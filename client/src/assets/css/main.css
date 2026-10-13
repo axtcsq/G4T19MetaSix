@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
+
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+/* Brand design tokens */
+@theme static {
+  --font-sans: 'Raleway', sans-serif;
+  --font-serif: 'Crimson Text', serif;
+
+  --color-brand-50: #fdf3f0;
+  --color-brand-100: #fbe5df;
+  --color-brand-200: #f5c9bc;
+  --color-brand-300: #eaa596;
+  --color-brand-400: #db806d;
+  --color-brand-500: #cd6651;
+  --color-brand-600: #b94f3d;
+  --color-brand-700: #983e31;
+  --color-brand-800: #7d4737;
+  --color-brand-900: #62352b;
+  --color-brand-950: #351c17;
+
+  --color-peach: #ffd3ac;
+  --color-lavender: #998ba1;
+  --color-brown: #7d4737;
+}
+
+/* Light theme */
+:root {
+  --ui-primary: var(--color-brand-500);
+  --ui-radius: 0.5rem;
+
+  --ui-bg: #faf8f6;
+  --ui-bg-elevated: #ffffff;
+  --ui-bg-accented: #f1e9e5;
+
+  --ui-text: #292321;
+  --ui-text-muted: #756c68;
+  --ui-border: #e7dcd7;
+}
+
+/* Dark theme */
+.dark {
+  --ui-primary: var(--color-brand-400);
+
+  --ui-bg: #171b27;
+  --ui-bg-elevated: #222839;
+  --ui-bg-accented: #30384a;
+
+  --ui-text: #f5f1ee;
+  --ui-text-muted: #a9a5b0;
+  --ui-border: #343b4b;
+}
+
+/* Global typography */
+body {
+  font-family: var(--font-sans);
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.font-editorial {
+  font-family: var(--font-serif);
+}
