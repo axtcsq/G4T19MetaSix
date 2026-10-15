@@ -1,0 +1,3 @@
+minimumReleaseAgeExclude:
+  - kareem@3.4.1
+  - mongoose@9.11.2
