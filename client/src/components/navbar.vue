@@ -3,55 +3,45 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-
-const items = computed(() => [
-  {
-    label: 'Home',
-    to: '/',
-    active: route.path === '/',
-  },
-  {
-    label: 'Daily Mood',
-    to: '/daily-mood',
-    active: route.path === '/daily-mood',
-  },
-  {
-    label: 'Calendar',
-    to: '/calendar',
-    active: route.path === '/calendar',
-  },
-  {
-    label: 'Canvas',
-    to: '/canvas',
-    active: route.path === '/canvas',
-  },
-  {
-    label: 'Profile',
-    to: '/profile',
-    active: route.path === '/profile',
-  },
-])
+const isLanding = computed(() => route.path === '/')
 </script>
 
 <template>
-  <UHeader>
-    <template #left>
-      <span class="text-xl font-bold">MetaFor</span>
-      <UColorModeButton />
+  <header class="site-header" :class="{ 'site-header-landing': isLanding }">
+    <div class="header-inner">
+      <RouterLink class="brand" to="/" aria-label="MetaFor home">
+        MetaFor<span class="brand-mark">®</span>
+      </RouterLink>
 
-      <UTooltip text="Open on GitHub" :kbds="['meta', 'G']">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          to="https://github.com/nuxt/ui"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-        />
-      </UTooltip>
-    </template>
-    <template #right>
-      <UNavigationMenu :items="items" />
-    </template>
-  </UHeader>
+      <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
+        <RouterLink class="header-cta glass-action" to="/signup">Get started</RouterLink>
+      </nav>
+
+      <nav v-else class="header-nav" aria-label="Main navigation">
+        <RouterLink class="header-link" to="/">Home</RouterLink>
+        <RouterLink class="header-link" to="/daily-mood">Daily Mood</RouterLink>
+        <RouterLink class="header-cta glass-action" to="/login">Sign in</RouterLink>
+      </nav>
+    </div>
+  </header>
 </template>
+
+<style scoped>
+.site-header { position: relative; z-index: 10; width: 100%; border-bottom: 1px solid #998ba155; background: #faf8f6; }
+.site-header-landing { background: #faf8f6; }
+.header-inner { display: flex; width: min(1180px, calc(100% - 64px)); min-height: 76px; align-items: center; justify-content: space-between; gap: 24px; margin-inline: auto; }
+.brand { color: #000; font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; letter-spacing: -0.055em; text-decoration: none; }
+.brand-mark { display: inline-block; padding-left: 3px; font-family: var(--font-sans); font-size: 0.58rem; vertical-align: top; }
+.header-nav { display: flex; align-items: center; gap: clamp(15px, 3vw, 34px); }
+.header-link { color: #625a53; font-size: 0.94rem; font-weight: 600; text-decoration: none; transition: color 160ms ease; }
+.header-link:hover { color: #cd6651; }
+.header-cta { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 11px; padding: 0 20px; }
+
+@media (max-width: 600px) {
+  .header-inner { width: calc(100% - 36px); min-height: 66px; }
+  .brand { font-size: 1.48rem; }
+  .header-nav { gap: 14px; }
+  .header-cta { min-height: 42px; padding-inline: 17px; }
+  .site-header:not(.site-header-landing) .header-link { font-size: 0.86rem; }
+}
+</style>
