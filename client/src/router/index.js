@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from '../views/home.vue'
+import Landing from '../views/landing.vue'
 import DailyMood from '../views/daily-mood.vue'
 import Login from '../views/login.vue'
 import Signup from '../views/signup.vue'
@@ -8,8 +8,8 @@ import Signup from '../views/signup.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home,
+    name: 'landing',
+    component: Landing,
   },
   {
     path: '/daily-mood',
