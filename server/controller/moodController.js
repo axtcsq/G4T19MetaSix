@@ -1,13 +1,22 @@
 import mongoose from "mongoose";
-import MoodLog from "../models/MoodLog.js";
-
-const allowedMoods = ["Sad", "Happy", "Relaxed", "Anxious", "Angry"];
+import {
+  addMoodLog,
+  editMoodLog,
+  findMoodLogById,
+  MOODS,
+  removeMoodLog,
+  retrieveMoodLogs,
+} from "../models/MoodLog.js";
 
 function validId(id) {
   return mongoose.isObjectIdOrHexString(id);
 }
 
 function validateEntry(body, requireMood = false) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return "Request body must be an object";
+  }
+
   const keys = Object.keys(body);
 
   if (keys.some((key) => !["mood", "journal"].includes(key))) {
@@ -18,7 +27,7 @@ function validateEntry(body, requireMood = false) {
     return "Mood is required";
   }
 
-  if ("mood" in body && !allowedMoods.includes(body.mood)) {
+  if ("mood" in body && !MOODS.includes(body.mood)) {
     return "Invalid mood";
   }
 
@@ -40,7 +49,7 @@ export async function createMood(req, res) {
     return res.status(400).json({ error });
   }
 
-  const log = await MoodLog.create({
+  const log = await addMoodLog({
     mood: req.body.mood,
     journal: req.body.journal ?? "",
   });
@@ -50,7 +59,7 @@ export async function createMood(req, res) {
 
 // READ ALL
 export async function getMoods(req, res) {
-  const logs = await MoodLog.find().sort({ createdAt: -1 }).limit(100);
+  const logs = await retrieveMoodLogs();
 
   res.json(logs);
 }
@@ -61,7 +70,7 @@ export async function getMood(req, res) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const log = await MoodLog.findById(req.params.id);
+  const log = await findMoodLogById(req.params.id);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
@@ -76,21 +85,17 @@ export async function updateMood(req, res) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  if (Object.keys(req.body).length === 0) {
-    return res.status(400).json({ error: "No fields supplied" });
-  }
-
   const error = validateEntry(req.body);
 
   if (error) {
     return res.status(400).json({ error });
   }
 
-  const log = await MoodLog.findByIdAndUpdate(
-    req.params.id,
-    { $set: req.body },
-    { returnDocument: "after", runValidators: true },
-  );
+  if (Object.keys(req.body).length === 0) {
+    return res.status(400).json({ error: "No fields supplied" });
+  }
+
+  const log = await editMoodLog(req.params.id, req.body);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
@@ -105,7 +110,7 @@ export async function deleteMood(req, res) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const log = await MoodLog.findByIdAndDelete(req.params.id);
+  const log = await removeMoodLog(req.params.id);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
