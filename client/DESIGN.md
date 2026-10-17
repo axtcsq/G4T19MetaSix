@@ -8,6 +8,8 @@ The Daily Mood screen keeps the form and journal history side by side on wide sc
 
 ## Interaction behavior
 
+The daily reflection field is a ruled notebook: warm paper, subtle grain, a red margin, blue-gray ink, and a dark fountain-pen nib pointer with a native text fallback. Its Nuxt UI textarea remains the canonical input and grows with the reflection. Labels, history, and controls retain the app typography. `--font-journal` in `src/assets/css/main.css` owns the handwriting stack: locally installed Biro Script, Segoe Print, Bradley Hand, then cursive. Biro Script's downloaded desktop EULA does not grant web redistribution; obtain an appropriate webfont license before bundling a font file. The reference EULA is retained at `../.font-reference/License_EULA.rtf`. Paper decoration is intentionally light even in dark mode; forced-colors mode uses system field colors without texture.
+
 Mood entries are stored by the server. Load the history on entry, show a loading state while it arrives, distinguish an empty history from a failed request, and offer retry after a load failure. Save only after server confirmation, prevent duplicate saves while the request is pending, and keep the selected mood and journal text if saving fails.
 
 The frontend calls the relative `/api` path. Vite proxies that path to the local server during development; deployments should provide `VITE_API_BASE_URL` or route `/api` to the backend on the same origin.
