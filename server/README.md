@@ -38,6 +38,8 @@ All endpoints use the `/api/moods` prefix. A mood must be `Sad`, `Happy`, `Relax
 
 The API starts even if MongoDB is unavailable. In that case the health endpoint returns `503`, and mood requests return a database unavailable response. This keeps the server's existing recovery and health-check behavior.
 
+The Canvas page currently displays a static analysis placeholder. No AI provider is connected.
+
 ## Run
 
 ```sh
