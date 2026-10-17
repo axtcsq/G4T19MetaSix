@@ -55,6 +55,10 @@ app.use((req, res) => {
 app.use((error, req, res, next) => {
   console.error(error);
 
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ error: "Request body is too large" });
+  }
+
   if (error.name === "ValidationError") {
     return res.status(400).json({
       error: "Validation failed",
