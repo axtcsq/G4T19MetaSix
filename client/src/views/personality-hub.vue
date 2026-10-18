@@ -128,37 +128,46 @@ onMounted(loadPage)
           <template v-else-if="personality">
             <div class="pattern-row mt-8">
               <div class="pattern-card type-card">
-                <p class="type-intro">You are a</p>
-                <img
-                  :src="typeIcons[personality.type.id] ?? starIcon"
-                  alt=""
-                  width="176"
-                  height="176"
-                  class="type-icon"
-                />
-                <p class="type-name">{{ personality.type.name }}</p>
-                <p class="body-text type-tagline">{{ personality.type.tagline }}</p>
+                <div class="type-header">
+                  <img
+                    :src="typeIcons[personality.type.id] ?? starIcon"
+                    alt=""
+                    width="136"
+                    height="136"
+                    class="type-icon"
+                  />
+                  <div>
+                    <p class="type-intro">You are</p>
+                    <p class="type-name">{{ personality.type.name }}</p>
+                    <p class="body-text type-tagline">{{ personality.type.tagline }}</p>
+                  </div>
+                </div>
                 <p class="type-meaning">{{ personality.type.description }}</p>
               </div>
 
               <div class="pattern-card traits-card">
-                <TraitBar v-for="trait in personality.traits" :key="trait.id" :trait="trait" />
+                <TraitBar
+                  v-for="trait in personality.traits"
+                  :key="trait.id"
+                  :trait="trait"
+                  compact
+                />
               </div>
             </div>
 
             <div class="insights-row mt-8">
               <div class="pattern-card insights-card">
                 <p class="emphasis-text">{{ personality.headline }}</p>
-                <ul class="mt-4 space-y-3">
-                  <li v-for="insight in personality.insights" :key="insight" class="body-text">
+                <ul class="insight-list">
+                  <li v-for="insight in personality.insights" :key="insight" class="insight-text">
                     {{ insight }}
                   </li>
                 </ul>
-                <p v-if="personality.moodLink" class="mood-link body-text mt-5">
+                <p v-if="personality.moodLink" class="mood-link insight-text">
                   <span class="mood-label">Mood × music</span>
                   {{ personality.moodLink.text }}
                 </p>
-                <p class="mt-5 font-sans text-sm text-[#665f78]">
+                <p class="font-sans text-sm text-[#665f78]">
                   {{ personality.type.match }}% match, based on
                   {{ personality.quizResults.length }}
                   {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
@@ -360,62 +369,73 @@ onMounted(loadPage)
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+/* Same two equal columns as the row below, so the cards line up. */
 .pattern-row {
   display: grid;
-  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 40px;
 }
 
 .type-card {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem 1.75rem;
+}
+
+.type-header {
+  display: flex;
   align-items: center;
-  padding: 1.25rem 1rem 1.5rem;
-  text-align: center;
+  gap: 1.5rem;
+}
+
+.type-icon {
+  flex-shrink: 0;
 }
 
 .type-intro {
   font-family: var(--font-sans);
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
-.type-icon {
-  margin-block: 1.25rem 0.75rem;
-}
-
-.type-tagline {
-  margin-top: 0.85rem;
-}
-
-.type-meaning {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(118, 62, 50, 0.15);
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  line-height: 1.4;
-  text-align: left;
-}
-
 .type-name {
-  margin-top: 0.5rem;
+  margin-top: 0.15rem;
   font-family: var(--font-sans);
   font-size: 2rem;
   font-weight: 700;
   line-height: 1.15;
 }
 
+.type-tagline {
+  margin-top: 0.6rem;
+}
+
+.type-meaning {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(118, 62, 50, 0.15);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
 .traits-card {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 1rem 3.25rem;
+  justify-content: space-evenly;
+  gap: 0.5rem;
+  padding: 1.5rem 1.75rem;
+}
+
+.insight-text {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.35;
 }
 
 .mood-link {
-  padding: 0.85rem 1rem;
+  padding: 0.6rem 0.85rem;
   border-radius: 10px;
   background: rgba(102, 95, 120, 0.08);
 }
@@ -437,12 +457,22 @@ onMounted(loadPage)
 }
 
 .breakdown-card {
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 1.75rem;
 }
 
+/* The text card stretches to the height of the card beside it, so its
+   blocks are spread evenly down it rather than bunched at the top. */
 .insights-card {
-  min-height: 226px;
-  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+}
+
+.insight-list {
+  display: grid;
+  gap: 0.6rem;
 }
 
 .summary-text {
@@ -486,8 +516,19 @@ onMounted(loadPage)
   }
 
   .insights-card,
-  .breakdown-card {
+  .breakdown-card,
+  .type-card,
+  .traits-card {
     padding: 1.25rem;
+  }
+
+  .type-header {
+    gap: 1rem;
+  }
+
+  .type-icon {
+    width: 88px;
+    height: 88px;
   }
 }
 </style>
