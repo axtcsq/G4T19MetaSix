@@ -45,5 +45,11 @@ const isLanding = computed(() => route.path === '/')
   .header-nav { gap: 14px; }
   .header-cta { min-height: 42px; padding-inline: 17px; }
   .site-header:not(.site-header-landing) .header-link { font-size: 0.86rem; }
+
+  /* The full link list doesn't fit beside the logo on phones, so it moves to its own row. */
+  .site-header:not(.site-header-landing) .header-inner { flex-wrap: wrap; row-gap: 6px; padding-block: 10px; }
+  .site-header:not(.site-header-landing) .header-nav { width: 100%; justify-content: space-between; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .site-header:not(.site-header-landing) .header-link { flex-shrink: 0; font-size: 0.8rem; }
+  .site-header:not(.site-header-landing) .header-cta { flex-shrink: 0; min-height: 38px; }
 }
 </style>
