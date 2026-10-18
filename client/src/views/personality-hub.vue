@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { getPersonality, getQuizzes } from '@/api/quiz'
 import SiteFooter from '@/components/footer.vue'
+import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
 import TraitBar from '@/components/TraitBar.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
 import starIcon from '@/assets/images/personality/star.svg'
@@ -107,12 +108,15 @@ onMounted(loadPage)
           </li>
         </ul>
       </section>
-
-      <section class="patterns" aria-labelledby="patterns-heading">
+      <!-- Patterns -->
+      <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
         <div class="page-width py-12">
           <h2 id="patterns-heading" class="patterns-title">Patterns</h2>
-          <p class="body-text text-center text-white">
-            Through your personality test, this is what we observed about you...
+          <p class="body-text patterns-intro">
+            Every quiz you take adds a thread. Here we weave your answers from all of them together
+            with your Spotify listening to show the habits that keep showing up, and the unqiue
+            MetaFor personality they add up to. The more quizzes you take, the clearer the picture
+            gets.
           </p>
 
           <div v-if="!isLoading && !loadError && !personality" class="pattern-card mt-8 p-10">
@@ -128,12 +132,13 @@ onMounted(loadPage)
                 <img
                   :src="typeIcons[personality.type.id] ?? starIcon"
                   alt=""
-                  width="144"
-                  height="144"
+                  width="176"
+                  height="176"
                   class="type-icon"
                 />
                 <p class="type-name">{{ personality.type.name }}</p>
-                <p class="body-text">{{ personality.type.tagline }}</p>
+                <p class="body-text type-tagline">{{ personality.type.tagline }}</p>
+                <p class="type-meaning">{{ personality.type.description }}</p>
               </div>
 
               <div class="pattern-card traits-card">
@@ -141,20 +146,29 @@ onMounted(loadPage)
               </div>
             </div>
 
-            <div class="pattern-card insights-card mt-8">
-              <p class="emphasis-text">{{ personality.headline }}</p>
-              <ul class="mt-4 space-y-3">
-                <li v-for="insight in personality.insights" :key="insight" class="body-text">
-                  {{ insight }}
-                </li>
-              </ul>
-              <p class="mt-5 font-sans text-sm text-[#665f78]">
-                {{ personality.type.match }}% match. You're also close to
-                {{ personality.runnerUp.name }} ({{ personality.runnerUp.match }}%). Based on
-                {{ personality.quizResults.length }}
-                {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
-                listening.
-              </p>
+            <div class="insights-row mt-8">
+              <div class="pattern-card insights-card">
+                <p class="emphasis-text">{{ personality.headline }}</p>
+                <ul class="mt-4 space-y-3">
+                  <li v-for="insight in personality.insights" :key="insight" class="body-text">
+                    {{ insight }}
+                  </li>
+                </ul>
+                <p v-if="personality.moodLink" class="mood-link body-text mt-5">
+                  <span class="mood-label">Mood × music</span>
+                  {{ personality.moodLink.text }}
+                </p>
+                <p class="mt-5 font-sans text-sm text-[#665f78]">
+                  {{ personality.type.match }}% match, based on
+                  {{ personality.quizResults.length }}
+                  {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
+                  listening.
+                </p>
+              </div>
+
+              <div v-if="personality.sources" class="pattern-card breakdown-card">
+                <PersonalityBreakdown :personality="personality" />
+              </div>
             </div>
           </template>
         </div>
@@ -312,14 +326,15 @@ onMounted(loadPage)
 }
 
 .patterns {
+  width: min(1320px, calc(100% - 32px));
+  margin-inline: auto;
   border: 1px solid #763e32;
   border-radius: 18px;
   background:
     linear-gradient(117.92deg, rgba(102, 95, 120, 0.2) 2.94%, rgba(118, 62, 50, 0.2) 100%),
     linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%),
     linear-gradient(109.07deg, rgba(118, 62, 50, 0.3) 42.18%, rgba(255, 205, 166, 0.3) 91.17%),
-    linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%),
-    #fff;
+    linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%), #fff;
   box-shadow: inset 0 9px 6.2px rgba(0, 0, 0, 0.25);
 }
 
@@ -330,7 +345,16 @@ onMounted(loadPage)
   text-align: center;
 }
 
+.patterns-intro {
+  max-width: 760px;
+  margin: 0.5rem auto 0;
+  color: #fff;
+  text-align: center;
+}
+
 .pattern-card {
+  overflow: hidden;
+  border-radius: 10px;
   color: #000;
   background: #fff;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -338,7 +362,7 @@ onMounted(loadPage)
 
 .pattern-row {
   display: grid;
-  grid-template-columns: minmax(0, 321px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
   gap: 40px;
 }
 
@@ -357,7 +381,21 @@ onMounted(loadPage)
 }
 
 .type-icon {
-  margin-top: 0.75rem;
+  margin-block: 1.25rem 0.75rem;
+}
+
+.type-tagline {
+  margin-top: 0.85rem;
+}
+
+.type-meaning {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(118, 62, 50, 0.15);
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  text-align: left;
 }
 
 .type-name {
@@ -376,6 +414,32 @@ onMounted(loadPage)
   padding: 1rem 3.25rem;
 }
 
+.mood-link {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(102, 95, 120, 0.08);
+}
+
+.mood-label {
+  display: block;
+  color: #665f78;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.insights-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+}
+
+.breakdown-card {
+  padding: 1.75rem 2rem;
+}
+
 .insights-card {
   min-height: 226px;
   padding: 1.75rem 2rem;
@@ -389,7 +453,8 @@ onMounted(loadPage)
 }
 
 @media (max-width: 860px) {
-  .pattern-row {
+  .pattern-row,
+  .insights-row {
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -420,7 +485,8 @@ onMounted(loadPage)
     font-size: 1.1rem;
   }
 
-  .insights-card {
+  .insights-card,
+  .breakdown-card {
     padding: 1.25rem;
   }
 }

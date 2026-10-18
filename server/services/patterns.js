@@ -4,8 +4,8 @@ import { clamp } from "./quizEngine.js";
 
 // How much the quiz results count versus the user's listening data when
 // working out their MetaFor traits.
-const QUIZ_WEIGHT = 0.7;
-const SPOTIFY_WEIGHT = 0.3;
+export const QUIZ_WEIGHT = 0.7;
+export const SPOTIFY_WEIGHT = 0.3;
 
 function average(values) {
   const numbers = values.filter((value) => typeof value === "number");
@@ -29,6 +29,56 @@ export function spotifySignals(profile) {
     discovery: typeof repeatRatio === "number" ? clamp((0.5 - repeatRatio) * 2) : null,
     focus: instrumentalness === null ? null : clamp((0.25 - instrumentalness) * 4),
     setting: danceability === null ? null : clamp((danceability - 0.5) * 2),
+  };
+}
+
+// Why the listening data leans the way it does, per trait, for the
+// "how it adds up" table.
+export function spotifyEvidence(profile) {
+  const percent = (value) => (value === null ? null : Math.round(value * 100));
+  const energy = percent(averageFeature(profile, "energy"));
+  const instrumentalness = percent(averageFeature(profile, "instrumentalness"));
+  const danceability = percent(averageFeature(profile, "danceability"));
+  const repeats = typeof profile?.repeatListenRatio === "number" ? percent(profile.repeatListenRatio) : null;
+
+  return {
+    energy: energy === null ? null : `Top tracks average ${energy}% energy`,
+    discovery: repeats === null ? null : `${repeats}% of your plays are repeats`,
+    focus:
+      instrumentalness === null
+        ? null
+        : instrumentalness < 25
+          ? `Only ${instrumentalness}% instrumental, so words matter`
+          : `${instrumentalness}% instrumental, so sound comes first`,
+    setting: danceability === null ? null : `Top tracks are ${danceability}% danceable`,
+  };
+}
+
+// Roughly how happy (valence) music tends to sound for each logged mood.
+const MOOD_VALENCE = { Happy: 0.75, Relaxed: 0.55, Anxious: 0.4, Angry: 0.35, Sad: 0.25 };
+
+// One line connecting the user's mood logs with their listening.
+export function moodLink(moodPatterns, stats) {
+  if (!moodPatterns) return null;
+
+  const [topMood, count] = Object.entries(moodPatterns.counts).sort((a, b) => b[1] - a[1])[0];
+  const logged = `You logged ${topMood} most often (${count} of your last ${moodPatterns.total} mood logs)`;
+
+  if (stats.averageHappiness === null) return { topMood, count, total: moodPatterns.total, text: `${logged}.` };
+
+  const gap = stats.averageHappiness / 100 - MOOD_VALENCE[topMood];
+  const comparison =
+    Math.abs(gap) < 0.12
+      ? "so your music matches how you've been feeling"
+      : gap > 0
+        ? "so your music sounds brighter than your mood, maybe it's how you lift yourself up"
+        : "so your music sounds moodier than you feel, maybe it's where you put the heavier stuff";
+
+  return {
+    topMood,
+    count,
+    total: moodPatterns.total,
+    text: `${logged}, and your top tracks average ${stats.averageHappiness}% happiness, ${comparison}.`,
   };
 }
 

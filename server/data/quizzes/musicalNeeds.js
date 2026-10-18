@@ -1,6 +1,6 @@
 import { clamp, shareRow, shares, tallyAnswers, topDimension } from "../../services/quizEngine.js";
 
-// The Musical Hierarchy of Needs: Maslow's pyramid for where music sits in
+// The Soundtrack Pyramid: Maslow's hierarchy of needs for where music sits in
 // the user's life. Answers and the user's Spotify playlist names both add
 // points to a level; the level with the most points is the result.
 const LEVELS = {
@@ -60,7 +60,7 @@ function classifyPlaylists(profile) {
 
 export const musicalNeeds = {
   id: "musical-needs",
-  title: "The Musical Hierarchy of Needs",
+  title: "The Soundtrack Pyramid",
   description: "From survival fuel to self-discovery: where does music sit in your life?",
   dimensions: ORDER,
   questions: [
@@ -166,7 +166,7 @@ export const musicalNeeds = {
       resultId: top,
       title: level.name,
       subtitle: `Level ${ORDER.indexOf(top) + 1} of 5`,
-      headline: `Based on the quiz, music sits at ${level.short} in your hierarchy of needs.`,
+      headline: `Based on the quiz, music sits at ${level.short} on your Soundtrack Pyramid.`,
       description: level.meaning,
       justification: [
         `${percents[top]}% of your answers and playlists point to music as ${level.short.toLowerCase()}.`,

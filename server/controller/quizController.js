@@ -10,7 +10,16 @@ import {
   savePersonality,
 } from "../models/QuizAttempt.js";
 import { analysePersonality } from "../services/quizLlm.js";
-import { combineTraits, listeningStats, rankTypes } from "../services/patterns.js";
+import {
+  QUIZ_WEIGHT,
+  SPOTIFY_WEIGHT,
+  combineTraits,
+  listeningStats,
+  moodLink,
+  rankTypes,
+  spotifyEvidence,
+  spotifySignals,
+} from "../services/patterns.js";
 import { validateAnswers } from "../services/quizEngine.js";
 
 // TODO: replace with the signed-in user's Spotify data once auth and the
@@ -43,12 +52,25 @@ function evaluateAttempt(attempt, profile) {
 
 async function latestResults(profile) {
   const attempts = await retrieveLatestAttempts();
-  return attempts.map((attempt) => evaluateAttempt(attempt, profile)).filter(Boolean);
+  const order = (result) => QUIZZES.findIndex((quiz) => quiz.id === result.quizId);
+
+  return attempts
+    .map((attempt) => evaluateAttempt(attempt, profile))
+    .filter(Boolean)
+    .sort((a, b) => order(a) - order(b));
 }
 
 function publicType(id) {
   const { name, tagline, description } = PERSONALITY_TYPES.find((type) => type.id === id);
   return { id, name, tagline, description };
+}
+
+// Used under the Patterns section when no LLM summary is available.
+function fallbackSummary(quizResults, type) {
+  const titles = quizResults.map((result) => result.title);
+  const list =
+    titles.length > 1 ? `${titles.slice(0, -1).join(", ")} and ${titles.at(-1)}` : titles[0];
+  return `Your quizzes describe you as ${list}. Put together with your listening, that adds up to ${type.name}.`;
 }
 
 // Summarises every quiz result into one MetaFor personality and saves it.
@@ -59,13 +81,36 @@ async function rebuildPersonality() {
   const ranking = rankTypes(traits);
   const stats = listeningStats(profile);
   const quizResults = results.map(({ quizId, quizTitle, title, subtitle }) => ({ quizId, quizTitle, title, subtitle }));
+  const moodPatterns = await getMoodPatterns();
+
+  // Every row of the "how it adds up" table: one per quiz, then Spotify.
+  const round = (value) => (typeof value === "number" ? Number(value.toFixed(2)) : null);
+  const evidence = spotifyEvidence(profile);
+  const signals = spotifySignals(profile);
+  const sources = [
+    ...results.map((result) => ({
+      kind: "quiz",
+      id: result.quizId,
+      label: result.quizTitle,
+      result: result.title,
+      traits: Object.fromEntries(Object.entries(result.traits).map(([id, value]) => [id, round(value)])),
+    })),
+    {
+      kind: "spotify",
+      id: "spotify",
+      label: "Your Spotify listening",
+      result: stats.topArtist ? `Top artist: ${stats.topArtist}` : "Listening data",
+      traits: Object.fromEntries(Object.entries(signals).map(([id, value]) => [id, round(value)])),
+      evidence,
+    },
+  ];
 
   const analysis = await analysePersonality({
     traits,
     quizResults,
     ranking,
     stats,
-    moodPatterns: await getMoodPatterns(),
+    moodPatterns,
     profile,
   });
 
@@ -81,9 +126,13 @@ async function rebuildPersonality() {
     headline:
       analysis?.headline ?? `So far you lean ${traits.map((trait) => trait.poleName).join(", ")}.`,
     insights: analysis?.insights ?? traits.map((trait) => trait.trait),
-    summary: analysis?.summary ?? type.description,
+    summary: analysis?.summary ?? fallbackSummary(quizResults, type),
     traits,
     quizResults,
+    sources,
+    weights: { quizzes: QUIZ_WEIGHT, spotify: SPOTIFY_WEIGHT },
+    ranking: ranking.map(({ id, match }) => ({ id, name: publicType(id).name, match })),
+    moodLink: moodLink(moodPatterns, stats),
     stats,
     source: analysis ? "llm" : "scoring",
   });
@@ -101,6 +150,10 @@ function formatPersonality(personality) {
     summary: personality.summary,
     traits: personality.traits,
     quizResults: personality.quizResults,
+    sources: personality.sources,
+    weights: personality.weights,
+    ranking: personality.ranking,
+    moodLink: personality.moodLink,
     stats: personality.stats,
     source: personality.source,
     updatedAt: personality.updatedAt,
@@ -129,7 +182,14 @@ export async function getQuizzes(req, res) {
 
 // GET /api/quiz/personality
 export async function getPersonality(req, res) {
-  res.json(formatPersonality(await findPersonality()));
+  let personality = await findPersonality();
+
+  // Rebuild personalities saved before the "how it adds up" data existed.
+  if (personality?.quizResults?.length && !personality.sources) {
+    personality = await rebuildPersonality();
+  }
+
+  res.json(formatPersonality(personality));
 }
 
 // GET /api/quiz/:quizId
