@@ -1,21 +1,17 @@
 import { mockSpotifyProfile } from "../data/mockSpotify.js";
 import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
-import { QUIZZES, findQuiz } from "../data/quizzes.js";
+import { QUIZZES, findQuiz } from "../data/quizzes/index.js";
 import { MOODS, retrieveMoodLogs } from "../models/MoodLog.js";
 import {
-  addQuizResult,
+  addQuizAttempt,
+  findLatestAttempt,
   findPersonality,
-  retrieveLatestQuizResults,
+  retrieveLatestAttempts,
   savePersonality,
-} from "../models/QuizResult.js";
+} from "../models/QuizAttempt.js";
 import { analysePersonality } from "../services/quizLlm.js";
-import {
-  combineTraits,
-  listeningStats,
-  rankTypes,
-  scoreQuiz,
-  validateAnswers,
-} from "../services/quizScoring.js";
+import { combineTraits, listeningStats, rankTypes } from "../services/patterns.js";
+import { validateAnswers } from "../services/quizEngine.js";
 
 // TODO: replace with the signed-in user's Spotify data once auth and the
 // Spotify API set-up are merged.
@@ -36,28 +32,37 @@ async function getMoodPatterns() {
   return { total: logs.length, counts };
 }
 
+// Works out a stored attempt's result. Attempts whose answers no longer fit
+// the quiz (for example after its questions changed) are skipped.
+function evaluateAttempt(attempt, profile) {
+  const quiz = findQuiz(attempt.quizId);
+  if (!quiz || validateAnswers(quiz, attempt.answers)) return null;
+
+  return { quizId: quiz.id, quizTitle: quiz.title, takenAt: attempt.createdAt, ...quiz.evaluate(attempt.answers, profile) };
+}
+
+async function latestResults(profile) {
+  const attempts = await retrieveLatestAttempts();
+  return attempts.map((attempt) => evaluateAttempt(attempt, profile)).filter(Boolean);
+}
+
 function publicType(id) {
   const { name, tagline, description } = PERSONALITY_TYPES.find((type) => type.id === id);
   return { id, name, tagline, description };
 }
 
-function quizTitle(id) {
-  return QUIZZES.find((quiz) => quiz.id === id)?.title ?? id;
-}
-
-// Summarises every quiz the user has taken into one MetaFor personality and
-// saves it.
+// Summarises every quiz result into one MetaFor personality and saves it.
 async function rebuildPersonality() {
-  const results = await retrieveLatestQuizResults();
   const profile = getSpotifyProfile();
-  const traits = combineTraits(QUIZZES, results);
+  const results = await latestResults(profile);
+  const traits = combineTraits(results, profile);
   const ranking = rankTypes(traits);
   const stats = listeningStats(profile);
-  const quizzesTaken = results.map((result) => result.quizId);
+  const quizResults = results.map(({ quizId, quizTitle, title, subtitle }) => ({ quizId, quizTitle, title, subtitle }));
 
   const analysis = await analysePersonality({
     traits,
-    quizzesTaken: quizzesTaken.map(quizTitle),
+    quizResults,
     ranking,
     stats,
     moodPatterns: await getMoodPatterns(),
@@ -78,14 +83,15 @@ async function rebuildPersonality() {
     insights: analysis?.insights ?? traits.map((trait) => trait.trait),
     summary: analysis?.summary ?? type.description,
     traits,
-    quizzesTaken,
+    quizResults,
     stats,
     source: analysis ? "llm" : "scoring",
   });
 }
 
 function formatPersonality(personality) {
-  if (!personality) return null;
+  // Personalities saved before quiz results were recorded are out of date.
+  if (!personality?.quizResults?.length) return null;
 
   return {
     type: { ...publicType(personality.typeId), match: personality.match },
@@ -94,7 +100,7 @@ function formatPersonality(personality) {
     insights: personality.insights,
     summary: personality.summary,
     traits: personality.traits,
-    quizzesTaken: personality.quizzesTaken,
+    quizResults: personality.quizResults,
     stats: personality.stats,
     source: personality.source,
     updatedAt: personality.updatedAt,
@@ -103,18 +109,21 @@ function formatPersonality(personality) {
 
 // GET /api/quiz
 export async function getQuizzes(req, res) {
-  const results = await retrieveLatestQuizResults();
-  const taken = new Set(results.map((result) => result.quizId));
+  const results = await latestResults(getSpotifyProfile());
 
   res.json(
-    QUIZZES.map(({ id, title, description, questions }) => ({
-      id,
-      title,
-      description,
-      available: Boolean(questions),
-      questionCount: questions?.length ?? 0,
-      taken: taken.has(id),
-    })),
+    QUIZZES.map((quiz) => {
+      const result = results.find((item) => item.quizId === quiz.id);
+
+      return {
+        id: quiz.id,
+        title: quiz.title,
+        description: quiz.description,
+        questionCount: quiz.questions.length,
+        needsBirthday: Boolean(quiz.needsBirthday),
+        latestResult: result ? { title: result.title, subtitle: result.subtitle } : null,
+      };
+    }),
   );
 }
 
@@ -135,13 +144,32 @@ export function getQuiz(req, res) {
     id: quiz.id,
     title: quiz.title,
     description: quiz.description,
-    // Poles and weights stay on the server; the client only needs the text.
+    needsBirthday: Boolean(quiz.needsBirthday),
+    // Option scores stay on the server; the client only needs the text.
     questions: quiz.questions.map(({ id, text, options }) => ({
       id,
       text,
       options: options.map((option) => ({ id: option.id, text: option.text })),
     })),
   });
+}
+
+// GET /api/quiz/:quizId/result
+export async function getLatestResult(req, res) {
+  const quiz = findQuiz(req.params.quizId);
+
+  if (!quiz) {
+    return res.status(404).json({ error: "Quiz not found" });
+  }
+
+  const attempt = await findLatestAttempt(quiz.id);
+  const result = attempt && evaluateAttempt(attempt, getSpotifyProfile());
+
+  if (!result) {
+    return res.status(404).json({ error: "You haven't taken this quiz yet" });
+  }
+
+  res.json(result);
 }
 
 // POST /api/quiz/:quizId/result
@@ -159,13 +187,13 @@ export async function submitQuiz(req, res) {
     return res.status(400).json({ error });
   }
 
-  const traits = scoreQuiz(quiz, answers, getSpotifyProfile());
-  await addQuizResult({ quizId: quiz.id, traits });
+  // Keep only the fields the quiz uses.
+  const stored = Object.fromEntries(quiz.questions.map((question) => [question.id, answers[question.id]]));
+  if (quiz.needsBirthday) stored.birthday = answers.birthday;
+
+  const attempt = await addQuizAttempt({ quizId: quiz.id, answers: stored });
+  const result = evaluateAttempt(attempt, getSpotifyProfile());
   const personality = await rebuildPersonality();
 
-  res.status(201).json({
-    quizId: quiz.id,
-    traits,
-    personality: formatPersonality(personality),
-  });
+  res.status(201).json({ result, personality: formatPersonality(personality) });
 }

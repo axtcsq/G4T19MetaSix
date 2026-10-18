@@ -75,14 +75,35 @@ onMounted(loadPage)
             </div>
             <h2 class="quiz-title">{{ quiz.title }}</h2>
             <p class="body-text quiz-description">{{ quiz.description }}</p>
+
+            <template v-if="quiz.latestResult">
+              <p class="latest-result">
+                <span class="latest-label">Your result</span>
+                <span class="latest-title">{{ quiz.latestResult.title }}</span>
+                <span class="latest-subtitle">{{ quiz.latestResult.subtitle }}</span>
+              </p>
+              <div class="card-actions">
+                <RouterLink
+                  class="peach-button"
+                  :to="{ name: 'personality-result', params: { quizId: quiz.id } }"
+                >
+                  View result
+                </RouterLink>
+                <RouterLink
+                  class="peach-button peach-button--quiet"
+                  :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
+                >
+                  Retake
+                </RouterLink>
+              </div>
+            </template>
             <RouterLink
-              v-if="quiz.available"
+              v-else
               class="peach-button"
               :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
             >
-              {{ quiz.taken ? 'Retake' : 'Get Started' }}
+              Get Started
             </RouterLink>
-            <button v-else type="button" class="peach-button" disabled>Coming soon</button>
           </li>
         </ul>
       </section>
@@ -130,8 +151,8 @@ onMounted(loadPage)
               <p class="mt-5 font-sans text-sm text-[#665f78]">
                 {{ personality.type.match }}% match. You're also close to
                 {{ personality.runnerUp.name }} ({{ personality.runnerUp.match }}%). Based on
-                {{ personality.quizzesTaken.length }}
-                {{ personality.quizzesTaken.length === 1 ? 'quiz' : 'quizzes' }} and your
+                {{ personality.quizResults.length }}
+                {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
                 listening.
               </p>
             </div>
@@ -238,7 +259,7 @@ onMounted(loadPage)
     transform 160ms ease;
 }
 
-.peach-button:hover:not(:disabled) {
+.peach-button:hover {
   background: #ffd6b6;
   transform: translateY(-1px);
 }
@@ -248,11 +269,46 @@ onMounted(loadPage)
   outline-offset: 3px;
 }
 
-.peach-button:disabled {
+.peach-button--quiet {
+  background: #fff;
+}
+
+.latest-result {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #ce5b4b;
+  border-radius: 0 10px 10px 0;
+  color: #000;
+  background: #ffe6d2;
+}
+
+.latest-label {
   color: #665f78;
-  background: #ece9ed;
-  box-shadow: none;
-  cursor: not-allowed;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.latest-title {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.latest-subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+}
+
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
 .patterns {

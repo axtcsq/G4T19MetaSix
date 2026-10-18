@@ -29,7 +29,7 @@ function candidateTypes(ranking) {
     .map(({ id, match }) => ({ ...PERSONALITY_TYPES.find((type) => type.id === id), match }));
 }
 
-export function buildAnalysisPrompt({ traits, quizzesTaken, ranking, stats, moodPatterns, profile }) {
+export function buildAnalysisPrompt({ traits, quizResults, ranking, stats, moodPatterns, profile }) {
   const candidates = candidateTypes(ranking)
     .map((type) => `- ${type.id} ("${type.name}", ${type.match}% match by score): ${type.description}`)
     .join("\n");
@@ -53,9 +53,14 @@ export function buildAnalysisPrompt({ traits, quizzesTaken, ranking, stats, mood
         .join(", ") + ` (from the last ${moodPatterns.total} mood logs)`
     : "No mood logs yet.";
 
+  const results = quizResults
+    .map((result) => `- ${result.quizTitle}: ${result.title} (${result.subtitle})`)
+    .join("\n");
+
   return `You are the personality analyst for MetaFor, a music and mood journaling app. Write a result in the style of Spotify Wrapped: personal, specific and fun.
 
-Quizzes taken: ${quizzesTaken.join(", ")}
+Their quiz results:
+${results}
 
 Traits, combined across all their quizzes:
 ${scores}

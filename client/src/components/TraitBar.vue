@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-// One trait from the server, scored from -1 (second pole) to 1 (first pole).
+// A trait or scale from the server, scored from -1 (second pole) to 1 (first pole).
 const props = defineProps({
   trait: { type: Object, required: true },
 })
@@ -19,7 +19,7 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
     <div
       class="trait-track"
       role="meter"
-      :aria-label="`${trait.label}: ${trait.strength}% ${trait.poleName}`"
+      :aria-label="`${trait.label}: ${fillPercent}% ${trait.firstPoleName}`"
       :aria-valuenow="fillPercent"
       aria-valuemin="0"
       aria-valuemax="100"

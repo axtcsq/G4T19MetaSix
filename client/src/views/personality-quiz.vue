@@ -1,30 +1,40 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getQuiz, submitQuiz } from '@/api/quiz'
 import SiteFooter from '@/components/footer.vue'
-import TraitBar from '@/components/TraitBar.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const quiz = ref(null)
 const answers = ref({})
+const birthday = ref('')
 const currentIndex = ref(0)
-const result = ref(null)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const loadError = ref('')
 const submitError = ref('')
 
-const questions = computed(() => quiz.value?.questions ?? [])
-const currentQuestion = computed(() => questions.value[currentIndex.value])
-const isLastQuestion = computed(() => currentIndex.value === questions.value.length - 1)
+const today = new Date().toISOString().slice(0, 10)
+
+// The birthday, when a quiz needs one, is asked before the questions.
+// TODO: read it from the user's profile once accounts are merged, and only
+// ask when it's missing.
+const steps = computed(() => [
+  ...(quiz.value?.needsBirthday ? [{ type: 'birthday', id: 'birthday' }] : []),
+  ...(quiz.value?.questions ?? []).map((question) => ({ type: 'question', id: question.id, question })),
+])
+const currentStep = computed(() => steps.value[currentIndex.value])
+const isLastStep = computed(() => currentIndex.value === steps.value.length - 1)
 const progress = computed(() =>
-  questions.value.length ? Math.round((currentIndex.value / questions.value.length) * 100) : 0,
+  steps.value.length ? Math.round((currentIndex.value / steps.value.length) * 100) : 0,
 )
-const hasAnsweredCurrent = computed(
-  () => currentQuestion.value && currentQuestion.value.id in answers.value,
-)
+const hasAnsweredCurrent = computed(() => {
+  if (!currentStep.value) return false
+  if (currentStep.value.type === 'birthday') return Boolean(birthday.value) && birthday.value <= today
+  return currentStep.value.id in answers.value
+})
 
 async function loadQuiz() {
   isLoading.value = true
@@ -40,7 +50,7 @@ async function loadQuiz() {
 }
 
 function selectOption(optionId) {
-  answers.value = { ...answers.value, [currentQuestion.value.id]: optionId }
+  answers.value = { ...answers.value, [currentStep.value.id]: optionId }
   submitError.value = ''
 }
 
@@ -51,7 +61,7 @@ function goBack() {
 async function goNext() {
   if (!hasAnsweredCurrent.value) return
 
-  if (!isLastQuestion.value) {
+  if (!isLastStep.value) {
     currentIndex.value += 1
     return
   }
@@ -60,18 +70,15 @@ async function goNext() {
   submitError.value = ''
 
   try {
-    result.value = await submitQuiz(quiz.value.id, answers.value)
+    const submission = quiz.value.needsBirthday
+      ? { ...answers.value, birthday: birthday.value }
+      : answers.value
+    await submitQuiz(quiz.value.id, submission)
+    router.push({ name: 'personality-result', params: { quizId: quiz.value.id } })
   } catch (error) {
     submitError.value = error.message
-  } finally {
     isSubmitting.value = false
   }
-}
-
-function retake() {
-  answers.value = {}
-  currentIndex.value = 0
-  result.value = null
 }
 
 onMounted(loadQuiz)
@@ -97,54 +104,50 @@ onMounted(loadQuiz)
         <h1 class="page-title mt-6">{{ quiz.title }}</h1>
         <p class="body-text mt-1">{{ quiz.description }}</p>
 
-        <!-- This quiz's result -->
-        <section v-if="result" class="quiz-panel mt-8" aria-live="polite">
-          <h2 class="sub-header">Here's how you listen</h2>
-          <div class="mt-6 space-y-4">
-            <TraitBar v-for="trait in result.traits" :key="trait.id" :trait="trait" />
+        <form class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
+          <template v-if="steps.length > 1">
+            <div class="flex items-center justify-between font-sans text-sm text-muted">
+              <span>Step {{ currentIndex + 1 }} of {{ steps.length }}</span>
+              <span>{{ progress }}%</span>
+            </div>
+            <div
+              class="progress-rail mt-2"
+              role="progressbar"
+              :aria-valuenow="progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div class="progress-fill" :style="{ width: `${progress}%` }" />
+            </div>
+          </template>
+
+          <div v-if="currentStep.type === 'birthday'" class="mt-8">
+            <label for="birthday" class="sub-header block">When's your birthday?</label>
+            <p class="body-text mt-2 text-[#665f78]">
+              We use it to find your star sign, then read it alongside your Spotify listening.
+            </p>
+            <input
+              id="birthday"
+              v-model="birthday"
+              type="date"
+              class="birthday-input mt-6"
+              :max="today"
+              min="1900-01-01"
+              required
+              @input="submitError = ''"
+            />
           </div>
 
-          <p class="body-text mt-8">
-            Added to your patterns. You're currently
-            <strong class="font-semibold">{{ result.personality.type.name }}</strong>.
-          </p>
-
-          <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            <RouterLink class="peach-button" :to="{ name: 'personality' }">
-              See your patterns
-            </RouterLink>
-            <button type="button" class="peach-button peach-button--quiet" @click="retake">
-              Retake quiz
-            </button>
-          </div>
-        </section>
-
-        <!-- Questions -->
-        <form v-else class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
-          <div class="flex items-center justify-between font-sans text-sm text-muted">
-            <span>Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
-            <span>{{ progress }}%</span>
-          </div>
-          <div
-            class="progress-rail mt-2"
-            role="progressbar"
-            :aria-valuenow="progress"
-            aria-valuemin="0"
-            aria-valuemax="100"
-          >
-            <div class="progress-fill" :style="{ width: `${progress}%` }" />
-          </div>
-
-          <fieldset class="mt-8">
-            <legend class="sub-header">{{ currentQuestion.text }}</legend>
+          <fieldset v-else class="mt-8">
+            <legend class="sub-header">{{ currentStep.question.text }}</legend>
             <div class="mt-6 grid gap-3">
               <button
-                v-for="option in currentQuestion.options"
+                v-for="option in currentStep.question.options"
                 :key="option.id"
                 type="button"
                 class="quiz-option"
-                :class="{ 'is-selected': answers[currentQuestion.id] === option.id }"
-                :aria-pressed="answers[currentQuestion.id] === option.id"
+                :class="{ 'is-selected': answers[currentStep.id] === option.id }"
+                :aria-pressed="answers[currentStep.id] === option.id"
                 @click="selectOption(option.id)"
               >
                 {{ option.text }}
@@ -170,7 +173,7 @@ onMounted(loadQuiz)
               class="peach-button next-button"
               :disabled="!hasAnsweredCurrent || isSubmitting"
             >
-              {{ isSubmitting ? 'Finding your patterns...' : isLastQuestion ? 'See my result' : 'Next' }}
+              {{ isSubmitting ? 'Working out your result...' : isLastStep ? 'See my result' : 'Next' }}
             </button>
           </div>
         </form>
@@ -209,7 +212,7 @@ onMounted(loadQuiz)
 }
 
 .back-link {
-  color: #763e32;
+  color: var(--ui-text-muted);
   font-family: var(--font-sans);
   font-size: 0.9rem;
   font-weight: 600;
@@ -309,12 +312,26 @@ onMounted(loadQuiz)
   cursor: not-allowed;
 }
 
-.peach-button--quiet {
-  background: #fff;
-}
-
 .next-button {
   min-width: 200px;
+}
+
+.birthday-input {
+  width: min(100%, 320px);
+  min-height: 55px;
+  padding: 0 1rem;
+  border: 1px solid rgba(118, 62, 50, 0.4);
+  border-radius: 10px;
+  color: #000;
+  background: #fff;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color-scheme: light;
+}
+
+.birthday-input:focus-visible {
+  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline-offset: 3px;
 }
 
 .back-button {

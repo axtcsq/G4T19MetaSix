@@ -18,3 +18,7 @@ export function submitQuiz(quizId, answers) {
     body: { answers },
   })
 }
+
+export function getLatestResult(quizId) {
+  return request(`/api/quiz/${encodeURIComponent(quizId)}/result`)
+}

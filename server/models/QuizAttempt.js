@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+// One finished quiz attempt. Only the answers are stored: results are worked
+// out from them by the quiz's evaluate(), so the same answers always give the
+// same result, and fixing a description updates past results too.
+// TODO: add the user's id once auth is merged, and filter every query by it.
+const quizAttemptSchema = new mongoose.Schema(
+  {
+    quizId: { type: String, required: true },
+    answers: { type: mongoose.Schema.Types.Mixed, required: true },
+  },
+  {
+    timestamps: true,
+    collection: "quizattempts",
+  },
+);
+
 const traitSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
@@ -16,17 +31,14 @@ const traitSchema = new mongoose.Schema(
   { _id: false },
 );
 
-// One finished quiz attempt.
-// TODO: add the user's id once auth is merged, and filter every query by it.
-const quizResultSchema = new mongoose.Schema(
+const quizSummarySchema = new mongoose.Schema(
   {
-    quizId: { type: String, required: true },
-    traits: { type: [traitSchema], required: true },
+    quizId: String,
+    quizTitle: String,
+    title: String,
+    subtitle: String,
   },
-  {
-    timestamps: true,
-    collection: "quizresults",
-  },
+  { _id: false },
 );
 
 // The user's MetaFor personality, summarised from all their quiz results.
@@ -42,7 +54,7 @@ const personalitySchema = new mongoose.Schema(
     insights: [String],
     summary: String,
     traits: [traitSchema],
-    quizzesTaken: [String],
+    quizResults: [quizSummarySchema],
     stats: mongoose.Schema.Types.Mixed,
     source: { type: String, enum: ["llm", "scoring"] },
   },
@@ -52,20 +64,24 @@ const personalitySchema = new mongoose.Schema(
   },
 );
 
-const QuizResult = mongoose.models.QuizResult || mongoose.model("QuizResult", quizResultSchema);
+const QuizAttempt = mongoose.models.QuizAttempt || mongoose.model("QuizAttempt", quizAttemptSchema);
 const Personality = mongoose.models.Personality || mongoose.model("Personality", personalitySchema);
 
-export function addQuizResult(result) {
-  return QuizResult.create(result);
+export function addQuizAttempt(attempt) {
+  return QuizAttempt.create(attempt);
 }
 
-// The most recent result of each quiz, so retaking a quiz replaces its old answers.
-export function retrieveLatestQuizResults() {
-  return QuizResult.aggregate([
+// The most recent attempt at each quiz, so retaking a quiz replaces its old answers.
+export function retrieveLatestAttempts() {
+  return QuizAttempt.aggregate([
     { $sort: { createdAt: -1 } },
-    { $group: { _id: "$quizId", result: { $first: "$$ROOT" } } },
-    { $replaceRoot: { newRoot: "$result" } },
+    { $group: { _id: "$quizId", attempt: { $first: "$$ROOT" } } },
+    { $replaceRoot: { newRoot: "$attempt" } },
   ]);
+}
+
+export function findLatestAttempt(quizId) {
+  return QuizAttempt.findOne({ quizId }).sort({ createdAt: -1 });
 }
 
 export function savePersonality(personality) {
@@ -80,4 +96,4 @@ export function findPersonality() {
   return Personality.findOne();
 }
 
-export default QuizResult;
+export default QuizAttempt;
