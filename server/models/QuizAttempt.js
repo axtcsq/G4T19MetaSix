@@ -55,6 +55,12 @@ const personalitySchema = new mongoose.Schema(
     summary: String,
     traits: [traitSchema],
     quizResults: [quizSummarySchema],
+    // What each quiz and the Spotify data said about each trait, for the
+    // "how it adds up" table.
+    sources: mongoose.Schema.Types.Mixed,
+    weights: mongoose.Schema.Types.Mixed,
+    ranking: mongoose.Schema.Types.Mixed,
+    moodLink: mongoose.Schema.Types.Mixed,
     stats: mongoose.Schema.Types.Mixed,
     source: { type: String, enum: ["llm", "scoring"] },
   },
