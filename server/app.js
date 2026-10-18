@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import moodRoutes from "./routes/moodRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
 
 const app = express();
 
@@ -45,6 +46,20 @@ app.use("/api/moods", async (req, res, next) => {
 
 // Mood routes
 app.use("/api/moods", moodRoutes);
+
+// Connect to MongoDB before quiz requests
+app.use("/api/quiz", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("[API] Quiz request unavailable because MongoDB is not connected:", error.message);
+    res.status(503).json({ error: "Database unavailable" });
+  }
+});
+
+// Personality quiz routes
+app.use("/api/quiz", quizRoutes);
 
 // Unknown routes
 app.use((req, res) => {
