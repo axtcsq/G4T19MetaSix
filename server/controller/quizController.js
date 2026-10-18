@@ -73,7 +73,8 @@ async function rebuildPersonality() {
     match: ranking.find((item) => item.id === typeId).match,
     runnerUpId: runnerUp.id,
     runnerUpMatch: runnerUp.match,
-    headline: analysis?.headline ?? type.tagline,
+    headline:
+      analysis?.headline ?? `So far you lean ${traits.map((trait) => trait.poleName).join(", ")}.`,
     insights: analysis?.insights ?? traits.map((trait) => trait.trait),
     summary: analysis?.summary ?? type.description,
     traits,

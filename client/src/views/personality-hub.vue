@@ -205,7 +205,7 @@ onMounted(loadPage)
   border: 1px solid rgba(118, 62, 50, 0.2);
   border-radius: 10px;
   color: #000;
-  background: rgba(255, 205, 166, 0.5);
+  background: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   font-family: var(--font-serif);
   font-size: 1.375rem;
@@ -217,7 +217,7 @@ onMounted(loadPage)
 }
 
 .peach-button:hover:not(:disabled) {
-  background: rgba(255, 205, 166, 0.85);
+  background: #ffd6b6;
   transform: translateY(-1px);
 }
 
@@ -228,7 +228,7 @@ onMounted(loadPage)
 
 .peach-button:disabled {
   color: #665f78;
-  background: rgba(179, 166, 184, 0.25);
+  background: #ece9ed;
   box-shadow: none;
   cursor: not-allowed;
 }
