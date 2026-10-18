@@ -5,10 +5,26 @@ import SiteFooter from '@/components/footer.vue'
 import TraitBar from '@/components/TraitBar.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
 import starIcon from '@/assets/images/personality/star.svg'
+import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
+import poetIcon from '@/assets/images/personality/types/poet.png'
+import sparkIcon from '@/assets/images/personality/types/spark.png'
+import stormChaserIcon from '@/assets/images/personality/types/storm-chaser.png'
+import tideKeeperIcon from '@/assets/images/personality/types/tide-keeper.png'
+import wandererIcon from '@/assets/images/personality/types/wanderer.png'
 
 // Card images by quiz id. Quizzes without one show the lilac placeholder.
 const quizImages = {
   'music-mbti': musicMbtiImage,
+}
+
+// Icons by personality type id. A type without one shows the star.
+const typeIcons = {
+  'storm-chaser': stormChaserIcon,
+  'tide-keeper': tideKeeperIcon,
+  poet: poetIcon,
+  daydreamer: daydreamerIcon,
+  spark: sparkIcon,
+  wanderer: wandererIcon,
 }
 
 const quizzes = ref([])
@@ -88,7 +104,13 @@ onMounted(loadPage)
             <div class="pattern-row mt-8">
               <div class="pattern-card type-card">
                 <p class="type-intro">You are a</p>
-                <img :src="starIcon" alt="" width="144" height="144" class="type-icon" />
+                <img
+                  :src="typeIcons[personality.type.id] ?? starIcon"
+                  alt=""
+                  width="144"
+                  height="144"
+                  class="type-icon"
+                />
                 <p class="type-name">{{ personality.type.name }}</p>
                 <p class="body-text">{{ personality.type.tagline }}</p>
               </div>
