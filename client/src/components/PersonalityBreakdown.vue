@@ -102,7 +102,7 @@ const rows = computed(() =>
 
 .breakdown-title {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
@@ -161,15 +161,15 @@ const rows = computed(() =>
 }
 
 .source-list {
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .source-row {
   display: grid;
-  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
   align-items: center;
-  gap: 0.35rem 1rem;
-  padding: 0.55rem 0;
+  gap: 0.25rem 0.75rem;
+  padding: 0.3rem 0;
   border-bottom: 1px solid rgba(118, 62, 50, 0.12);
 }
 
@@ -179,15 +179,16 @@ const rows = computed(() =>
 
 .source-name {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .source-result {
   display: block;
   color: #763e32;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 400;
   text-decoration: none;
 }
@@ -200,16 +201,16 @@ const rows = computed(() =>
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .chip {
-  padding: 0.2rem 0.65rem;
+  padding: 0.1rem 0.55rem;
   border-radius: 999px;
   color: #763e32;
   background: #ffe6d2;
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 

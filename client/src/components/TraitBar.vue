@@ -4,6 +4,8 @@ import { computed } from 'vue'
 // A trait or scale from the server, scored from -1 (second pole) to 1 (first pole).
 const props = defineProps({
   trait: { type: Object, required: true },
+  // A slimmer bar for tight layouts such as the Patterns card.
+  compact: { type: Boolean, default: false },
 })
 
 // The fill grows from the left, towards the first pole.
@@ -11,7 +13,7 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
 </script>
 
 <template>
-  <div class="trait-bar">
+  <div class="trait-bar" :class="{ 'is-compact': compact }">
     <div class="trait-labels">
       <span>{{ trait.firstPoleName }}</span>
       <span>{{ trait.secondPoleName }}</span>
@@ -61,6 +63,18 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
   border-radius: 40px;
   background: #ce5b4b;
   transition: width 320ms ease;
+}
+
+.is-compact .trait-labels {
+  font-size: 1.05rem;
+}
+
+.is-compact .trait-track {
+  padding: 6px 9px;
+}
+
+.is-compact .trait-rail {
+  height: 20px;
 }
 
 @media (max-width: 600px) {
