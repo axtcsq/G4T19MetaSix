@@ -18,6 +18,15 @@ export const mockSpotifyProfile = {
     { name: "Get Lucky", artist: "Daft Punk", energy: 0.81, valence: 0.86, danceability: 0.79, acousticness: 0.04, instrumentalness: 0.03, speechiness: 0.05 },
     { name: "Something Real", artist: "Keshi", energy: 0.29, valence: 0.21, danceability: 0.55, acousticness: 0.64, instrumentalness: 0.12, speechiness: 0.04 },
   ],
+  // The user's own playlists (Spotify Web API: GET /me/playlists).
+  playlists: [
+    { name: "Study Lo-fi" },
+    { name: "Gym Hype" },
+    { name: "Late Night Feels" },
+    { name: "Road Trip w/ the Squad" },
+    { name: "Comfort Songs" },
+    { name: "Album Deep Dives" },
+  ],
   // Share of recent plays that were tracks already played in the last month.
   repeatListenRatio: 0.64,
 };

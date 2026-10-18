@@ -7,6 +7,7 @@ import Signup from '../views/signup.vue'
 import Canvas from '../views/canvas.vue'
 import PersonalityHub from '../views/personality-hub.vue'
 import PersonalityQuiz from '../views/personality-quiz.vue'
+import PersonalityResult from '../views/personality-result.vue'
 
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
     path: '/quiz/:quizId',
     name: 'personality-quiz',
     component: PersonalityQuiz,
+  },
+  {
+    path: '/quiz/:quizId/result',
+    name: 'personality-result',
+    component: PersonalityResult,
   },
   {
     path: '/login',
