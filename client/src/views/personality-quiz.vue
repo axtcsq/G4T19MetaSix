@@ -1,0 +1,357 @@
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { getQuiz, submitQuiz } from '@/api/quiz'
+import SiteFooter from '@/components/footer.vue'
+import TraitBar from '@/components/TraitBar.vue'
+
+const route = useRoute()
+
+const quiz = ref(null)
+const answers = ref({})
+const currentIndex = ref(0)
+const result = ref(null)
+const isLoading = ref(true)
+const isSubmitting = ref(false)
+const loadError = ref('')
+const submitError = ref('')
+
+const questions = computed(() => quiz.value?.questions ?? [])
+const currentQuestion = computed(() => questions.value[currentIndex.value])
+const isLastQuestion = computed(() => currentIndex.value === questions.value.length - 1)
+const progress = computed(() =>
+  questions.value.length ? Math.round((currentIndex.value / questions.value.length) * 100) : 0,
+)
+const hasAnsweredCurrent = computed(
+  () => currentQuestion.value && currentQuestion.value.id in answers.value,
+)
+
+async function loadQuiz() {
+  isLoading.value = true
+  loadError.value = ''
+
+  try {
+    quiz.value = await getQuiz(route.params.quizId)
+  } catch (error) {
+    loadError.value = error.message
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function selectOption(optionId) {
+  answers.value = { ...answers.value, [currentQuestion.value.id]: optionId }
+  submitError.value = ''
+}
+
+function goBack() {
+  if (currentIndex.value > 0) currentIndex.value -= 1
+}
+
+async function goNext() {
+  if (!hasAnsweredCurrent.value) return
+
+  if (!isLastQuestion.value) {
+    currentIndex.value += 1
+    return
+  }
+
+  isSubmitting.value = true
+  submitError.value = ''
+
+  try {
+    result.value = await submitQuiz(quiz.value.id, answers.value)
+  } catch (error) {
+    submitError.value = error.message
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function retake() {
+  answers.value = {}
+  currentIndex.value = 0
+  result.value = null
+}
+
+onMounted(loadQuiz)
+</script>
+
+<template>
+  <div class="quiz-page">
+    <main class="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
+      <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
+
+      <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-8 text-muted">
+        Preparing your quiz...
+      </p>
+
+      <div v-else-if="loadError" role="alert" class="mt-8">
+        <p class="text-sm text-error">{{ loadError }}</p>
+        <button type="button" class="peach-button mt-4 max-w-[334px]" @click="loadQuiz">
+          Try again
+        </button>
+      </div>
+
+      <template v-else>
+        <h1 class="page-title mt-6">{{ quiz.title }}</h1>
+        <p class="body-text mt-1">{{ quiz.description }}</p>
+
+        <!-- This quiz's result -->
+        <section v-if="result" class="quiz-panel mt-8" aria-live="polite">
+          <h2 class="sub-header">Here's how you listen</h2>
+          <div class="mt-6 space-y-4">
+            <TraitBar v-for="trait in result.traits" :key="trait.id" :trait="trait" />
+          </div>
+
+          <p class="body-text mt-8">
+            Added to your patterns. You're currently
+            <strong class="font-semibold">{{ result.personality.type.name }}</strong>.
+          </p>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <RouterLink class="peach-button" :to="{ name: 'personality' }">
+              See your patterns
+            </RouterLink>
+            <button type="button" class="peach-button peach-button--quiet" @click="retake">
+              Retake quiz
+            </button>
+          </div>
+        </section>
+
+        <!-- Questions -->
+        <form v-else class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
+          <div class="flex items-center justify-between font-sans text-sm text-muted">
+            <span>Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+            <span>{{ progress }}%</span>
+          </div>
+          <div
+            class="progress-rail mt-2"
+            role="progressbar"
+            :aria-valuenow="progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div class="progress-fill" :style="{ width: `${progress}%` }" />
+          </div>
+
+          <fieldset class="mt-8">
+            <legend class="sub-header">{{ currentQuestion.text }}</legend>
+            <div class="mt-6 grid gap-3">
+              <button
+                v-for="option in currentQuestion.options"
+                :key="option.id"
+                type="button"
+                class="quiz-option"
+                :class="{ 'is-selected': answers[currentQuestion.id] === option.id }"
+                :aria-pressed="answers[currentQuestion.id] === option.id"
+                @click="selectOption(option.id)"
+              >
+                {{ option.text }}
+              </button>
+            </div>
+          </fieldset>
+
+          <p v-if="submitError" role="alert" class="mt-4 text-sm text-error">
+            {{ submitError }} Your answers are kept so you can retry.
+          </p>
+
+          <div class="mt-8 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              class="back-button"
+              :disabled="currentIndex === 0 || isSubmitting"
+              @click="goBack"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              class="peach-button next-button"
+              :disabled="!hasAnsweredCurrent || isSubmitting"
+            >
+              {{ isSubmitting ? 'Finding your patterns...' : isLastQuestion ? 'See my result' : 'Next' }}
+            </button>
+          </div>
+        </form>
+      </template>
+    </main>
+    <SiteFooter />
+  </div>
+</template>
+
+<style scoped>
+.quiz-page {
+  display: flex;
+  min-height: calc(100vh - 76px);
+  flex-direction: column;
+  background: var(--ui-bg);
+}
+
+.page-title {
+  color: var(--ui-text);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.sub-header {
+  color: #000;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.body-text {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.back-link {
+  color: #763e32;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #ce5b4b;
+}
+
+.quiz-panel {
+  padding: 1.75rem;
+  border: 1px solid rgba(118, 62, 50, 0.2);
+  border-radius: 10px;
+  color: #000;
+  background: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.progress-rail {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 40px;
+  background: #ffcda6;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #ce5b4b;
+  transition: width 240ms ease;
+}
+
+.quiz-option {
+  min-height: 55px;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid rgba(118, 62, 50, 0.2);
+  border-radius: 10px;
+  color: #000;
+  background: #fff;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.quiz-option:hover {
+  border-color: rgba(118, 62, 50, 0.45);
+  transform: translateY(-1px);
+}
+
+.quiz-option:focus-visible,
+.peach-button:focus-visible,
+.back-button:focus-visible {
+  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline-offset: 3px;
+}
+
+.quiz-option.is-selected {
+  border-color: #ce5b4b;
+  background: rgba(255, 205, 166, 0.5);
+}
+
+.peach-button {
+  display: flex;
+  min-height: 55px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1.5rem;
+  border: 1px solid rgba(118, 62, 50, 0.2);
+  border-radius: 10px;
+  color: #000;
+  background: rgba(255, 205, 166, 0.5);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.peach-button:hover:not(:disabled) {
+  background: rgba(255, 205, 166, 0.85);
+  transform: translateY(-1px);
+}
+
+.peach-button:disabled {
+  color: #665f78;
+  background: rgba(179, 166, 184, 0.25);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.peach-button--quiet {
+  background: #fff;
+}
+
+.next-button {
+  min-width: 200px;
+}
+
+.back-button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  color: #763e32;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-button:disabled {
+  color: #b3a6b8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .quiz-page {
+    min-height: calc(100vh - 66px);
+  }
+
+  .quiz-panel {
+    padding: 1.25rem;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+  }
+
+  .sub-header {
+    font-size: 1.25rem;
+  }
+
+  .next-button {
+    min-width: 0;
+    flex: 1;
+  }
+}
+</style>

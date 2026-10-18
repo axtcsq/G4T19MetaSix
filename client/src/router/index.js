@@ -5,6 +5,8 @@ import DailyMood from '../views/daily-mood.vue'
 import Login from '../views/login.vue'
 import Signup from '../views/signup.vue'
 import Canvas from '../views/canvas.vue'
+import PersonalityHub from '../views/personality-hub.vue'
+import PersonalityQuiz from '../views/personality-quiz.vue'
 
 const routes = [
   {
@@ -21,6 +23,16 @@ const routes = [
     path: '/canvas',
     name: 'canvas',
     component: Canvas,
+  },
+  {
+    path: '/quiz',
+    name: 'personality',
+    component: PersonalityHub,
+  },
+  {
+    path: '/quiz/:quizId',
+    name: 'personality-quiz',
+    component: PersonalityQuiz,
   },
   {
     path: '/login',
