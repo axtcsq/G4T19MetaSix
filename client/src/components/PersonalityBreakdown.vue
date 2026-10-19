@@ -117,10 +117,10 @@ const rows = computed(() =>
   height: 22px;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #665f78;
+  border: 1.5px solid var(--pq-muted);
   border-radius: 50%;
-  color: #665f78;
-  background: #fff;
+  color: var(--pq-muted);
+  background: var(--pq-surface);
   font-family: var(--font-serif);
   font-size: 0.85rem;
   font-style: italic;
@@ -129,7 +129,7 @@ const rows = computed(() =>
 }
 
 .info-button:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 2px;
 }
 
@@ -170,7 +170,7 @@ const rows = computed(() =>
   align-items: center;
   gap: 0.25rem 0.75rem;
   padding: 0.3rem 0;
-  border-bottom: 1px solid rgba(118, 62, 50, 0.12);
+  border-bottom: 1px solid var(--pq-line);
 }
 
 .source-row.is-total {
@@ -186,7 +186,7 @@ const rows = computed(() =>
 
 .source-result {
   display: block;
-  color: #763e32;
+  color: var(--pq-brown);
   font-family: var(--font-serif);
   font-size: 0.9rem;
   font-weight: 400;
@@ -194,7 +194,7 @@ const rows = computed(() =>
 }
 
 .source-result:hover {
-  color: #ce5b4b;
+  color: var(--pq-accent);
   text-decoration: underline;
 }
 
@@ -207,8 +207,8 @@ const rows = computed(() =>
 .chip {
   padding: 0.1rem 0.55rem;
   border-radius: 999px;
-  color: #763e32;
-  background: #ffe6d2;
+  color: var(--pq-brown);
+  background: var(--pq-peach);
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 600;
@@ -220,8 +220,8 @@ const rows = computed(() =>
 }
 
 .chip.is-empty {
-  color: #665f78;
-  background: rgba(102, 95, 120, 0.1);
+  color: var(--pq-muted);
+  background: var(--pq-tint);
 }
 
 @media (max-width: 600px) {
