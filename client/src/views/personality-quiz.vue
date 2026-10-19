@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getQuiz, submitQuiz } from '@/api/quiz'
+import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/footer.vue'
 
 const route = useRoute()
@@ -85,7 +86,7 @@ onMounted(loadQuiz)
 </script>
 
 <template>
-  <div class="quiz-page">
+  <div class="quiz-page personality-theme">
     <main class="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
@@ -123,7 +124,7 @@ onMounted(loadQuiz)
 
           <div v-if="currentStep.type === 'birthday'" class="mt-8">
             <label for="birthday" class="sub-header block">When's your birthday?</label>
-            <p class="body-text mt-2 text-[#665f78]">
+            <p class="body-text mt-2 text-(--pq-muted)">
               We use it to find your star sign, then read it alongside your Spotify listening.
             </p>
             <input
@@ -198,7 +199,7 @@ onMounted(loadQuiz)
 }
 
 .sub-header {
-  color: #000;
+  color: var(--pq-on-surface);
   font-family: var(--font-sans);
   font-size: 1.5rem;
   font-weight: 600;
@@ -220,39 +221,39 @@ onMounted(loadQuiz)
 }
 
 .back-link:hover {
-  color: #ce5b4b;
+  color: var(--pq-accent);
 }
 
 .quiz-panel {
   padding: 1.75rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #fff;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+  box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
 .progress-rail {
   height: 10px;
   overflow: hidden;
   border-radius: 40px;
-  background: #ffcda6;
+  background: var(--pq-rail);
 }
 
 .progress-fill {
   height: 100%;
   border-radius: inherit;
-  background: #ce5b4b;
+  background: var(--pq-accent);
   transition: width 240ms ease;
 }
 
 .quiz-option {
   min-height: 55px;
   padding: 0.75rem 1.1rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
   font-family: var(--font-serif);
   font-size: 1.2rem;
   text-align: left;
@@ -264,20 +265,20 @@ onMounted(loadQuiz)
 }
 
 .quiz-option:hover {
-  border-color: rgba(118, 62, 50, 0.45);
+  border-color: var(--pq-border-strong);
   transform: translateY(-1px);
 }
 
 .quiz-option:focus-visible,
 .peach-button:focus-visible,
 .back-button:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 3px;
 }
 
 .quiz-option.is-selected {
-  border-color: #ce5b4b;
-  background: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
+  border-color: var(--pq-accent);
+  background: var(--pq-peach);
 }
 
 .peach-button {
@@ -286,11 +287,11 @@ onMounted(loadQuiz)
   align-items: center;
   justify-content: center;
   padding-inline: 1.5rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -301,13 +302,13 @@ onMounted(loadQuiz)
 }
 
 .peach-button:hover:not(:disabled) {
-  background: #ffd6b6;
+  background: var(--pq-peach-hover);
   transform: translateY(-1px);
 }
 
 .peach-button:disabled {
-  color: #665f78;
-  background: #ece9ed;
+  color: var(--pq-muted);
+  background: var(--pq-disabled);
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -320,24 +321,29 @@ onMounted(loadQuiz)
   width: min(100%, 320px);
   min-height: 55px;
   padding: 0 1rem;
-  border: 1px solid rgba(118, 62, 50, 0.4);
+  border: 1px solid var(--pq-border-strong);
   border-radius: 10px;
-  color: #000;
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
   font-family: var(--font-serif);
   font-size: 1.25rem;
   color-scheme: light;
 }
 
+/* Dark date picker in dark mode. */
+.dark .birthday-input {
+  color-scheme: dark;
+}
+
 .birthday-input:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 3px;
 }
 
 .back-button {
   padding: 0.5rem 0.75rem;
   border-radius: 10px;
-  color: #763e32;
+  color: var(--pq-brown);
   background: transparent;
   font-family: var(--font-sans);
   font-weight: 600;
@@ -345,7 +351,8 @@ onMounted(loadQuiz)
 }
 
 .back-button:disabled {
-  color: #b3a6b8;
+  color: var(--pq-muted);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
