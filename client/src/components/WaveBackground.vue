@@ -7,7 +7,7 @@ const canvas = ref(null)
 const isReady = ref(false)
 
 // How fast the waves drift. Kept low so the motion feels calm.
-const SPEED = 0.12
+const SPEED = 0.2
 
 let renderer
 let scene
