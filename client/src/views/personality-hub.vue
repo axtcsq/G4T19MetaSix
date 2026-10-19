@@ -10,6 +10,7 @@ import spotifyHoroscopeImage from '@/assets/images/personality/spotify-horoscope
 import auxAlignmentImage from '@/assets/images/personality/aux-alignment.png'
 import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.png'
 import soundwoodsImage from '@/assets/images/personality/soundwoods.png'
+import musicalNeedsImage from '@/assets/images/personality/musical-needs.png'
 import starIcon from '@/assets/images/personality/star.svg'
 import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
 import poetIcon from '@/assets/images/personality/types/poet.png'
@@ -25,6 +26,7 @@ const quizImages = {
   'aux-alignment': auxAlignmentImage,
   'love-on-repeat': loveOnRepeatImage,
   soundwoods: soundwoodsImage,
+  'musical-needs': musicalNeedsImage,
 }
 
 // Icons by personality type id. A type without one shows the star.
