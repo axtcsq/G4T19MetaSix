@@ -145,10 +145,11 @@ async function rebuildPersonality(userId) {
 }
 
 // True when the saved results no longer match what the quizzes give now, for
-// example after a result title changes.
+// example after a quiz or result is renamed.
 async function isOutdated(userId, personality) {
   const results = await latestResults(userId, getSpotifyProfile());
-  const titles = (list) => list.map((result) => `${result.quizId}:${result.title}`).join("|");
+  const titles = (list) =>
+    list.map((result) => `${result.quizId}:${result.quizTitle}:${result.title}`).join("|");
 
   return titles(results) !== titles(personality.quizResults);
 }
@@ -201,7 +202,7 @@ export async function getPersonality(req, res) {
   let personality = await findPersonality(userId);
 
   // Rebuild personalities saved before the "how it adds up" data existed, or
-  // whose quiz results have since been renamed.
+  // whose quizzes or results have since been renamed.
   if (personality?.quizResults?.length && (!personality.sources || (await isOutdated(userId, personality)))) {
     personality = await rebuildPersonality(userId);
   }
