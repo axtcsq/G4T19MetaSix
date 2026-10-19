@@ -216,6 +216,21 @@ Drafts in `server/data/personalityTypes.js`. Each has a name, tagline, longer de
 
 The design follows the "Personality Test" frame in the team Figma: Raleway headers, Crimson Text body, peach `#ffcda6` and terracotta `#ce5b4b` bars, `#763e32` accents and the gradient Patterns band.
 
+### Card images
+
+Each quiz card has a calm nature photo that hints at the quiz. The photos are from Unsplash (free to use under the [Unsplash License](https://unsplash.com/license)), cropped to 900 × 600 and saved in `client/src/assets/images/personality/`.
+
+| Quiz | Photo | By |
+|---|---|---|
+| Music MBTI | Light through a glass prism, one light split into many facets | Egor Litvinov |
+| Spotify Horoscope | Crystals on a wooden slice | Sarah Brown |
+| Aux Alignment | Palm-lined beach from above | Nattu Adnan |
+| Love on Repeat | Ripples spreading on still water | Jackson Hendry |
+| Soundwoods | Sunlight through a forest | Łukasz Szmigiel |
+| The Soundtrack Pyramid | A stack of balanced stones | Sean Stratton |
+
+To change one, replace the PNG with the same name, or add a new import to `quizImages` in `personality-hub.vue`.
+
 ---
 
 ## API
