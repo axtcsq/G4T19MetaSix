@@ -50,6 +50,8 @@ const quizSummarySchema = new mongoose.Schema(
 // the LLM on every visit.
 const personalitySchema = new mongoose.Schema(
   {
+    // Empty until auth is merged, like quiz attempts.
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
     typeId: { type: String, required: true },
     match: Number,
     runnerUpId: String,
@@ -73,6 +75,9 @@ const personalitySchema = new mongoose.Schema(
     collection: "personalities",
   },
 );
+
+// One personality per user.
+personalitySchema.index({ userId: 1 }, { unique: true });
 
 const QuizAttempt = mongoose.models.QuizAttempt || mongoose.model("QuizAttempt", quizAttemptSchema);
 const Personality = mongoose.models.Personality || mongoose.model("Personality", personalitySchema);
