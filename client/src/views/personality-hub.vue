@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getPersonality, getQuizzes } from '@/api/quiz'
+import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/footer.vue'
 import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/ShareCardDialog.vue'
@@ -66,7 +67,7 @@ onMounted(loadPage)
 </script>
 
 <template>
-  <div class="personality-page">
+  <div class="personality-page personality-theme">
     <main class="flex-1">
       <section class="page-width pt-12 pb-16">
         <h1 class="page-title">Find Your Personality</h1>
@@ -207,7 +208,7 @@ onMounted(loadPage)
                   <span class="mood-label">Mood × music</span>
                   {{ personality.moodLink.text }}
                 </p>
-                <p class="font-sans text-sm text-[#665f78]">
+                <p class="font-sans text-sm text-(--pq-muted)">
                   {{ personality.type.match }}% match, based on
                   {{ personality.quizResults.length }}
                   {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
@@ -282,10 +283,10 @@ onMounted(loadPage)
 .quiz-image {
   height: 212px;
   overflow: hidden;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  background: #b3a6b8;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  background: var(--pq-placeholder);
+  box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
 .quiz-image img {
@@ -314,11 +315,11 @@ onMounted(loadPage)
   align-items: center;
   justify-content: center;
   margin-top: 0.75rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -329,17 +330,18 @@ onMounted(loadPage)
 }
 
 .peach-button:hover {
-  background: #ffd6b6;
+  background: var(--pq-peach-hover);
   transform: translateY(-1px);
 }
 
 .peach-button:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 3px;
 }
 
 .peach-button--quiet {
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
 }
 
 .latest-result {
@@ -347,14 +349,14 @@ onMounted(loadPage)
   flex-direction: column;
   margin-top: 0.75rem;
   padding: 0.75rem 1rem;
-  border-left: 4px solid #ce5b4b;
+  border-left: 4px solid var(--pq-accent);
   border-radius: 0 10px 10px 0;
-  color: #000;
-  background: #ffe6d2;
+  color: var(--pq-on-surface);
+  background: var(--pq-result);
 }
 
 .latest-label {
-  color: #665f78;
+  color: var(--pq-muted);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
@@ -453,9 +455,9 @@ onMounted(loadPage)
 .pattern-card {
   overflow: hidden;
   border-radius: 10px;
-  color: #000;
-  background: #fff;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+  box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
 /* Same two equal columns as the row below, so the cards line up. */
@@ -503,7 +505,7 @@ onMounted(loadPage)
 .type-meaning {
   margin-top: 1.25rem;
   padding-top: 1.1rem;
-  border-top: 1px solid rgba(118, 62, 50, 0.15);
+  border-top: 1px solid var(--pq-line);
   font-family: var(--font-serif);
   font-size: 1.05rem;
   line-height: 1.4;
@@ -526,12 +528,12 @@ onMounted(loadPage)
 .mood-link {
   padding: 0.6rem 0.85rem;
   border-radius: 10px;
-  background: rgba(102, 95, 120, 0.08);
+  background: var(--pq-tint);
 }
 
 .mood-label {
   display: block;
-  color: #665f78;
+  color: var(--pq-muted);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
