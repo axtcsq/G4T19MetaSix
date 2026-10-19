@@ -5,10 +5,21 @@ import * as THREE from 'three'
 // A soft gradient drawn with a three.js shader, used behind the Patterns section.
 const canvas = ref(null)
 
+// How fast the waves drift. Kept low so the motion feels calm.
+const SPEED = 0.12
+
 let renderer
 let scene
 let camera
 let material
+let clock
+let animationFrame
+
+function animate() {
+  animationFrame = requestAnimationFrame(animate)
+  material.uniforms.uTime.value = clock.getElapsedTime() * SPEED
+  renderer.render(scene, camera)
+}
 
 const vertexShader = /* glsl */ `
   varying vec2 vUv;
@@ -71,10 +82,13 @@ onMounted(() => {
   const { width, height } = canvas.value.getBoundingClientRect()
   renderer.setSize(width, height, false)
   material.uniforms.uResolution.value.set(width, height)
-  renderer.render(scene, camera)
+
+  clock = new THREE.Clock()
+  animate()
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(animationFrame)
   renderer?.dispose()
 })
 </script>
