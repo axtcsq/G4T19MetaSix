@@ -123,10 +123,10 @@ onBeforeUnmount(clearImage)
   max-height: calc(100dvh - 32px);
   margin: auto;
   padding: 0;
-  border: 1px solid rgba(118, 62, 50, 0.4);
+  border: 1px solid var(--pq-border-strong);
   border-radius: 18px;
-  color: #000;
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
@@ -163,7 +163,7 @@ onBeforeUnmount(clearImage)
 }
 
 .close-button:hover {
-  background: rgba(118, 62, 50, 0.08);
+  background: var(--pq-tint);
 }
 
 /* Keeps the 9:16 shape while the card is being drawn. */
@@ -203,11 +203,11 @@ onBeforeUnmount(clearImage)
   min-height: 48px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #ffe6d2;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.2rem;
   text-decoration: none;
@@ -215,11 +215,12 @@ onBeforeUnmount(clearImage)
 }
 
 .share-button:hover {
-  background: #ffd6b6;
+  background: var(--pq-peach-hover);
 }
 
 .share-button--quiet {
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
 }
 
 .share-button.is-disabled {
@@ -229,12 +230,12 @@ onBeforeUnmount(clearImage)
 
 .share-button:focus-visible,
 .close-button:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 2px;
 }
 
 .share-note {
-  color: #a1352a;
+  color: var(--pq-error);
   font-family: var(--font-sans);
   font-size: 0.9rem;
 }
