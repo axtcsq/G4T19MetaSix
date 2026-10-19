@@ -20,6 +20,7 @@ const isLanding = computed(() => route.path === '/')
       <nav v-else class="header-nav" aria-label="Main navigation">
         <RouterLink class="header-link" to="/">Home</RouterLink>
         <RouterLink class="header-link" to="/daily-mood">Daily Mood</RouterLink>
+        <RouterLink class="header-link" to="/canvas">Canvas</RouterLink>
         <RouterLink class="header-cta glass-action" to="/login">Sign in</RouterLink>
       </nav>
     </div>
