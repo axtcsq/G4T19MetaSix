@@ -16,6 +16,9 @@ const quizAttemptSchema = new mongoose.Schema(
   },
 );
 
+// Finds a user's latest attempt at each quiz.
+quizAttemptSchema.index({ userId: 1, quizId: 1, createdAt: -1 });
+
 const traitSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
