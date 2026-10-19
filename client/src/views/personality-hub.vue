@@ -7,6 +7,7 @@ import TraitBar from '@/components/TraitBar.vue'
 import WaveBackground from '@/components/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
 import spotifyHoroscopeImage from '@/assets/images/personality/spotify-horoscope.png'
+import auxAlignmentImage from '@/assets/images/personality/aux-alignment.png'
 import starIcon from '@/assets/images/personality/star.svg'
 import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
 import poetIcon from '@/assets/images/personality/types/poet.png'
@@ -19,6 +20,7 @@ import wandererIcon from '@/assets/images/personality/types/wanderer.png'
 const quizImages = {
   'music-mbti': musicMbtiImage,
   'spotify-horoscope': spotifyHoroscopeImage,
+  'aux-alignment': auxAlignmentImage,
 }
 
 // Icons by personality type id. A type without one shows the star.
