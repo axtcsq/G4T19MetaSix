@@ -1,0 +1,6586 @@
+[
+  {
+    "id": "3B3eOgLJSqPEA0RfboIQVM",
+    "name": "Skinny Love",
+    "artist": "Bon Iver",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.845,
+      "danceability": 0.592,
+      "energy": 0.263,
+      "instrumentalness": 5.68e-06,
+      "key": 4,
+      "liveness": 0.127,
+      "loudness": -14.029,
+      "mode": 0,
+      "speechiness": 0.0568,
+      "tempo": 76.366,
+      "valence": 0.109
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.25995392560259,
+      "emotionalShare": 0.5944911272775742,
+      "emotions": {
+        "joy": 0.02451587806365663,
+        "surprise": 0.14014885352263529,
+        "neutral": 0.40550887272242575,
+        "sadness": 0.1209529661723683,
+        "fear": 0.08356532595691181,
+        "anger": 0.17836134391085756,
+        "disgust": 0.04694676095800054
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Come on, skinny love, just last the year / Pour a little salt, we were never here",
+          "And now all your love is wasted / And then who the hell was I?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "28cnXtME493VX9NOw9cIUh",
+    "name": "Hurt",
+    "artist": "Johnny Cash",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.649,
+      "danceability": 0.534,
+      "energy": 0.392,
+      "instrumentalness": 0.000227,
+      "key": 9,
+      "liveness": 0.0948,
+      "loudness": -7.636,
+      "mode": 0,
+      "speechiness": 0.0267,
+      "tempo": 90.379,
+      "valence": 0.163
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1293260134167597,
+      "emotionalShare": 0.9204570090191232,
+      "emotions": {
+        "joy": 0.01656269918506344,
+        "surprise": 0.01612627858089076,
+        "neutral": 0.07954299098087682,
+        "sadness": 0.4254057920641369,
+        "fear": 0.09703802193204562,
+        "anger": 0.30231015673942035,
+        "disgust": 0.06301405953450336
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I hurt myself today / To see if I still feel",
+          "I wear this crown of thorns / Upon my liar's chair"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7LVHVU3tWfcxj5aiPFEW4Q",
+    "name": "Fix You",
+    "artist": "Coldplay",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.164,
+      "danceability": 0.209,
+      "energy": 0.417,
+      "instrumentalness": 0.00196,
+      "key": 3,
+      "liveness": 0.113,
+      "loudness": -8.74,
+      "mode": 1,
+      "speechiness": 0.0338,
+      "tempo": 138.178,
+      "valence": 0.124
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1347685943336362,
+      "emotionalShare": 0.7158472113035343,
+      "emotions": {
+        "joy": 0.016870812728518137,
+        "surprise": 0.015140883590060251,
+        "neutral": 0.28415278869646565,
+        "sadness": 0.3653713882797294,
+        "fear": 0.05956738352499626,
+        "anger": 0.1615916046279448,
+        "disgust": 0.09730513359385508
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "When you try your best, but you don't succeed / When you get what you want, but not what you need",
+          "And the tears come streaming down your face / When you lose something you can't replace"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5yJaXWIErrrsjQ3J0eR5aK",
+    "name": "The Night We Met",
+    "artist": "Lord Huron",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.968,
+      "danceability": 0.44,
+      "energy": 0.378,
+      "instrumentalness": 0.272,
+      "key": 2,
+      "liveness": 0.639,
+      "loudness": -9.545,
+      "mode": 1,
+      "speechiness": 0.045,
+      "tempo": 174.121,
+      "valence": 0.105
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.16154632179674489,
+      "emotionalShare": 0.9297322709113359,
+      "emotions": {
+        "joy": 0.0023447121609933676,
+        "surprise": 0.04718424594029784,
+        "neutral": 0.07026772908866405,
+        "sadness": 0.09146457770839334,
+        "fear": 0.63272944688797,
+        "anger": 0.14009945841971785,
+        "disgust": 0.01590983858332038
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I had all and then most of you, some and now none of you / Take me back to the night we met",
+          "I am not the only traveler / Who has not repaid his debt"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6PypGyiu0Y2lCDBN1XZEnP",
+    "name": "Everybody Hurts",
+    "artist": "R.E.M.",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.615,
+      "danceability": 0.467,
+      "energy": 0.324,
+      "instrumentalness": 0.0248,
+      "key": 2,
+      "liveness": 0.118,
+      "loudness": -10.451,
+      "mode": 1,
+      "speechiness": 0.0255,
+      "tempo": 94.301,
+      "valence": 0.166
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1253142174606064,
+      "emotionalShare": 0.8510269180405885,
+      "emotions": {
+        "joy": 0.013571212519309483,
+        "surprise": 0.009439400251721963,
+        "neutral": 0.1489730819594115,
+        "sadness": 0.6269383039325476,
+        "fear": 0.10575698915636167,
+        "anger": 0.07854553035576828,
+        "disgust": 0.016775484255049378
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "When your day is long / And the night, the night is yours alone",
+          "When your day is night alone (hold on, hold on) / If you feel like letting go (hold on)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3JOVTQ5h8HGFnDdp4VT3MP",
+    "name": "Mad World",
+    "artist": "Gary Jules",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.976,
+      "danceability": 0.344,
+      "energy": 0.0585,
+      "instrumentalness": 0.000362,
+      "key": 3,
+      "liveness": 0.103,
+      "loudness": -17.212,
+      "mode": 1,
+      "speechiness": 0.0373,
+      "tempo": 174.149,
+      "valence": 0.323
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4150198154575451,
+      "emotionalShare": 0.9350172347389162,
+      "emotions": {
+        "joy": 0.2619360289691637,
+        "surprise": 0.12822848972864448,
+        "neutral": 0.06498276526108385,
+        "sadness": 0.37025998116781317,
+        "fear": 0.1557817720497648,
+        "anger": 0.005546313710510731,
+        "disgust": 0.01326463557779789
+      },
+      "highlights": {
+        "positive": [
+          "Children waiting for the day they feel good / Happy birthday, happy birthday"
+        ],
+        "negative": [
+          "Their tears are filling up their glasses / No expression, no expression",
+          "Went to school and I was very nervous / No one knew me, no one knew me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1kgdslQYmeTR4thk9whoRw",
+    "name": "Tears in Heaven",
+    "artist": "Eric Clapton",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.835,
+      "danceability": 0.498,
+      "energy": 0.242,
+      "instrumentalness": 0.536,
+      "key": 9,
+      "liveness": 0.133,
+      "loudness": -12.238,
+      "mode": 1,
+      "speechiness": 0.0257,
+      "tempo": 153.744,
+      "valence": 0.312
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.25196604341741397,
+      "emotionalShare": 0.7423316542284959,
+      "emotions": {
+        "joy": 0.02018816968792993,
+        "surprise": 0.16809923452974268,
+        "neutral": 0.25766834577150416,
+        "sadness": 0.27759709751064127,
+        "fear": 0.23199284708861148,
+        "anger": 0.029448216611688786,
+        "disgust": 0.015006094225541208
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Beyond the door / There's peace, I'm sure",
+          "Time can bring you down / Time can bend your knees"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6Vc5wAMmXdKIAM7WUoEb7N",
+    "name": "Say Something",
+    "artist": "A Great Big World",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.857,
+      "danceability": 0.407,
+      "energy": 0.147,
+      "instrumentalness": 2.89e-06,
+      "key": 2,
+      "liveness": 0.0913,
+      "loudness": -8.822,
+      "mode": 1,
+      "speechiness": 0.0355,
+      "tempo": 141.284,
+      "valence": 0.0765
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.16807841973511428,
+      "emotionalShare": 0.8100838782670705,
+      "emotions": {
+        "joy": 0.03891436929267872,
+        "surprise": 0.0321193625745566,
+        "neutral": 0.1899161217329295,
+        "sadness": 0.5139803595678962,
+        "fear": 0.12024669865470218,
+        "anger": 0.07714480136359192,
+        "disgust": 0.02767828847889019
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Say something, I'm giving up on you",
+          "I'm sorry that I couldn't get to you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5wANPM4fQCJwkGd4rN57mH",
+    "name": "drivers license",
+    "artist": "Olivia Rodrigo",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.768,
+      "danceability": 0.561,
+      "energy": 0.431,
+      "instrumentalness": 1.42e-05,
+      "key": 10,
+      "liveness": 0.106,
+      "loudness": -8.81,
+      "mode": 1,
+      "speechiness": 0.0578,
+      "tempo": 143.875,
+      "valence": 0.137
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2758281263540047,
+      "emotionalShare": 0.9534383847378194,
+      "emotions": {
+        "joy": 0.03601454026065767,
+        "surprise": 0.2520409542135894,
+        "neutral": 0.04656161526218057,
+        "sadness": 0.3443491911515594,
+        "fear": 0.2201689741574228,
+        "anger": 0.06314704264514148,
+        "disgust": 0.0377176797715947
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Guess you didn't mean what you wrote in that song about me / 'Cause you said forever, now I drive alone past your street",
+          "And you're probably with that blonde girl / Who always made me doubt"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5GHY1DFWKz3Prg2V0Iodqo",
+    "name": "Nothing Compares 2 U",
+    "artist": "Sinéad O'Connor",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0425,
+      "danceability": 0.512,
+      "energy": 0.574,
+      "instrumentalness": 2.31e-05,
+      "key": 5,
+      "liveness": 0.105,
+      "loudness": -7.016,
+      "mode": 1,
+      "speechiness": 0.0273,
+      "tempo": 119.917,
+      "valence": 0.161
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.24674515445014675,
+      "emotionalShare": 0.7662429069027756,
+      "emotions": {
+        "joy": 0.10704767526212064,
+        "surprise": 0.04031977339675932,
+        "neutral": 0.23375709309722437,
+        "sadness": 0.4046629771138682,
+        "fear": 0.02584047403863885,
+        "anger": 0.09407961423593489,
+        "disgust": 0.0942923863220847
+      },
+      "highlights": {
+        "positive": [
+          "I can eat my dinner in a fancy restaurant / But nothing"
+        ],
+        "negative": [
+          "It's been so lonely without you here / Like a bird without a song",
+          "It's been seven hours and 15 days / Since you took your love away"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5fVZC9GiM4e8vu99W0Xf6J",
+    "name": "How to Save a Life",
+    "artist": "The Fray",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.269,
+      "danceability": 0.64,
+      "energy": 0.743,
+      "instrumentalness": 0,
+      "key": 10,
+      "liveness": 0.101,
+      "loudness": -4.08,
+      "mode": 1,
+      "speechiness": 0.0379,
+      "tempo": 122.035,
+      "valence": 0.361
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.17044153333509227,
+      "emotionalShare": 0.8012235389592556,
+      "emotions": {
+        "joy": 0.01021932060113893,
+        "surprise": 0.08161338857518366,
+        "neutral": 0.19877646104074442,
+        "sadness": 0.32547330834831184,
+        "fear": 0.1389259290881455,
+        "anger": 0.22192467068536922,
+        "disgust": 0.023066935416024465
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Where did I go wrong? I lost a friend / Somewhere along in the bitterness",
+          "And where did I go wrong? I lost a friend / Somewhere along in the bitterness"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4G92yYrUs0cvY7G41YRI0z",
+    "name": "Jealous",
+    "artist": "Labrinth",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.874,
+      "danceability": 0.439,
+      "energy": 0.153,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.107,
+      "loudness": -8.95,
+      "mode": 1,
+      "speechiness": 0.0479,
+      "tempo": 116.76,
+      "valence": 0.104
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.18705362298674702,
+      "emotionalShare": 0.9762376476403164,
+      "emotions": {
+        "joy": 0.006696939164691646,
+        "surprise": 0.15699121001702937,
+        "neutral": 0.023762352359683617,
+        "sadness": 0.6550548160853593,
+        "fear": 0.015940415784311684,
+        "anger": 0.13201360556337496,
+        "disgust": 0.009540661379856907
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "As I sink in the sand / Watch you slip through my hands",
+          "I wished you the best of / All this world could give"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6Kkt27YmFyIFrcX3QXFi2o",
+    "name": "Liability",
+    "artist": "Lorde",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.92,
+      "danceability": 0.587,
+      "energy": 0.229,
+      "instrumentalness": 0,
+      "key": 10,
+      "liveness": 0.1,
+      "loudness": -11.254,
+      "mode": 0,
+      "speechiness": 0.128,
+      "tempo": 75.67,
+      "valence": 0.379
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.23575827889470338,
+      "emotionalShare": 0.785857820149624,
+      "emotions": {
+        "joy": 0.10441287189270511,
+        "surprise": 0.020042991773648697,
+        "neutral": 0.214142179850376,
+        "sadness": 0.2725498820796157,
+        "fear": 0.15828536044467578,
+        "anger": 0.1486609144644304,
+        "disgust": 0.08190580051053654
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Baby really hurt me, crying in the taxi / He don't wanna know me",
+          "I do my best to meet her demands, play at romance, we slow dance / In the living room, but all that a stranger would see"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "75JFxkI2RXiU7L9VXzMkle",
+    "name": "The Scientist",
+    "artist": "Coldplay",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.731,
+      "danceability": 0.557,
+      "energy": 0.442,
+      "instrumentalness": 1.46e-05,
+      "key": 5,
+      "liveness": 0.11,
+      "loudness": -7.224,
+      "mode": 1,
+      "speechiness": 0.0243,
+      "tempo": 146.277,
+      "valence": 0.213
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2621050047941279,
+      "emotionalShare": 0.8189898384018586,
+      "emotions": {
+        "joy": 0.015035047804793486,
+        "surprise": 0.20163763070908877,
+        "neutral": 0.18101016159814137,
+        "sadness": 0.12327710961779723,
+        "fear": 0.3832749002254926,
+        "anger": 0.02000329364091158,
+        "disgust": 0.07576186320959376
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I was just guessing at numbers and figures / Pulling the puzzles apart",
+          "Nobody said it was easy / It's such a shame for us to part"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3BQHpFgAp4l80e1XslIjNI",
+    "name": "Yesterday - Remastered 2009",
+    "artist": "The Beatles",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.879,
+      "danceability": 0.332,
+      "energy": 0.179,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.0886,
+      "loudness": -11.83,
+      "mode": 1,
+      "speechiness": 0.0326,
+      "tempo": 96.524,
+      "valence": 0.315
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.5071451015315454,
+      "emotionalShare": 0.6979283695574849,
+      "emotions": {
+        "joy": 0.15362711397465317,
+        "surprise": 0.2999288007616997,
+        "neutral": 0.302071630442515,
+        "sadness": 0.11634058887138962,
+        "fear": 0.07221340155228972,
+        "anger": 0.03247328321449459,
+        "disgust": 0.023345176666043698
+      },
+      "highlights": {
+        "positive": [
+          "Yesterday, love was such an easy game to play / Now I need a place to hide away"
+        ],
+        "negative": [
+          "Why she had to go / I don't know, she wouldn't say"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5Xak5fmy089t0FYmh3VJiY",
+    "name": "Black",
+    "artist": "Pearl Jam",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.323,
+      "danceability": 0.36,
+      "energy": 0.684,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.34,
+      "loudness": -6.457,
+      "mode": 0,
+      "speechiness": 0.0308,
+      "tempo": 77.15,
+      "valence": 0.2
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.24304839255493396,
+      "emotionalShare": 0.9525918812939415,
+      "emotions": {
+        "joy": 0.045695156143564314,
+        "surprise": 0.1916804295723085,
+        "neutral": 0.04740811870605857,
+        "sadness": 0.052073264563525165,
+        "fear": 0.03171280655940926,
+        "anger": 0.5464119955000503,
+        "disgust": 0.08501822439332803
+      },
+      "highlights": {
+        "positive": [
+          "Hey, hey, yeah, uh"
+        ],
+        "negative": [
+          "Ooh, I know she gave me all that she wore / And now my bitter hands chafe beneath the clouds",
+          "Sheets of empty canvas, untouched sheets of clay / Were laid spread out before me as her body once did"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1AdYZ6X00nXmO613Y7GJOl",
+    "name": "I Miss You",
+    "artist": "blink-182",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.00113,
+      "danceability": 0.423,
+      "energy": 0.714,
+      "instrumentalness": 6.28e-06,
+      "key": 11,
+      "liveness": 0.0855,
+      "loudness": -8.295,
+      "mode": 1,
+      "speechiness": 0.045,
+      "tempo": 110.017,
+      "valence": 0.593
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1256356405843289,
+      "emotionalShare": 0.9774631227023507,
+      "emotions": {
+        "joy": 0.0019546749719761706,
+        "surprise": 0.005742112413587931,
+        "neutral": 0.02253687729764926,
+        "sadness": 0.4850570372011709,
+        "fear": 0.4105072657939194,
+        "anger": 0.06724129748028262,
+        "disgust": 0.006960735595049827
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I miss you, miss you",
+          "I miss you, miss you / I miss you, miss you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4xqrdfXkTW4T0RauPLv3WA",
+    "name": "Heather",
+    "artist": "Conan Gray",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.584,
+      "danceability": 0.357,
+      "energy": 0.425,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.322,
+      "loudness": -7.301,
+      "mode": 1,
+      "speechiness": 0.0333,
+      "tempo": 102.078,
+      "valence": 0.27
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4040308769526751,
+      "emotionalShare": 0.8184136011770793,
+      "emotions": {
+        "joy": 0.11961152926087379,
+        "surprise": 0.2902766847184726,
+        "neutral": 0.18158639882292066,
+        "sadness": 0.1378547945192882,
+        "fear": 0.0402972691825458,
+        "anger": 0.16450977293508393,
+        "disgust": 0.06586354241839477
+      },
+      "highlights": {
+        "positive": [
+          "I still remember, third of December, me in your sweater / You said it looked better on me than it did you"
+        ],
+        "negative": [
+          "Why would you ever kiss me? / I'm not even half as pretty",
+          "But you like her better / I wish I were Heather"
+        ]
+      },
+      "darkThemes": [
+        "dead",
+        "die"
+      ]
+    }
+  },
+  {
+    "id": "5CZ40GBx1sQ9agT82CLQCT",
+    "name": "traitor",
+    "artist": "Olivia Rodrigo",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.691,
+      "danceability": 0.38,
+      "energy": 0.339,
+      "instrumentalness": 0,
+      "key": 3,
+      "liveness": 0.12,
+      "loudness": -7.885,
+      "mode": 1,
+      "speechiness": 0.0338,
+      "tempo": 100.607,
+      "valence": 0.0849
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.20688384886743644,
+      "emotionalShare": 0.9542002953415694,
+      "emotions": {
+        "joy": 0.009435044536583646,
+        "surprise": 0.18364722216718418,
+        "neutral": 0.045799704658430675,
+        "sadness": 0.44998119299321676,
+        "fear": 0.04290400791999906,
+        "anger": 0.12082835962606031,
+        "disgust": 0.14740447630715925
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "But you're still, you're still a traitor (ah-ah-ah)",
+          "You betrayed me / And I know that you'll never feel sorry for the way I hurt, yeah"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5Nm9ERjJZ5oyfXZTECKmRt",
+    "name": "Stay With Me",
+    "artist": "Sam Smith",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.588,
+      "danceability": 0.413,
+      "energy": 0.42,
+      "instrumentalness": 6.39e-05,
+      "key": 0,
+      "liveness": 0.11,
+      "loudness": -6.444,
+      "mode": 1,
+      "speechiness": 0.0416,
+      "tempo": 84.126,
+      "valence": 0.185
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15883342914508483,
+      "emotionalShare": 0.7673451892721156,
+      "emotions": {
+        "joy": 0.027581212207830202,
+        "surprise": 0.034364229844262205,
+        "neutral": 0.23265481072788438,
+        "sadness": 0.2518182268055777,
+        "fear": 0.09038807835895568,
+        "anger": 0.2774790659702073,
+        "disgust": 0.08571437214656423
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Oh, won't you stay with me?",
+          "Why am I so emotional? / No, it's not a good look, gain some self-control"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7qEHsqek33rTcFNT9PFqLf",
+    "name": "Someone You Loved",
+    "artist": "Lewis Capaldi",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.751,
+      "danceability": 0.501,
+      "energy": 0.405,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.105,
+      "loudness": -5.679,
+      "mode": 1,
+      "speechiness": 0.0319,
+      "tempo": 109.891,
+      "valence": 0.446
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1828735196396231,
+      "emotionalShare": 0.7566845243740262,
+      "emotions": {
+        "joy": 0.04829703773033212,
+        "surprise": 0.02343177186169972,
+        "neutral": 0.24331547562597375,
+        "sadness": 0.136132974981923,
+        "fear": 0.1988148477605798,
+        "anger": 0.26629403193311935,
+        "disgust": 0.08371385412685799
+      },
+      "highlights": {
+        "positive": [
+          "Now, I need somebody to know, somebody to heal / Somebody to have, just to know how it feels"
+        ],
+        "negative": [
+          "I let my guard down, and then you pulled the rug / I was getting kinda used to being someone you loved",
+          "And I tend to close my eyes when it hurts sometimes / I fall into your arms"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7b4eqsDeLUzSrGth8uB2D1",
+    "name": "lovely",
+    "artist": "Billie Eilish",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.934,
+      "danceability": 0.292,
+      "energy": 0.296,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.095,
+      "loudness": -10.109,
+      "mode": 0,
+      "speechiness": 0.0359,
+      "tempo": 115.046,
+      "valence": 0.112
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.24242885500708994,
+      "emotionalShare": 0.8559899186449391,
+      "emotions": {
+        "joy": 0.07067123454596315,
+        "surprise": 0.09152486734092236,
+        "neutral": 0.14401008135506085,
+        "sadness": 0.33610910792568965,
+        "fear": 0.3216936263322298,
+        "anger": 0.018722198188437948,
+        "disgust": 0.017268880902390395
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Isn't it lovely? All alone / Heart made of glass, my mind of stone",
+          "Oh, I hope some day I'll make it out of here / Even if it takes all night or a hundred years"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "27tX58NOpv1YKQ0abW7EPy",
+    "name": "Hurt",
+    "artist": "Nine Inch Nails",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.709,
+      "danceability": 0.566,
+      "energy": 0.124,
+      "instrumentalness": 0.0104,
+      "key": 11,
+      "liveness": 0.132,
+      "loudness": -18.166,
+      "mode": 0,
+      "speechiness": 0.0431,
+      "tempo": 79.924,
+      "valence": 0.11
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.128361719441356,
+      "emotionalShare": 0.9308320219731994,
+      "emotions": {
+        "joy": 0.01607615759389268,
+        "surprise": 0.015379448731740316,
+        "neutral": 0.06916797802680069,
+        "sadness": 0.22925285663869646,
+        "fear": 0.10091076832678583,
+        "anger": 0.46327103798588115,
+        "disgust": 0.10594175186836058
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I hurt myself today / To see if I still feel",
+          "I wear this crown of shit / Upon my liar's chair"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "70LcF31zb1H0PyJoS1Sx1r",
+    "name": "Creep",
+    "artist": "Radiohead",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0097,
+      "danceability": 0.515,
+      "energy": 0.43,
+      "instrumentalness": 0.000133,
+      "key": 7,
+      "liveness": 0.129,
+      "loudness": -9.935,
+      "mode": 1,
+      "speechiness": 0.0372,
+      "tempo": 91.844,
+      "valence": 0.104
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.21543250664085975,
+      "emotionalShare": 0.9247659174977122,
+      "emotions": {
+        "joy": 0.0555200006158368,
+        "surprise": 0.10113707567388946,
+        "neutral": 0.07523408250228779,
+        "sadness": 0.16271749934231913,
+        "fear": 0.17975019603162198,
+        "anger": 0.16377073808296308,
+        "disgust": 0.2618704052591646
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "But I'm a creep / I'm a weirdo",
+          "I want you to notice / When I'm not around"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3ZffCQKLFLUvYM59XKLbVm",
+    "name": "Wake Me up When September Ends",
+    "artist": "Green Day",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.023,
+      "danceability": 0.546,
+      "energy": 0.814,
+      "instrumentalness": 0,
+      "key": 7,
+      "liveness": 0.0972,
+      "loudness": -5.146,
+      "mode": 1,
+      "speechiness": 0.0314,
+      "tempo": 104.98,
+      "valence": 0.146
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1640983212161803,
+      "emotionalShare": 0.7672423227306675,
+      "emotions": {
+        "joy": 0.01612700367866851,
+        "surprise": 0.045310504433205896,
+        "neutral": 0.23275767726933255,
+        "sadness": 0.4031320834422813,
+        "fear": 0.25631476599065695,
+        "anger": 0.03830333399202894,
+        "disgust": 0.008054643294171375
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "As my memory rests / But never forgets what I lost",
+          "Here comes the rain again / Falling from the stars"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4oVdhvxZrKQTM9ZsUIZa3S",
+    "name": "December",
+    "artist": "Neck Deep",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.626,
+      "danceability": 0.542,
+      "energy": 0.439,
+      "instrumentalness": 0,
+      "key": 2,
+      "liveness": 0.109,
+      "loudness": -7.728,
+      "mode": 1,
+      "speechiness": 0.0272,
+      "tempo": 144.949,
+      "valence": 0.466
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14377427143768726,
+      "emotionalShare": 0.9637334578437731,
+      "emotions": {
+        "joy": 0.003760923445672513,
+        "surprise": 0.0760210595281723,
+        "neutral": 0.03626654215622693,
+        "sadness": 0.8561020161096866,
+        "fear": 0.019588279354278572,
+        "anger": 0.003549567593906361,
+        "disgust": 0.004711624978181834
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I miss your face, you're in my head / There's so many things that I should've said",
+          "I was looking out our window / Watching all the cars go"
+        ]
+      },
+      "darkThemes": [
+        "die",
+        "killing"
+      ]
+    }
+  },
+  {
+    "id": "77yGZRjuWfSzbDT0ROSSUG",
+    "name": "Earthmover",
+    "artist": "Have A Nice Life",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.037,
+      "danceability": 0.347,
+      "energy": 0.557,
+      "instrumentalness": 0.98,
+      "key": 0,
+      "liveness": 0.143,
+      "loudness": -7.939,
+      "mode": 1,
+      "speechiness": 0.0611,
+      "tempo": 120.024,
+      "valence": 0.0445
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14305688557762397,
+      "emotionalShare": 0.7902697951067239,
+      "emotions": {
+        "joy": 0.01229065578081645,
+        "surprise": 0.042663213491323404,
+        "neutral": 0.2097302048932761,
+        "sadness": 0.11414059909293428,
+        "fear": 0.044957860838621855,
+        "anger": 0.42118448624387383,
+        "disgust": 0.1550329690799117
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Carved out of stone / Earth, blood, and bone",
+          "(An army of the golems is stalking, now, the heart's lands) / (Eating all reality)"
+        ]
+      },
+      "darkThemes": [
+        "blood",
+        "dead"
+      ]
+    }
+  },
+  {
+    "id": "3NLrRZoMF0Lx6zTlYqeIo4",
+    "name": "Here Without You",
+    "artist": "3 Doors Down",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0492,
+      "danceability": 0.557,
+      "energy": 0.533,
+      "instrumentalness": 0,
+      "key": 10,
+      "liveness": 0.205,
+      "loudness": -6.817,
+      "mode": 0,
+      "speechiness": 0.0252,
+      "tempo": 143.994,
+      "valence": 0.233
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.23676597950698425,
+      "emotionalShare": 0.8214575498037644,
+      "emotions": {
+        "joy": 0.019374759590907675,
+        "surprise": 0.18606952457009135,
+        "neutral": 0.17854245019623557,
+        "sadness": 0.5152383880135981,
+        "fear": 0.05688277430631019,
+        "anger": 0.022580946178955806,
+        "disgust": 0.021311154840765772
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I'm here without you, baby / But you're still on my lonely mind",
+          "I'm here without you, baby / But you're still with me in my dreams"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6Qyc6fS4DsZjB2mRW9DsQs",
+    "name": "Iris",
+    "artist": "The Goo Goo Dolls",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.00125,
+      "danceability": 0.315,
+      "energy": 0.715,
+      "instrumentalness": 7.97e-06,
+      "key": 11,
+      "liveness": 0.0942,
+      "loudness": -8.072,
+      "mode": 0,
+      "speechiness": 0.0362,
+      "tempo": 155.925,
+      "valence": 0.497
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14143825434308363,
+      "emotionalShare": 0.8071162349754764,
+      "emotions": {
+        "joy": 0.008868918664032412,
+        "surprise": 0.0324038791079675,
+        "neutral": 0.1928837650245236,
+        "sadness": 0.3763746553731541,
+        "fear": 0.19409935344611445,
+        "anger": 0.1651615089466495,
+        "disgust": 0.03020791682384668
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And I'd give up forever to touch you / 'Cause I know that you feel me somehow",
+          "And all I can taste is this moment / And all I can breathe is your life"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "30FURVTCpbKyykjSEQzGkH",
+    "name": "Back To Black",
+    "artist": "Amy Winehouse",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.123,
+      "danceability": 0.49,
+      "energy": 0.725,
+      "instrumentalness": 2.68e-05,
+      "key": 10,
+      "liveness": 0.0983,
+      "loudness": -3.304,
+      "mode": 1,
+      "speechiness": 0.0392,
+      "tempo": 123.28,
+      "valence": 0.335
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.16180255497857934,
+      "emotionalShare": 0.7082590464088652,
+      "emotions": {
+        "joy": 0.027661824826565054,
+        "surprise": 0.02555361224545373,
+        "neutral": 0.29174095359113483,
+        "sadness": 0.44514343738555906,
+        "fear": 0.14965724986460474,
+        "anger": 0.039500331071515876,
+        "disgust": 0.020742580377393297
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Black, black / Black, black",
+          "He left no time to regret / Kept his dick wet"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2tGvwE8GcFKwNdAXMnlbfl",
+    "name": "happier",
+    "artist": "Olivia Rodrigo",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.765,
+      "danceability": 0.395,
+      "energy": 0.443,
+      "instrumentalness": 9.67e-06,
+      "key": 6,
+      "liveness": 0.0839,
+      "loudness": -9.72,
+      "mode": 1,
+      "speechiness": 0.133,
+      "tempo": 168.924,
+      "valence": 0.338
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2288419205761915,
+      "emotionalShare": 0.9119400101134906,
+      "emotions": {
+        "joy": 0.04424257606670663,
+        "surprise": 0.15788509601072684,
+        "neutral": 0.0880599898865094,
+        "sadness": 0.4892007772986953,
+        "fear": 0.01894730979551536,
+        "anger": 0.15314217093023094,
+        "disgust": 0.048522072026153676
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And now I'm picking her apart / Like cuttin' her down will make you miss my wretched heart",
+          "Oh, I hope you're happy / But not like how you were with me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3YfS47QufnLDFA71FUsgCM",
+    "name": "The Sound of Silence",
+    "artist": "Simon & Garfunkel",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.869,
+      "danceability": 0.535,
+      "energy": 0.225,
+      "instrumentalness": 1.57e-06,
+      "key": 6,
+      "liveness": 0.0988,
+      "loudness": -13.865,
+      "mode": 1,
+      "speechiness": 0.0301,
+      "tempo": 107.384,
+      "valence": 0.338
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14782075082134513,
+      "emotionalShare": 0.9214262327826445,
+      "emotions": {
+        "joy": 0.0054728532182600565,
+        "surprise": 0.01230069002657033,
+        "neutral": 0.07857376721735551,
+        "sadness": 0.10108988078804139,
+        "fear": 0.6652205016683129,
+        "anger": 0.05320266955052776,
+        "disgust": 0.08413962699020938
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "\"Fools\", said I, \"You do not know / Silence like a cancer grows",
+          "And in the naked light, I saw / Ten thousand people, maybe more"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2Bo0hh0yoQReC4reJav5DT",
+    "name": "Breathe Me",
+    "artist": "Sia",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0428,
+      "danceability": 0.553,
+      "energy": 0.621,
+      "instrumentalness": 0.596,
+      "key": 0,
+      "liveness": 0.115,
+      "loudness": -7.356,
+      "mode": 1,
+      "speechiness": 0.0333,
+      "tempo": 120.051,
+      "valence": 0.19
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14257735641316735,
+      "emotionalShare": 0.9882623243145645,
+      "emotions": {
+        "joy": 0.0025345297530293466,
+        "surprise": 0.0022016297443769872,
+        "neutral": 0.011737675685435534,
+        "sadness": 0.02484343498945236,
+        "fear": 0.776448680832982,
+        "anger": 0.14019033552613108,
+        "disgust": 0.04204369354993105
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Help, I have done it again / I have been here many times before",
+          "Ouch, I have lost myself again / Lost myself and I am nowhere to be found"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "25Syi9wnfn6ZGAmiOBypPq",
+    "name": "Motion Sickness",
+    "artist": "Phoebe Bridgers",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.774,
+      "danceability": 0.651,
+      "energy": 0.546,
+      "instrumentalness": 0.0437,
+      "key": 1,
+      "liveness": 0.0842,
+      "loudness": -9.021,
+      "mode": 1,
+      "speechiness": 0.0357,
+      "tempo": 107.021,
+      "valence": 0.623
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2545187081250698,
+      "emotionalShare": 0.8980559663790645,
+      "emotions": {
+        "joy": 0.0801930171296452,
+        "surprise": 0.10787352026355537,
+        "neutral": 0.1019440336209355,
+        "sadness": 0.2249794484991016,
+        "fear": 0.33331245724394015,
+        "anger": 0.1202425452683008,
+        "disgust": 0.03145497992183223
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I hate you for what you did / And I miss you like a little kid",
+          "I have emotional motion sickness / I try to stay clean and live without"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0GgN4MhR5GKn5IcKN0e0rG",
+    "name": "Cancer",
+    "artist": "My Chemical Romance",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.358,
+      "danceability": 0.457,
+      "energy": 0.515,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.278,
+      "loudness": -4.31,
+      "mode": 1,
+      "speechiness": 0.0261,
+      "tempo": 74.984,
+      "valence": 0.222
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12101589108206368,
+      "emotionalShare": 0.9013905616906973,
+      "emotions": {
+        "joy": 0.011459809190665301,
+        "surprise": 0.010316059602281222,
+        "neutral": 0.0986094383093027,
+        "sadness": 0.6895323212330158,
+        "fear": 0.08089318112112008,
+        "anger": 0.07136658263894227,
+        "disgust": 0.03782259988097044
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "'Cause the hardest part of this / Is leaving you",
+          "Turn away / If you could get me a drink"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3pRaLNL3b8x5uBOcsgvdqM",
+    "name": "Hallelujah",
+    "artist": "Jeff Buckley",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.931,
+      "danceability": 0.324,
+      "energy": 0.136,
+      "instrumentalness": 0.00117,
+      "key": 0,
+      "liveness": 0.176,
+      "loudness": -10.33,
+      "mode": 1,
+      "speechiness": 0.0318,
+      "tempo": 97.256,
+      "valence": 0.0831
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.42045601848610326,
+      "emotionalShare": 0.7689569852082059,
+      "emotions": {
+        "joy": 0.20719222494517453,
+        "surprise": 0.13668738561682403,
+        "neutral": 0.23104301479179412,
+        "sadness": 0.28069420089013875,
+        "fear": 0.03919621316345001,
+        "anger": 0.08278055646223947,
+        "disgust": 0.02240639609954087
+      },
+      "highlights": {
+        "positive": [
+          "Hallelujah / Hallelujah",
+          "[ti:Hallelujah] / [ar:Jeff Buckley]"
+        ],
+        "negative": [
+          "And love is not a victory march / It's a cold and it's a broken Hallelujah",
+          "Maybe there's a God above / But all I've ever learned from love"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "60nZcImufyMA1MKQY3dcCH",
+    "name": "Happy - From \"Despicable Me 2\"",
+    "artist": "Pharrell Williams",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.219,
+      "danceability": 0.647,
+      "energy": 0.822,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.0908,
+      "loudness": -4.662,
+      "mode": 0,
+      "speechiness": 0.183,
+      "tempo": 160.019,
+      "valence": 0.962
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.7727649130921294,
+      "emotionalShare": 0.943838872998539,
+      "emotions": {
+        "joy": 0.7338953783554543,
+        "surprise": 0.012891663636158531,
+        "neutral": 0.05616112700146106,
+        "sadness": 0.019305905184915498,
+        "fear": 0.09449548857810441,
+        "anger": 0.07561937669136871,
+        "disgust": 0.0076310557196848094
+      },
+      "highlights": {
+        "positive": [
+          "(Because I'm happy) / Clap along if you feel like a room without a roof",
+          "Huh (Because I'm happy) / Clap along if you feel like a room without a roof"
+        ],
+        "negative": [
+          "Here come bad news talking this and that (Yeah) / Well give me all you got, don't hold back (Yeah)",
+          "Uh, bring me down / Can't nothing, bring me down"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "05wIrZSwuaVWhcv5FfqeH0",
+    "name": "Walking On Sunshine",
+    "artist": "Katrina & The Waves",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0119,
+      "danceability": 0.597,
+      "energy": 0.87,
+      "instrumentalness": 0.166,
+      "key": 10,
+      "liveness": 0.0678,
+      "loudness": -11.97,
+      "mode": 1,
+      "speechiness": 0.0371,
+      "tempo": 109.901,
+      "valence": 0.944
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.47170508252680843,
+      "emotionalShare": 0.8987064678049473,
+      "emotions": {
+        "joy": 0.3293635110301828,
+        "surprise": 0.10123131068043963,
+        "neutral": 0.10129353219505262,
+        "sadness": 0.2635626571804837,
+        "fear": 0.06958244801326482,
+        "anger": 0.07461258314153249,
+        "disgust": 0.06035395442180474
+      },
+      "highlights": {
+        "positive": [
+          "Walking on sunshine / Walking on sunshine",
+          "I feel alive, I feel the love, I feel the love that's really real / I feel alive, I feel the love, I feel the love that's really real"
+        ],
+        "negative": [
+          "I'll say it, say it, say it again now / And don't feel good",
+          "Now I don't want u back for the weekend / Not back for a day, no no no"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "32OlwWuMpZ6b0aN2RZOeMS",
+    "name": "Uptown Funk (feat. Bruno Mars)",
+    "artist": "Mark Ronson",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00801,
+      "danceability": 0.856,
+      "energy": 0.609,
+      "instrumentalness": 8.15e-05,
+      "key": 0,
+      "liveness": 0.0344,
+      "loudness": -7.223,
+      "mode": 1,
+      "speechiness": 0.0824,
+      "tempo": 114.988,
+      "valence": 0.928
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4013440675241634,
+      "emotionalShare": 0.7535944106702758,
+      "emotions": {
+        "joy": 0.22588687441726724,
+        "surprise": 0.0624430647285858,
+        "neutral": 0.24640558932972426,
+        "sadness": 0.04959672755829179,
+        "fear": 0.07731656684992042,
+        "anger": 0.28299187629087136,
+        "disgust": 0.055359310959235276
+      },
+      "highlights": {
+        "positive": [
+          "Uptown funk you up (woo, come on) / Uptown funk you up (hey, say what?)"
+        ],
+        "negative": [
+          "I'm too hot (hot damn) / Called a police and a fireman",
+          "I'm too hot (hot damn), uh / Called a police and a fireman"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6dGnYIeXmHdcikdzNNDMm2",
+    "name": "Here Comes The Sun - Remastered 2009",
+    "artist": "The Beatles",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0339,
+      "danceability": 0.557,
+      "energy": 0.54,
+      "instrumentalness": 0.00248,
+      "key": 9,
+      "liveness": 0.179,
+      "loudness": -10.484,
+      "mode": 1,
+      "speechiness": 0.0347,
+      "tempo": 129.177,
+      "valence": 0.394
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.515056594620456,
+      "emotionalShare": 0.7889193208129317,
+      "emotions": {
+        "joy": 0.3150559774151555,
+        "surprise": 0.11826523062255648,
+        "neutral": 0.21108067918706824,
+        "sadness": 0.3155581261962652,
+        "fear": 0.010319389696060508,
+        "anger": 0.021991524500427424,
+        "disgust": 0.007729083661817842
+      },
+      "highlights": {
+        "positive": [
+          "Little darling, the smile's returning to the faces / Little darling, it seems like years since it's been here"
+        ],
+        "negative": [
+          "Here comes the sun, doo, dun, doo, doo / Here comes the sun, and I say",
+          "Sun, sun, sun, here it comes / Sun, sun, sun, here it comes"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2RlgNHKcydI9sayD2Df2xp",
+    "name": "Mr. Blue Sky",
+    "artist": "Electric Light Orchestra",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.652,
+      "danceability": 0.388,
+      "energy": 0.338,
+      "instrumentalness": 3.73e-06,
+      "key": 10,
+      "liveness": 0.248,
+      "loudness": -10.054,
+      "mode": 1,
+      "speechiness": 0.0329,
+      "tempo": 177.765,
+      "valence": 0.478
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.7756615192849229,
+      "emotionalShare": 0.8580689321187409,
+      "emotions": {
+        "joy": 0.6207855893425982,
+        "surprise": 0.09920809905637394,
+        "neutral": 0.14193106788125906,
+        "sadness": 0.024986292921345344,
+        "fear": 0.04984716608358378,
+        "anger": 0.049859297648072246,
+        "disgust": 0.013382482596419075
+      },
+      "highlights": {
+        "positive": [
+          "Mr. Blue Sky / Please tell us why",
+          "Oh, Mr. Blue Sky / Please tell us why"
+        ],
+        "negative": [
+          "Please turn me over",
+          "Mr. Blue, you did it right / But soon comes Mr. Night"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0GjEhVFGZW8afUYGChu3Rr",
+    "name": "Dancing Queen",
+    "artist": "ABBA",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.358,
+      "danceability": 0.543,
+      "energy": 0.87,
+      "instrumentalness": 0.000939,
+      "key": 9,
+      "liveness": 0.792,
+      "loudness": -6.514,
+      "mode": 1,
+      "speechiness": 0.0428,
+      "tempo": 100.804,
+      "valence": 0.754
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6647929248173539,
+      "emotionalShare": 0.6898419098819004,
+      "emotions": {
+        "joy": 0.3826599610859857,
+        "surprise": 0.12334632150390569,
+        "neutral": 0.31015809011809964,
+        "sadness": 0.0485811768209233,
+        "fear": 0.053674068685401886,
+        "anger": 0.06852545549490434,
+        "disgust": 0.013054914635551326
+      },
+      "highlights": {
+        "positive": [
+          "You're in the mood for a dance / And when you get the chance",
+          "You can dance, you can jive / Having the time of your life"
+        ],
+        "negative": [
+          "Friday night and the lights are low / Looking out for a place to go, mm"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2grjqo0Frpf2okIBiifQKs",
+    "name": "September",
+    "artist": "Earth, Wind & Fire",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.168,
+      "danceability": 0.697,
+      "energy": 0.832,
+      "instrumentalness": 0.00131,
+      "key": 9,
+      "liveness": 0.269,
+      "loudness": -7.264,
+      "mode": 1,
+      "speechiness": 0.0298,
+      "tempo": 125.926,
+      "valence": 0.979
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6304686308027981,
+      "emotionalShare": 0.6639843824061942,
+      "emotions": {
+        "joy": 0.3146625425904355,
+        "surprise": 0.16500834779853515,
+        "neutral": 0.3360156175938058,
+        "sadness": 0.09747394840133951,
+        "fear": 0.04511101707380186,
+        "anger": 0.02141649589101051,
+        "disgust": 0.020312033197347153
+      },
+      "highlights": {
+        "positive": [
+          "Now December / Found the love we shared in September",
+          "And we'll say / Ba-dee-ya, say, do you remember?"
+        ],
+        "negative": [
+          "The bell was ringing, oh, oh / Our souls were singing"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1WkMMavIMc4JZ8cfMmxHkI",
+    "name": "CAN'T STOP THE FEELING! (from DreamWorks Animation's \"TROLLS\")",
+    "artist": "Justin Timberlake",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0106,
+      "danceability": 0.669,
+      "energy": 0.832,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.0968,
+      "loudness": -5.721,
+      "mode": 1,
+      "speechiness": 0.0682,
+      "tempo": 113.035,
+      "valence": 0.7
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.44436820878844085,
+      "emotionalShare": 0.8327469331460695,
+      "emotions": {
+        "joy": 0.27280431374907493,
+        "surprise": 0.09670103581001362,
+        "neutral": 0.16725306685393054,
+        "sadness": 0.08159084578355154,
+        "fear": 0.13074770155673227,
+        "anger": 0.21225877116123834,
+        "disgust": 0.038644265805681546
+      },
+      "highlights": {
+        "positive": [
+          "Nothing I can see but you when you dance, dance, dance / (I can't stop the feeling)",
+          "Under the lights when everything goes / Nowhere to hide when I'm getting you close"
+        ],
+        "negative": [
+          "Cause I got that sunshine in my pocket / Got that good song in my feet",
+          "I got that sunshine in my pocket / Got that good song in my feet"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2tUBqZG2AbRi7Q0BIrVrEj",
+    "name": "I Wanna Dance with Somebody (Who Loves Me)",
+    "artist": "Whitney Houston",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.207,
+      "danceability": 0.709,
+      "energy": 0.824,
+      "instrumentalness": 0.000307,
+      "key": 1,
+      "liveness": 0.0888,
+      "loudness": -8.824,
+      "mode": 1,
+      "speechiness": 0.0453,
+      "tempo": 118.818,
+      "valence": 0.867
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.22228192176890615,
+      "emotionalShare": 0.9473014714747248,
+      "emotions": {
+        "joy": 0.08025808541864997,
+        "surprise": 0.09122844591317042,
+        "neutral": 0.05269852852527524,
+        "sadness": 0.3374318136820491,
+        "fear": 0.040084983418944856,
+        "anger": 0.20766043628920133,
+        "disgust": 0.19063770368327976
+      },
+      "highlights": {
+        "positive": [
+          "Huh, yeah, woo! / Hey yeah, huh",
+          "Ooh, ooh (dance) / Ooh, ooh (dance)"
+        ],
+        "negative": [
+          "I've been in love and lost to my senses / Spinning through the town",
+          "I need a man who'll take a chance / On a love that burns hot enough to last"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4kbj5MwxO1bq9wjT5g9HaA",
+    "name": "Shut Up and Dance",
+    "artist": "WALK THE MOON",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00701,
+      "danceability": 0.578,
+      "energy": 0.866,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.257,
+      "loudness": -3.804,
+      "mode": 1,
+      "speechiness": 0.0619,
+      "tempo": 128.038,
+      "valence": 0.619
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2100650412220533,
+      "emotionalShare": 0.9751461133466012,
+      "emotions": {
+        "joy": 0.010859558253639167,
+        "surprise": 0.1572433196669144,
+        "neutral": 0.024853886653398796,
+        "sadness": 0.056817726863007394,
+        "fear": 0.3895442702116505,
+        "anger": 0.327266282075265,
+        "disgust": 0.033414949309982116
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "\"Oh, don't you dare look back / Just keep your eyes on me\"",
+          "\"Don't you dare look back / Just keep your eyes on me\""
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2PpruBYCo4H7WOBJ7Q2EwM",
+    "name": "Hey Ya!",
+    "artist": "Outkast",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.103,
+      "danceability": 0.727,
+      "energy": 0.974,
+      "instrumentalness": 0.000532,
+      "key": 4,
+      "liveness": 0.174,
+      "loudness": -2.261,
+      "mode": 0,
+      "speechiness": 0.0664,
+      "tempo": 79.526,
+      "valence": 0.965
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.399984725118554,
+      "emotionalShare": 0.8439696594876678,
+      "emotions": {
+        "joy": 0.17536679197923818,
+        "surprise": 0.18970081544064574,
+        "neutral": 0.15603034051233217,
+        "sadness": 0.18033855778508281,
+        "fear": 0.18531650024784826,
+        "anger": 0.08520980976448443,
+        "disgust": 0.02803718821776688
+      },
+      "highlights": {
+        "positive": [
+          "Uh thank god for mom and dad / For sticking two together",
+          "Hey alright now / Alright now fellas （YEAH ）"
+        ],
+        "negative": [
+          "My baby don't mess around / Because she loves me so",
+          "Shh you got to shake it shh shake it shake it got to shake it / （Shake it Suga'） shake it like a Poloroid Picture"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6KgBpzTuTRPebChN0VTyzV",
+    "name": "Good as Hell",
+    "artist": "Lizzo",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.256,
+      "danceability": 0.682,
+      "energy": 0.919,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.442,
+      "loudness": -3.18,
+      "mode": 0,
+      "speechiness": 0.0875,
+      "tempo": 95.982,
+      "valence": 0.535
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.5639080604403173,
+      "emotionalShare": 0.7618811216882684,
+      "emotions": {
+        "joy": 0.401952579300004,
+        "surprise": 0.01990353539374403,
+        "neutral": 0.2381188783117316,
+        "sadness": 0.04021664687686346,
+        "fear": 0.03662664345888929,
+        "anger": 0.20077626568011261,
+        "disgust": 0.062405462715436115
+      },
+      "highlights": {
+        "positive": [
+          "I do my hair toss, check my nails / Baby how you feeling? (Feeling good as hell)"
+        ],
+        "negative": [
+          "If he don't love you anymore / Then walk your fine ass out the door",
+          "If he don't love you anymore / Just walk your fine ass out the door"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "39LLxExYz6ewLAcYrzQQyP",
+    "name": "Levitating",
+    "artist": "Dua Lipa",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0561,
+      "danceability": 0.695,
+      "energy": 0.884,
+      "instrumentalness": 0,
+      "key": 6,
+      "liveness": 0.213,
+      "loudness": -2.278,
+      "mode": 0,
+      "speechiness": 0.0753,
+      "tempo": 103.014,
+      "valence": 0.914
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.3886439636616958,
+      "emotionalShare": 0.6143008156402692,
+      "emotions": {
+        "joy": 0.14594345197484299,
+        "surprise": 0.09418717842247035,
+        "neutral": 0.3856991843597309,
+        "sadness": 0.03898308400970858,
+        "fear": 0.12337398931786821,
+        "anger": 0.17202787433524389,
+        "disgust": 0.039785232092883135
+      },
+      "highlights": {
+        "positive": [
+          "I got you (yeah), moonlight, you're my starlight / I need you all night (all night), come on, dance with me"
+        ],
+        "negative": [
+          "Yeah, yeah, yeah, yeah, yeah (whoo) / My love is like a rocket, watch it blast off",
+          "I need you all night, come on, dance with me / I'm levitating"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5QDLhrAOJJdNAmCTJ8xMyW",
+    "name": "Dynamite",
+    "artist": "BTS",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0112,
+      "danceability": 0.746,
+      "energy": 0.765,
+      "instrumentalness": 0,
+      "key": 6,
+      "liveness": 0.0936,
+      "loudness": -4.41,
+      "mode": 0,
+      "speechiness": 0.0993,
+      "tempo": 114.044,
+      "valence": 0.737
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.5116621311405005,
+      "emotionalShare": 0.7187182588274019,
+      "emotions": {
+        "joy": 0.23285632675284879,
+        "surprise": 0.19020574468008258,
+        "neutral": 0.28128174117259813,
+        "sadness": 0.08254353535410605,
+        "fear": 0.05676679761688176,
+        "anger": 0.13038884119637179,
+        "disgust": 0.02595701480382367
+      },
+      "highlights": {
+        "positive": [
+          "This is getting heavy, can you hear the bass boom? I'm ready (woo-hoo) / Life is sweet as honey, yeah, this beat cha-ching like money, huh"
+        ],
+        "negative": [
+          "'Cause I, I, I'm in the stars tonight / So, watch me bring the fire, and set the night alight",
+          "Dyn-na-na-na, na-na, na-na, ayy / Dyn-na-na-na, na-na, na-na, ayy"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "77NNZQSqzLNqh2A9JhLRkg",
+    "name": "Don't Stop Believin'",
+    "artist": "Journey",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.25,
+      "danceability": 0.491,
+      "energy": 0.802,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.387,
+      "loudness": -7.106,
+      "mode": 1,
+      "speechiness": 0.0392,
+      "tempo": 119.25,
+      "valence": 0.472
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2486964034157589,
+      "emotionalShare": 0.9145576351155074,
+      "emotions": {
+        "joy": 0.07846445300114843,
+        "surprise": 0.102237422652065,
+        "neutral": 0.08544236488449268,
+        "sadness": 0.14845431715441057,
+        "fear": 0.363558677622141,
+        "anger": 0.11354848551444519,
+        "disgust": 0.1082942871711193
+      },
+      "highlights": {
+        "positive": [
+          "Workin' hard to get my fill / Everybody wants a thrill"
+        ],
+        "negative": [
+          "A singer in a smokey room / A smell of wine and cheap perfume",
+          "Just a small town girl / Livin' in a lonely world"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "62AuGbAkt8Ox2IrFFb8GKV",
+    "name": "Sweet Caroline",
+    "artist": "Neil Diamond",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.614,
+      "danceability": 0.529,
+      "energy": 0.127,
+      "instrumentalness": 0.000133,
+      "key": 11,
+      "liveness": 0.237,
+      "loudness": -16.066,
+      "mode": 1,
+      "speechiness": 0.0274,
+      "tempo": 63.05,
+      "valence": 0.579
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.30783407636148036,
+      "emotionalShare": 0.9301835508751017,
+      "emotions": {
+        "joy": 0.019659309922384897,
+        "surprise": 0.34136377830457476,
+        "neutral": 0.06981644912489823,
+        "sadness": 0.3433030350632699,
+        "fear": 0.11863073453839336,
+        "anger": 0.01504931625510965,
+        "disgust": 0.09217737508671624
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And when I hurt / Hurting runs off my shoulder",
+          "Hands, touching hands, reaching out / Touching me, touching you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3K7Q9PHUWPTaknlbFPThn2",
+    "name": "Celebration",
+    "artist": "Kool & The Gang",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.145,
+      "danceability": 0.886,
+      "energy": 0.664,
+      "instrumentalness": 0.0483,
+      "key": 1,
+      "liveness": 0.0767,
+      "loudness": -11.795,
+      "mode": 1,
+      "speechiness": 0.0524,
+      "tempo": 121.631,
+      "valence": 0.906
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.9135326874617934,
+      "emotionalShare": 0.9096076425229167,
+      "emotions": {
+        "joy": 0.8536847912032028,
+        "surprise": 0.028558610681572866,
+        "neutral": 0.09039235747708328,
+        "sadness": 0.008136618597400856,
+        "fear": 0.001683464361121878,
+        "anger": 0.012806511933690515,
+        "disgust": 0.004737634504824106
+      },
+      "highlights": {
+        "positive": [
+          "Celebrate good times, come on / Let's celebrate",
+          "Celebrate good times, come on / It's a celebration"
+        ],
+        "negative": []
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3G7tRC24Uh09Hmp1KZ7LQ2",
+    "name": "I'm a Believer - 2006 Remaster",
+    "artist": "The Monkees",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.707,
+      "danceability": 0.526,
+      "energy": 0.775,
+      "instrumentalness": 2.05e-05,
+      "key": 0,
+      "liveness": 0.217,
+      "loudness": -6.05,
+      "mode": 1,
+      "speechiness": 0.0352,
+      "tempo": 80.106,
+      "valence": 0.962
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19503805129097956,
+      "emotionalShare": 0.8032628723209905,
+      "emotions": {
+        "joy": 0.017530681663042596,
+        "surprise": 0.06941313392692997,
+        "neutral": 0.19673712767900958,
+        "sadness": 0.14204715495748865,
+        "fear": 0.5346578258360105,
+        "anger": 0.017224891355351334,
+        "disgust": 0.02238918849146895
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I thought love was more or less a given thing / Seems the more I gave the less I got",
+          "I thought love was only true in fairytales / Meant for someone else but not for me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5Hroj5K7vLpIG4FNCRIjbP",
+    "name": "Best Day Of My Life",
+    "artist": "American Authors",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0591,
+      "danceability": 0.673,
+      "energy": 0.902,
+      "instrumentalness": 0.000227,
+      "key": 2,
+      "liveness": 0.0558,
+      "loudness": -2.392,
+      "mode": 1,
+      "speechiness": 0.0346,
+      "tempo": 100.012,
+      "valence": 0.536
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.49187634534186875,
+      "emotionalShare": 0.9622994752770121,
+      "emotions": {
+        "joy": 0.3666274373800578,
+        "surprise": 0.10217474925924432,
+        "neutral": 0.03770052472298795,
+        "sadness": 0.08069414268671112,
+        "fear": 0.2876340914517641,
+        "anger": 0.10558036481961608,
+        "disgust": 0.019588694886558435
+      },
+      "highlights": {
+        "positive": [
+          "This is gonna be the best day of my life / My life",
+          "This is gonna be, this is gonna be, this is gotta be / The best day of my life"
+        ],
+        "negative": [
+          "I hear it calling outside my window / I feel it in my soul (soul)",
+          "I'm never gonna look back, woah / I never gonna give it up, no"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6kopmMZiyLmw7h66uXcXR7",
+    "name": "Valerie (feat. Amy Winehouse) - Version Revisited",
+    "artist": "Mark Ronson",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00243,
+      "danceability": 0.699,
+      "energy": 0.83,
+      "instrumentalness": 0.00024,
+      "key": 1,
+      "liveness": 0.0995,
+      "loudness": -4.898,
+      "mode": 1,
+      "speechiness": 0.0633,
+      "tempo": 105.809,
+      "valence": 0.889
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2634265948203967,
+      "emotionalShare": 0.8567368711477944,
+      "emotions": {
+        "joy": 0.010121781412245972,
+        "surprise": 0.24960002125728697,
+        "neutral": 0.14326312885220563,
+        "sadness": 0.0635216495997849,
+        "fear": 0.1322012757438989,
+        "anger": 0.33559007401622476,
+        "disgust": 0.06570207804352754
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Why don't you come on over Valerie?",
+          "Cos, Since I've come on home, / Well my body's been a mess"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2u2udGmop1z67EPpr91km7",
+    "name": "Man in the Mirror",
+    "artist": "Michael Jackson",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.429,
+      "danceability": 0.794,
+      "energy": 0.798,
+      "instrumentalness": 1.16e-05,
+      "key": 8,
+      "liveness": 0.118,
+      "loudness": -5.639,
+      "mode": 1,
+      "speechiness": 0.0366,
+      "tempo": 100.338,
+      "valence": 0.265
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2815189014842936,
+      "emotionalShare": 0.6875647729055749,
+      "emotions": {
+        "joy": 0.11717768106609583,
+        "surprise": 0.038122906649692194,
+        "neutral": 0.3124352270944251,
+        "sadness": 0.14214056693017482,
+        "fear": 0.12287041683448478,
+        "anger": 0.1965174455790677,
+        "disgust": 0.07073574788971908
+      },
+      "highlights": {
+        "positive": [
+          "(Oh yeah) gonna feel real good now",
+          "I'm gonna make a change / For once in my life"
+        ],
+        "negative": [
+          "I've been a victim of a selfish kind of love / It's time that I realize",
+          "Come on / You got to"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0DiWol3AO6WpXZgp0goxAV",
+    "name": "One More Time",
+    "artist": "Daft Punk",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0194,
+      "danceability": 0.613,
+      "energy": 0.697,
+      "instrumentalness": 0,
+      "key": 2,
+      "liveness": 0.332,
+      "loudness": -8.618,
+      "mode": 1,
+      "speechiness": 0.133,
+      "tempo": 122.746,
+      "valence": 0.476
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.9212163925134994,
+      "emotionalShare": 0.9413913381844758,
+      "emotions": {
+        "joy": 0.9013446650281548,
+        "surprise": 0.013729214873164893,
+        "neutral": 0.0586086618155241,
+        "sadness": 0.011637265114113688,
+        "fear": 0.0015685073123313487,
+        "anger": 0.009581006914377212,
+        "disgust": 0.0035306850541383028
+      },
+      "highlights": {
+        "positive": [
+          "Music's got me feeling so free / We're gonna celebrate",
+          "We're gonna celebrate / Celebrate and dance so free"
+        ],
+        "negative": []
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3w3y8KPTfNeOKPiqUTakBh",
+    "name": "Locked out of Heaven",
+    "artist": "Bruno Mars",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.049,
+      "danceability": 0.726,
+      "energy": 0.698,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.309,
+      "loudness": -4.165,
+      "mode": 1,
+      "speechiness": 0.0431,
+      "tempo": 143.994,
+      "valence": 0.867
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4084825801347115,
+      "emotionalShare": 0.8350795101301343,
+      "emotions": {
+        "joy": 0.08867528231120576,
+        "surprise": 0.35391765149931115,
+        "neutral": 0.1649204898698657,
+        "sadness": 0.1410950653108896,
+        "fear": 0.1054933270549073,
+        "anger": 0.038852871633043476,
+        "disgust": 0.1070453106772666
+      },
+      "highlights": {
+        "positive": [
+          "I'm born again every time you spend the night (ooh) / 'Cause your sex takes me to paradise"
+        ],
+        "negative": [
+          "Can I just stay here? / Spend the rest of my days here?",
+          "Yeah, you make me feel like / I've been locked out of Heaven"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4y1LsJpmMti1PfRQV9AWWe",
+    "name": "Girls Just Want to Have Fun",
+    "artist": "Cyndi Lauper",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.22,
+      "danceability": 0.71,
+      "energy": 0.799,
+      "instrumentalness": 0.000602,
+      "key": 6,
+      "liveness": 0.349,
+      "loudness": -4.897,
+      "mode": 1,
+      "speechiness": 0.0328,
+      "tempo": 120.372,
+      "valence": 0.725
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6715946305581968,
+      "emotionalShare": 0.7453631828812992,
+      "emotions": {
+        "joy": 0.477794358689411,
+        "surprise": 0.038013098944051596,
+        "neutral": 0.2546368171187008,
+        "sadness": 0.12947652474337934,
+        "fear": 0.018276788481492914,
+        "anger": 0.04811387761112522,
+        "disgust": 0.0336885280980199
+      },
+      "highlights": {
+        "positive": [
+          "When the workin' / When the workin' day is done",
+          "They just want, they just wanna (girls) / They just want, they just wanna (girls just wanna have fun)"
+        ],
+        "negative": [
+          "The phone rings, in the middle of the night / My father yells, \"What you gonna do with your life?\""
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5ZBeML7Lf3FMEVviTyvi8l",
+    "name": "Twist And Shout - Remastered 2009",
+    "artist": "The Beatles",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.641,
+      "danceability": 0.482,
+      "energy": 0.849,
+      "instrumentalness": 7.74e-06,
+      "key": 2,
+      "liveness": 0.0414,
+      "loudness": -9.198,
+      "mode": 1,
+      "speechiness": 0.0452,
+      "tempo": 124.631,
+      "valence": 0.937
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.20897600850847073,
+      "emotionalShare": 0.7306247770234391,
+      "emotions": {
+        "joy": 0.05035471638526629,
+        "surprise": 0.022247360217281513,
+        "neutral": 0.26937522297656097,
+        "sadness": 0.01644122987744157,
+        "fear": 0.5139076432420148,
+        "anger": 0.09977137504352464,
+        "disgust": 0.027902459449790144
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Yeah, shake it up, baby, now (Shake it up, baby) / Twist and shout (Twist and shout)",
+          "Well, shake it up, baby, now (Shake it up, baby) / Twist and shout (Twist and shout)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0bRXwKfigvpKZUurwqAlEh",
+    "name": "Lovely Day",
+    "artist": "Bill Withers",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.292,
+      "danceability": 0.692,
+      "energy": 0.651,
+      "instrumentalness": 0.00241,
+      "key": 9,
+      "liveness": 0.105,
+      "loudness": -8.267,
+      "mode": 1,
+      "speechiness": 0.0324,
+      "tempo": 97.923,
+      "valence": 0.706
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.8094789100063378,
+      "emotionalShare": 0.9806018155733389,
+      "emotions": {
+        "joy": 0.8095474131647256,
+        "surprise": 0.007749028213612445,
+        "neutral": 0.01939818442666105,
+        "sadness": 0.0738705661172023,
+        "fear": 0.07452982681759561,
+        "anger": 0.007606384553039422,
+        "disgust": 0.007298602962219338
+      },
+      "highlights": {
+        "positive": [
+          "A lovely day / (Lovely day, lovely day)",
+          "(Lovely day, lovely day) / (Lovely day, lovely day)"
+        ],
+        "negative": [
+          "When I wake up in the mornin', love / And the sunlight hurts my eyes",
+          "When the day that lies ahead of me / Seems impossible to face"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7vggqxNKwd6xdRoYS0pQtM",
+    "name": "Three Little Birds",
+    "artist": "Bob Marley & The Wailers",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00956,
+      "danceability": 0.825,
+      "energy": 0.494,
+      "instrumentalness": 5.82e-06,
+      "key": 9,
+      "liveness": 0.0361,
+      "loudness": -10.486,
+      "mode": 1,
+      "speechiness": 0.0699,
+      "tempo": 74.103,
+      "valence": 0.627
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4458541539930936,
+      "emotionalShare": 0.9048812600990964,
+      "emotions": {
+        "joy": 0.31914200279344285,
+        "surprise": 0.03264496136560208,
+        "neutral": 0.09511873990090357,
+        "sadness": 0.015328101529222395,
+        "fear": 0.5072751894088773,
+        "anger": 0.024472247550470963,
+        "disgust": 0.006018758932542469
+      },
+      "highlights": {
+        "positive": [
+          "Rise up this mornin' / Smile with the risin' sun",
+          "'Cause every little thing gonna be all right"
+        ],
+        "negative": [
+          "Singin', don't worry, about a thing / Worry about a thing, no",
+          "Hmm, don't worry, about a thing / 'Cause a every little thing, gonna be all right"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7yq4Qj7cqayVTp3FF9CWbm",
+    "name": "Riptide",
+    "artist": "Vance Joy",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.431,
+      "danceability": 0.484,
+      "energy": 0.731,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.151,
+      "loudness": -6.694,
+      "mode": 1,
+      "speechiness": 0.0379,
+      "tempo": 101.654,
+      "valence": 0.51
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.201401888971458,
+      "emotionalShare": 0.8367731313221156,
+      "emotions": {
+        "joy": 0.019239466413855554,
+        "surprise": 0.09773959062993526,
+        "neutral": 0.16322686867788433,
+        "sadness": 0.20023653292097152,
+        "fear": 0.3925407109037042,
+        "anger": 0.054838982960209254,
+        "disgust": 0.07217783594038338
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Yeah, I got a lump in my throat / 'Cause you're gonna sing the words wrong",
+          "Lady, running down to the riptide / Taken away to the dark side"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5qII2n90lVdPDcgXEEVHNy",
+    "name": "Sunday Morning",
+    "artist": "Maroon 5",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.0913,
+      "danceability": 0.608,
+      "energy": 0.768,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.0629,
+      "loudness": -5.227,
+      "mode": 1,
+      "speechiness": 0.0475,
+      "tempo": 88.059,
+      "valence": 0.809
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2376377191587808,
+      "emotionalShare": 0.7177475824513856,
+      "emotions": {
+        "joy": 0.06409036689529232,
+        "surprise": 0.059139194633519535,
+        "neutral": 0.2822524175486144,
+        "sadness": 0.16800322201029927,
+        "fear": 0.2948546351536232,
+        "anger": 0.05204670043552623,
+        "disgust": 0.07961345577210772
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "That may be all I need / In darkness she is all I see",
+          "That may be all I need / In darkness she is all I see (you are all I see)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2nGFzvICaeEWjIrBrL2RAx",
+    "name": "Put Your Records On",
+    "artist": "Corinne Bailey Rae",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.167,
+      "danceability": 0.739,
+      "energy": 0.511,
+      "instrumentalness": 1.34e-06,
+      "key": 9,
+      "liveness": 0.133,
+      "loudness": -7.844,
+      "mode": 1,
+      "speechiness": 0.0362,
+      "tempo": 96.038,
+      "valence": 0.542
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.20887629731487822,
+      "emotionalShare": 0.6940458060751827,
+      "emotions": {
+        "joy": 0.052058813555324275,
+        "surprise": 0.03524532593909721,
+        "neutral": 0.30595419392481726,
+        "sadness": 0.18234787386719067,
+        "fear": 0.27384967944707794,
+        "anger": 0.09555491879318823,
+        "disgust": 0.054989185157882155
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Blue as the sky, sunburned and lonely / Sipping tea in the bar by the roadside",
+          "Maybe sometimes we got it wrong / But it's alright"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1EzrEOXmMH3G43AXT1y7pA",
+    "name": "I'm Yours",
+    "artist": "Jason Mraz",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.559,
+      "danceability": 0.703,
+      "energy": 0.444,
+      "instrumentalness": 0,
+      "key": 11,
+      "liveness": 0.0973,
+      "loudness": -9.331,
+      "mode": 1,
+      "speechiness": 0.0417,
+      "tempo": 150.96,
+      "valence": 0.712
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.365647811677449,
+      "emotionalShare": 0.7879029864783992,
+      "emotions": {
+        "joy": 0.1147550687066872,
+        "surprise": 0.19408424916169184,
+        "neutral": 0.21209701352160085,
+        "sadness": 0.04820417452349581,
+        "fear": 0.2944154255430807,
+        "anger": 0.1118624953574247,
+        "disgust": 0.024581572320312262
+      },
+      "highlights": {
+        "positive": [
+          "Before the cool done run out, I'll be givin' it my bestest / And nothing's gonna stop me but divine intervention"
+        ],
+        "negative": [
+          "Well, open up your mind and see like me / Open up your plans and, damn, you're free",
+          "But I won't hesitate, no more, no more / It cannot wait, I'm yours"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2ixsaeFioXJmMgkkbd4uj1",
+    "name": "Budapest",
+    "artist": "George Ezra",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.0846,
+      "danceability": 0.717,
+      "energy": 0.455,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.11,
+      "loudness": -8.303,
+      "mode": 1,
+      "speechiness": 0.0276,
+      "tempo": 127.812,
+      "valence": 0.389
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.28341852223702246,
+      "emotionalShare": 0.8159849534517732,
+      "emotions": {
+        "joy": 0.03626361119978387,
+        "surprise": 0.20640066246791133,
+        "neutral": 0.18401504654822678,
+        "sadness": 0.07740570604801178,
+        "fear": 0.31284707855304766,
+        "anger": 0.1537224161599217,
+        "disgust": 0.029345475506551307
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Give me one good reason / Why I should never make a change",
+          "My friends and family / They don't understand"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2MLHyLy5z5l5YRp7momlgw",
+    "name": "Island In The Sun",
+    "artist": "Weezer",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.00719,
+      "danceability": 0.654,
+      "energy": 0.81,
+      "instrumentalness": 0.00251,
+      "key": 4,
+      "liveness": 0.165,
+      "loudness": -6.26,
+      "mode": 0,
+      "speechiness": 0.0288,
+      "tempo": 114.622,
+      "valence": 0.661
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.44774599278686195,
+      "emotionalShare": 0.7432769606279772,
+      "emotions": {
+        "joy": 0.27814415204447024,
+        "surprise": 0.0412162433724937,
+        "neutral": 0.2567230393720228,
+        "sadness": 0.3540684430058612,
+        "fear": 0.028818687380746354,
+        "anger": 0.00940007952496756,
+        "disgust": 0.031629348260372184
+      },
+      "highlights": {
+        "positive": [
+          "On an island in the sun / We'll be playing and having fun"
+        ],
+        "negative": [
+          "We'll run away together / We'll spend some time forever",
+          "Hip-hip / (Hip-hip) we'll never feel bad anymore"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "754kgU5rWscRTfvlsuEwFp",
+    "name": "Kiss Me",
+    "artist": "Sixpence None The Richer",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.023,
+      "danceability": 0.526,
+      "energy": 0.749,
+      "instrumentalness": 1.76e-06,
+      "key": 3,
+      "liveness": 0.0692,
+      "loudness": -6.964,
+      "mode": 1,
+      "speechiness": 0.0283,
+      "tempo": 99.982,
+      "valence": 0.421
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2559425832502777,
+      "emotionalShare": 0.8337958742243549,
+      "emotions": {
+        "joy": 0.14365746333108595,
+        "surprise": 0.009689245411815742,
+        "neutral": 0.16620412577564517,
+        "sadness": 0.23288875088716546,
+        "fear": 0.06141632858392162,
+        "anger": 0.33701164145410684,
+        "disgust": 0.04913244019068467
+      },
+      "highlights": {
+        "positive": [
+          "Silver moon's sparkling / So kiss me"
+        ],
+        "negative": [
+          "Kiss me / Down by the broken tree house",
+          "Kiss me / Out of the bearded barley"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "59WN2psjkt1tyaxjspN8fp",
+    "name": "Killing In The Name",
+    "artist": "Rage Against The Machine",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0266,
+      "danceability": 0.466,
+      "energy": 0.833,
+      "instrumentalness": 0,
+      "key": 7,
+      "liveness": 0.0327,
+      "loudness": -4.215,
+      "mode": 1,
+      "speechiness": 0.304,
+      "tempo": 88.785,
+      "valence": 0.661
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15311999752149316,
+      "emotionalShare": 0.6217240034503506,
+      "emotions": {
+        "joy": 0.026308297683692913,
+        "surprise": 0.018403664314277233,
+        "neutral": 0.37827599654964944,
+        "sadness": 0.02136173570885303,
+        "fear": 0.029241837501684402,
+        "anger": 0.4426908084052674,
+        "disgust": 0.08371766442631154
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Fuck you, I won't do what you tell me / Fuck you, I won't do what you tell me",
+          "Motherfucker / Uh"
+        ]
+      },
+      "darkThemes": [
+        "died",
+        "killing"
+      ]
+    }
+  },
+  {
+    "id": "7CpbhqKUedOIrcvc94p60Y",
+    "name": "Bodies",
+    "artist": "Drowning Pool",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00347,
+      "danceability": 0.656,
+      "energy": 0.932,
+      "instrumentalness": 0.00147,
+      "key": 4,
+      "liveness": 0.144,
+      "loudness": -3.405,
+      "mode": 0,
+      "speechiness": 0.0708,
+      "tempo": 130.936,
+      "valence": 0.544
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.23125421597818416,
+      "emotionalShare": 0.8155890264105601,
+      "emotions": {
+        "joy": 0.0708387948374157,
+        "surprise": 0.08053152343319332,
+        "neutral": 0.18441097358943986,
+        "sadness": 0.0840244829715764,
+        "fear": 0.13141522490892743,
+        "anger": 0.34436969868228084,
+        "disgust": 0.10440929805798853
+      },
+      "highlights": {
+        "positive": [
+          "Hey! Come! / Hey! Come!"
+        ],
+        "negative": [
+          "One, nothing wrong with me / Two, nothing wrong with me",
+          "Let the bodies hit the floor / Let the bodies hit the floor"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5cZqsjVs6MevCnAkasbEOX",
+    "name": "Break Stuff",
+    "artist": "Limp Bizkit",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0128,
+      "danceability": 0.432,
+      "energy": 0.884,
+      "instrumentalness": 0.000457,
+      "key": 8,
+      "liveness": 0.166,
+      "loudness": -6.657,
+      "mode": 1,
+      "speechiness": 0.128,
+      "tempo": 108.835,
+      "valence": 0.619
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1165933581656893,
+      "emotionalShare": 0.9583153772034816,
+      "emotions": {
+        "joy": 0.005606241284736566,
+        "surprise": 0.017258535272308757,
+        "neutral": 0.04168462279651846,
+        "sadness": 0.021126401956592288,
+        "fear": 0.050141947556819236,
+        "anger": 0.6951001456805638,
+        "disgust": 0.16908210728849685
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "All those motherfuckers / That want to step up",
+          "And if my day keeps going this way, I just might / Break something tonight"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "61mWefnWQOLf90gepjOCb3",
+    "name": "Duality",
+    "artist": "Slipknot",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000237,
+      "danceability": 0.354,
+      "energy": 0.982,
+      "instrumentalness": 0.000294,
+      "key": 4,
+      "liveness": 0.204,
+      "loudness": -3.026,
+      "mode": 0,
+      "speechiness": 0.168,
+      "tempo": 143.772,
+      "valence": 0.194
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.22154371340160361,
+      "emotionalShare": 0.7579386565420363,
+      "emotions": {
+        "joy": 0.03155305336608931,
+        "surprise": 0.11975474417623547,
+        "neutral": 0.24206134345796373,
+        "sadness": 0.3111249672041999,
+        "fear": 0.10850423132931744,
+        "anger": 0.07968128793355492,
+        "disgust": 0.10732037084246124
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I have screamed until my veins collapsed / I've waited as my time's elapsed",
+          "I push my fingers into my eyes / It's the only thing that slowly stops the ache"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3RAFcUBrCNaboRXoP3S5t1",
+    "name": "Psychosocial",
+    "artist": "Slipknot",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00269,
+      "danceability": 0.568,
+      "energy": 0.981,
+      "instrumentalness": 0.00275,
+      "key": 2,
+      "liveness": 0.0243,
+      "loudness": -3.889,
+      "mode": 1,
+      "speechiness": 0.0887,
+      "tempo": 135.146,
+      "valence": 0.307
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.18786976452946913,
+      "emotionalShare": 0.8752014223875395,
+      "emotions": {
+        "joy": 0.04596825413155689,
+        "surprise": 0.060897837045477396,
+        "neutral": 0.12479857761246055,
+        "sadness": 0.0955358314425198,
+        "fear": 0.1476361512748608,
+        "anger": 0.3931437843937927,
+        "disgust": 0.13201957212677642
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I did my time, and I want out / So effusive fade, it doesn't cut",
+          "Oh, there are cracks in the road we laid / But where the temple fell"
+        ]
+      },
+      "darkThemes": [
+        "dead",
+        "kill",
+        "killed",
+        "killing"
+      ]
+    }
+  },
+  {
+    "id": "2DlHlPMa4M17kufBvI2lEN",
+    "name": "Chop Suey!",
+    "artist": "System Of A Down",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000278,
+      "danceability": 0.417,
+      "energy": 0.934,
+      "instrumentalness": 0.0015,
+      "key": 7,
+      "liveness": 0.132,
+      "loudness": -3.908,
+      "mode": 0,
+      "speechiness": 0.119,
+      "tempo": 127.066,
+      "valence": 0.287
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.13686265317171956,
+      "emotionalShare": 0.9563438550755382,
+      "emotions": {
+        "joy": 0.004215814075432717,
+        "surprise": 0.020279538615141063,
+        "neutral": 0.04365614492446184,
+        "sadness": 0.2821000888943672,
+        "fear": 0.4306031993427314,
+        "anger": 0.18535998737439513,
+        "disgust": 0.03378523281076923
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I... Cry... When angels deserve to die",
+          "I... Cry... When angels deserve to die / In, my, Self-righteous suicide"
+        ]
+      },
+      "darkThemes": [
+        "die",
+        "suicide"
+      ]
+    }
+  },
+  {
+    "id": "40rvBMQizxkIqnjPdEWY1v",
+    "name": "Down with the Sickness",
+    "artist": "Disturbed",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000996,
+      "danceability": 0.695,
+      "energy": 0.876,
+      "instrumentalness": 6.89e-06,
+      "key": 3,
+      "liveness": 0.106,
+      "loudness": -4.262,
+      "mode": 0,
+      "speechiness": 0.0553,
+      "tempo": 89.954,
+      "valence": 0.941
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15063102686036678,
+      "emotionalShare": 0.9618972243878465,
+      "emotions": {
+        "joy": 0.007625913945211766,
+        "surprise": 0.0576638095259953,
+        "neutral": 0.03810277561215349,
+        "sadness": 0.11660246741480361,
+        "fear": 0.26775825426030236,
+        "anger": 0.4422783861653163,
+        "disgust": 0.0699683918307225
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Why did you have to be such a bitch? / Why don't you, why don't you fuck off and die?",
+          "Open up your hate, and let it flow into me / Get up, come on get down with the sickness"
+        ]
+      },
+      "darkThemes": [
+        "die",
+        "died"
+      ]
+    }
+  },
+  {
+    "id": "0tZ3mElWcr74OOhKEiNz1x",
+    "name": "Bulls On Parade",
+    "artist": "Rage Against The Machine",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0124,
+      "danceability": 0.412,
+      "energy": 0.919,
+      "instrumentalness": 0.0601,
+      "key": 5,
+      "liveness": 0.424,
+      "loudness": -7.291,
+      "mode": 1,
+      "speechiness": 0.184,
+      "tempo": 166.367,
+      "valence": 0.572
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.22941760924852245,
+      "emotionalShare": 0.7751106860679249,
+      "emotions": {
+        "joy": 0.07411436975911953,
+        "surprise": 0.05546773783862591,
+        "neutral": 0.22488931393207506,
+        "sadness": 0.022777890526624614,
+        "fear": 0.1916377689732715,
+        "anger": 0.3346598387890777,
+        "disgust": 0.09645308248785346
+      },
+      "highlights": {
+        "positive": [
+          "Bulls on parade! / Bulls on parade!",
+          "Bulls on parade!"
+        ],
+        "negative": [
+          "The microphone explodes, shattering the molds / Either drop the hits like de la O, or get the fuck off the commode",
+          "Weapons, not food, not homes, not shoes / Not need, just feed the war cannibal animal"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6wqJeItl3Vc3az4ZicSQAB",
+    "name": "Before I Forget",
+    "artist": "Slipknot",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0177,
+      "danceability": 0.291,
+      "energy": 0.974,
+      "instrumentalness": 5.44e-06,
+      "key": 6,
+      "liveness": 0.886,
+      "loudness": -2.997,
+      "mode": 0,
+      "speechiness": 0.171,
+      "tempo": 134.724,
+      "valence": 0.348
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.16050119821243847,
+      "emotionalShare": 0.8894612395049384,
+      "emotions": {
+        "joy": 0.007764121793055286,
+        "surprise": 0.03739886775923272,
+        "neutral": 0.11053876049506167,
+        "sadness": 0.0306505174919342,
+        "fear": 0.5702906890617062,
+        "anger": 0.14617590851460893,
+        "disgust": 0.09718112385210892
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I'm smeared across the page, and doused in gasoline / I wear you like a stain, yet I'm the one who's obscene",
+          "Fray the strings / Throw the shapes"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1fLlRApgzxWweF1JTf8yM5",
+    "name": "Given Up",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00113,
+      "danceability": 0.655,
+      "energy": 0.886,
+      "instrumentalness": 0.000409,
+      "key": 7,
+      "liveness": 0.0448,
+      "loudness": -4.116,
+      "mode": 1,
+      "speechiness": 0.0435,
+      "tempo": 100.088,
+      "valence": 0.938
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14477291458262823,
+      "emotionalShare": 0.871524057991337,
+      "emotions": {
+        "joy": 0.0046199790594982915,
+        "surprise": 0.034831436700187624,
+        "neutral": 0.12847594200866297,
+        "sadness": 0.3148168094921857,
+        "fear": 0.3535594360146206,
+        "anger": 0.10080983414081857,
+        "disgust": 0.06288656112155877
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Wake in a sweat again / Another day's been laid to waste in my disgrace",
+          "Take this all away I'm suffocating / Tell me what the fuck is wrong with me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7fcfNW0XxTWlwVlftzfDOR",
+    "name": "Walk",
+    "artist": "Pantera",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000155,
+      "danceability": 0.43,
+      "energy": 0.704,
+      "instrumentalness": 0.00221,
+      "key": 1,
+      "liveness": 0.0933,
+      "loudness": -8.008,
+      "mode": 0,
+      "speechiness": 0.0804,
+      "tempo": 118.242,
+      "valence": 0.703
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.13179285886758701,
+      "emotionalShare": 0.814439137428999,
+      "emotions": {
+        "joy": 0.004168720687739551,
+        "surprise": 0.030067774290218948,
+        "neutral": 0.18556086257100105,
+        "sadness": 0.06367397989146412,
+        "fear": 0.1463209953159094,
+        "anger": 0.4838509717583656,
+        "disgust": 0.08635668605566024
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Respect, walk / What did you say?",
+          "Run your mouth when I'm not around / It's easy to achieve"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0Puj4YlTm6xNzDDADXHMI9",
+    "name": "Sabotage",
+    "artist": "Beastie Boys",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.032,
+      "danceability": 0.324,
+      "energy": 0.938,
+      "instrumentalness": 0.0321,
+      "key": 6,
+      "liveness": 0.0961,
+      "loudness": -7.332,
+      "mode": 0,
+      "speechiness": 0.102,
+      "tempo": 168.131,
+      "valence": 0.543
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15814839552858367,
+      "emotionalShare": 0.9225510934988658,
+      "emotions": {
+        "joy": 0.006381739334513744,
+        "surprise": 0.0873350515961647,
+        "neutral": 0.07744890650113424,
+        "sadness": 0.08614818553129831,
+        "fear": 0.09105723388493062,
+        "anger": 0.45368322332700095,
+        "disgust": 0.19794565935929617
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "But I can't stand rockin' when I'm in this place / Because I feel disgrace because you're all in my face",
+          "Why / Our backs are now against the wall"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4fiOTntQKr24p07FvQDHZE",
+    "name": "Raining Blood",
+    "artist": "Slayer",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000405,
+      "danceability": 0.227,
+      "energy": 0.995,
+      "instrumentalness": 0.393,
+      "key": 10,
+      "liveness": 0.127,
+      "loudness": -4.361,
+      "mode": 0,
+      "speechiness": 0.173,
+      "tempo": 87.499,
+      "valence": 0.0363
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12107867380715996,
+      "emotionalShare": 0.944744857881839,
+      "emotions": {
+        "joy": 0.004416417395178642,
+        "surprise": 0.0023115007400823138,
+        "neutral": 0.055255142118160926,
+        "sadness": 0.3334800436471899,
+        "fear": 0.30008528298801845,
+        "anger": 0.2081600126499931,
+        "disgust": 0.09629159431076711
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Trapped in purgatory / A lifeless object, alive",
+          "Pierced from below, souls of my treacherous past / Betrayed by many"
+        ]
+      },
+      "darkThemes": [
+        "blood",
+        "death"
+      ]
+    }
+  },
+  {
+    "id": "3K4HG9evC7dg3N0R9cYqk4",
+    "name": "One Step Closer",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0014,
+      "danceability": 0.492,
+      "energy": 0.969,
+      "instrumentalness": 1.32e-06,
+      "key": 9,
+      "liveness": 0.0787,
+      "loudness": -4.419,
+      "mode": 1,
+      "speechiness": 0.0491,
+      "tempo": 95.136,
+      "valence": 0.538
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15275062465341016,
+      "emotionalShare": 0.8498405423373557,
+      "emotions": {
+        "joy": 0.017432979478214223,
+        "surprise": 0.02037520035922241,
+        "neutral": 0.1501594576626443,
+        "sadness": 0.19852832586576158,
+        "fear": 0.3964797616578065,
+        "anger": 0.17664397213285646,
+        "disgust": 0.04038028929454203
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I find the answers aren't so clear / Wish I could find a way to disappear",
+          "Shut up when I'm talking to you / Shut up, shut up, shut up"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6W21LNLz9Sw7sUSNWMSHRu",
+    "name": "Freak On a Leash",
+    "artist": "Korn",
+    "label": "angry",
+    "features": {
+      "acousticness": 2.23e-05,
+      "danceability": 0.353,
+      "energy": 0.898,
+      "instrumentalness": 0.105,
+      "key": 2,
+      "liveness": 0.39,
+      "loudness": -5.877,
+      "mode": 1,
+      "speechiness": 0.052,
+      "tempo": 103.299,
+      "valence": 0.525
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.13657333863877036,
+      "emotionalShare": 0.7450545782844226,
+      "emotions": {
+        "joy": 0.010514444950968028,
+        "surprise": 0.020933641420884264,
+        "neutral": 0.25494542171557744,
+        "sadness": 0.2520753391811417,
+        "fear": 0.15690067704353067,
+        "anger": 0.2045916812804838,
+        "disgust": 0.10003880065762334
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Something takes a part of me / You and I were meant to be",
+          "Sometimes I cannot take this place / Sometimes it's my life I can't taste"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5W8YXBz9MTIDyrpYaCg2Ky",
+    "name": "Last Resort",
+    "artist": "Papa Roach",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000481,
+      "danceability": 0.589,
+      "energy": 0.89,
+      "instrumentalness": 0.00082,
+      "key": 4,
+      "liveness": 0.201,
+      "loudness": -3.719,
+      "mode": 0,
+      "speechiness": 0.06,
+      "tempo": 90.586,
+      "valence": 0.687
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12226515294647927,
+      "emotionalShare": 0.9744147527445521,
+      "emotions": {
+        "joy": 0.004502389942192369,
+        "surprise": 0.009590556651043395,
+        "neutral": 0.02558524725544784,
+        "sadness": 0.5281113100548586,
+        "fear": 0.26146367378532887,
+        "anger": 0.14569624942830867,
+        "disgust": 0.025050573257936373
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And I was empty within / Hungry",
+          "Nothing's alright / Nothing is fine"
+        ]
+      },
+      "darkThemes": [
+        "die",
+        "suicide"
+      ]
+    }
+  },
+  {
+    "id": "1AEYT6VxrxXPMoQUxsY0E4",
+    "name": "Headstrong",
+    "artist": "Trapt",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000172,
+      "danceability": 0.492,
+      "energy": 0.896,
+      "instrumentalness": 2.78e-06,
+      "key": 4,
+      "liveness": 0.189,
+      "loudness": -5.819,
+      "mode": 0,
+      "speechiness": 0.117,
+      "tempo": 184.981,
+      "valence": 0.534
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.14539850844561783,
+      "emotionalShare": 0.626335824911411,
+      "emotions": {
+        "joy": 0.01257363693215526,
+        "surprise": 0.02203242093897783,
+        "neutral": 0.373664175088589,
+        "sadness": 0.03803906532434317,
+        "fear": 0.13461820690247875,
+        "anger": 0.33071476804235805,
+        "disgust": 0.08835772707198675
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Headstrong to take on anyone / I know that you are wrong",
+          "I know that you are wrong / And this is not where you belong"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0UFDKFqW2oGspYeYqo9wjA",
+    "name": "Bleed It Out",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.113,
+      "danceability": 0.541,
+      "energy": 0.969,
+      "instrumentalness": 0,
+      "key": 11,
+      "liveness": 0.638,
+      "loudness": -3.439,
+      "mode": 1,
+      "speechiness": 0.0458,
+      "tempo": 140.119,
+      "valence": 0.599
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12288128985565003,
+      "emotionalShare": 0.8862405008914178,
+      "emotions": {
+        "joy": 0.007289816323144917,
+        "surprise": 0.02085486824803969,
+        "neutral": 0.11375949910858221,
+        "sadness": 0.09675592445490654,
+        "fear": 0.07309095561504364,
+        "anger": 0.494526553441558,
+        "disgust": 0.19372238284140303
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "So why try ignoring him / Make it a dirt dance floor again",
+          "Truth is you can stop and stare / Bled myself out and no one cares"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0snQkGI5qnAmohLE7jTsTn",
+    "name": "Toxicity",
+    "artist": "System Of A Down",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000264,
+      "danceability": 0.413,
+      "energy": 0.873,
+      "instrumentalness": 0.00249,
+      "key": 8,
+      "liveness": 0.204,
+      "loudness": -4.151,
+      "mode": 1,
+      "speechiness": 0.0536,
+      "tempo": 116.68,
+      "valence": 0.48
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19851770409560196,
+      "emotionalShare": 0.754811135386782,
+      "emotions": {
+        "joy": 0.0679166979888188,
+        "surprise": 0.011574150961158531,
+        "neutral": 0.24518886461321796,
+        "sadness": 0.09796521001096282,
+        "fear": 0.21691981212435557,
+        "anger": 0.12564841391784803,
+        "disgust": 0.23478685745171138
+      },
+      "highlights": {
+        "positive": [
+          "When I became the sun, I shone life into the man's hearts / When I became the sun, I shone life into the man's hearts"
+        ],
+        "negative": [
+          "More wood for their fires, loud neighbors / Flashlight reveries caught in the headlights of a truck",
+          "Conversion, software version 7.0 / Looking at life through the eyes of a tire hub"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0NlGoUyOJSuSHmngoibVAs",
+    "name": "All I Want",
+    "artist": "Kodaline",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.174,
+      "danceability": 0.188,
+      "energy": 0.411,
+      "instrumentalness": 0.153,
+      "key": 0,
+      "liveness": 0.0843,
+      "loudness": -9.733,
+      "mode": 1,
+      "speechiness": 0.0484,
+      "tempo": 187.376,
+      "valence": 0.159
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2558512105671666,
+      "emotionalShare": 0.8194475693905607,
+      "emotions": {
+        "joy": 0.04304460681816365,
+        "surprise": 0.1725474772776695,
+        "neutral": 0.1805524306094393,
+        "sadness": 0.3268747712148631,
+        "fear": 0.09700482719122096,
+        "anger": 0.1528376281519044,
+        "disgust": 0.027138257656801255
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "All I want is nothing more / To hear you knocking at my door",
+          "But if you loved me / Why did you leave me"
+        ]
+      },
+      "darkThemes": [
+        "die",
+        "died"
+      ]
+    }
+  },
+  {
+    "id": "2L9N0zZnd37dwF0clgxMGI",
+    "name": "ceilings",
+    "artist": "Lizzy McAlpine",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.473,
+      "danceability": 0.516,
+      "energy": 0.322,
+      "instrumentalness": 0.00194,
+      "key": 9,
+      "liveness": 0.215,
+      "loudness": -11.762,
+      "mode": 1,
+      "speechiness": 0.0292,
+      "tempo": 148.005,
+      "valence": 0.261
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.48481319485635116,
+      "emotionalShare": 0.8605885540859567,
+      "emotions": {
+        "joy": 0.22210154774236596,
+        "surprise": 0.2750141898997956,
+        "neutral": 0.1394114459140433,
+        "sadness": 0.19058431829843256,
+        "fear": 0.09744841708905166,
+        "anger": 0.043418225521842636,
+        "disgust": 0.032021851227101356
+      },
+      "highlights": {
+        "positive": [
+          "Ceilings, plaster / Can't you just make it move faster?"
+        ],
+        "negative": [
+          "So short / Then you're driving me home"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3aBGKDiAAvH2H7HLOyQ4US",
+    "name": "Glimpse of Us",
+    "artist": "Joji",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.899,
+      "danceability": 0.441,
+      "energy": 0.287,
+      "instrumentalness": 3.69e-06,
+      "key": 8,
+      "liveness": 0.155,
+      "loudness": -9.963,
+      "mode": 1,
+      "speechiness": 0.0448,
+      "tempo": 169.672,
+      "valence": 0.272
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.20747358010396164,
+      "emotionalShare": 0.7411639337571194,
+      "emotions": {
+        "joy": 0.023203525432528786,
+        "surprise": 0.09396621021621215,
+        "neutral": 0.2588360662428805,
+        "sadness": 0.2261631197940845,
+        "fear": 0.2589888213417278,
+        "anger": 0.054443754972173616,
+        "disgust": 0.08439848812010425
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Tell me he savors your glory, does he laugh the way I did? / Is this a part of your story? One that I had never lived",
+          "When you're out of sight in my mind"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1LzNfuep1bnAUR9skqdHCK",
+    "name": "Fade Into You",
+    "artist": "Mazzy Star",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.247,
+      "danceability": 0.417,
+      "energy": 0.33,
+      "instrumentalness": 0.000689,
+      "key": 9,
+      "liveness": 0.0677,
+      "loudness": -13.925,
+      "mode": 1,
+      "speechiness": 0.0275,
+      "tempo": 157.113,
+      "valence": 0.175
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.31890336614102993,
+      "emotionalShare": 0.9685070002824068,
+      "emotions": {
+        "joy": 0.018873519469052552,
+        "surprise": 0.3337239636201412,
+        "neutral": 0.031492999717593194,
+        "sadness": 0.009512593606486916,
+        "fear": 0.5820993988751434,
+        "anger": 0.012107344157993794,
+        "disgust": 0.012190172458067536
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I wanna hold the hand inside you / I wanna take the breath that's true",
+          "Colors your eyes with what's not there / Fade into you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0nJW01T7XtvILxQgC5J7Wh",
+    "name": "When I Was Your Man",
+    "artist": "Bruno Mars",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.932,
+      "danceability": 0.612,
+      "energy": 0.28,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.088,
+      "loudness": -8.648,
+      "mode": 1,
+      "speechiness": 0.0434,
+      "tempo": 72.795,
+      "valence": 0.387
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2068948560128918,
+      "emotionalShare": 0.8330775471620782,
+      "emotions": {
+        "joy": 0.050246784972503435,
+        "surprise": 0.08113142163601032,
+        "neutral": 0.16692245283792184,
+        "sadness": 0.4024462796920954,
+        "fear": 0.11552451524970143,
+        "anger": 0.16272611864084421,
+        "disgust": 0.02100243341437606
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Take you to every party / 'Cause all you wanted to do was dance",
+          "When I was your man / Do all the things I should have done"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3ZCTVFBt2Brf31RLEnCkWJ",
+    "name": "everything i wanted",
+    "artist": "Billie Eilish",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.902,
+      "danceability": 0.704,
+      "energy": 0.225,
+      "instrumentalness": 0.657,
+      "key": 6,
+      "liveness": 0.106,
+      "loudness": -14.454,
+      "mode": 0,
+      "speechiness": 0.0994,
+      "tempo": 120.006,
+      "valence": 0.243
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19074639555706246,
+      "emotionalShare": 0.9227984341171881,
+      "emotions": {
+        "joy": 0.008797695278190076,
+        "surprise": 0.1028615478426218,
+        "neutral": 0.07720156588281195,
+        "sadness": 0.052852468099445105,
+        "fear": 0.49663633418579894,
+        "anger": 0.22172624384984374,
+        "disgust": 0.039924145909026265
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I got everything I wanted / But when I wake up, I see",
+          "And you say / \"As long as I'm here, no one can hurt you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7lGKEWMXVWWTt3X71Bv44I",
+    "name": "Unsteady",
+    "artist": "X Ambassadors",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.178,
+      "danceability": 0.389,
+      "energy": 0.665,
+      "instrumentalness": 0.000732,
+      "key": 0,
+      "liveness": 0.116,
+      "loudness": -6.169,
+      "mode": 1,
+      "speechiness": 0.0644,
+      "tempo": 117.055,
+      "valence": 0.199
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15603522858890898,
+      "emotionalShare": 0.8662485498370547,
+      "emotions": {
+        "joy": 0.01201319396778038,
+        "surprise": 0.019884004822057304,
+        "neutral": 0.13375145016294537,
+        "sadness": 0.18485327064990997,
+        "fear": 0.5677443765329592,
+        "anger": 0.05446206033229828,
+        "disgust": 0.02729163747845274
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Mother, I know / That you're tired of being alone",
+          "Mama, come here / Approach, appear"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0HZhYMZOcUzZKSFwPOti6m",
+    "name": "jar of hearts",
+    "artist": "Christina Perri",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.726,
+      "danceability": 0.349,
+      "energy": 0.348,
+      "instrumentalness": 0,
+      "key": 3,
+      "liveness": 0.12,
+      "loudness": -6.142,
+      "mode": 1,
+      "speechiness": 0.0316,
+      "tempo": 74.541,
+      "valence": 0.0886
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.17543399719616487,
+      "emotionalShare": 0.8489640925852757,
+      "emotions": {
+        "joy": 0.03290963239686669,
+        "surprise": 0.06430633858127414,
+        "neutral": 0.15103590741472425,
+        "sadness": 0.27526454320001714,
+        "fear": 0.07828797350795764,
+        "anger": 0.372547183783268,
+        "disgust": 0.025648415879399148
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I know I can't take one more step towards you / 'Cause all that's waiting is regret",
+          "And who do you think you are? / Runnin' 'round leaving scars"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1VdZ0vKfR5jneCmWIUAMxK",
+    "name": "The A Team",
+    "artist": "Ed Sheeran",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.669,
+      "danceability": 0.642,
+      "energy": 0.289,
+      "instrumentalness": 0,
+      "key": 9,
+      "liveness": 0.18,
+      "loudness": -9.918,
+      "mode": 1,
+      "speechiness": 0.0367,
+      "tempo": 84.996,
+      "valence": 0.407
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11928425980578856,
+      "emotionalShare": 0.9447553043161899,
+      "emotions": {
+        "joy": 0.0065732649445507515,
+        "surprise": 0.015530664206508704,
+        "neutral": 0.055244695683810074,
+        "sadness": 0.429823063700919,
+        "fear": 0.09732599549887466,
+        "anger": 0.3105679483375919,
+        "disgust": 0.08493436423038513
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "The worst things in life come free to us",
+          "White lips, pale face / Breathing in snowflakes"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5hnyJvgoWiQUYZttV4wXy6",
+    "name": "Chasing Cars",
+    "artist": "Snow Patrol",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.199,
+      "danceability": 0.561,
+      "energy": 0.595,
+      "instrumentalness": 6.47e-05,
+      "key": 9,
+      "liveness": 0.132,
+      "loudness": -4.53,
+      "mode": 1,
+      "speechiness": 0.0274,
+      "tempo": 104.006,
+      "valence": 0.144
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.23949894213803158,
+      "emotionalShare": 0.6084339884775025,
+      "emotions": {
+        "joy": 0.030028225496477847,
+        "surprise": 0.11109529542071479,
+        "neutral": 0.3915660115224974,
+        "sadness": 0.12001025031453796,
+        "fear": 0.0760851776160832,
+        "anger": 0.2335492584388703,
+        "disgust": 0.03766577609349042
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I don't quite know / How to say",
+          "If I lay here / If I just lay here"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "67Hna13dNDkZvBpTXRIaOJ",
+    "name": "Teardrop",
+    "artist": "Massive Attack",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0173,
+      "danceability": 0.615,
+      "energy": 0.419,
+      "instrumentalness": 0.497,
+      "key": 11,
+      "liveness": 0.135,
+      "loudness": -8.8,
+      "mode": 0,
+      "speechiness": 0.0395,
+      "tempo": 76.997,
+      "valence": 0.216
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15217460154029558,
+      "emotionalShare": 0.994161986155194,
+      "emotions": {
+        "joy": 0.001688680007915806,
+        "surprise": 0.0025294902993159164,
+        "neutral": 0.005838013844806011,
+        "sadness": 0.002487837000646525,
+        "fear": 0.9833976251107676,
+        "anger": 0.0026501569017353985,
+        "disgust": 0.0014082076571260889
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Teardrop on the fire / Fearless on my breath",
+          "Teardrop on the fire / Fearless on my..."
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4GvdsVns332wQ3JsWAg2OV",
+    "name": "Funeral",
+    "artist": "Phoebe Bridgers",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.947,
+      "danceability": 0.218,
+      "energy": 0.263,
+      "instrumentalness": 0.00028,
+      "key": 11,
+      "liveness": 0.0919,
+      "loudness": -14.416,
+      "mode": 1,
+      "speechiness": 0.0376,
+      "tempo": 170.724,
+      "valence": 0.307
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2574038814328838,
+      "emotionalShare": 0.8780659338528359,
+      "emotions": {
+        "joy": 0.037937205026133194,
+        "surprise": 0.1987280257874065,
+        "neutral": 0.12193406614716407,
+        "sadness": 0.4419167466737606,
+        "fear": 0.13200699707010277,
+        "anger": 0.039463249854398544,
+        "disgust": 0.028013700671080086
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And last night, I blacked out in my car / And I woke up in my childhood bed",
+          "I'm singing at a funeral tomorrow / For a kid a year older than me"
+        ]
+      },
+      "darkThemes": [
+        "dead",
+        "funeral",
+        "kill"
+      ]
+    }
+  },
+  {
+    "id": "4l0Mvzj72xxOpRrp6h8nHi",
+    "name": "Lose You To Love Me",
+    "artist": "Selena Gomez",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.55,
+      "danceability": 0.516,
+      "energy": 0.342,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.21,
+      "loudness": -8.985,
+      "mode": 1,
+      "speechiness": 0.0425,
+      "tempo": 102.819,
+      "valence": 0.0993
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1393005819184331,
+      "emotionalShare": 0.9394477785284084,
+      "emotions": {
+        "joy": 0.03621076145541987,
+        "surprise": 0.01016048212823946,
+        "neutral": 0.0605522214715916,
+        "sadness": 0.39409185271887553,
+        "fear": 0.021229139322208032,
+        "anger": 0.4388682304896296,
+        "disgust": 0.03888730352212276
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "You promised the world and I fell for it / I put you first and you adored it",
+          "To love, love, yeah / To love, love, yeah"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1mXVgsBdtIVeCLJnSnmtdV",
+    "name": "Too Good At Goodbyes",
+    "artist": "Sam Smith",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.638,
+      "danceability": 0.715,
+      "energy": 0.372,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.169,
+      "loudness": -8.237,
+      "mode": 1,
+      "speechiness": 0.0443,
+      "tempo": 91.931,
+      "valence": 0.474
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19280881268288044,
+      "emotionalShare": 0.9267177822533995,
+      "emotions": {
+        "joy": 0.07508591968100518,
+        "surprise": 0.03979420503135771,
+        "neutral": 0.07328221774660051,
+        "sadness": 0.5549063451960683,
+        "fear": 0.04574883764609695,
+        "anger": 0.15345534769352526,
+        "disgust": 0.0577271363674663
+      },
+      "highlights": {
+        "positive": [
+          "I'm way too good at goodbyes / (I'm way too good at goodbyes)"
+        ],
+        "negative": [
+          "I know you're thinking I'm heartless / I know you're thinking I'm cold",
+          "But every time you hurt me, the less that I cry / And every time you leave me, the quicker these tears dry"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2JO3HwMRPeya8bXbtbyPcf",
+    "name": "Love Will Tear Us Apart",
+    "artist": "Joy Division",
+    "label": "sad",
+    "features": {
+      "acousticness": 5.24e-05,
+      "danceability": 0.443,
+      "energy": 0.956,
+      "instrumentalness": 0.825,
+      "key": 2,
+      "liveness": 0.135,
+      "loudness": -6.198,
+      "mode": 1,
+      "speechiness": 0.0511,
+      "tempo": 146.754,
+      "valence": 0.909
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11551813327537333,
+      "emotionalShare": 0.9798046569339931,
+      "emotions": {
+        "joy": 0.0018490653704194462,
+        "surprise": 0.009167980012374328,
+        "neutral": 0.0201953430660069,
+        "sadness": 0.4407693565658787,
+        "fear": 0.18098087225328474,
+        "anger": 0.3414690813378376,
+        "disgust": 0.00556830205845044
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "When routine bites hard and ambitions are low / And resentment rides high but emotions won't grow",
+          "But love, love will tear us apart again / Love, love will tear us apart again"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0QnONzv3TvHAWk294h6DaQ",
+    "name": "Last Kiss",
+    "artist": "Pearl Jam",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.363,
+      "danceability": 0.622,
+      "energy": 0.692,
+      "instrumentalness": 0.000158,
+      "key": 7,
+      "liveness": 0.193,
+      "loudness": -6.97,
+      "mode": 1,
+      "speechiness": 0.0276,
+      "tempo": 112.053,
+      "valence": 0.774
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2726463929217821,
+      "emotionalShare": 0.9756716643770535,
+      "emotions": {
+        "joy": 0.004748270893469453,
+        "surprise": 0.3001584989950061,
+        "neutral": 0.02432833562294642,
+        "sadness": 0.3431739330291748,
+        "fear": 0.28661829146246115,
+        "anger": 0.025377159131069978,
+        "disgust": 0.015595502872020005
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I lifted her head, she looked at me and said / \"Hold me darling, just a little while\"",
+          "I couldn't stop, so I swerved to the right / I'll never forget, the sound that night"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4jKq1e80xAYixkIwt6YyV1",
+    "name": "Brick",
+    "artist": "Ben Folds Five",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.645,
+      "danceability": 0.542,
+      "energy": 0.454,
+      "instrumentalness": 0.00279,
+      "key": 2,
+      "liveness": 0.15,
+      "loudness": -10.247,
+      "mode": 1,
+      "speechiness": 0.025,
+      "tempo": 96.881,
+      "valence": 0.267
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.200365687087411,
+      "emotionalShare": 0.8716315194158941,
+      "emotions": {
+        "joy": 0.010288253564991662,
+        "surprise": 0.14396914769266103,
+        "neutral": 0.12836848058410594,
+        "sadness": 0.5150612898775049,
+        "fear": 0.13504613699341142,
+        "anger": 0.04646348052129552,
+        "disgust": 0.020803211835791934
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "And we drive / Now that I have found someone",
+          "6 a.m., day after Christmas / I throw some clothes on in the dark"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2Zg0aB5oVQlbQE1vzQmIIY",
+    "name": "Hurt Somebody",
+    "artist": "Noah Kahan",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.344,
+      "danceability": 0.638,
+      "energy": 0.51,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.212,
+      "loudness": -6.485,
+      "mode": 1,
+      "speechiness": 0.305,
+      "tempo": 114.576,
+      "valence": 0.448
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12760818230946303,
+      "emotionalShare": 0.9757164749436271,
+      "emotions": {
+        "joy": 0.008420046001004104,
+        "surprise": 0.003662379476456688,
+        "neutral": 0.02428352505637285,
+        "sadness": 0.20450562582566187,
+        "fear": 0.35899059226115543,
+        "anger": 0.3829547716065859,
+        "disgust": 0.017183058477269534
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Hold me close and I won't leave / 'Cause it hurts when you hurt somebody",
+          "One day before you know it, you will see / All of the pain and all the irony"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1Fid2jjqsHViMX6xNH70hE",
+    "name": "Atlantis",
+    "artist": "Seafret",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.0529,
+      "danceability": 0.4,
+      "energy": 0.479,
+      "instrumentalness": 2.14e-06,
+      "key": 8,
+      "liveness": 0.115,
+      "loudness": -7.989,
+      "mode": 0,
+      "speechiness": 0.0308,
+      "tempo": 166.159,
+      "valence": 0.213
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.17937169601217648,
+      "emotionalShare": 0.9763862070976757,
+      "emotions": {
+        "joy": 0.0022500107588712126,
+        "surprise": 0.068828352203127,
+        "neutral": 0.02361379290232435,
+        "sadness": 0.041042970842681825,
+        "fear": 0.8234149068593979,
+        "anger": 0.016421817475929856,
+        "disgust": 0.024428135264315642
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I can't save us, my Atlantis / We fall, we built this town on shaky ground",
+          "Yeah, we built it up, and we built it up / Yeah, we built it up to pull it down"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4pvb0WLRcMtbPGmtejJJ6y",
+    "name": "exile (feat. Bon Iver)",
+    "artist": "Taylor Swift",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.778,
+      "danceability": 0.298,
+      "energy": 0.38,
+      "instrumentalness": 5.62e-05,
+      "key": 6,
+      "liveness": 0.11,
+      "loudness": -8.426,
+      "mode": 1,
+      "speechiness": 0.0287,
+      "tempo": 75.602,
+      "valence": 0.152
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.29065276447903426,
+      "emotionalShare": 0.718957532492895,
+      "emotions": {
+        "joy": 0.036205253120334374,
+        "surprise": 0.20201693229850323,
+        "neutral": 0.28104246750710504,
+        "sadness": 0.08917520768822186,
+        "fear": 0.1057662087463079,
+        "anger": 0.18846583112128198,
+        "disgust": 0.09732809325768835
+      },
+      "highlights": {
+        "positive": [
+          "I can see you standing, honey / With his arms around your body"
+        ],
+        "negative": [
+          "Second, third, and hundredth chances / Balancin' on breaking branches",
+          "I can see you starin', honey / Like he's just your understudy"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2xlV2CuWgpPyE9e0GquKDN",
+    "name": "Someone To Stay",
+    "artist": "Vancouver Sleep Clinic",
+    "label": "sad",
+    "features": {
+      "acousticness": 0.588,
+      "danceability": 0.436,
+      "energy": 0.473,
+      "instrumentalness": 4.35e-05,
+      "key": 1,
+      "liveness": 0.103,
+      "loudness": -7.24,
+      "mode": 1,
+      "speechiness": 0.0307,
+      "tempo": 108.906,
+      "valence": 0.242
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11291163523831407,
+      "emotionalShare": 0.9034210072519878,
+      "emotions": {
+        "joy": 0.008249673740162203,
+        "surprise": 0.006786831764556054,
+        "neutral": 0.09657899274801214,
+        "sadness": 0.7269294281076226,
+        "fear": 0.02518006101147168,
+        "anger": 0.11606095828271161,
+        "disgust": 0.0202140633482486
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "You were alone, left out in the cold / Clinging to the ruin of your broken home",
+          "Hear the fallen and lonely, cry out / Will you fix me up? Will you show me hope?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1JO1xLtVc8mWhIoE3YaCL0",
+    "name": "Happy Together",
+    "artist": "The Turtles",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.55,
+      "danceability": 0.584,
+      "energy": 0.367,
+      "instrumentalness": 1.38e-05,
+      "key": 6,
+      "liveness": 0.0818,
+      "loudness": -9.638,
+      "mode": 0,
+      "speechiness": 0.0328,
+      "tempo": 120.175,
+      "valence": 0.588
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.8441710606830397,
+      "emotionalShare": 0.9589403660613156,
+      "emotions": {
+        "joy": 0.818602224900609,
+        "surprise": 0.035405388279330166,
+        "neutral": 0.04105963393868435,
+        "sadness": 0.09597980721099746,
+        "fear": 0.002021678490564227,
+        "anger": 0.005557615553871507,
+        "disgust": 0.0013736527651504037
+      },
+      "highlights": {
+        "positive": [
+          "If I should call you up, invest a dime / And you say you belong to me",
+          "Imagine me and you, I do / I think about you day and night"
+        ],
+        "negative": [
+          "I can't see me lovin' nobody but you for all my life / When you're with me, baby, the skies will be blue for all my life"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7tqhbajSfrz2F7E1Z75ASX",
+    "name": "Ain't No Mountain High Enough",
+    "artist": "Marvin Gaye",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.43,
+      "danceability": 0.663,
+      "energy": 0.6,
+      "instrumentalness": 0,
+      "key": 7,
+      "liveness": 0.184,
+      "loudness": -10.87,
+      "mode": 1,
+      "speechiness": 0.032,
+      "tempo": 129.987,
+      "valence": 0.797
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2301660195711056,
+      "emotionalShare": 0.8305545020848513,
+      "emotions": {
+        "joy": 0.04557618058148633,
+        "surprise": 0.09940321648631383,
+        "neutral": 0.16944549791514874,
+        "sadness": 0.2296450080315548,
+        "fear": 0.3933722282656365,
+        "anger": 0.041521027968782515,
+        "disgust": 0.021036844976522303
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Oh no, darling / No wind, no rain",
+          "If you need me, call me / No matter where you are"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5IVuqXILoxVWvWEPm82Jxr",
+    "name": "Crazy In Love (feat. JAŸ-Z)",
+    "artist": "Beyoncé",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00249,
+      "danceability": 0.646,
+      "energy": 0.77,
+      "instrumentalness": 0,
+      "key": 2,
+      "liveness": 0.0715,
+      "loudness": -6.596,
+      "mode": 0,
+      "speechiness": 0.226,
+      "tempo": 99.165,
+      "valence": 0.681
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.35716860948478857,
+      "emotionalShare": 0.8673509786992023,
+      "emotions": {
+        "joy": 0.08232674705019842,
+        "surprise": 0.27933544704380137,
+        "neutral": 0.13264902130079767,
+        "sadness": 0.05134801446304967,
+        "fear": 0.26819973279877257,
+        "anger": 0.1361737638556709,
+        "disgust": 0.049967273216073714
+      },
+      "highlights": {
+        "positive": [
+          "When you leave, I'm beggin' you not to go / Call your name two, three times in a row"
+        ],
+        "negative": [
+          "Got me looking so crazy, my baby / I'm not myself lately, I'm foolish, I don't do this",
+          "Uh-oh, uh-oh, uh-oh, oh no, no / Uh-oh, uh-oh, uh-oh, oh no, no"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6b8Be6ljOzmkOmFslEb23P",
+    "name": "24K Magic",
+    "artist": "Bruno Mars",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.034,
+      "danceability": 0.818,
+      "energy": 0.803,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.153,
+      "loudness": -4.282,
+      "mode": 1,
+      "speechiness": 0.0797,
+      "tempo": 106.97,
+      "valence": 0.632
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2554731891930823,
+      "emotionalShare": 0.704929142822454,
+      "emotions": {
+        "joy": 0.039845845087166924,
+        "surprise": 0.13825119546626086,
+        "neutral": 0.295070857177546,
+        "sadness": 0.055327319246889266,
+        "fear": 0.13206032483643035,
+        "anger": 0.1982188333791715,
+        "disgust": 0.14122562171362432
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Head to toe so player / Look out, uh",
+          "First, take your sip (Sip), do your dip (Dip) / Spend your money like money ain't shit, ooh-ooh (We too fresh)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "55h7vJchibLdUkxdlX3fK7",
+    "name": "Treasure",
+    "artist": "Bruno Mars",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0412,
+      "danceability": 0.874,
+      "energy": 0.692,
+      "instrumentalness": 7.24e-05,
+      "key": 5,
+      "liveness": 0.324,
+      "loudness": -5.28,
+      "mode": 0,
+      "speechiness": 0.0431,
+      "tempo": 116.017,
+      "valence": 0.937
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6793706284397474,
+      "emotionalShare": 0.7596250884234905,
+      "emotions": {
+        "joy": 0.39614629542285745,
+        "surprise": 0.20381572893397373,
+        "neutral": 0.24037491157650948,
+        "sadness": 0.024574051293629138,
+        "fear": 0.029444992267103356,
+        "anger": 0.06410362161907622,
+        "disgust": 0.04154039557430555
+      },
+      "highlights": {
+        "positive": [
+          "Pretty girl, pretty girl, pretty girl / You should be smiling (you should be smiling)",
+          "Treasure, that is what you are / Honey, you're my golden star"
+        ],
+        "negative": []
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0ikz6tENMONtK6qGkOrU3c",
+    "name": "Wake Me Up Before You Go-Go",
+    "artist": "Wham!",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.271,
+      "danceability": 0.62,
+      "energy": 0.573,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.0607,
+      "loudness": -11.893,
+      "mode": 1,
+      "speechiness": 0.0423,
+      "tempo": 81.548,
+      "valence": 0.897
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19588379752081192,
+      "emotionalShare": 0.7517027222684451,
+      "emotions": {
+        "joy": 0.04503873114341072,
+        "surprise": 0.04174481136724353,
+        "neutral": 0.24829727773155486,
+        "sadness": 0.160106040836711,
+        "fear": 0.25841571471121694,
+        "anger": 0.22001096651490246,
+        "disgust": 0.026386444962450437
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "'Cause you're my lady / I'm your fool",
+          "You put the gray skies outta my way / You make the sun shine brighter than Doris Day"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6W2VbtvMrDXm5vYeB7amkO",
+    "name": "Footloose",
+    "artist": "Kenny Loggins",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0819,
+      "danceability": 0.546,
+      "energy": 0.895,
+      "instrumentalness": 1.42e-05,
+      "key": 9,
+      "liveness": 0.0768,
+      "loudness": -7.189,
+      "mode": 1,
+      "speechiness": 0.0579,
+      "tempo": 174.089,
+      "valence": 0.494
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2120399845803049,
+      "emotionalShare": 0.9090462116830385,
+      "emotions": {
+        "joy": 0.022550046332736513,
+        "surprise": 0.14176541914357177,
+        "neutral": 0.09095378831696155,
+        "sadness": 0.20898974953747507,
+        "fear": 0.23598549487208254,
+        "anger": 0.24773974883467403,
+        "disgust": 0.05201575137786011
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Everybody cut footloose / You're playing so cool",
+          "Kick off the Sunday shoes (c'mon, girl) / Please, Louise"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "37ZJ0p5Jm13JPevGcx4SkF",
+    "name": "Livin' On A Prayer",
+    "artist": "Bon Jovi",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0778,
+      "danceability": 0.532,
+      "energy": 0.887,
+      "instrumentalness": 0.000206,
+      "key": 0,
+      "liveness": 0.294,
+      "loudness": -3.757,
+      "mode": 1,
+      "speechiness": 0.0335,
+      "tempo": 122.509,
+      "valence": 0.794
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.3884894659635219,
+      "emotionalShare": 0.8610934070109025,
+      "emotions": {
+        "joy": 0.06514657985257066,
+        "surprise": 0.3717741043023441,
+        "neutral": 0.13890659298909747,
+        "sadness": 0.1849924875828235,
+        "fear": 0.1430946333617296,
+        "anger": 0.05474171653875838,
+        "disgust": 0.04134388976608929
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Once upon a time / Not so long ago",
+          "Gina dreams of running away / When she cries in the night, Tommy whispers"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2x1jP9BexWtOKudvuUHbaD",
+    "name": "Home",
+    "artist": "Edward Sharpe & The Magnetic Zeros",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.292,
+      "danceability": 0.542,
+      "energy": 0.59,
+      "instrumentalness": 0.00055,
+      "key": 2,
+      "liveness": 0.177,
+      "loudness": -6.623,
+      "mode": 1,
+      "speechiness": 0.0318,
+      "tempo": 111.661,
+      "valence": 0.136
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.36196592551384743,
+      "emotionalShare": 0.8255180291299309,
+      "emotions": {
+        "joy": 0.12833878057177311,
+        "surprise": 0.2019774838018098,
+        "neutral": 0.1744819708700691,
+        "sadness": 0.28763341127362635,
+        "fear": 0.12361777816300414,
+        "anger": 0.05138525304251484,
+        "disgust": 0.03256532462047679
+      },
+      "highlights": {
+        "positive": [
+          "Alabama, Arkansas / I do love my Ma and Pa",
+          "Well, hot and heavy, pumpkin pie / Chocolate candy, Jesus Christ"
+        ],
+        "negative": [
+          "Home / Home",
+          "Home, let me come home / Home is wherever I'm with you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "6XK6Zw6JkFsHXzAcMWNiIr",
+    "name": "Send Me On My Way",
+    "artist": "Rusted Root",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.125,
+      "danceability": 0.5,
+      "energy": 0.704,
+      "instrumentalness": 1.79e-05,
+      "key": 0,
+      "liveness": 0.138,
+      "loudness": -8.797,
+      "mode": 1,
+      "speechiness": 0.0695,
+      "tempo": 119.463,
+      "valence": 0.722
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.33380157731575094,
+      "emotionalShare": 0.5988453054620373,
+      "emotions": {
+        "joy": 0.036483348317203984,
+        "surprise": 0.19247196362383903,
+        "neutral": 0.40115469453796265,
+        "sadness": 0.05924695489868041,
+        "fear": 0.2552829768148161,
+        "anger": 0.03910075616271746,
+        "disgust": 0.016259308273513472
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Well, I would like to hold my little hand / And we will run, we will, we will crawl, we will",
+          "I would like to reach out my hand / Oombayseeyou, oombaytellyou to run"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0k664IuFwVP557Gnx7RhIl",
+    "name": "Juice",
+    "artist": "Lizzo",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00611,
+      "danceability": 0.767,
+      "energy": 0.889,
+      "instrumentalness": 0,
+      "key": 7,
+      "liveness": 0.402,
+      "loudness": -2.988,
+      "mode": 1,
+      "speechiness": 0.0963,
+      "tempo": 119.93,
+      "valence": 0.843
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.2237731392111532,
+      "emotionalShare": 0.8509248249899986,
+      "emotions": {
+        "joy": 0.06621291509259548,
+        "surprise": 0.09518213796693442,
+        "neutral": 0.14907517501000148,
+        "sadness": 0.04167485020276326,
+        "fear": 0.02899179802234493,
+        "anger": 0.49050557780176846,
+        "disgust": 0.12835754698781826
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "If the juice ain't worth the squeeze / If the juice don't look like this (like this, like this, like this)",
+          "Ya-ya-ee (ya-ya-ee), ya-ya-ee, ya-ya-ee, ya-ya-ee / Blame it on my juice, blame it, blame it on my juice"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0RgcOUQg4qYAEt9RIdf3oB",
+    "name": "Shining Star",
+    "artist": "Earth, Wind & Fire",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.668,
+      "danceability": 0.676,
+      "energy": 0.692,
+      "instrumentalness": 0.00915,
+      "key": 9,
+      "liveness": 0.13,
+      "loudness": -13.093,
+      "mode": 1,
+      "speechiness": 0.052,
+      "tempo": 102.516,
+      "valence": 0.799
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6654028321762465,
+      "emotionalShare": 0.7997153481078703,
+      "emotions": {
+        "joy": 0.47848879021787366,
+        "surprise": 0.07830615623225999,
+        "neutral": 0.20028465189212977,
+        "sadness": 0.06615225444439539,
+        "fear": 0.12585544075037158,
+        "anger": 0.030921406708224568,
+        "disgust": 0.01999130891636014
+      },
+      "highlights": {
+        "positive": [
+          "You're a shining star / No matter who you are",
+          "Shining star for you to see / What your life can truly be"
+        ],
+        "negative": [
+          "So, if you find yourself in need / Why don't you listen to these words of heed",
+          "Born a man-child of the sun, yeah / Yeah, saw my work had just begun"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1uigwk5hNV84zRd5YQQRTk",
+    "name": "Pocketful of Sunshine",
+    "artist": "Natasha Bedingfield",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.191,
+      "danceability": 0.721,
+      "energy": 0.88,
+      "instrumentalness": 0,
+      "key": 9,
+      "liveness": 0.0769,
+      "loudness": -3.896,
+      "mode": 0,
+      "speechiness": 0.0454,
+      "tempo": 110.021,
+      "valence": 0.655
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.28809062899073795,
+      "emotionalShare": 0.7431602471468735,
+      "emotions": {
+        "joy": 0.12461887924394137,
+        "surprise": 0.027360918308595116,
+        "neutral": 0.2568397528531266,
+        "sadness": 0.07657523981203705,
+        "fear": 0.40349943747966954,
+        "anger": 0.09265122387204057,
+        "disgust": 0.018454547841954504
+      },
+      "highlights": {
+        "positive": [
+          "And takes me for a ride / I smile up to the sky"
+        ],
+        "negative": [
+          "A secret place (A secret place) / To better days (To better days)",
+          "A hiding place (A hiding place) / There's a place that I go that nobody knows"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3U5JVgI2x4rDyHGObzJfNf",
+    "name": "Unwritten",
+    "artist": "Natasha Bedingfield",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.00584,
+      "danceability": 0.706,
+      "energy": 0.8,
+      "instrumentalness": 0,
+      "key": 5,
+      "liveness": 0.0822,
+      "loudness": -6.333,
+      "mode": 1,
+      "speechiness": 0.0399,
+      "tempo": 100.011,
+      "valence": 0.629
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12338191710790762,
+      "emotionalShare": 0.8519672267138958,
+      "emotions": {
+        "joy": 0.007618607187720194,
+        "surprise": 0.011745862560729459,
+        "neutral": 0.1480327732861042,
+        "sadness": 0.4312161556764008,
+        "fear": 0.15143757367072858,
+        "anger": 0.16285903557930906,
+        "disgust": 0.08709000204115698
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Feel the rain on your skin / No one else can feel it for you",
+          "Staring at the blank page before you / Open up the dirty window"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3ibAzRj9JnowdoLkyllk3n",
+    "name": "Holiday",
+    "artist": "Madonna",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0251,
+      "danceability": 0.813,
+      "energy": 0.699,
+      "instrumentalness": 0.0134,
+      "key": 7,
+      "liveness": 0.0527,
+      "loudness": -8.656,
+      "mode": 1,
+      "speechiness": 0.0458,
+      "tempo": 117.549,
+      "valence": 0.732
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.8907852872297657,
+      "emotionalShare": 0.9039515999520754,
+      "emotions": {
+        "joy": 0.824346855089262,
+        "surprise": 0.028108128286027288,
+        "neutral": 0.09604840004792461,
+        "sadness": 0.03892572693429984,
+        "fear": 0.0016547002543864603,
+        "anger": 0.007505518541514099,
+        "disgust": 0.0034106671296108464
+      },
+      "highlights": {
+        "positive": [
+          "Just one day out of life (celebrate) / It would be so nice",
+          "Holiday / Celebrate"
+        ],
+        "negative": []
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "3cfOd4CMv2snFaKAnMdnvK",
+    "name": "All Star",
+    "artist": "Smash Mouth",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.0394,
+      "danceability": 0.731,
+      "energy": 0.867,
+      "instrumentalness": 0,
+      "key": 11,
+      "liveness": 0.0861,
+      "loudness": -5.881,
+      "mode": 1,
+      "speechiness": 0.032,
+      "tempo": 104.02,
+      "valence": 0.776
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.3839536111214647,
+      "emotionalShare": 0.53450708880144,
+      "emotions": {
+        "joy": 0.13954951032749652,
+        "surprise": 0.06241308360853616,
+        "neutral": 0.46549291119855996,
+        "sadness": 0.06743418899200418,
+        "fear": 0.03903184920165907,
+        "anger": 0.13411535240490646,
+        "disgust": 0.09196310419151012
+      },
+      "highlights": {
+        "positive": [
+          "Hey now, you're an all star / Get your game on, go play"
+        ],
+        "negative": [
+          "Somebody once told me / The world is gonna roll me",
+          "(Go for the moon, go, go) / (Go for the moon, go, go)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2TxCwUlqaOH3TIyJqGgR91",
+    "name": "Mamma Mia",
+    "artist": "ABBA",
+    "label": "happy",
+    "features": {
+      "acousticness": 0.295,
+      "danceability": 0.749,
+      "energy": 0.748,
+      "instrumentalness": 0.000443,
+      "key": 2,
+      "liveness": 0.469,
+      "loudness": -7.011,
+      "mode": 1,
+      "speechiness": 0.0323,
+      "tempo": 137.547,
+      "valence": 0.827
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.29698850815259875,
+      "emotionalShare": 0.9888905064787629,
+      "emotions": {
+        "joy": 0.004926328525640244,
+        "surprise": 0.377511480065106,
+        "neutral": 0.011109493521237097,
+        "sadness": 0.5181032581211522,
+        "fear": 0.03713894075562441,
+        "anger": 0.04310664976405543,
+        "disgust": 0.008103842051093315
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I've been angry and sad about things that you do",
+          "Mamma mia, does it show again? / My, my, just how much I've missed you?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0IktbUcnAGrvD03AWnz3Q8",
+    "name": "Lucky",
+    "artist": "Jason Mraz",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.294,
+      "danceability": 0.625,
+      "energy": 0.414,
+      "instrumentalness": 0,
+      "key": 0,
+      "liveness": 0.151,
+      "loudness": -8.7,
+      "mode": 1,
+      "speechiness": 0.0369,
+      "tempo": 130.088,
+      "valence": 0.669
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.6827399825170171,
+      "emotionalShare": 0.9394319254713945,
+      "emotions": {
+        "joy": 0.5517445288073176,
+        "surprise": 0.14092855045619684,
+        "neutral": 0.06056807452860551,
+        "sadness": 0.07591324146741475,
+        "fear": 0.15994839759495777,
+        "anger": 0.006651962940127422,
+        "disgust": 0.00424523651599884
+      },
+      "highlights": {
+        "positive": [
+          "I'll wait for you I promise you, I will / I'm lucky I'm in love with my best friend",
+          "You make it easier when life gets hard / I'm lucky I'm in love with my best friend"
+        ],
+        "negative": [
+          "Do you hear me, / I'm talking to you"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "25U7raB3ZSszayTYClh4hF",
+    "name": "Somewhere Over The Rainbow/What A Wonderful World",
+    "artist": "Israel Kamakawiwo'ole",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.928,
+      "danceability": 0.663,
+      "energy": 0.168,
+      "instrumentalness": 5.68e-05,
+      "key": 0,
+      "liveness": 0.361,
+      "loudness": -13.725,
+      "mode": 1,
+      "speechiness": 0.0448,
+      "tempo": 85.005,
+      "valence": 0.678
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.46334174785229565,
+      "emotionalShare": 0.9742534070142678,
+      "emotions": {
+        "joy": 0.3125720835880053,
+        "surprise": 0.13514221307574487,
+        "neutral": 0.025746592985732213,
+        "sadness": 0.0658916317078532,
+        "fear": 0.414591163548888,
+        "anger": 0.039708420786322376,
+        "disgust": 0.006347894212421106
+      },
+      "highlights": {
+        "positive": [
+          "I see friends shaking hands / Saying, how do you do",
+          "And I think to myself / What a wonderful world"
+        ],
+        "negative": [
+          "Someday I'll wish upon a star / Wake up where the clouds are far behind me",
+          "That's where you'll find me, oh / Somewhere over the rainbow"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "29U7stRjqHU6rMiS8BfaI9",
+    "name": "What A Wonderful World",
+    "artist": "Louis Armstrong",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.726,
+      "danceability": 0.271,
+      "energy": 0.165,
+      "instrumentalness": 1.54e-06,
+      "key": 5,
+      "liveness": 0.118,
+      "loudness": -20.652,
+      "mode": 1,
+      "speechiness": 0.0351,
+      "tempo": 77.082,
+      "valence": 0.202
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.7437524594753591,
+      "emotionalShare": 0.88378363176538,
+      "emotions": {
+        "joy": 0.5935085683033384,
+        "surprise": 0.12016416418141332,
+        "neutral": 0.11621636823462002,
+        "sadness": 0.05104942404632938,
+        "fear": 0.08747042347837625,
+        "anger": 0.00853278543318397,
+        "disgust": 0.023058269028391302
+      },
+      "highlights": {
+        "positive": [
+          "I see trees of green / Red roses too",
+          "I hear babies cry / I watch them grow"
+        ],
+        "negative": [
+          "I see friends shaking hands / Saying, \"How do you do?\""
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "34gCuhDGsG4bRPIf9bb02f",
+    "name": "Thinking out Loud",
+    "artist": "Ed Sheeran",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.474,
+      "danceability": 0.781,
+      "energy": 0.445,
+      "instrumentalness": 0,
+      "key": 2,
+      "liveness": 0.184,
+      "loudness": -6.061,
+      "mode": 1,
+      "speechiness": 0.0295,
+      "tempo": 78.998,
+      "valence": 0.591
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.4368039033381145,
+      "emotionalShare": 0.7273906224771687,
+      "emotions": {
+        "joy": 0.24614102503730226,
+        "surprise": 0.06956400513729971,
+        "neutral": 0.2726093775228314,
+        "sadness": 0.2812966938616465,
+        "fear": 0.019722542436995907,
+        "anger": 0.08782930125522873,
+        "disgust": 0.02283705404514204
+      },
+      "highlights": {
+        "positive": [
+          "And, baby, your smile's / Forever in my mind and memory",
+          "So, honey, now / Take me into your loving arms"
+        ],
+        "negative": [
+          "Kiss me under the light of a thousand stars / Place your head on my beating heart",
+          "When my hair's all but gone and my memory fades / And the crowds don't remember my name"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0tgVpDi06FyKpA1z0VMD4v",
+    "name": "Perfect",
+    "artist": "Ed Sheeran",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.163,
+      "danceability": 0.599,
+      "energy": 0.448,
+      "instrumentalness": 0,
+      "key": 8,
+      "liveness": 0.106,
+      "loudness": -6.312,
+      "mode": 1,
+      "speechiness": 0.0232,
+      "tempo": 95.05,
+      "valence": 0.168
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.3496701492114169,
+      "emotionalShare": 0.8389003444049093,
+      "emotions": {
+        "joy": 0.21893749156345924,
+        "surprise": 0.02778287244339784,
+        "neutral": 0.16109965559509065,
+        "sadness": 0.34928395561873915,
+        "fear": 0.18920141975912783,
+        "anger": 0.03520832356686394,
+        "disgust": 0.018486272678193118
+      },
+      "highlights": {
+        "positive": [
+          "Well, I found a woman, stronger than anyone I know / She shares my dreams, I hope that someday I'll share her home"
+        ],
+        "negative": [
+          "Be my girl, I'll be your man / I see my future in your eyes",
+          "Your heart is all I own / And in your eyes, you're holding mine"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1HMQmOWrkieKYWlFsjUP3D",
+    "name": "Bloom - Bonus Track",
+    "artist": "The Paper Kites",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.882,
+      "danceability": 0.591,
+      "energy": 0.416,
+      "instrumentalness": 0.000641,
+      "key": 1,
+      "liveness": 0.112,
+      "loudness": -9.794,
+      "mode": 1,
+      "speechiness": 0.0246,
+      "tempo": 96.003,
+      "valence": 0.415
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.43048542678932916,
+      "emotionalShare": 0.8334546253085137,
+      "emotions": {
+        "joy": 0.08122665726890167,
+        "surprise": 0.4073526029785474,
+        "neutral": 0.16654537469148636,
+        "sadness": 0.1994376351435979,
+        "fear": 0.05451293159276247,
+        "anger": 0.0413453783839941,
+        "disgust": 0.04957942801217238
+      },
+      "highlights": {
+        "positive": [
+          "In the morning, when I wake / And the sun is coming through"
+        ],
+        "negative": [
+          "Shall I write it in a letter? / Shall I try to get it down?",
+          "Can I be close to you? / Oo-oo-oo-ooh, oo-oo-oo-ooh"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "43iIQbw5hx986dUEZbr3eN",
+    "name": "From The Start",
+    "artist": "Laufey",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.886,
+      "danceability": 0.554,
+      "energy": 0.339,
+      "instrumentalness": 0.00128,
+      "key": 1,
+      "liveness": 0.11,
+      "loudness": -10.088,
+      "mode": 1,
+      "speechiness": 0.0779,
+      "tempo": 80.994,
+      "valence": 0.83
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.32906383982232423,
+      "emotionalShare": 0.9537888851575553,
+      "emotions": {
+        "joy": 0.1457634362578392,
+        "surprise": 0.16826051155105234,
+        "neutral": 0.04621111484244466,
+        "sadness": 0.24011619668453932,
+        "fear": 0.2089873583242297,
+        "anger": 0.15767999117262663,
+        "disgust": 0.03298139019869268
+      },
+      "highlights": {
+        "positive": [
+          "Confess I loved you / from the start"
+        ],
+        "negative": [
+          "of how you don't feel the same / Oh, the burning pain",
+          "What's a girl / to do?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "44AyOl4qVkzS48vBsbNXaC",
+    "name": "Can't Help Falling in Love",
+    "artist": "Elvis Presley",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.941,
+      "danceability": 0.396,
+      "energy": 0.293,
+      "instrumentalness": 0.000196,
+      "key": 2,
+      "liveness": 0.105,
+      "loudness": -14.062,
+      "mode": 1,
+      "speechiness": 0.0275,
+      "tempo": 100.307,
+      "valence": 0.343
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1418814450611973,
+      "emotionalShare": 0.7445872596536691,
+      "emotions": {
+        "joy": 0.002875768024331102,
+        "surprise": 0.010521639622031497,
+        "neutral": 0.2554127403463309,
+        "sadness": 0.19109244415393242,
+        "fear": 0.4695833841195473,
+        "anger": 0.049209634271951824,
+        "disgust": 0.02130437516965545
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "For I can't help / Falling in love with you",
+          "Take my hand / Take my whole life too"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4RCWB3V8V0dignt99LZ8vH",
+    "name": "Hey There Delilah",
+    "artist": "Plain White T's",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.872,
+      "danceability": 0.658,
+      "energy": 0.291,
+      "instrumentalness": 0,
+      "key": 2,
+      "liveness": 0.114,
+      "loudness": -10.572,
+      "mode": 1,
+      "speechiness": 0.0292,
+      "tempo": 103.962,
+      "valence": 0.295
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.3093388197341896,
+      "emotionalShare": 0.7495855371778211,
+      "emotions": {
+        "joy": 0.10341330021619796,
+        "surprise": 0.12295350668330987,
+        "neutral": 0.250414462822179,
+        "sadness": 0.09676574027786652,
+        "fear": 0.1507858530152589,
+        "anger": 0.21644547094280522,
+        "disgust": 0.059221670706756414
+      },
+      "highlights": {
+        "positive": [
+          "Hey there, Delilah / You be good and don't you miss me"
+        ],
+        "negative": [
+          "The world will never, ever be the same / And you're to blame",
+          "Oh, it's what you do to me / Oh, it's what you do to me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "7h2nmmoWDi2UpfYKLKWLYB",
+    "name": "Sunflower",
+    "artist": "Rex Orange County",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.646,
+      "danceability": 0.548,
+      "energy": 0.765,
+      "instrumentalness": 0.00378,
+      "key": 6,
+      "liveness": 0.522,
+      "loudness": -4.463,
+      "mode": 1,
+      "speechiness": 0.0525,
+      "tempo": 129.933,
+      "valence": 0.573
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15504067110548667,
+      "emotionalShare": 0.7334538567811251,
+      "emotions": {
+        "joy": 0.03284612278919667,
+        "surprise": 0.018321558297611774,
+        "neutral": 0.26654614321887493,
+        "sadness": 0.43764632105827334,
+        "fear": 0.065796186090447,
+        "anger": 0.15982669999590143,
+        "disgust": 0.019016965329647063
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I don't wanna see you cry / You don't have to feel this emptiness",
+          "I want to know / Where I can go"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1lbXEepatjRVjoG8pZMtdp",
+    "name": "Dreams",
+    "artist": "Fleetwood Mac",
+    "label": "calm",
+    "features": {
+      "acousticness": 0.139,
+      "danceability": 0.823,
+      "energy": 0.338,
+      "instrumentalness": 0.00129,
+      "key": 0,
+      "liveness": 0.5,
+      "loudness": -15.899,
+      "mode": 1,
+      "speechiness": 0.0413,
+      "tempo": 120.473,
+      "valence": 0.785
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1906336358391452,
+      "emotionalShare": 0.6170027996812548,
+      "emotions": {
+        "joy": 0.019081765759204117,
+        "surprise": 0.07214081228843756,
+        "neutral": 0.3829972003187452,
+        "sadness": 0.2964027428733451,
+        "fear": 0.07262599633873573,
+        "anger": 0.12644363338393824,
+        "disgust": 0.03030785105324217
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "It's only right that you should play the way you feel it / But listen carefully to the sound of your loneliness",
+          "Now here I go again, I see the crystal visions / I keep my visions to myself"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0EYOdF5FCkgOJJla8DI2Md",
+    "name": "B.Y.O.B.",
+    "artist": "System Of A Down",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00662,
+      "danceability": 0.538,
+      "energy": 0.981,
+      "instrumentalness": 0,
+      "key": 1,
+      "liveness": 0.219,
+      "loudness": -2.688,
+      "mode": 0,
+      "speechiness": 0.14,
+      "tempo": 101.414,
+      "valence": 0.711
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.316658155255589,
+      "emotionalShare": 0.8559785090323727,
+      "emotions": {
+        "joy": 0.16577767327001666,
+        "surprise": 0.08441797246114682,
+        "neutral": 0.14402149096762729,
+        "sadness": 0.03366852575376377,
+        "fear": 0.046694321348726496,
+        "anger": 0.31419521980619025,
+        "disgust": 0.2112247976711241
+      },
+      "highlights": {
+        "positive": [
+          "Everybody's going to the party, have a real good time",
+          "Dancing in the desert, blowing up the sunshine"
+        ],
+        "negative": [
+          "Yet you feed us lies from the tablecloth",
+          "Dancing in the desert, blowing up the sun / Where the fuck are you?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2gscB6kDOmrv1P6qs2KXE3",
+    "name": "Wait and Bleed",
+    "artist": "Slipknot",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00208,
+      "danceability": 0.382,
+      "energy": 0.996,
+      "instrumentalness": 0,
+      "key": 7,
+      "liveness": 0.417,
+      "loudness": -4.119,
+      "mode": 1,
+      "speechiness": 0.104,
+      "tempo": 93.345,
+      "valence": 0.327
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.17441991050346028,
+      "emotionalShare": 0.9302211771455576,
+      "emotions": {
+        "joy": 0.03400776002837239,
+        "surprise": 0.07052867146173739,
+        "neutral": 0.06977882285444241,
+        "sadness": 0.18671198055710433,
+        "fear": 0.1011208766315765,
+        "anger": 0.3934804942318291,
+        "disgust": 0.14437140588525613
+      },
+      "highlights": {
+        "positive": [
+          "Goodbye!"
+        ],
+        "negative": [
+          "I've felt the hate rise up in me / Kneel down and clear the stone of leaves",
+          "Get outta my head 'cause I don't need this! / Why didn't I see this?"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0Y2i84QWPFiFHQfEQDgHya",
+    "name": "People = Shit",
+    "artist": "Slipknot",
+    "label": "angry",
+    "features": {
+      "acousticness": 5.8e-05,
+      "danceability": 0.462,
+      "energy": 0.996,
+      "instrumentalness": 0.00377,
+      "key": 11,
+      "liveness": 0.139,
+      "loudness": -2.973,
+      "mode": 0,
+      "speechiness": 0.231,
+      "tempo": 122.072,
+      "valence": 0.145
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.138483326059165,
+      "emotionalShare": 0.91251609175806,
+      "emotions": {
+        "joy": 0.01463711785803002,
+        "surprise": 0.030314457972371388,
+        "neutral": 0.08748390824193993,
+        "sadness": 0.02712214146075504,
+        "fear": 0.15035749835863946,
+        "anger": 0.4432378355709333,
+        "disgust": 0.24684704263650237
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "People equal shit / People equal shit",
+          "Here we go again, motherfucker"
+        ]
+      },
+      "darkThemes": [
+        "dead",
+        "die",
+        "gun"
+      ]
+    }
+  },
+  {
+    "id": "6RJdYpFQwLyNfDc5FbjkgV",
+    "name": "Stricken",
+    "artist": "Disturbed",
+    "label": "angry",
+    "features": {
+      "acousticness": 9.14e-05,
+      "danceability": 0.402,
+      "energy": 0.969,
+      "instrumentalness": 0.0325,
+      "key": 8,
+      "liveness": 0.225,
+      "loudness": -2.825,
+      "mode": 1,
+      "speechiness": 0.181,
+      "tempo": 173.847,
+      "valence": 0.262
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11739948378143712,
+      "emotionalShare": 0.9597835337975994,
+      "emotions": {
+        "joy": 0.0018691925186431035,
+        "surprise": 0.0035014727036468685,
+        "neutral": 0.04021646620240062,
+        "sadness": 0.45452782555948945,
+        "fear": 0.26720374170690775,
+        "anger": 0.10483598354039714,
+        "disgust": 0.12784532728837802
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "You walk on like a woman in suffering / Won't even bother now to tell me why",
+          "Yes, I am stricken and can't let you go"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "42ZVk59gT4tMlrZmd8Ijxf",
+    "name": "Indestructible",
+    "artist": "Disturbed",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000209,
+      "danceability": 0.429,
+      "energy": 0.966,
+      "instrumentalness": 0.124,
+      "key": 8,
+      "liveness": 0.371,
+      "loudness": -4.605,
+      "mode": 1,
+      "speechiness": 0.0733,
+      "tempo": 179.956,
+      "valence": 0.525
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.15909516929504558,
+      "emotionalShare": 0.9082309253946212,
+      "emotions": {
+        "joy": 0.012900016237316387,
+        "surprise": 0.005101952635283981,
+        "neutral": 0.09176907460537873,
+        "sadness": 0.06454616730999467,
+        "fear": 0.8031213839006212,
+        "anger": 0.019116258585459685,
+        "disgust": 0.003445156533936305
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "My true vocation and now my unfortunate friend / You will discover a war you're unable to win",
+          "Another reason / Another cause for me to fight"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "4Yf5bqU3NK4kNOypcrLYwU",
+    "name": "Faint",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.127,
+      "danceability": 0.554,
+      "energy": 0.98,
+      "instrumentalness": 0,
+      "key": 4,
+      "liveness": 0.0833,
+      "loudness": -3.514,
+      "mode": 1,
+      "speechiness": 0.108,
+      "tempo": 135.12,
+      "valence": 0.611
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.13293938107907077,
+      "emotionalShare": 0.9167205875869407,
+      "emotions": {
+        "joy": 0.01144907536894776,
+        "surprise": 0.00613417494825499,
+        "neutral": 0.08327941241305928,
+        "sadness": 0.2560358891740095,
+        "fear": 0.3479481488466263,
+        "anger": 0.27519685809695443,
+        "disgust": 0.01995643912706264
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "I can't feel the way I did before / Don't turn your back on me; I won't be ignored",
+          "Don't turn your back on me; I won't be ignored"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1Vej0qeQ3ioKwpI6FUbRv1",
+    "name": "Papercut",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00022,
+      "danceability": 0.524,
+      "energy": 0.939,
+      "instrumentalness": 0,
+      "key": 9,
+      "liveness": 0.623,
+      "loudness": -3.994,
+      "mode": 1,
+      "speechiness": 0.113,
+      "tempo": 150.184,
+      "valence": 0.661
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.27758908458541803,
+      "emotionalShare": 0.7892693549577818,
+      "emotions": {
+        "joy": 0.10267374549656495,
+        "surprise": 0.062492538067954975,
+        "neutral": 0.21073064504221814,
+        "sadness": 0.0636041945793101,
+        "fear": 0.4329333872702278,
+        "anger": 0.06446109697619667,
+        "disgust": 0.06310439425459528
+      },
+      "highlights": {
+        "positive": [
+          "Like a face that I hold inside / A face that awakes when I close my eyes"
+        ],
+        "negative": [
+          "The sun goes down / I feel the light betray me",
+          "I know I've got a face in me / Points out all my mistakes to me"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1pr9TZGOXeJUggIal1Wq3R",
+    "name": "Blind",
+    "artist": "Korn",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00678,
+      "danceability": 0.283,
+      "energy": 0.891,
+      "instrumentalness": 0.0038,
+      "key": 2,
+      "liveness": 0.159,
+      "loudness": -8.165,
+      "mode": 1,
+      "speechiness": 0.178,
+      "tempo": 92.049,
+      "valence": 0.226
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.20118198621400377,
+      "emotionalShare": 0.8893781938451402,
+      "emotions": {
+        "joy": 0.006275690725429895,
+        "surprise": 0.14057827312895593,
+        "neutral": 0.11062180615485982,
+        "sadness": 0.37006764644955065,
+        "fear": 0.2873115702433155,
+        "anger": 0.041441213379197935,
+        "disgust": 0.04370379947284435
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Deeper, and deeper, and deeper / As I journey to live a life that seems to be",
+          "This place inside my mind / A place I like to hide"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1wsRitfRRtWyEapl0q22o8",
+    "name": "Guerrilla Radio",
+    "artist": "Rage Against The Machine",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0129,
+      "danceability": 0.599,
+      "energy": 0.957,
+      "instrumentalness": 7.06e-05,
+      "key": 11,
+      "liveness": 0.155,
+      "loudness": -5.764,
+      "mode": 1,
+      "speechiness": 0.188,
+      "tempo": 103.68,
+      "valence": 0.489
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.13055626089439354,
+      "emotionalShare": 0.9337812325708112,
+      "emotions": {
+        "joy": 0.008335864874629341,
+        "surprise": 0.033669841637340735,
+        "neutral": 0.06621876742918881,
+        "sadness": 0.040638982641453644,
+        "fear": 0.09224916644850556,
+        "anger": 0.5819405341634944,
+        "disgust": 0.17694682956730223
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Was it cast for the mass who burn and toil / Or for the vultures who thirst for blood and oil?",
+          "Contact, I hijacked the frequencies / Blockin' the beltway, move on DC!"
+        ]
+      },
+      "darkThemes": [
+        "blood",
+        "bombs",
+        "bullets"
+      ]
+    }
+  },
+  {
+    "id": "2SgbR6ttzoNlCRGQOKjrop",
+    "name": "Cowboys from Hell",
+    "artist": "Pantera",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00437,
+      "danceability": 0.415,
+      "energy": 0.908,
+      "instrumentalness": 0.0345,
+      "key": 2,
+      "liveness": 0.082,
+      "loudness": -9.701,
+      "mode": 1,
+      "speechiness": 0.0765,
+      "tempo": 114.816,
+      "valence": 0.437
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.16768990284278226,
+      "emotionalShare": 0.8561404905024361,
+      "emotions": {
+        "joy": 0.023300225083577507,
+        "surprise": 0.03110629729332125,
+        "neutral": 0.1438595094975639,
+        "sadness": 0.046772493465625224,
+        "fear": 0.4518745251079189,
+        "anger": 0.24279544954287244,
+        "disgust": 0.060291503996964785
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Step aside, we're the cowboys from hell",
+          "Here we come reach for your gun / And you better listen well, my friend, you see"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "5ohfpKB5tt275f4Y4lQ9F7",
+    "name": "Angel Of Death",
+    "artist": "Slayer",
+    "label": "angry",
+    "features": {
+      "acousticness": 9.41e-05,
+      "danceability": 0.326,
+      "energy": 0.995,
+      "instrumentalness": 0.386,
+      "key": 1,
+      "liveness": 0.145,
+      "loudness": -4.38,
+      "mode": 1,
+      "speechiness": 0.147,
+      "tempo": 105.459,
+      "valence": 0.092
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11707314939935906,
+      "emotionalShare": 0.9557652830919052,
+      "emotions": {
+        "joy": 0.0021024266025051475,
+        "surprise": 0.006915468598735776,
+        "neutral": 0.04423471690809473,
+        "sadness": 0.2516776806417298,
+        "fear": 0.22146253799028853,
+        "anger": 0.21974958453644464,
+        "disgust": 0.2538575813015725
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Sadistic, surgeon of demise / Sadist of the noblest blood",
+          "Angel of Death / Monarch to the kingdom of the dead"
+        ]
+      },
+      "darkThemes": [
+        "blood",
+        "dead",
+        "death",
+        "die",
+        "dying",
+        "knife"
+      ]
+    }
+  },
+  {
+    "id": "1158ckiB5S4cpsdYHDB9IF",
+    "name": "My Own Summer (Shove It)",
+    "artist": "Deftones",
+    "label": "angry",
+    "features": {
+      "acousticness": 1.33e-05,
+      "danceability": 0.443,
+      "energy": 0.781,
+      "instrumentalness": 0.205,
+      "key": 1,
+      "liveness": 0.166,
+      "loudness": -4.277,
+      "mode": 1,
+      "speechiness": 0.0377,
+      "tempo": 71.841,
+      "valence": 0.372
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.25758964421491765,
+      "emotionalShare": 0.9142310839485038,
+      "emotions": {
+        "joy": 0.046646075774774406,
+        "surprise": 0.20428407034187607,
+        "neutral": 0.08576891605149616,
+        "sadness": 0.09038296676325527,
+        "fear": 0.04564304500253814,
+        "anger": 0.5055422787131234,
+        "disgust": 0.021732641553336925
+      },
+      "highlights": {
+        "positive": [
+          "Hey, you, big star / Tell me when it's over (Cloud)"
+        ],
+        "negative": [
+          "(Come) Shove it, shove it, shove it / (Shove) Shove it, shove it, shove it",
+          "The shade is a tool / A device, a savior"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "1Q2fYlSdwuutWj3QplhY9q",
+    "name": "Riot",
+    "artist": "Three Days Grace",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0104,
+      "danceability": 0.185,
+      "energy": 0.948,
+      "instrumentalness": 0,
+      "key": 8,
+      "liveness": 0.105,
+      "loudness": -3.892,
+      "mode": 1,
+      "speechiness": 0.147,
+      "tempo": 196.578,
+      "valence": 0.316
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.12135644403267369,
+      "emotionalShare": 0.9879953893097607,
+      "emotions": {
+        "joy": 0.003036867508566693,
+        "surprise": 0.002376108712173606,
+        "neutral": 0.01200461069023923,
+        "sadness": 0.12457051267847419,
+        "fear": 0.3466135517228395,
+        "anger": 0.3209774596126456,
+        "disgust": 0.19042087819329218
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "If you feel so filthy / So dirty, so fucked up",
+          "If you feel so empty / So used up, so let down"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "56sk7jBpZV0CD31G9hEU3b",
+    "name": "Animal I Have Become",
+    "artist": "Three Days Grace",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000684,
+      "danceability": 0.553,
+      "energy": 0.853,
+      "instrumentalness": 0,
+      "key": 8,
+      "liveness": 0.126,
+      "loudness": -3.668,
+      "mode": 1,
+      "speechiness": 0.0339,
+      "tempo": 122.023,
+      "valence": 0.506
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1407197085595751,
+      "emotionalShare": 0.9490586614960598,
+      "emotions": {
+        "joy": 0.003570874215155426,
+        "surprise": 0.006232334378485878,
+        "neutral": 0.05094133850394024,
+        "sadness": 0.09708392009552982,
+        "fear": 0.6498796247760765,
+        "anger": 0.1438186562801194,
+        "disgust": 0.04847325766200407
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "(I can't escape myself) / So many times I've lied",
+          "(This animal, this animal, this animal) / (This animal, this animal, this animal, this animal)"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "2rBHnIxbhkMGLpqmsNX91M",
+    "name": "Bombtrack",
+    "artist": "Rage Against The Machine",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.0239,
+      "danceability": 0.459,
+      "energy": 0.926,
+      "instrumentalness": 1.93e-05,
+      "key": 4,
+      "liveness": 0.183,
+      "loudness": -3.415,
+      "mode": 1,
+      "speechiness": 0.155,
+      "tempo": 151.534,
+      "valence": 0.569
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1284133201462845,
+      "emotionalShare": 0.9541073231365194,
+      "emotions": {
+        "joy": 0.015409476348114284,
+        "surprise": 0.016715976161966947,
+        "neutral": 0.0458926768634807,
+        "sadness": 0.01186529922891747,
+        "fear": 0.11306628291918473,
+        "anger": 0.7039690528657626,
+        "disgust": 0.0930812326460992
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Instead, I warm my hands upon the flames of the flag / To recall the downfall and the businesses that burnt us all",
+          "With the thoughts from a militant mind / Hard line, hard line after hard line"
+        ]
+      },
+      "darkThemes": []
+    }
+  },
+  {
+    "id": "0bM9c5A7CterSOEssmWqAa",
+    "name": "Holy Wars...The Punishment Due",
+    "artist": "Megadeth",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.00291,
+      "danceability": 0.339,
+      "energy": 0.887,
+      "instrumentalness": 0.316,
+      "key": 9,
+      "liveness": 0.296,
+      "loudness": -12.179,
+      "mode": 1,
+      "speechiness": 0.0699,
+      "tempo": 125.086,
+      "valence": 0.317
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.1709693318233331,
+      "emotionalShare": 0.9225083564275077,
+      "emotions": {
+        "joy": 0.04403779206664434,
+        "surprise": 0.022454616114763275,
+        "neutral": 0.07749164357249226,
+        "sadness": 0.11840088894989874,
+        "fear": 0.33620740227135165,
+        "anger": 0.34808492607304026,
+        "disgust": 0.053322733246854374
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Brother will kill brother, spilling blood across the land / Killing for religion, something I don't understand",
+          "A country that's divided, surely will not stand / My past erased, no more disgrace, no foolish naïve stand"
+        ]
+      },
+      "darkThemes": [
+        "blood",
+        "die",
+        "kill",
+        "killed",
+        "killing",
+        "overdose"
+      ]
+    }
+  },
+  {
+    "id": "0L7zm6afBEtrNKo6C6Gj08",
+    "name": "Painkiller",
+    "artist": "Judas Priest",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.000195,
+      "danceability": 0.435,
+      "energy": 0.987,
+      "instrumentalness": 0.0879,
+      "key": 1,
+      "liveness": 0.268,
+      "loudness": -4.667,
+      "mode": 0,
+      "speechiness": 0.16,
+      "tempo": 103.162,
+      "valence": 0.1
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.19997454507382756,
+      "emotionalShare": 0.8765359161103644,
+      "emotions": {
+        "joy": 0.08310042504823154,
+        "surprise": 0.021406150939760775,
+        "neutral": 0.1234640838896356,
+        "sadness": 0.2603943848829126,
+        "fear": 0.12585685445313774,
+        "anger": 0.25452018872176,
+        "disgust": 0.13125791176926435
+      },
+      "highlights": {
+        "positive": [
+          "Flying high on rapture / Stronger free and brave"
+        ],
+        "negative": [
+          "Planets devastated / Mankind's on its knees",
+          "Faster than a bullet / Terrifying scream"
+        ]
+      },
+      "darkThemes": [
+        "bomb",
+        "bullet",
+        "grave",
+        "killer"
+      ]
+    }
+  },
+  {
+    "id": "5egqKwgK5r5rvGD1LrtR7J",
+    "name": "Points of Authority",
+    "artist": "Linkin Park",
+    "label": "angry",
+    "features": {
+      "acousticness": 0.03,
+      "danceability": 0.512,
+      "energy": 0.97,
+      "instrumentalness": 0,
+      "key": 8,
+      "liveness": 0.0994,
+      "loudness": -3.886,
+      "mode": 0,
+      "speechiness": 0.212,
+      "tempo": 94.952,
+      "valence": 0.427
+    },
+    "lyrics": {
+      "status": "found",
+      "valence": 0.11271496554096436,
+      "emotionalShare": 0.8225915986028585,
+      "emotions": {
+        "joy": 0.008513444615527988,
+        "surprise": 0.004919751111248678,
+        "neutral": 0.17740840139714154,
+        "sadness": 0.06869210390882059,
+        "fear": 0.015258401530710133,
+        "anger": 0.5950540380044417,
+        "disgust": 0.13015386218374425
+      },
+      "highlights": {
+        "positive": [],
+        "negative": [
+          "Forfeit the game before somebody else / Takes you out of the frame",
+          "You love the things I say I'll do / The way I hurt myself again just to get back at you"
+        ]
+      },
+      "darkThemes": []
+    }
+  }
+]
