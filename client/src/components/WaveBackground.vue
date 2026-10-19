@@ -19,12 +19,18 @@ let intersectionObserver
 let elapsed = 0
 let isOnScreen = false
 
+// People who ask their device for less motion get a still frame of the waves.
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
 function resize() {
   const { width, height } = canvas.value.getBoundingClientRect()
   if (!width || !height) return
 
   renderer.setSize(width, height, false)
   material.uniforms.uResolution.value.set(width, height)
+
+  // Redraw straight away in case the animation is paused.
+  renderer.render(scene, camera)
 }
 
 function animate() {
@@ -36,7 +42,7 @@ function animate() {
 
 // Only animate while the section is on screen and the tab is visible.
 function updatePlaying() {
-  const shouldPlay = isOnScreen && !document.hidden
+  const shouldPlay = isOnScreen && !document.hidden && !reducedMotion.matches
 
   if (shouldPlay && !animationFrame) {
     clock.getDelta()
@@ -118,11 +124,13 @@ onMounted(() => {
   })
   intersectionObserver.observe(canvas.value)
   document.addEventListener('visibilitychange', updatePlaying)
+  reducedMotion.addEventListener('change', updatePlaying)
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrame)
   document.removeEventListener('visibilitychange', updatePlaying)
+  reducedMotion.removeEventListener('change', updatePlaying)
   intersectionObserver?.disconnect()
   resizeObserver?.disconnect()
   renderer?.dispose()
