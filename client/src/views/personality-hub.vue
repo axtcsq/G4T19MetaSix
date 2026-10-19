@@ -619,5 +619,16 @@ onMounted(loadPage)
     width: 88px;
     height: 88px;
   }
+
+  /* Icon only on phones, so it doesn't crowd the heading. */
+  .share-trigger {
+    width: 42px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .share-label {
+    display: none;
+  }
 }
 </style>
