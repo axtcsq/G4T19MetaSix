@@ -42,7 +42,7 @@ Results are **fixed**: the same answers always give the same result, and no LLM 
 | Aux Alignment | 8 questions | 9 D&D alignments, e.g. *The Crowd Pleaser* | No |
 | Love on Repeat | 8 questions | 5 music love languages | No |
 | Soundwoods | 8 questions | 4 forest scenes, e.g. *The Moonlit Lake* | Energy, for comparison |
-| The Soundtrack Pyramid | 7 questions | 5 levels of need | Playlist names |
+| Maslow’s Mixtape | 7 questions | 5 levels of need | Playlist names |
 
 Every option a user can pick adds points to one or more of the quiz's **dimensions** (for example `{ E: 2 }` or `{ L: 1, G: 2 }`). The quiz's `evaluate()` turns those totals into its result. Every result also says how it scores on the four [MetaFor traits](#metafor-traits), which is what Patterns combines.
 
@@ -127,7 +127,7 @@ Every option a user can pick adds points to one or more of the quiz's **dimensio
 
 **MetaFor traits:** energy → Amped/Mellow, instrumentalness → Soundscaper (low instrumentalness → Wordsmith).
 
-### 6. The Soundtrack Pyramid
+### 6. Maslow’s Mixtape
 
 **Concept:** based on Maslow's Hierarchy of Needs. It maps where music sits in your daily life, from basic utility to self-actualisation. Questions are about priorities: what would happen if you lost music for a week? Would your productivity crash, would you lose your social connections, or would you lose your sense of self? It also looks at the user's playlists to tell functional listening (workout, study, sleep) apart from deep album listening and emotional processing.
 
@@ -227,7 +227,7 @@ Each quiz card has a calm nature photo that hints at the quiz. The photos are fr
 | Aux Alignment | Stones placed around a zen garden, each in its own spot | Jupter Moon |
 | Love on Repeat | Ripples spreading on still water | Jackson Hendry |
 | Soundwoods | Sunlight through a forest | Łukasz Szmigiel |
-| The Soundtrack Pyramid | A stack of balanced stones | Sean Stratton |
+| Maslow’s Mixtape | A stack of balanced stones | Sean Stratton |
 
 To change one, replace the PNG with the same name, or add a new import to `quizImages` in `personality-hub.vue`.
 
