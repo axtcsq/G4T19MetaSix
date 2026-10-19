@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getLatestResult } from '@/api/quiz'
+import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/footer.vue'
 import TraitBar from '@/components/TraitBar.vue'
 
@@ -28,7 +29,7 @@ onMounted(loadResult)
 </script>
 
 <template>
-  <div class="result-page">
+  <div class="result-page personality-theme">
     <main class="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
@@ -140,7 +141,7 @@ onMounted(loadResult)
 }
 
 .back-link:hover {
-  color: #ce5b4b;
+  color: var(--pq-accent);
 }
 
 .quiz-name {
@@ -152,15 +153,15 @@ onMounted(loadResult)
 
 .result-panel {
   padding: 2rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #fff;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+  box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
 .result-title {
-  color: #763e32;
+  color: var(--pq-brown);
   font-family: var(--font-sans);
   font-size: clamp(2rem, 7vw, 3rem);
   font-weight: 800;
@@ -198,7 +199,7 @@ onMounted(loadResult)
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ce5b4b;
+  background: var(--pq-accent);
   content: '';
 }
 
@@ -212,13 +213,13 @@ onMounted(loadResult)
   height: 20px;
   overflow: hidden;
   border-radius: 40px;
-  background: #ffcda6;
+  background: var(--pq-rail);
 }
 
 .share-fill {
   height: 100%;
   border-radius: inherit;
-  background: #ce5b4b;
+  background: var(--pq-accent);
 }
 
 .tag-list {
@@ -229,13 +230,13 @@ onMounted(loadResult)
 
 .tag {
   padding: 0.75rem 1.25rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  background: #ffe6d2;
+  background: var(--pq-result);
 }
 
 .tag dt {
-  color: #665f78;
+  color: var(--pq-muted);
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -253,11 +254,11 @@ onMounted(loadResult)
   align-items: center;
   justify-content: center;
   padding-inline: 1.5rem;
-  border: 1px solid rgba(118, 62, 50, 0.2);
+  border: 1px solid var(--pq-border);
   border-radius: 10px;
-  color: #000;
-  background: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -268,17 +269,18 @@ onMounted(loadResult)
 }
 
 .peach-button:hover {
-  background: #ffd6b6;
+  background: var(--pq-peach-hover);
   transform: translateY(-1px);
 }
 
 .peach-button:focus-visible {
-  outline: 3px solid rgba(206, 91, 75, 0.45);
+  outline: 3px solid var(--pq-focus);
   outline-offset: 3px;
 }
 
 .peach-button--quiet {
-  background: #fff;
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
 }
 
 @media (max-width: 600px) {
