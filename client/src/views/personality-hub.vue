@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { getPersonality, getQuizzes } from '@/api/quiz'
 import SiteFooter from '@/components/footer.vue'
 import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
+import ShareCardDialog from '@/components/ShareCardDialog.vue'
 import TraitBar from '@/components/TraitBar.vue'
 import WaveBackground from '@/components/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
@@ -44,6 +45,7 @@ const quizzes = ref([])
 const personality = ref(null)
 const isLoading = ref(true)
 const loadError = ref('')
+const shareDialog = ref(null)
 
 async function loadPage() {
   isLoading.value = true
@@ -124,6 +126,31 @@ onMounted(loadPage)
       <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
         <WaveBackground />
         <div class="page-width py-12">
+          <!-- Sits in the corner beside the heading, so the section keeps its size. -->
+          <button
+            v-if="personality"
+            type="button"
+            class="share-trigger"
+            aria-label="Share my personality card"
+            @click="shareDialog.open()"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3v12" />
+              <path d="m7 8 5-5 5 5" />
+              <path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+            </svg>
+            <span class="share-label">Share card</span>
+          </button>
           <h2 id="patterns-heading" class="patterns-title">Patterns</h2>
           <p class="body-text patterns-intro">
             Every quiz you take adds a thread. Here we weave your answers from all of them together
@@ -192,6 +219,12 @@ onMounted(loadPage)
                 <PersonalityBreakdown :personality="personality" />
               </div>
             </div>
+
+            <ShareCardDialog
+              ref="shareDialog"
+              :personality="personality"
+              :icon="typeIcons[personality.type.id] ?? starIcon"
+            />
           </template>
         </div>
       </section>
@@ -366,6 +399,41 @@ onMounted(loadPage)
 .patterns > .page-width {
   position: relative;
   z-index: 1;
+}
+
+/* Taken out of the flow and lined up with the heading, so adding it doesn't
+   change the section's height. */
+.share-trigger {
+  position: absolute;
+  top: 3rem;
+  right: 0;
+  display: flex;
+  height: 42px;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.share-trigger:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+
+.share-trigger:focus-visible {
+  outline: 3px solid rgba(255, 205, 166, 0.8);
+  outline-offset: 3px;
 }
 
 .patterns-title {
