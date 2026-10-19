@@ -43,6 +43,8 @@ All endpoints use the `/api/moods` prefix. A mood must be `Sad`, `Happy`, `Relax
 
 The API starts even if MongoDB is unavailable. In that case the health endpoint returns `503`, and mood requests return a database unavailable response. This keeps the server's existing recovery and health-check behavior.
 
+The Canvas page currently displays a static analysis placeholder. No AI provider is connected.
+
 ## Set up the database
 
 Run this once per database, and again whenever an index is added or changed. It only creates what is missing.
@@ -61,6 +63,7 @@ npm run db:seed -- --days 30    # only the last 30 days
 ```
 
 This adds the 156 test songs to `tracks` with both mood readings, creates the demo user (`spotifyId: "demo"`, never synced), generates 10–40 plays a day, and rebuilds their `dailyMoods`. Exam weeks lean sad, holidays lean happy, and weekends are quieter. Re-running replaces the demo user's data, so it is safe to repeat. It refuses to run on a database whose name doesn't end in `_dev` unless you pass `--yes`.
+
 
 ## Run
 
