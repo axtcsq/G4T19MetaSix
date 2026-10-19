@@ -163,6 +163,15 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
+/* The section's inner shadow, redrawn on top so the canvas doesn't hide it. */
+.wave-background::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 9px 6.2px rgba(0, 0, 0, 0.25);
+  content: '';
+}
+
 .wave-canvas {
   display: block;
   width: 100%;
