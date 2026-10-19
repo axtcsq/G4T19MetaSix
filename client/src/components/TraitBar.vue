@@ -38,7 +38,7 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  color: #000;
+  color: var(--pq-on-surface);
   font-family: var(--font-serif);
   font-size: 1.25rem;
   font-weight: 600;
@@ -47,7 +47,7 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
 .trait-track {
   margin-top: 0.15rem;
   padding: 10px 13px;
-  border: 1px solid rgba(118, 62, 50, 0.4);
+  border: 1px solid var(--pq-border-strong);
   border-radius: 40px;
 }
 
@@ -55,13 +55,13 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
   height: 33px;
   overflow: hidden;
   border-radius: 40px;
-  background: #ffcda6;
+  background: var(--pq-rail);
 }
 
 .trait-fill {
   height: 100%;
   border-radius: 40px;
-  background: #ce5b4b;
+  background: var(--pq-accent);
   transition: width 320ms ease;
 }
 
