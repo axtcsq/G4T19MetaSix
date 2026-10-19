@@ -93,6 +93,12 @@ const fragmentShader = /* glsl */ `
     float ripple = sin(p.y * 12.0 + wave1 * 2.0 + t * 2.0) * 0.5 + 0.5;
     colour += ripple * 0.035;
 
+    // Keep the white heading and intro text readable: deepen the top of the
+    // section where they sit, and never let the waves get too light.
+    float fromTop = (1.0 - vUv.y) * uResolution.y;
+    colour = mix(colour, brown, (1.0 - smoothstep(120.0, 320.0, fromTop)) * 0.35);
+    colour = min(colour, vec3(0.78, 0.6, 0.56));
+
     gl_FragColor = vec4(colour, 1.0);
   }
 `
