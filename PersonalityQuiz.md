@@ -236,8 +236,10 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 
 | Collection | Holds |
 |---|---|
-| `quizattempts` | `{ quizId, answers, createdAt }`. Only the answers are stored; results are recalculated from them, so fixing a description also updates past results |
-| `personalities` | The latest Patterns result: type, match, traits, quiz results, per-source traits, mood link, listening stats, and the AI's headline, insights and summary |
+| `quizattempts` | `{ userId, quizId, answers, createdAt }`. Only the answers are stored; results are recalculated from them, so fixing a description also updates past results. Indexed on `userId + quizId + createdAt` |
+| `personalities` | One per user (unique `userId`): the latest Patterns result, with type, match, traits, quiz results, per-source traits, mood link, listening stats, and the AI's headline, insights and summary. It is rebuilt if a quiz's result title has changed since it was saved |
+
+Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Until login is merged, `userId` is `null` and every query filters on that, so only `currentUserId()` in `quizController.js` needs to change then.
 
 ---
 
@@ -306,7 +308,7 @@ The AI only writes the Patterns text; it never decides a single quiz's result. T
 
 | Waiting on | What changes |
 |---|---|
-| Login and accounts (George) | Add the user id to `quizattempts` and `personalities`, and filter every query by it. Only count the signed-in user's mood logs. Read the birthday from the profile and only ask when it's missing |
+| Login and accounts (George) | Return the signed-in user's `_id` from `currentUserId()` in `quizController.js`. Only count the signed-in user's mood logs. Read the birthday from the profile and only ask when it's missing |
 | Spotify API (Jeriel) | Replace `mockSpotifyProfile` in `quizController.js` with the user's real top artists, tracks, playlists and audio features. The field names already follow the Spotify Web API and ReccoBeats |
 
 **Ideas for later:** card images for the five quizzes that don't have one yet; a spider web chart of the four traits; a shareable Wrapped-style result card.
