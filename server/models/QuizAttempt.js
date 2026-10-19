@@ -87,28 +87,29 @@ export function addQuizAttempt(attempt) {
 }
 
 // The most recent attempt at each quiz, so retaking a quiz replaces its old answers.
-export function retrieveLatestAttempts() {
+export function retrieveLatestAttempts(userId) {
   return QuizAttempt.aggregate([
+    { $match: { userId } },
     { $sort: { createdAt: -1 } },
     { $group: { _id: "$quizId", attempt: { $first: "$$ROOT" } } },
     { $replaceRoot: { newRoot: "$attempt" } },
   ]);
 }
 
-export function findLatestAttempt(quizId) {
-  return QuizAttempt.findOne({ quizId }).sort({ createdAt: -1 });
+export function findLatestAttempt(userId, quizId) {
+  return QuizAttempt.findOne({ userId, quizId }).sort({ createdAt: -1 });
 }
 
-export function savePersonality(personality) {
-  return Personality.findOneAndUpdate({}, personality, {
+export function savePersonality(userId, personality) {
+  return Personality.findOneAndUpdate({ userId }, { ...personality, userId }, {
     upsert: true,
     returnDocument: "after",
     runValidators: true,
   });
 }
 
-export function findPersonality() {
-  return Personality.findOne();
+export function findPersonality(userId) {
+  return Personality.findOne({ userId });
 }
 
 export default QuizAttempt;

@@ -22,6 +22,12 @@ import {
 } from "../services/patterns.js";
 import { validateAnswers } from "../services/quizEngine.js";
 
+// The signed-in user's _id. Null until auth is merged, so every quiz query
+// still filters by user and only this needs changing then.
+function currentUserId(req) {
+  return req.user?._id ?? null;
+}
+
 // TODO: replace with the signed-in user's Spotify data once auth and the
 // Spotify API set-up are merged.
 function getSpotifyProfile() {
@@ -50,8 +56,8 @@ function evaluateAttempt(attempt, profile) {
   return { quizId: quiz.id, quizTitle: quiz.title, takenAt: attempt.createdAt, ...quiz.evaluate(attempt.answers, profile) };
 }
 
-async function latestResults(profile) {
-  const attempts = await retrieveLatestAttempts();
+async function latestResults(userId, profile) {
+  const attempts = await retrieveLatestAttempts(userId);
   const order = (result) => QUIZZES.findIndex((quiz) => quiz.id === result.quizId);
 
   return attempts
@@ -74,9 +80,9 @@ function fallbackSummary(quizResults, type) {
 }
 
 // Summarises every quiz result into one MetaFor personality and saves it.
-async function rebuildPersonality() {
+async function rebuildPersonality(userId) {
   const profile = getSpotifyProfile();
-  const results = await latestResults(profile);
+  const results = await latestResults(userId, profile);
   const traits = combineTraits(results, profile);
   const ranking = rankTypes(traits);
   const stats = listeningStats(profile);
@@ -118,7 +124,7 @@ async function rebuildPersonality() {
   const runnerUp = ranking.find((type) => type.id !== typeId);
   const type = publicType(typeId);
 
-  return savePersonality({
+  return savePersonality(userId, {
     typeId,
     match: ranking.find((item) => item.id === typeId).match,
     runnerUpId: runnerUp.id,
@@ -162,7 +168,7 @@ function formatPersonality(personality) {
 
 // GET /api/quiz
 export async function getQuizzes(req, res) {
-  const results = await latestResults(getSpotifyProfile());
+  const results = await latestResults(currentUserId(req), getSpotifyProfile());
 
   res.json(
     QUIZZES.map((quiz) => {
@@ -182,11 +188,12 @@ export async function getQuizzes(req, res) {
 
 // GET /api/quiz/personality
 export async function getPersonality(req, res) {
-  let personality = await findPersonality();
+  const userId = currentUserId(req);
+  let personality = await findPersonality(userId);
 
   // Rebuild personalities saved before the "how it adds up" data existed.
   if (personality?.quizResults?.length && !personality.sources) {
-    personality = await rebuildPersonality();
+    personality = await rebuildPersonality(userId);
   }
 
   res.json(formatPersonality(personality));
@@ -222,7 +229,7 @@ export async function getLatestResult(req, res) {
     return res.status(404).json({ error: "Quiz not found" });
   }
 
-  const attempt = await findLatestAttempt(quiz.id);
+  const attempt = await findLatestAttempt(currentUserId(req), quiz.id);
   const result = attempt && evaluateAttempt(attempt, getSpotifyProfile());
 
   if (!result) {
@@ -251,9 +258,10 @@ export async function submitQuiz(req, res) {
   const stored = Object.fromEntries(quiz.questions.map((question) => [question.id, answers[question.id]]));
   if (quiz.needsBirthday) stored.birthday = answers.birthday;
 
-  const attempt = await addQuizAttempt({ quizId: quiz.id, answers: stored });
+  const userId = currentUserId(req);
+  const attempt = await addQuizAttempt({ userId, quizId: quiz.id, answers: stored });
   const result = evaluateAttempt(attempt, getSpotifyProfile());
-  const personality = await rebuildPersonality();
+  const personality = await rebuildPersonality(userId);
 
   res.status(201).json({ result, personality: formatPersonality(personality) });
 }
