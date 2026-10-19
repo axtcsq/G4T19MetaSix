@@ -337,6 +337,8 @@ onMounted(loadPage)
 }
 
 .patterns {
+  position: relative;
+  isolation: isolate;
   width: min(1320px, calc(100% - 32px));
   margin-inline: auto;
   border: 1px solid #763e32;
@@ -347,6 +349,12 @@ onMounted(loadPage)
     linear-gradient(109.07deg, rgba(118, 62, 50, 0.3) 42.18%, rgba(255, 205, 166, 0.3) 91.17%),
     linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%), #fff;
   box-shadow: inset 0 9px 6.2px rgba(0, 0, 0, 0.25);
+}
+
+/* Content sits above the moving waves. */
+.patterns > .page-width {
+  position: relative;
+  z-index: 1;
 }
 
 .patterns-title {
