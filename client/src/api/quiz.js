@@ -1,24 +1,23 @@
-import { request } from './http'
+import { api } from './http'
+
+const quizPath = (quizId) => `/api/quiz/${encodeURIComponent(quizId)}`
 
 export function getQuizzes() {
-  return request('/api/quiz')
+  return api.get('/api/quiz')
 }
 
 export function getPersonality() {
-  return request('/api/quiz/personality')
+  return api.get('/api/quiz/personality')
 }
 
 export function getQuiz(quizId) {
-  return request(`/api/quiz/${encodeURIComponent(quizId)}`)
+  return api.get(quizPath(quizId))
 }
 
 export function submitQuiz(quizId, answers) {
-  return request(`/api/quiz/${encodeURIComponent(quizId)}/result`, {
-    method: 'POST',
-    body: { answers },
-  })
+  return api.post(`${quizPath(quizId)}/result`, { answers })
 }
 
 export function getLatestResult(quizId) {
-  return request(`/api/quiz/${encodeURIComponent(quizId)}/result`)
+  return api.get(`${quizPath(quizId)}/result`)
 }
