@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 // One finished quiz attempt. Only the answers are stored: results are worked
 // out from them by the quiz's evaluate(), so the same answers always give the
 // same result, and fixing a description updates past results too.
-// TODO: add the user's id once auth is merged, and filter every query by it.
 const quizAttemptSchema = new mongoose.Schema(
   {
+    // Empty until auth is merged; attempts without a user are shared for now.
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
     quizId: { type: String, required: true },
     answers: { type: mongoose.Schema.Types.Mixed, required: true },
   },
