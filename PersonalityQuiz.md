@@ -224,6 +224,23 @@ The **Share card** button in the top-right corner of Patterns opens a pop-up wit
 
 The design follows the "Personality Test" frame in the team Figma: Raleway headers, Crimson Text body, peach `#ffcda6` and terracotta `#ce5b4b` bars, `#763e32` accents and the gradient Patterns band.
 
+### Dark mode
+
+The Personality pages follow the app's light and dark mode (the `.dark` class on `<html>`). Their colours are tokens in `client/src/assets/css/personality-theme.css`, scoped to the `.personality-theme` class on each page, so the rest of the app is untouched.
+
+| Token | Light | Dark | Used for |
+|---|---|---|---|
+| `--pq-surface` | `#ffffff` | `#262234` plum | Cards, quiz panel, share dialog |
+| `--pq-on-surface` | `#000000` | `#f5ece6` | Text on cards |
+| `--pq-muted` | `#665f78` | `#b9aec4` | Labels, "Your result" |
+| `--pq-peach` | `#ffe6d2` | `#3a2a30` rosewood | Buttons, selected answer |
+| `--pq-result` | `#ffe6d2` | `#2f2530` | Latest-result box, tags |
+| `--pq-accent` | `#ce5b4b` | `#db806d` | Bar fills, accents |
+| `--pq-rail` | `#ffcda6` | `#4a3a3f` | Empty part of bars |
+| `--pq-brown` | `#763e32` | `#eaa596` | Result title, chips |
+
+The dark shades sit on the team's navy page background (`#171b27`), and every text pairing passes WCAG AA contrast. The Patterns band, its waves and the share card image look the same in both modes. The black type icons are inverted in dark mode so they stay visible.
+
 ### Card images
 
 Each quiz card has a calm nature photo that hints at the quiz. The photos are from Unsplash (free to use under the [Unsplash License](https://unsplash.com/license)), cropped to 900 × 600 and saved in `client/src/assets/images/personality/`.
