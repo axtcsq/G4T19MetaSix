@@ -4,6 +4,7 @@ import { getPersonality, getQuizzes } from '@/api/quiz'
 import SiteFooter from '@/components/footer.vue'
 import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
 import TraitBar from '@/components/TraitBar.vue'
+import WaveBackground from '@/components/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
 import starIcon from '@/assets/images/personality/star.svg'
 import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
@@ -110,6 +111,7 @@ onMounted(loadPage)
       </section>
       <!-- Patterns -->
       <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
+        <WaveBackground />
         <div class="page-width py-12">
           <h2 id="patterns-heading" class="patterns-title">Patterns</h2>
           <p class="body-text patterns-intro">
