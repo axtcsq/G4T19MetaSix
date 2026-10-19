@@ -112,4 +112,5 @@ export function findPersonality(userId) {
   return Personality.findOne({ userId });
 }
 
+export { Personality };
 export default QuizAttempt;
