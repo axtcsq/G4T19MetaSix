@@ -484,6 +484,11 @@ onMounted(loadPage)
   flex-shrink: 0;
 }
 
+/* The icons are black line art, so they're flipped to light in dark mode. */
+.dark .type-icon {
+  filter: invert(0.94);
+}
+
 .type-intro {
   font-family: var(--font-sans);
   font-size: 1.15rem;
