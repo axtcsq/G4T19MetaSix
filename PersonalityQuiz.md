@@ -224,7 +224,7 @@ Each quiz card has a calm nature photo that hints at the quiz. The photos are fr
 |---|---|---|
 | Music MBTI | Light through a glass prism, one light split into many facets | Egor Litvinov |
 | Spotify Horoscope | Crystals on a wooden slice | Sarah Brown |
-| Aux Alignment | Palm-lined beach from above | Nattu Adnan |
+| Aux Alignment | Stones placed around a zen garden, each in its own spot | Jupter Moon |
 | Love on Repeat | Ripples spreading on still water | Jackson Hendry |
 | Soundwoods | Sunlight through a forest | Łukasz Szmigiel |
 | The Soundtrack Pyramid | A stack of balanced stones | Sean Stratton |
