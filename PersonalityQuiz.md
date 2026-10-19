@@ -37,7 +37,7 @@ Results are **fixed**: the same answers always give the same result, and no LLM 
 
 | Quiz | Asks | Possible results | Uses Spotify data |
 |---|---|---|---|
-| Music MBTI | 12 questions | 16 types, e.g. *Music INFP · The Bedroom Dreamer* | No |
+| Music MBTI | 12 questions | 16 types, e.g. *INFP · The Bedroom Dreamer* | No |
 | Spotify Horoscope | Birthday only | Genre + energy + sign, e.g. *Jazzy Easygoing Libra* | Top genre, energy |
 | Aux Alignment | 8 questions | 9 D&D alignments, e.g. *The Crowd Pleaser* | No |
 | Love on Repeat | 8 questions | 5 music love languages | No |
@@ -48,7 +48,7 @@ Every option a user can pick adds points to one or more of the quiz's **dimensio
 
 ### 1. Music MBTI
 
-**Concept:** similar to the real MBTI, but every question is about music. The result says something like "Based on the quiz, we think you are an INTP", gives a justification, and explains what being a Music INTP means.
+**Concept:** similar to the real MBTI, but every question is about music. The result says something like "Based on the quiz, we think you are an INTP", gives a justification, and explains what being an INTP means for how you listen.
 
 **How it's scored**
 - 3 questions for each MBTI letter pair: E/I, S/N, T/F, J/P. Each has 4 options worth 2 points (strong lean) or 1 point (mild lean) towards one letter.
