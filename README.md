@@ -24,7 +24,6 @@ engaging.
 | Name    | Purpose |
 | -------- | ------- |
 | Spotify  | Account |
-| Spotify Extended Audio Features | Song Mood Values |
 | ReccoBeats  | Provides Music Recommendations & Access to an Extensive Music Database |
 | MusicBrainz | Music Metadata |
 
