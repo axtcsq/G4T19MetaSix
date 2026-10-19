@@ -87,11 +87,11 @@ const fragmentShader = /* glsl */ `
 
     vec3 colour = mix(lavender, terracotta, smoothstep(-1.0, 1.0, wave1) * 0.85);
     colour = mix(colour, brown, smoothstep(-0.2, 1.0, wave2) * 0.45);
-    colour = mix(colour, peach, smoothstep(0.4, 1.0, wave3) * 0.35);
+    colour = mix(colour, peach, smoothstep(0.3, 1.0, wave3) * 0.45);
 
     // Faint ripples running along the waves.
     float ripple = sin(p.y * 12.0 + wave1 * 2.0 + t * 2.0) * 0.5 + 0.5;
-    colour += ripple * 0.02;
+    colour += ripple * 0.035;
 
     gl_FragColor = vec4(colour, 1.0);
   }
