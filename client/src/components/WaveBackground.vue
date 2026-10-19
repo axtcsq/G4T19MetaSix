@@ -4,6 +4,7 @@ import * as THREE from 'three'
 
 // A soft gradient drawn with a three.js shader, used behind the Patterns section.
 const canvas = ref(null)
+const isReady = ref(false)
 
 // How fast the waves drift. Kept low so the motion feels calm.
 const SPEED = 0.12
@@ -97,7 +98,13 @@ const fragmentShader = /* glsl */ `
 `
 
 onMounted(() => {
-  renderer = new THREE.WebGLRenderer({ canvas: canvas.value, powerPreference: 'low-power' })
+  // Without WebGL the canvas stays hidden and the section's CSS gradient shows instead.
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas.value, powerPreference: 'low-power' })
+  } catch {
+    return
+  }
+  isReady.value = true
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
 
   scene = new THREE.Scene()
@@ -143,7 +150,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="wave-background" aria-hidden="true">
-    <canvas ref="canvas" class="wave-canvas" />
+    <canvas ref="canvas" class="wave-canvas" :class="{ 'is-ready': isReady }" />
   </div>
 </template>
 
@@ -160,5 +167,11 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.wave-canvas.is-ready {
+  opacity: 1;
 }
 </style>
