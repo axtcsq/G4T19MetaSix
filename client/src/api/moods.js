@@ -1,12 +1,9 @@
-import { request } from './http'
+import { api } from './http'
 
 export function getMoods() {
-  return request('/api/moods')
+  return api.get('/api/moods')
 }
 
 export function createMood(entry) {
-  return request('/api/moods', {
-    method: 'POST',
-    body: entry,
-  })
+  return api.post('/api/moods', entry)
 }
