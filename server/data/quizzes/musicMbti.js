@@ -209,7 +209,7 @@ export const musicMbti = {
 
     return {
       resultId: code,
-      title: `Music ${code}`,
+      title: code,
       subtitle: type.name,
       headline: `Based on the quiz, we think you are an ${code}.`,
       description: type.meaning,
