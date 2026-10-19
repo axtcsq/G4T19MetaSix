@@ -14,6 +14,15 @@ let camera
 let material
 let clock
 let animationFrame
+let resizeObserver
+
+function resize() {
+  const { width, height } = canvas.value.getBoundingClientRect()
+  if (!width || !height) return
+
+  renderer.setSize(width, height, false)
+  material.uniforms.uResolution.value.set(width, height)
+}
 
 function animate() {
   animationFrame = requestAnimationFrame(animate)
@@ -79,9 +88,9 @@ onMounted(() => {
   })
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material))
 
-  const { width, height } = canvas.value.getBoundingClientRect()
-  renderer.setSize(width, height, false)
-  material.uniforms.uResolution.value.set(width, height)
+  resizeObserver = new ResizeObserver(resize)
+  resizeObserver.observe(canvas.value)
+  resize()
 
   clock = new THREE.Clock()
   animate()
@@ -89,6 +98,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrame)
+  resizeObserver?.disconnect()
   renderer?.dispose()
 })
 </script>
