@@ -1,0 +1,49 @@
+/* Colours for the Personality pages. Each page root has the
+   .personality-theme class, so these only apply there. Dark mode swaps the
+   white cards and peach buttons for warm plum ones that sit on the app's
+   navy background. */
+.personality-theme {
+  --pq-surface: #fff;
+  --pq-on-surface: #000;
+  --pq-muted: #665f78;
+  --pq-brown: #763e32;
+  --pq-accent: #ce5b4b;
+  --pq-peach: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
+  --pq-peach-hover: #ffd6b6;
+  --pq-on-peach: #000;
+  --pq-quiet: #fff;
+  --pq-result: #ffe6d2;
+  --pq-rail: #ffcda6;
+  --pq-placeholder: #b3a6b8;
+  --pq-disabled: #ece9ed;
+  --pq-border: rgba(118, 62, 50, 0.2);
+  --pq-border-strong: rgba(118, 62, 50, 0.4);
+  --pq-line: rgba(118, 62, 50, 0.15);
+  --pq-tint: rgba(102, 95, 120, 0.08);
+  --pq-shadow: rgba(0, 0, 0, 0.25);
+  --pq-focus: rgba(206, 91, 75, 0.45);
+  --pq-error: #a1352a;
+}
+
+.dark .personality-theme {
+  --pq-surface: #262234;
+  --pq-on-surface: #f5ece6;
+  --pq-muted: #b9aec4;
+  --pq-brown: #eaa596;
+  --pq-accent: #db806d;
+  --pq-peach: #3a2a30;
+  --pq-peach-hover: #4a333a;
+  --pq-on-peach: #ffe6d2;
+  --pq-quiet: transparent;
+  --pq-result: #2f2530;
+  --pq-rail: #4a3a3f;
+  --pq-placeholder: #3d3850;
+  --pq-disabled: #2c2838;
+  --pq-border: rgba(255, 205, 166, 0.18);
+  --pq-border-strong: rgba(255, 205, 166, 0.32);
+  --pq-line: rgba(255, 205, 166, 0.12);
+  --pq-tint: rgba(185, 174, 196, 0.12);
+  --pq-shadow: rgba(0, 0, 0, 0.45);
+  --pq-focus: rgba(219, 128, 109, 0.6);
+  --pq-error: #f09595;
+}
