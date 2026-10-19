@@ -12,6 +12,7 @@ let renderer
 let scene
 let camera
 let material
+let geometry
 let clock
 let animationFrame
 let resizeObserver
@@ -109,7 +110,8 @@ onMounted(() => {
       uResolution: { value: new THREE.Vector2(1, 1) },
     },
   })
-  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material))
+  geometry = new THREE.PlaneGeometry(2, 2)
+  scene.add(new THREE.Mesh(geometry, material))
 
   resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas.value)
@@ -133,6 +135,8 @@ onBeforeUnmount(() => {
   reducedMotion.removeEventListener('change', updatePlaying)
   intersectionObserver?.disconnect()
   resizeObserver?.disconnect()
+  geometry?.dispose()
+  material?.dispose()
   renderer?.dispose()
 })
 </script>
