@@ -8,13 +8,14 @@ import { connectDB } from "../config/db.js";
 import DailyMood from "../models/DailyMood.js";
 import Listen from "../models/Listen.js";
 import MoodLog from "../models/MoodLog.js";
+import QuizAttempt, { Personality } from "../models/QuizAttempt.js";
 import SyncGap from "../models/SyncGap.js";
 import Track from "../models/Track.js";
 import User from "../models/User.js";
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
-const MODELS = [User, Listen, Track, DailyMood, SyncGap, MoodLog];
+const MODELS = [User, Listen, Track, DailyMood, SyncGap, MoodLog, QuizAttempt, Personality];
 
 async function init() {
   await connectDB();
