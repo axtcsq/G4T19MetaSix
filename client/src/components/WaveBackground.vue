@@ -15,6 +15,9 @@ let material
 let clock
 let animationFrame
 let resizeObserver
+let intersectionObserver
+let elapsed = 0
+let isOnScreen = false
 
 function resize() {
   const { width, height } = canvas.value.getBoundingClientRect()
@@ -26,8 +29,22 @@ function resize() {
 
 function animate() {
   animationFrame = requestAnimationFrame(animate)
-  material.uniforms.uTime.value = clock.getElapsedTime() * SPEED
+  elapsed += clock.getDelta()
+  material.uniforms.uTime.value = elapsed * SPEED
   renderer.render(scene, camera)
+}
+
+// Only animate while the section is on screen and the tab is visible.
+function updatePlaying() {
+  const shouldPlay = isOnScreen && !document.hidden
+
+  if (shouldPlay && !animationFrame) {
+    clock.getDelta()
+    animate()
+  } else if (!shouldPlay && animationFrame) {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = null
+  }
 }
 
 const vertexShader = /* glsl */ `
@@ -93,11 +110,20 @@ onMounted(() => {
   resize()
 
   clock = new THREE.Clock()
-  animate()
+  renderer.render(scene, camera)
+
+  intersectionObserver = new IntersectionObserver(([entry]) => {
+    isOnScreen = entry.isIntersecting
+    updatePlaying()
+  })
+  intersectionObserver.observe(canvas.value)
+  document.addEventListener('visibilitychange', updatePlaying)
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrame)
+  document.removeEventListener('visibilitychange', updatePlaying)
+  intersectionObserver?.disconnect()
   resizeObserver?.disconnect()
   renderer?.dispose()
 })
