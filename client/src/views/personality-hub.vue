@@ -19,7 +19,8 @@ import stormChaserIcon from '@/assets/images/personality/types/storm-chaser.png'
 import tideKeeperIcon from '@/assets/images/personality/types/tide-keeper.png'
 import wandererIcon from '@/assets/images/personality/types/wanderer.png'
 
-// Card images by quiz id. Quizzes without one show the lilac placeholder.
+// Card images by quiz id, from Unsplash (credits in PersonalityQuiz.md).
+// Quizzes without one show the lilac placeholder.
 const quizImages = {
   'music-mbti': musicMbtiImage,
   'spotify-horoscope': spotifyHoroscopeImage,
