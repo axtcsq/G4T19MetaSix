@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import ButterflyMark from './ButterflyMark.vue'
 // Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
 import { useColorMode } from '#imports'
 defineOptions({ name: 'SiteNavbar' })
@@ -112,7 +113,8 @@ watch(
     <div ref="headerInner" class="header-inner">
       <div ref="brandGroup" class="brand-group">
         <RouterLink class="brand" to="/" aria-label="MetaFor home">
-          MetaFor<span class="brand-mark">®</span>
+          <ButterflyMark class="brand-butterfly" :size="30" />
+          <span>MetaFor<span class="brand-mark">®</span></span>
         </RouterLink>
 
         <button
@@ -302,12 +304,22 @@ watch(
   }
 }
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: #000;
   font-family: var(--font-serif);
   font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: -0.055em;
   text-decoration: none;
+}
+.brand-butterfly {
+  flex-shrink: 0;
+  color: #b9543f;
+}
+.dark .brand-butterfly {
+  color: #eaa596;
 }
 .brand-mark {
   display: inline-block;
@@ -582,7 +594,8 @@ watch(
 
 @media (max-width: 600px) {
   .header-inner { width: calc(100% - 36px); min-height: 66px; }
-  .brand { font-size: 1.48rem; }
+  .brand { font-size: 1.48rem; gap: 5px; }
+  .brand-butterfly { width: 26px; height: 23px; }
   .header-nav { gap: 14px; }
   .header-cta { min-height: 42px; padding-inline: 17px; }
   .header-inner { gap: 12px; }
@@ -597,7 +610,10 @@ watch(
   .theme-thumb { width: 22px; height: 22px; }
   .theme-toggle.is-dark .theme-thumb { transform: translateX(24px); }
   .theme-icon { width: 14px; height: 14px; }
-  .site-header-landing .header-cta { padding-inline: 12px; }
+  /* The landing bar holds the brand, toggle, Get started and profile on one row. */
+  .site-header-landing .header-inner { gap: 8px; }
+  .site-header-landing .brand-group { gap: 6px; }
+  .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }
 
 }
 </style>
