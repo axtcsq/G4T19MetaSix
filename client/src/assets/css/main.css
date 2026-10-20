@@ -3,10 +3,20 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+/* Self-hosted so the journal font also loads on deployed clients. */
+@font-face {
+  font-family: 'Biro Script';
+  src: url('/fonts/biro-script/Biro_Script_reduced.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Brand design tokens */
 @theme static {
   --font-sans: 'Raleway', sans-serif;
   --font-serif: 'Crimson Text', serif;
+  --font-journal: 'Biro Script', 'Segoe Print', 'Bradley Hand', cursive;
 
   --color-brand-50: #fdf3f0;
   --color-brand-100: #fbe5df;
@@ -78,7 +88,10 @@ body {
   font-size: 0.9rem !important;
   font-weight: 700 !important;
   text-decoration: none;
-  transition: box-shadow 160ms ease, transform 160ms ease, filter 160ms ease;
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    filter 160ms ease;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }

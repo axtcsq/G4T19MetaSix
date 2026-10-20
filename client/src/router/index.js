@@ -11,6 +11,11 @@ import PersonalityResult from '../views/personality-result.vue'
 
 const routes = [
   {
+    path: '/listen',
+    name: 'listen',
+    component: () => import('../views/listen.vue'),
+  },
+  {
     path: '/',
     name: 'landing',
     component: Landing,

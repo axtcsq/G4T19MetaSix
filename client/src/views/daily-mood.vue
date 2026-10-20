@@ -117,10 +117,11 @@ onMounted(loadEntries)
                 v-model="journalEntry"
                 placeholder="Write your thoughts here..."
                 :rows="7"
+                autoresize
                 maxlength="5000"
                 aria-describedby="journal-help"
-                class="mt-4 w-full resize-none"
-                :ui="{ base: 'w-full font-sans resize-none' }"
+                class="notebook-field mt-4 w-full resize-none"
+                :ui="{ base: 'notebook-input w-full resize-none' }"
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
@@ -275,7 +276,11 @@ onMounted(loadEntries)
   border-color: color-mix(in srgb, var(--mood-color), white 55%);
   color: var(--mood-text);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--mood-color), white 48%), var(--mood-color) 62%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--mood-color), white 48%),
+      var(--mood-color) 62%
+    ),
     var(--mood-color);
   box-shadow:
     inset 0 2px 2px rgba(255, 255, 255, 0.68),
@@ -295,6 +300,58 @@ onMounted(loadEntries)
 
 .journal-history {
   background: #fff;
+}
+
+.notebook-field :deep(textarea) {
+  --notebook-line-height: 36px;
+  min-height: 300px;
+  padding: 18px 24px 18px 48px;
+  border: 1px solid #d9cdbb;
+  border-radius: 6px 14px 14px 6px;
+  background-color: #fffaf0;
+  background-image:
+    linear-gradient(90deg, transparent 31px, #d6a09a 31px, #d6a09a 32px, transparent 32px),
+    repeating-linear-gradient(180deg, transparent 0, transparent 35px, #b8c9d5 35px, #b8c9d5 36px),
+    url('/images/paper-grain.svg');
+  background-position:
+    0 0,
+    0 12px,
+    0 0;
+  /* Keep the ruling aligned to each line as long reflections scroll. */
+  background-attachment: local;
+  box-shadow:
+    inset 4px 0 9px #78694d0d,
+    0 3px 9px #78694d12;
+  color: #313c50;
+  caret-color: #7d4737;
+  font-family: var(--font-journal);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: var(--notebook-line-height);
+  resize: none;
+  overflow-wrap: anywhere;
+  cursor:
+    url('/images/ink-pen-cursor.svg') 3 29,
+    text;
+}
+
+.notebook-field :deep(textarea::placeholder) {
+  color: #687181;
+  opacity: 1;
+}
+
+.notebook-field :deep(textarea:focus-visible) {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 4px;
+}
+
+@media (forced-colors: active) {
+  .notebook-field :deep(textarea) {
+    background-image: none;
+    color: FieldText;
+    background-color: Field;
+    cursor: text;
+  }
 }
 .journal-entry {
   background: var(--ui-bg);

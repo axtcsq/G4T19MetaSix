@@ -1,2 +1,12 @@
-# Local Claude Code settings
-.claude/
+# Local design screenshots and scratch files
+/.taste-skill/
+/client/*-premium-audit.json
+
+# Local branch worktrees and recovery copies
+/.branch-worktrees/
+/.branch-backup/
+
+# Local environment files (keep documented examples)
+.env
+.env.*
+!.env.example
