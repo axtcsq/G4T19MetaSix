@@ -8,6 +8,11 @@ import Canvas from '../views/canvas.vue'
 
 const routes = [
   {
+    path: '/listen',
+    name: 'listen',
+    component: () => import('../views/listen.vue'),
+  },
+  {
     path: '/',
     name: 'landing',
     component: Landing,
