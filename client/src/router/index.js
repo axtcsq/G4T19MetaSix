@@ -14,6 +14,11 @@ const routes = [
     component: Dashboard,
   },
   {
+    path: '/listen',
+    name: 'listen',
+    component: () => import('../views/listen.vue'),
+  },
+  {
     path: '/',
     name: 'landing',
     component: Landing,

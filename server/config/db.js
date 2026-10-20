@@ -20,6 +20,8 @@ export async function connectDB() {
   connectionPromise = mongoose
     .connect(process.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 10000,
+      // Indexes are created by scripts/db-init.js, not on every startup.
+      autoIndex: false,
     })
     .then(() => {
       console.log("[MongoDB] Connected successfully!");

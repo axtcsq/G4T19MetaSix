@@ -5,15 +5,13 @@ defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
 const isLanding = computed(() => route.path === '/')
+const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
 </script>
 
 <template>
   <header
     class="site-header"
-    :class="{
-      'site-header-landing': isLanding,
-      'site-header-dashboard': route.path === '/dashboard',
-    }"
+    :class="{ 'site-header-landing': isLanding, 'site-header-dashboard': isListeningPage }"
   >
     <div class="header-inner">
       <RouterLink class="brand" to="/" aria-label="MetaFor home">
@@ -28,10 +26,11 @@ const isLanding = computed(() => route.path === '/')
         <RouterLink class="header-link" to="/">Home</RouterLink>
         <RouterLink class="header-link" to="/dashboard">Dashboard</RouterLink>
         <RouterLink class="header-link" to="/daily-mood">Daily Mood</RouterLink>
+        <RouterLink class="header-link" to="/listen">Listening room</RouterLink>
         <RouterLink class="header-link" to="/canvas">Canvas</RouterLink>
         <RouterLink
           class="header-cta"
-          :class="route.path === '/dashboard' ? 'dashboard-signin' : 'glass-action'"
+          :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
           to="/login"
           >Sign in</RouterLink
         >

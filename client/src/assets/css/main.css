@@ -3,10 +3,10 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-/* Local font only: the downloaded desktop license does not grant web embedding. */
+/* Self-hosted so the journal font also loads on deployed clients. */
 @font-face {
   font-family: 'Biro Script';
-  src: local('Biro Script'), local('Biro Script reduced'), local('Biro_Script_reduced');
+  src: url('/fonts/biro-script/Biro_Script_reduced.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
