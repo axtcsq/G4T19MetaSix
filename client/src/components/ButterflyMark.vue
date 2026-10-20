@@ -1,5 +1,5 @@
 <script setup>
-// The MetaFor butterfly: open line wings and a rounded body, drawn in
+// The MetaFor butterfly: just its open line wings, drawn in
 // currentColor so its parent sets the colour for light and dark mode.
 // The right half mirrors the left. Lines get thicker at small sizes so the
 // wings stay visible.
@@ -39,13 +39,6 @@ const isSmall = computed(() => props.size < 48)
       />
       <path
         d="M30.5 33C26 33 18.5 33.5 14.5 37.5C10.5 41.5 11.5 48.5 16.5 50.5C21.5 52.5 27 47 29.5 40.5C30.5 38 30.8 35.5 30.5 33Z"
-      />
-    </g>
-    <g fill="currentColor" stroke="none">
-      <circle cx="32" cy="20.8" r="2.1" />
-      <ellipse cx="32" cy="26.8" rx="2.6" ry="4" />
-      <path
-        d="M32 30.6C34.4 30.6 35 34 34.7 38.5C34.4 42.8 33.6 46.4 32 46.9C30.4 46.4 29.6 42.8 29.3 38.5C29 34 29.6 30.6 32 30.6Z"
       />
     </g>
   </svg>
