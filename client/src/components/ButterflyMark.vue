@@ -1,11 +1,15 @@
 <script setup>
 // The MetaFor butterfly: open line wings and a rounded body, drawn in
 // currentColor so its parent sets the colour for light and dark mode.
-// The right half mirrors the left. Antennae only show at larger sizes.
-defineProps({
+// The right half mirrors the left. Lines get thicker at small sizes so the
+// wings stay visible.
+import { computed } from 'vue'
+
+const props = defineProps({
   size: { type: Number, default: 32 },
-  antennae: { type: Boolean, default: false },
 })
+
+const isSmall = computed(() => props.size < 48)
 </script>
 
 <template>
@@ -16,7 +20,7 @@ defineProps({
     :height="size"
     fill="none"
     stroke="currentColor"
-    :stroke-width="antennae ? 1.6 : 2.8"
+    :stroke-width="isSmall ? 2.8 : 1.6"
     stroke-linejoin="round"
     stroke-linecap="round"
     aria-hidden="true"
@@ -43,12 +47,6 @@ defineProps({
       <path
         d="M32 30.6C34.4 30.6 35 34 34.7 38.5C34.4 42.8 33.6 46.4 32 46.9C30.4 46.4 29.6 42.8 29.3 38.5C29 34 29.6 30.6 32 30.6Z"
       />
-    </g>
-    <g v-if="antennae" stroke-width="0.9">
-      <path d="M31.3 19C30 13.5 27.5 9.5 24.5 8" />
-      <path d="M32.7 19C34 13.5 36.5 9.5 39.5 8" />
-      <circle cx="24.5" cy="8" r="0.9" fill="currentColor" stroke="none" />
-      <circle cx="39.5" cy="8" r="0.9" fill="currentColor" stroke="none" />
     </g>
   </svg>
 </template>
