@@ -71,12 +71,10 @@ function publicType(id) {
   return { id, name, tagline, description };
 }
 
-// Used under the Patterns section when no LLM summary is available.
-function fallbackSummary(quizResults, type) {
-  const titles = quizResults.map((result) => result.title);
-  const list =
-    titles.length > 1 ? `${titles.slice(0, -1).join(", ")} and ${titles.at(-1)}` : titles[0];
-  return `Your quizzes describe you as ${list}. Put together with your listening, that adds up to ${type.name}.`;
+// The line under the Patterns section when no LLM summary is available: a
+// send-off written for the type, since the cards above already explain the result.
+function closingLine(typeId) {
+  return PERSONALITY_TYPES.find((type) => type.id === typeId).closing;
 }
 
 // Summarises every quiz result into one MetaFor personality and saves it.
@@ -122,7 +120,6 @@ async function rebuildPersonality(userId) {
 
   const typeId = analysis?.typeId ?? ranking[0].id;
   const runnerUp = ranking.find((type) => type.id !== typeId);
-  const type = publicType(typeId);
 
   return savePersonality(userId, {
     typeId,
@@ -132,7 +129,7 @@ async function rebuildPersonality(userId) {
     headline:
       analysis?.headline ?? `So far you lean ${traits.map((trait) => trait.poleName).join(", ")}.`,
     insights: analysis?.insights ?? traits.map((trait) => trait.trait),
-    summary: analysis?.summary ?? fallbackSummary(quizResults, type),
+    summary: analysis?.summary ?? closingLine(typeId),
     traits,
     quizResults,
     sources,
@@ -163,7 +160,8 @@ function formatPersonality(personality) {
     runnerUp: { ...publicType(personality.runnerUpId), match: personality.runnerUpMatch },
     headline: personality.headline,
     insights: personality.insights,
-    summary: personality.summary,
+    // Read live, so edits to a type's closing line show without a rebuild.
+    summary: personality.source === "llm" ? personality.summary : closingLine(personality.typeId),
     traits: personality.traits,
     quizResults: personality.quizResults,
     sources: personality.sources,
