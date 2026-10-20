@@ -11,8 +11,9 @@ const result = spawnSync(
     'node_modules/vitest/vitest.mjs',
     'run',
     'src/__tests__/Spotify.spec.js',
-    'src/__tests__/ListeningRoom.spec.js',
-    'src/__tests__/ListeningPlayer.spec.js',
+    'src/__tests__/SpotifyHistory.spec.js',
+    'src/__tests__/Dashboard.spec.js',
+    'src/__tests__/ArtworkModel.spec.js',
   ],
   { stdio: 'inherit', env: { ...process.env, TEMP: temp, TMP: temp } },
 )
