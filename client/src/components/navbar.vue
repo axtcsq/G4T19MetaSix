@@ -452,10 +452,9 @@ watch(
   /* Lines up with the header content above it. */
   padding: 10px max(32px, calc((100% - 1180px) / 2)) 18px;
   border-bottom: 1px solid #998ba155;
-  background: rgba(250, 248, 246, 0.94);
+  /* Solid: a blurred panel inside the blurred bar lets the page show through. */
+  background: #faf8f6;
   box-shadow: 0 12px 24px rgba(41, 35, 33, 0.12);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 .menu-link {
   padding: 12px 10px;
@@ -566,7 +565,7 @@ watch(
 }
 .dark .site-menu {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: rgba(23, 27, 39, 0.94);
+  background: #171b27;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 .dark .menu-link:hover {
