@@ -1,6 +1,6 @@
 // Browser-only Authorization Code + PKCE. No client secret belongs in this app.
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-const REDIRECT = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || `${location.origin}/listen`
+const REDIRECT = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || `${location.origin}/dashboard`
 const SESSION = 'metafor.spotify.session'
 const FLOW = 'metafor.spotify.flow'
 export const spotifyConfigured = Boolean(CLIENT_ID)
@@ -139,7 +139,10 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
       429: `Spotify needs a short break. Try again in ${response.headers.get('Retry-After') || 'a few'} seconds.`,
     }
     throw new Error(
-      messages[response.status] || 'Spotify could not complete that request. Please try again.',
+      messages[response.status] ||
+        (response.status >= 500
+          ? `Spotify is temporarily unavailable (HTTP ${response.status}). Try again shortly.`
+          : `Spotify rejected the request (HTTP ${response.status}). Try reconnecting your account.`),
     )
   }
   return response.status === 204 ? null : response.json()

@@ -13,7 +13,7 @@ try {
   page.on('pageerror', (error) => errors.push(error.message))
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 })
-    for (const path of ['/listen']) {
+    for (const path of ['/dashboard']) {
       await page.goto(`${base}${path}`)
       await page.getByRole('heading', { level: 1 }).waitFor()
       await page.getByRole('button', { name: 'Connect Spotify', exact: true }).waitFor()
@@ -80,18 +80,32 @@ try {
       },
     }
   })
-  await page.goto(`${base}/listen`)
-  await page.locator('.shelf-record').waitFor()
-  await page.locator('.shelf-record').click()
-  assert.equal(plays, 1)
-  await page.getByRole('heading', { name: song.name, exact: true }).waitFor()
+  await page.goto(`${base}/dashboard`)
+  await page.getByText('Browser test song', { exact: false }).first().waitFor()
+  assert.match(await page.locator('.sleeve-totals').innerText(), /1/)
+  assert.equal(await page.locator('.chart-radar').count(), 0)
+  await page.getByRole('heading', { name: 'Mood over time', exact: true }).waitFor()
+  await page.getByRole('heading', { name: 'Emotion profile', exact: true }).waitFor()
+  await page.getByRole('heading', { name: 'Genre mix', exact: true }).waitFor()
+  assert.equal(await page.locator('.daily-plays li').count(), 7)
+  assert.equal(await page.locator('.repeat-plays li').count(), 2)
+  assert.equal(await page.locator('.unavailable-note').count(), 3)
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 })
+    assert.equal(
+      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      true,
+    )
+    await page.screenshot({ path: `${out}/dashboard-restored-${width}.png`, fullPage: true })
+  }
+  await page.locator('.listening-artwork canvas').waitFor({ state: 'visible' })
+  await page.screenshot({ path: `${out}/dashboard-connected-390.png`, fullPage: true })
   failure = true
-  await page.goto(`${base}/listen`)
+  await page.goto(`${base}/dashboard`)
   await page.getByRole('button', { name: 'Retry history' }).waitFor()
   failure = false
   await page.getByRole('button', { name: 'Retry history' }).click()
-  await page.locator('.shelf-record').waitFor()
-  await page.goto(`${base}/listen`)
+  await page.locator('.song-list').waitFor()
   await page.getByRole('button', { name: 'Disconnect', exact: true }).click()
   assert.equal(await page.locator('.shelf-record').count(), 0)
   assert.equal(errors.length, 0, errors.join('\n'))
