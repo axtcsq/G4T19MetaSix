@@ -76,12 +76,12 @@ ${candidates}
 Then write, in the second person:
 - a one-sentence headline,
 - 3 short insights, each pointing to a specific pattern in the data above (an artist, a stat or a trait) and saying what it suggests about them,
-- a summary paragraph of 3 to 4 sentences that ties the patterns together.
+- a summary: a warm closing line of 1 to 2 sentences for their type, like a send-off. Don't list or repeat the quiz results, since the page already shows them.
 
 Rules:
 - Keep it warm and light. This is for fun: do not diagnose, mention mental health conditions or give advice.
 - If the mood logs show many sad, anxious or angry entries, you may gently acknowledge that music seems to be a comfort, but do not dwell on it.
-- Headline at most 140 characters, each insight at most 240 characters, summary at most 700 characters.
+- Headline at most 140 characters, each insight at most 240 characters, summary at most 280 characters.
 
 Reply with JSON only, no markdown, in this shape:
 {"typeId": "...", "headline": "...", "insights": ["...", "...", "..."], "summary": "..."}`;
@@ -100,7 +100,7 @@ function isValidAnalysis(analysis, ranking) {
   return (
     allowed.includes(analysis?.typeId) &&
     isShortText(analysis.headline, 140) &&
-    isShortText(analysis.summary, 700) &&
+    isShortText(analysis.summary, 280) &&
     Array.isArray(analysis.insights) &&
     analysis.insights.length >= 2 &&
     analysis.insights.length <= 4 &&
