@@ -1,5 +1,4 @@
 import { api } from './http'
-
 const quizPath = (quizId) => `/api/quiz/${encodeURIComponent(quizId)}`
 
 export function getQuizzes() {
