@@ -67,6 +67,20 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
           >Sign in</RouterLink
         >
       </nav>
+
+      <!-- Outside the nav so it stays in the top row on phones, where the links scroll.
+           Placeholder until the profile page exists; swap for a RouterLink then. -->
+      <button
+        type="button"
+        class="profile-button"
+        aria-label="Profile (coming soon)"
+        title="Profile (coming soon)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 21a8 8 0 0 1 16 0" />
+        </svg>
+      </button>
     </div>
   </header>
 </template>
@@ -170,6 +184,7 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
 }
 .header-nav {
   display: flex;
+  margin-left: auto;
   align-items: center;
   gap: clamp(15px, 3vw, 34px);
 }
@@ -195,6 +210,37 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   justify-content: center;
   gap: 11px;
   padding: 0 20px;
+}
+.profile-button {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #998ba155;
+  border-radius: 50%;
+  color: #625a53;
+  background: #fff;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.profile-button:hover {
+  border-color: #cd6651;
+  color: #cd6651;
+}
+.profile-button:focus-visible {
+  outline: 2px solid #cd6651;
+  outline-offset: 3px;
+}
+.profile-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .site-header-dashboard {
   border-bottom: 0;
@@ -227,5 +273,12 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   .site-header:not(.site-header-landing) .header-nav { width: 100%; justify-content: space-between; gap: 6px; overflow-x: auto; scrollbar-width: none; }
   .site-header:not(.site-header-landing) .header-link { flex-shrink: 0; font-size: 0.8rem; }
   .site-header:not(.site-header-landing) .header-cta { flex-shrink: 0; min-height: 38px; }
+  .header-inner { gap: 12px; }
+  .brand-group { gap: 10px; }
+  .profile-button { width: 38px; height: 38px; }
+
+  /* Top row: brand and toggle on the left, profile on the right; links below. */
+  .site-header:not(.site-header-landing) .profile-button { order: 1; margin-left: auto; }
+  .site-header:not(.site-header-landing) .header-nav { order: 2; }
 }
 </style>
