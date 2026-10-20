@@ -202,7 +202,8 @@ Drafts in `server/data/personalityTypes.js`. Each has a name, tagline, longer de
   - **Mood × music:** the user's most-logged mood next to their tracks' average happiness, e.g. "so your music sounds moodier than you feel".
   - The match percentage.
 - **How it adds up:** one row per quiz (its result links to the result page) plus a Spotify row, each with chips for the traits it pushed towards. Dark chips are strong leans. The last row, *All together*, is the combined result. The ⓘ icon explains the 70/30 blend on hover or tap.
-- **Summary:** a paragraph under the section, written by the AI, or a sentence listing the quiz results when there is no AI.
+- **Closing line:** a short send-off under the section. Each type has its own `closing` line in `personalityTypes.js` (for example, The Spark: "Keep the aux close and the playlist ready…"). When the AI is set up it writes its own 1–2 sentence closing instead. It doesn't repeat the quiz results, since the cards above already show them.
+- **Dark mode:** the cards on the Patterns band turn into warm, frosted espresso glass and the waves are dimmed slightly, so the band matches the navy page.
 
 ### Share card
 
