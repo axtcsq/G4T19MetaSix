@@ -27,6 +27,9 @@ beforeAll(async () => {
     } else if (mode === 'expired' && req.headers.authorization === 'Bearer original-access') {
       res.writeHead(401)
       res.end('{}')
+    } else if (mode === 'unavailable') {
+      res.writeHead(503)
+      res.end('{}')
     } else if (mode === 'limited') {
       res.writeHead(429, { 'Retry-After': '12' })
       res.end('{}')
@@ -166,5 +169,10 @@ describe('Spotify HTTP integration against a local stand-in', () => {
     api.clearSpotifySession()
     await expect(api.searchSpotify('song')).rejects.toThrow('Connect Spotify')
     expect(calls).toHaveLength(0)
+  })
+  it('identifies temporary provider failures with their HTTP status', async () => {
+    session(Date.now() + 3600000)
+    mode = 'unavailable'
+    await expect(api.recentSpotify()).rejects.toThrow('temporarily unavailable (HTTP 503)')
   })
 })

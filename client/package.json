@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "^4.11.3",
+    "p5": "^2.3.4",
     "pinia": "^4.0.3",
     "tailwindcss": "^4.3.3",
     "three": "^0.186.1",

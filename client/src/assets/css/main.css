@@ -37,6 +37,10 @@
 
 /* Light theme */
 :root {
+  --scroll-thumb: #9a8d85;
+  --scroll-track: #f4f1ee;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  scrollbar-width: auto;
   --ui-primary: var(--color-brand-500);
   --ui-radius: 0.5rem;
 
@@ -47,6 +51,30 @@
   --ui-text: #292321;
   --ui-text-muted: #756c68;
   --ui-border: #e7dcd7;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border: 3px solid var(--scroll-track);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #756c68;
+}
+*::-webkit-scrollbar-thumb:active {
+  background: #655e56;
+}
+@media (forced-colors: active) {
+  :root {
+    scrollbar-color: auto;
+  }
 }
 
 /* Dark theme */
