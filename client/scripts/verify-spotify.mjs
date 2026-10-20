@@ -12,6 +12,7 @@ const result = spawnSync(
     'run',
     'src/__tests__/Spotify.spec.js',
     'src/__tests__/ListeningRoom.spec.js',
+    'src/__tests__/ListeningPlayer.spec.js',
   ],
   { stdio: 'inherit', env: { ...process.env, TEMP: temp, TMP: temp } },
 )
