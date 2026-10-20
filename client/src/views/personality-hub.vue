@@ -460,6 +460,20 @@ onMounted(loadPage)
   box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
+/* In dark mode the plum cards clash with the warm waves, so cards on the band
+   turn into warm, frosted espresso glass that lets the waves glow through.
+   The tokens are set on the card so its trait bars and chips follow. */
+.dark .pattern-card {
+  --pq-surface: rgba(38, 25, 27, 0.8);
+  --pq-rail: rgba(255, 205, 166, 0.14);
+  --pq-peach: rgba(255, 205, 166, 0.12);
+  --pq-tint: rgba(255, 205, 166, 0.08);
+  --pq-line: rgba(255, 205, 166, 0.14);
+  --pq-border-strong: rgba(255, 205, 166, 0.22);
+  border: 1px solid rgba(255, 205, 166, 0.14);
+  backdrop-filter: blur(14px) saturate(1.1);
+}
+
 /* Same two equal columns as the row below, so the cards line up. */
 .pattern-row {
   display: grid;
