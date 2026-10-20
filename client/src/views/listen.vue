@@ -317,10 +317,17 @@ onBeforeUnmount(() => {
               @click="room.selectRecord(item)"
             >
               <div class="shelf-art">
-                <img :src="item.album?.images?.[0]?.url" :alt="item.album.name" loading="lazy" />
+                <img
+                  v-if="item.album?.images?.[0]?.url"
+                  :src="item.album.images[0].url"
+                  :alt="item.album?.name || item.name"
+                  loading="lazy"
+                />
               </div>
               <strong>{{ item.name }}</strong
-              ><span class="sr-only">{{ item.artists[0].name }}</span>
+              ><span class="sr-only">{{
+                item.artists?.map((artist) => artist.name).join(', ')
+              }}</span>
             </button>
           </div>
         </template>

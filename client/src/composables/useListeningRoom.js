@@ -123,11 +123,13 @@ async function connectPlayer() {
     'playback_error',
   ]) {
     player.addListener(event, ({ message }) => {
+      if (version !== connectVersion) return
       error.value =
         event === 'account_error' ? 'Spotify Premium is required to listen here.' : message
     })
   }
   player.addListener('autoplay_failed', () => {
+    if (version !== connectVersion) return
     error.value = 'Your browser paused audio. Press play to start listening.'
   })
   player.addListener('ready', ({ device_id }) => {
@@ -138,11 +140,15 @@ async function connectPlayer() {
     }
   })
   player.addListener('not_ready', () => {
+    if (version !== connectVersion) return
     ready.value = false
     device = null
     paused.value = true
   })
-  player.addListener('player_state_changed', applyState)
+  // Replaced players can deliver late events after reconnect or disconnect.
+  player.addListener('player_state_changed', (state) => {
+    if (version === connectVersion) applyState(state)
+  })
   const instance = player
   let timer
   try {
@@ -174,7 +180,8 @@ async function connectPlayer() {
   poll = setInterval(async () => {
     if (document.hidden) return
     try {
-      applyState(await instance.getCurrentState())
+      const state = await instance.getCurrentState()
+      if (version === connectVersion) applyState(state)
     } catch {
       /* SDK events report connection failures. */
     }

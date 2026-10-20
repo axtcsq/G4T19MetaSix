@@ -53,8 +53,13 @@ function box(w, h, d, mat, x, y, z, parent = scene) {
   return item
 }
 function updateCover() {
-  if (!labelMaterial || !props.artwork) return
+  if (!labelMaterial) return
+  // Clearing a song also invalidates any cover still loading for the previous song.
   const version = ++textureVersion
+  labelMaterial.map?.dispose()
+  labelMaterial.map = null
+  labelMaterial.needsUpdate = true
+  if (!props.artwork) return
   new THREE.TextureLoader().load(
     props.artwork,
     (texture) => {
@@ -69,6 +74,7 @@ function updateCover() {
     },
     undefined,
     () => {
+      if (disposed || version !== textureVersion) return
       labelMaterial.map?.dispose()
       labelMaterial.map = null
       labelMaterial.needsUpdate = true
@@ -80,7 +86,6 @@ function resetView() {
   controls?.target.set(0, 0, 0)
   controls?.update()
 }
-defineExpose({ resetView })
 watch(() => props.artwork, updateCover)
 watch(
   () => props.color,
@@ -102,7 +107,7 @@ onMounted(() => {
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
     renderer.setClearColor(0x000000, 0)
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.3
     scene.add(new THREE.HemisphereLight(0xfffaf1, 0x747b71, 3))
