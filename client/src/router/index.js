@@ -5,11 +5,17 @@ import DailyMood from '../views/daily-mood.vue'
 import Login from '../views/login.vue'
 import Signup from '../views/signup.vue'
 import Canvas from '../views/canvas.vue'
+import Dashboard from '../views/dashboard.vue'
 import PersonalityHub from '../views/personality-hub.vue'
 import PersonalityQuiz from '../views/personality-quiz.vue'
 import PersonalityResult from '../views/personality-result.vue'
 
 const routes = [
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
+  },
   {
     path: '/listen',
     name: 'listen',
