@@ -276,6 +276,12 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   .header-inner { gap: 12px; }
   .brand-group { gap: 10px; }
   .profile-button { width: 38px; height: 38px; }
+  .brand, .header-cta { white-space: nowrap; }
+  .theme-toggle { width: 54px; height: 30px; padding: 0 6px; }
+  .theme-thumb { width: 22px; height: 22px; }
+  .theme-toggle.is-dark .theme-thumb { transform: translateX(24px); }
+  .theme-icon { width: 14px; height: 14px; }
+  .site-header-landing .header-cta { padding-inline: 12px; }
 
   /* Top row: brand and toggle on the left, profile on the right; links below. */
   .site-header:not(.site-header-landing) .profile-button { order: 1; margin-left: auto; }
