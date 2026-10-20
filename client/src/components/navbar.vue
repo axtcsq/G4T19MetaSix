@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 // Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
 import { useColorMode } from '#imports'
@@ -14,15 +14,84 @@ function toggleTheme() {
 }
 const isLanding = computed(() => route.path === '/')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
+
+const links = [
+  { to: '/', label: 'Home' },
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/daily-mood', label: 'Daily Mood' },
+  { to: '/listen', label: 'Listening room' },
+  { to: '/canvas', label: 'Canvas' },
+  { to: '/quiz', label: 'Personality' },
+]
+
+// The links fold into a menu as soon as they no longer fit on one row. The nav
+// stays in the page (hidden) while folded, so its full width can still be measured.
+const header = ref(null)
+const headerInner = ref(null)
+const brandGroup = ref(null)
+const nav = ref(null)
+const profile = ref(null)
+const isCollapsed = ref(false)
+const menuOpen = ref(false)
+let resizeObserver
+
+function updateCollapsed() {
+  if (isLanding.value || !nav.value) {
+    isCollapsed.value = false
+    return
+  }
+  const gap = parseFloat(getComputedStyle(headerInner.value).columnGap) || 0
+  const needed =
+    brandGroup.value.offsetWidth + nav.value.scrollWidth + profile.value.offsetWidth + gap * 2
+  isCollapsed.value = needed > headerInner.value.clientWidth
+  if (!isCollapsed.value) menuOpen.value = false
+}
+
+function closeMenu() {
+  menuOpen.value = false
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && menuOpen.value) closeMenu()
+}
+
+function onPointerDown(event) {
+  if (menuOpen.value && !header.value.contains(event.target)) closeMenu()
+}
+
+onMounted(() => {
+  resizeObserver = new ResizeObserver(updateCollapsed)
+  resizeObserver.observe(header.value)
+  // Web fonts change the link widths once they load.
+  document.fonts?.ready.then(updateCollapsed)
+  document.addEventListener('keydown', onKeydown)
+  document.addEventListener('pointerdown', onPointerDown)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  document.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointerdown', onPointerDown)
+})
+
+watch(
+  () => route.fullPath,
+  async () => {
+    closeMenu()
+    await nextTick()
+    updateCollapsed()
+  },
+)
 </script>
 
 <template>
   <header
+    ref="header"
     class="site-header"
     :class="{ 'site-header-landing': isLanding, 'site-header-dashboard': isListeningPage }"
   >
-    <div class="header-inner">
-      <div class="brand-group">
+    <div ref="headerInner" class="header-inner">
+      <div ref="brandGroup" class="brand-group">
         <RouterLink class="brand" to="/" aria-label="MetaFor home">
           MetaFor<span class="brand-mark">®</span>
         </RouterLink>
@@ -53,13 +122,18 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
         <RouterLink class="header-cta glass-action" to="/signup">Get started</RouterLink>
       </nav>
 
-      <nav v-else class="header-nav" aria-label="Main navigation">
-        <RouterLink class="header-link" to="/">Home</RouterLink>
-        <RouterLink class="header-link" to="/dashboard">Dashboard</RouterLink>
-        <RouterLink class="header-link" to="/daily-mood">Daily Mood</RouterLink>
-        <RouterLink class="header-link" to="/listen">Listening room</RouterLink>
-        <RouterLink class="header-link" to="/canvas">Canvas</RouterLink>
-        <RouterLink class="header-link" to="/quiz">Personality</RouterLink>
+      <nav
+        v-else
+        ref="nav"
+        class="header-nav"
+        :class="{ 'is-collapsed': isCollapsed }"
+        aria-label="Main navigation"
+        :aria-hidden="isCollapsed || undefined"
+        :inert="isCollapsed"
+      >
+        <RouterLink v-for="link in links" :key="link.to" class="header-link" :to="link.to">
+          {{ link.label }}
+        </RouterLink>
         <RouterLink
           class="header-cta"
           :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
@@ -68,9 +142,22 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
         >
       </nav>
 
-      <!-- Outside the nav so it stays in the top row on phones, where the links scroll.
-           Placeholder until the profile page exists; swap for a RouterLink then. -->
       <button
+        v-if="isCollapsed"
+        type="button"
+        class="menu-button"
+        :class="{ 'is-open': menuOpen }"
+        :aria-expanded="menuOpen"
+        aria-controls="site-menu"
+        :aria-label="menuOpen ? 'Close menu' : 'Open menu'"
+        @click="menuOpen = !menuOpen"
+      >
+        <span class="menu-bars" aria-hidden="true" />
+      </button>
+
+      <!-- Placeholder until the profile page exists; swap for a RouterLink then. -->
+      <button
+        ref="profile"
         type="button"
         class="profile-button"
         aria-label="Profile (coming soon)"
@@ -82,6 +169,19 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
         </svg>
       </button>
     </div>
+
+    <nav
+      v-if="isCollapsed"
+      v-show="menuOpen"
+      id="site-menu"
+      class="site-menu"
+      aria-label="Main navigation"
+    >
+      <RouterLink v-for="link in links" :key="link.to" class="menu-link" :to="link.to">
+        {{ link.label }}
+      </RouterLink>
+      <RouterLink class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
+    </nav>
   </header>
 </template>
 
@@ -189,6 +289,8 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   gap: clamp(15px, 3vw, 34px);
 }
 .header-link {
+  flex-shrink: 0;
+  white-space: nowrap;
   color: #625a53;
   font-size: 0.94rem;
   font-weight: 600;
@@ -242,6 +344,119 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+/* Folded away, but still laid out at full width so it can be measured. */
+.header-nav.is-collapsed {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+.menu-button {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  border: 1px solid #998ba155;
+  border-radius: 12px;
+  color: #625a53;
+  background: #fff;
+  cursor: pointer;
+}
+.menu-button:hover {
+  border-color: #cd6651;
+  color: #cd6651;
+}
+.menu-button:focus-visible {
+  outline: 2px solid #cd6651;
+  outline-offset: 3px;
+}
+/* Three bars that turn into a cross when the menu is open. */
+.menu-bars,
+.menu-bars::before,
+.menu-bars::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+.menu-bars {
+  position: relative;
+}
+.menu-bars::before,
+.menu-bars::after {
+  position: absolute;
+  left: 0;
+  content: '';
+}
+.menu-bars::before {
+  top: -6px;
+}
+.menu-bars::after {
+  top: 6px;
+}
+.menu-button.is-open .menu-bars {
+  background: transparent;
+}
+.menu-button.is-open .menu-bars::before {
+  transform: translateY(6px) rotate(45deg);
+}
+.menu-button.is-open .menu-bars::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+.site-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Lines up with the header content above it. */
+  padding: 10px max(32px, calc((100% - 1180px) / 2)) 18px;
+  border-bottom: 1px solid #998ba155;
+  background: #faf8f6;
+  box-shadow: 0 12px 24px rgba(41, 35, 33, 0.12);
+}
+.menu-link {
+  padding: 12px 10px;
+  border-radius: 10px;
+  color: #625a53;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.menu-link:hover {
+  color: #cd6651;
+  background: #f0eae6;
+}
+.menu-link.router-link-exact-active {
+  color: #a54b3b;
+  background: #f5e6e0;
+}
+.menu-link:focus-visible {
+  outline: 2px solid #cd6651;
+  outline-offset: -2px;
+}
+.menu-cta {
+  align-self: flex-start;
+  min-width: 160px;
+  margin-top: 10px;
+}
+/* Keep the menu and profile buttons together, closer than the header's gap. */
+.menu-button + .profile-button {
+  margin-left: -14px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-bars,
+  .menu-bars::before,
+  .menu-bars::after {
+    transition: none;
+  }
+}
 .site-header-dashboard {
   border-bottom: 0;
 }
@@ -266,16 +481,13 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   .brand { font-size: 1.48rem; }
   .header-nav { gap: 14px; }
   .header-cta { min-height: 42px; padding-inline: 17px; }
-  .site-header:not(.site-header-landing) .header-link { font-size: 0.86rem; }
-
-  /* The full link list doesn't fit beside the logo on phones, so it moves to its own row. */
-  .site-header:not(.site-header-landing) .header-inner { flex-wrap: wrap; row-gap: 6px; padding-block: 10px; }
-  .site-header:not(.site-header-landing) .header-nav { width: 100%; justify-content: space-between; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-  .site-header:not(.site-header-landing) .header-link { flex-shrink: 0; font-size: 0.8rem; }
-  .site-header:not(.site-header-landing) .header-cta { flex-shrink: 0; min-height: 38px; }
   .header-inner { gap: 12px; }
   .brand-group { gap: 10px; }
-  .profile-button { width: 38px; height: 38px; }
+  .profile-button,
+  .menu-button { width: 38px; height: 38px; }
+  .menu-button + .profile-button { margin-left: -4px; }
+  .site-menu { padding-inline: 18px; }
+  .menu-cta { align-self: stretch; }
   .brand, .header-cta { white-space: nowrap; }
   .theme-toggle { width: 54px; height: 30px; padding: 0 6px; }
   .theme-thumb { width: 22px; height: 22px; }
@@ -283,8 +495,5 @@ const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.
   .theme-icon { width: 14px; height: 14px; }
   .site-header-landing .header-cta { padding-inline: 12px; }
 
-  /* Top row: brand and toggle on the left, profile on the right; links below. */
-  .site-header:not(.site-header-landing) .profile-button { order: 1; margin-left: auto; }
-  .site-header:not(.site-header-landing) .header-nav { order: 2; }
 }
 </style>
