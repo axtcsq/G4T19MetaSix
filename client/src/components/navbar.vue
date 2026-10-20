@@ -512,6 +512,75 @@ watch(
   outline-offset: 4px;
 }
 
+/* Dark mode: the bar matches the app's navy page and turns into dark glass on scroll. */
+.dark .site-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: #171b27;
+}
+.dark .site-header.is-scrolled {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  background: rgba(23, 27, 39, 0.72);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.dark .brand {
+  color: #f5f1ee;
+}
+.dark .header-link,
+.dark .menu-link {
+  color: #c9c2cf;
+}
+.dark .header-link:hover,
+.dark .menu-link:hover {
+  color: #eaa596;
+}
+.dark .header-link.router-link-exact-active,
+.dark .menu-link.router-link-exact-active {
+  color: #eaa596;
+}
+.dark .theme-toggle {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #222839;
+}
+.dark .theme-thumb {
+  background: #3a4256;
+}
+.dark .theme-toggle.is-dark .theme-thumb {
+  background: #30384a;
+}
+.dark .theme-icon {
+  stroke: #7d7888;
+}
+.dark .theme-toggle.is-dark .theme-moon {
+  stroke: #ffcda6;
+}
+.dark .profile-button,
+.dark .menu-button {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #c9c2cf;
+  background: #222839;
+}
+.dark .profile-button:hover,
+.dark .menu-button:hover {
+  border-color: #db806d;
+  color: #eaa596;
+}
+.dark .site-menu {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: rgba(23, 27, 39, 0.94);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+.dark .menu-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.dark .menu-link.router-link-exact-active {
+  background: rgba(219, 128, 109, 0.16);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .dark .site-header.is-scrolled {
+    background: #171b27;
+  }
+}
+
 @media (max-width: 600px) {
   .header-inner { width: calc(100% - 36px); min-height: 66px; }
   .brand { font-size: 1.48rem; }
