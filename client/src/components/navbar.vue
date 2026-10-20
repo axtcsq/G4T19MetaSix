@@ -33,7 +33,18 @@ const nav = ref(null)
 const profile = ref(null)
 const isCollapsed = ref(false)
 const menuOpen = ref(false)
+// Once the page scrolls, the bar turns into frosted glass over the content.
+const isScrolled = ref(false)
 let resizeObserver
+let scrollFrame
+
+function onScroll() {
+  if (scrollFrame) return
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = null
+    isScrolled.value = window.scrollY > 8
+  })
+}
 
 function updateCollapsed() {
   if (isLanding.value || !nav.value) {
@@ -66,12 +77,16 @@ onMounted(() => {
   document.fonts?.ready.then(updateCollapsed)
   document.addEventListener('keydown', onKeydown)
   document.addEventListener('pointerdown', onPointerDown)
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
 })
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   document.removeEventListener('keydown', onKeydown)
   document.removeEventListener('pointerdown', onPointerDown)
+  window.removeEventListener('scroll', onScroll)
+  cancelAnimationFrame(scrollFrame)
 })
 
 watch(
@@ -88,7 +103,11 @@ watch(
   <header
     ref="header"
     class="site-header"
-    :class="{ 'site-header-landing': isLanding, 'site-header-dashboard': isListeningPage }"
+    :class="{
+      'site-header-landing': isLanding,
+      'site-header-dashboard': isListeningPage,
+      'is-scrolled': isScrolled || menuOpen,
+    }"
   >
     <div ref="headerInner" class="header-inner">
       <div ref="brandGroup" class="brand-group">
@@ -186,15 +205,30 @@ watch(
 </template>
 
 <style scoped>
+/* Sticks to the top of the window; turns to frosted glass once you scroll. */
 .site-header {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   width: 100%;
   border-bottom: 1px solid #998ba155;
   background: #faf8f6;
+  transition:
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
 }
-.site-header-landing {
-  background: #faf8f6;
+.site-header.is-scrolled {
+  border-bottom-color: rgba(153, 139, 161, 0.25);
+  background: rgba(250, 248, 246, 0.72);
+  box-shadow: 0 6px 20px rgba(41, 35, 33, 0.08);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .site-header.is-scrolled {
+    background: #faf8f6;
+  }
 }
 .header-inner {
   display: flex;
@@ -418,8 +452,10 @@ watch(
   /* Lines up with the header content above it. */
   padding: 10px max(32px, calc((100% - 1180px) / 2)) 18px;
   border-bottom: 1px solid #998ba155;
-  background: #faf8f6;
+  background: rgba(250, 248, 246, 0.94);
   box-shadow: 0 12px 24px rgba(41, 35, 33, 0.12);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 .menu-link {
   padding: 12px 10px;
