@@ -169,10 +169,10 @@ export const musicalNeeds = {
       headline: `Based on the quiz, music sits at the ${level.short} level of your Maslow’s Mixtape.`,
       description: level.meaning,
       justification: [
-        `${percents[top]}% of your answers and playlists point to music as ${level.short.toLowerCase()}.`,
+        `${percents[top]}% of your ${playlists.length ? "answers and playlists" : "answers"} point to music as ${level.short.toLowerCase()}.`,
         fromPlaylists.length
           ? `Your playlists back this up: ${fromPlaylists.join(", ")}.`
-          : `We looked at ${playlists.length} of your playlists, and your answers carried this result.`,
+          : "Your answers carried this result.",
       ],
       // Listed from the top of the pyramid down.
       breakdown: [...ORDER].reverse().map((key) => shareRow(LEVELS[key].short, percents[key])),
