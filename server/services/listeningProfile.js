@@ -1,5 +1,6 @@
 import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
+import { artistGenres } from "./artistGenres.js";
 
 // Builds the listening profile the quizzes and patterns read, from the user's
 // own plays in the listens collection. It keeps the shape of the old mock
@@ -43,17 +44,18 @@ export async function buildListeningProfile(user) {
     }));
 
   const totalPlays = plays.reduce((sum, play) => sum + play.plays, 0);
+  const topArtistNames = [...artistPlays]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_ARTISTS)
+    .map(([name]) => name);
+  const genres = await artistGenres(topArtistNames);
 
   return {
     displayName: user.displayName,
-    // Genres aren't stored with the listens, so the quizzes fall back to
-    // their "no genre" wording.
-    topArtists: [...artistPlays]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, TOP_ARTISTS)
-      .map(([name]) => ({ name, genres: [] })),
+    // Genres come from Last.fm tags, since Spotify no longer returns them.
+    topArtists: topArtistNames.map((name) => ({ name, genres: genres[name] })),
     topTracks,
-    // Playlist names aren't stored either.
+    // Playlist names aren't stored, so Maslow's Mixtape uses the answers alone.
     playlists: [],
     // Share of plays that were a song already played in the window.
     repeatListenRatio: totalPlays ? (totalPlays - plays.length) / totalPlays : null,
