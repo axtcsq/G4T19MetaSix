@@ -124,16 +124,13 @@ function resetPointer(event) {
 
 <style scoped>
 .landing-page {
-  --brand: #cd6651;
-  --peach: #ffd3ac;
-  --lavender: #998ba1;
-  --brown: #7d4737;
-  --ink: #292321;
-  --line: #b9aaa2;
+  --brand: var(--ui-primary);
+  --brown: var(--ui-primary);
+  --ink: var(--ui-text);
   min-height: calc(100vh - 77px);
   overflow: hidden;
   color: var(--ink);
-  background: #faf8f6;
+  background: var(--ui-bg);
 }
 
 .landing-shell {
@@ -175,7 +172,7 @@ function resetPointer(event) {
 .intro-description {
   max-width: 550px;
   margin: 0;
-  color: #4e4642;
+  color: var(--ui-text-muted);
   font-family: var(--font-serif);
   font-size: 1.08rem;
   line-height: 1.58;
@@ -249,9 +246,9 @@ function resetPointer(event) {
   align-items: center;
   justify-content: center;
   padding: 28px 25px;
-  border: 1px solid rgba(118, 62, 50, 0.18);
+  border: 1px solid var(--ui-border);
   border-radius: 16px;
-  background: linear-gradient(180deg, #fffaf6 0%, #fdf1e8 100%);
+  background: var(--ui-bg-elevated);
   box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
   text-align: center;
 }
@@ -321,7 +318,7 @@ function resetPointer(event) {
 .feature-card p {
   max-width: 260px;
   margin: 0;
-  color: #6f5d55;
+  color: var(--ui-text-muted);
   font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.55;
