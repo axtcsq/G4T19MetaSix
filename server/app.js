@@ -11,6 +11,7 @@ import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import spotifyRoutes from "./routes/spotifyRoutes.js";
+import syncRoutes from "./routes/syncRoutes.js";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -108,6 +109,7 @@ app.use("/api/spotify", requireUser, spotifyRoutes);
 
 // Listening history, from the listens collection
 app.use("/api/listens", requireUser, listenRoutes);
+app.use("/api/sync", requireUser, syncRoutes);
 
 // Mood routes
 app.use("/api/moods", requireUser, moodRoutes);
