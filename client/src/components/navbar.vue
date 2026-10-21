@@ -1,12 +1,24 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useListeningRoom } from '@/composables/useListeningRoom'
 // Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
 import { useColorMode } from '#imports'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
+
+async function logOut() {
+  closeMenu()
+  // Stop the player and clear the user's songs before the session ends.
+  useListeningRoom().disconnect()
+  await auth.logout()
+  router.push('/')
+}
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
@@ -141,7 +153,9 @@ watch(
       </div>
 
       <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
-        <RouterLink class="header-cta glass-action" to="/signup">Get started</RouterLink>
+        <RouterLink class="header-cta glass-action" :to="auth.user ? '/dashboard' : '/login'">{{
+          auth.user ? 'Open MetaFor' : 'Get started'
+        }}</RouterLink>
       </nav>
 
       <nav
@@ -156,7 +170,17 @@ watch(
         <RouterLink v-for="link in links" :key="link.to" class="header-link" :to="link.to">
           {{ link.label }}
         </RouterLink>
+        <button
+          v-if="auth.user"
+          type="button"
+          class="header-cta"
+          :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
+          @click="logOut"
+        >
+          Log out
+        </button>
         <RouterLink
+          v-else
           class="header-cta"
           :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
           to="/login"
@@ -182,8 +206,8 @@ watch(
         ref="profile"
         type="button"
         class="profile-button"
-        aria-label="Profile (coming soon)"
-        title="Profile (coming soon)"
+        :aria-label="auth.user ? `Logged in as ${auth.user.displayName}` : 'Profile (coming soon)'"
+        :title="auth.user ? `Logged in as ${auth.user.displayName}` : 'Profile (coming soon)'"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="8" r="4" />
@@ -202,7 +226,10 @@ watch(
       <RouterLink v-for="link in links" :key="link.to" class="menu-link" :to="link.to">
         {{ link.label }}
       </RouterLink>
-      <RouterLink class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
+      <button v-if="auth.user" type="button" class="header-cta glass-action menu-cta" @click="logOut">
+        Log out
+      </button>
+      <RouterLink v-else class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
     </nav>
   </header>
 </template>
@@ -515,6 +542,12 @@ watch(
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
+}
+/* Log out is a button, so it drops the browser's button look to match Sign in. */
+:where(button).header-cta {
+  border: 0;
+  font-family: var(--font-sans);
+  cursor: pointer;
 }
 .dashboard-signin:hover {
   background: #873c2f;

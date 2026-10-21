@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import App from '../App.vue'
 import router from '../router'
 
@@ -8,7 +9,7 @@ describe('App', () => {
   it('mounts the MetaFor shell with router context', async () => {
     const wrapper = mount(App, {
       global: {
-        plugins: [router],
+        plugins: [createPinia(), router],
         stubs: {
           UApp: { template: '<div><slot /></div>' },
         },
