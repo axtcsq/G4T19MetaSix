@@ -8,23 +8,8 @@ import { getPersonality } from '@/api/quiz'
 import { useAuthStore } from '@/stores/auth'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 import '@/assets/css/personality-theme.css'
-import starIcon from '@/assets/images/personality/star.svg'
-import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
-import poetIcon from '@/assets/images/personality/types/poet.png'
-import sparkIcon from '@/assets/images/personality/types/spark.png'
-import stormChaserIcon from '@/assets/images/personality/types/storm-chaser.png'
-import tideKeeperIcon from '@/assets/images/personality/types/tide-keeper.png'
-import wandererIcon from '@/assets/images/personality/types/wanderer.png'
+import { typeIcon } from '@/utils/typeIcons'
 defineOptions({ name: 'ProfilePage' })
-
-const typeIcons = {
-  'storm-chaser': stormChaserIcon,
-  'tide-keeper': tideKeeperIcon,
-  poet: poetIcon,
-  daydreamer: daydreamerIcon,
-  spark: sparkIcon,
-  wanderer: wandererIcon,
-}
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -115,7 +100,7 @@ async function logOut() {
             <div class="type-row">
               <img
                 class="type-icon"
-                :src="typeIcons[personality.type.id] ?? starIcon"
+                :src="typeIcon(personality.type.id)"
                 alt=""
                 width="64"
                 height="64"
