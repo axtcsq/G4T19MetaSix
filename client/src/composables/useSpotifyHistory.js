@@ -5,10 +5,20 @@ import {
   hasSpotifySession,
   recentSpotify,
 } from '@/api/spotify'
+import { getListens, usesStoredHistory } from '@/api/listens'
+
+// The dashboard shows the last 7 days or this month, whichever starts earlier.
+function historyStart(now = new Date()) {
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6)
+  return weekStart < monthStart ? weekStart : monthStart
+}
 
 // Dashboard history does not need the listening room's player or search state.
 export function useSpotifyHistory() {
   const connected = ref(false)
+  // 'spotify' for Spotify's last 50 plays, 'stored' for plays from our database.
+  const source = ref('spotify')
   const busy = ref(false)
   const history = ref([])
   const historyLoading = ref(false)
@@ -33,12 +43,15 @@ export function useSpotifyHistory() {
     historyLoading.value = true
     historyError.value = ''
     try {
-      const response = await recentSpotify()
+      const response =
+        source.value === 'stored'
+          ? await getListens({ from: historyStart(), limit: 2000 })
+          : await recentSpotify()
       if (version !== requestVersion) return
       history.value = (response?.items || []).filter((item) => item.track?.id)
     } catch (failure) {
       if (version !== requestVersion) return
-      if (!hasSpotifySession()) disconnect()
+      if (!hasSpotifySession() && !usesStoredHistory()) disconnect()
       historyError.value = failure.message || 'Listening history could not load. Try again.'
     } finally {
       if (version === requestVersion) historyLoading.value = false
@@ -51,7 +64,8 @@ export function useSpotifyHistory() {
     const version = requestVersion
     try {
       if (version !== requestVersion) return
-      connected.value = hasSpotifySession()
+      source.value = usesStoredHistory() ? 'stored' : 'spotify'
+      connected.value = hasSpotifySession() || source.value === 'stored'
       await refreshHistory()
     } catch (failure) {
       if (version === requestVersion) error.value = failure.message
@@ -76,6 +90,7 @@ export function useSpotifyHistory() {
 
   return {
     connected,
+    source,
     busy,
     history,
     historyLoading,

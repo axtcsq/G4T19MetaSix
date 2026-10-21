@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/footer.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
+import { getListens, usesStoredHistory } from '@/api/listens'
 
 const moodEmoji = { Happy: '😊', Relaxed: '😌', Sad: '😟', Anxious: '😰', Angry: '😠' }
 const moodTags = {
@@ -18,6 +19,8 @@ const loading = ref(true)
 const moodError = ref('')
 const spotifyError = ref('')
 const isConnectingSpotify = ref(false)
+// The test account's plays come from our database, one month at a time.
+const storedHistory = usesStoredHistory()
 
 const monthLabel = computed(() => shownMonth.value.toLocaleDateString('en-SG', { month: 'long', year: 'numeric' }))
 const monthCells = computed(() => {
@@ -76,11 +79,21 @@ async function loadData() {
   moodError.value = ''
   spotifyError.value = ''
   const moodsRequest = getMoods().then((data) => { moodLogs.value = data }).catch((error) => { moodError.value = error.message })
-  const spotifyRequest = hasSpotifySession()
-    ? recentSpotify().then((data) => { listens.value = data.items || [] }).catch((error) => { spotifyError.value = error.message })
-    : Promise.resolve()
+  const spotifyRequest = storedHistory
+    ? loadStoredMonth()
+    : hasSpotifySession()
+      ? recentSpotify().then((data) => { listens.value = data.items || [] }).catch((error) => { spotifyError.value = error.message })
+      : Promise.resolve()
   await Promise.all([moodsRequest, spotifyRequest])
   loading.value = false
+}
+function loadStoredMonth() {
+  const from = shownMonth.value
+  const to = new Date(from.getFullYear(), from.getMonth() + 1, 1)
+  spotifyError.value = ''
+  return getListens({ from, to, limit: 2000 })
+    .then((data) => { if (shownMonth.value === from) listens.value = data.items || [] })
+    .catch((error) => { spotifyError.value = error.message })
 }
 async function connectSpotify() {
   if (isConnectingSpotify.value) return
@@ -96,6 +109,7 @@ async function connectSpotify() {
 function moveMonth(amount) {
   shownMonth.value = new Date(shownMonth.value.getFullYear(), shownMonth.value.getMonth() + amount, 1)
   selectedDate.value = null
+  if (storedHistory) loadStoredMonth()
 }
 function selectDay(date) {
   selectedDate.value = selectedDate.value && keyForDate(selectedDate.value) === keyForDate(date) ? null : date
@@ -125,15 +139,15 @@ onMounted(loadData)
         <section class="month-summary" aria-live="polite">
           <span v-if="monthMoodCount">This month, you logged <strong>{{ monthMoodCount }}</strong> mood{{ monthMoodCount === 1 ? '' : 's' }}<template v-if="monthMoods"> and most often felt <strong>{{ monthMoods.toLowerCase() }}</strong></template>.</span>
           <span v-else>No mood logs for this month yet. Add one in Daily Mood.</span>
-          <span class="song-summary">{{ monthSongCount }} recent Spotify play{{ monthSongCount === 1 ? '' : 's' }} shown</span>
+          <span class="song-summary">{{ monthSongCount }} {{ storedHistory ? '' : 'recent Spotify ' }}play{{ monthSongCount === 1 ? '' : 's' }} shown</span>
         </section>
         <div v-if="spotifyError" class="spotify-connect-note" role="status">
           <p>{{ spotifyError }}</p>
-          <button v-if="!hasSpotifySession()" type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
+          <button v-if="!hasSpotifySession() && !storedHistory" type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
             {{ isConnectingSpotify ? 'Connecting…' : 'Connect Spotify' }}
           </button>
         </div>
-        <div v-else-if="!hasSpotifySession()" class="spotify-connect-note">
+        <div v-else-if="!hasSpotifySession() && !storedHistory" class="spotify-connect-note">
           <p>Connect Spotify to see your recent songs. Spotify provides up to 50 recent plays here.</p>
           <button type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
             {{ isConnectingSpotify ? 'Connecting…' : 'Connect Spotify' }}

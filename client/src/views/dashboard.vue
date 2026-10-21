@@ -8,7 +8,7 @@ defineOptions({ name: 'ListeningDashboard' })
 
 const period = ref('weekly')
 const spotify = useSpotifyHistory()
-const { connected, busy, history, historyLoading, historyError, error } = spotify
+const { connected, source, busy, history, historyLoading, historyError, error } = spotify
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 onMounted(() => {
@@ -25,7 +25,9 @@ onMounted(() => {
           <h1>Your listening portrait</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
-            ><span>Spotify recent history</span>
+            ><span>{{
+              source === 'stored' ? 'Test account listening history' : 'Spotify recent history'
+            }}</span>
           </p>
         </div>
         <div class="dashboard-toolbar" data-ui>
