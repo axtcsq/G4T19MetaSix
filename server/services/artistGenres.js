@@ -8,6 +8,8 @@ const MAX_GENRES = 3;
 // Tags used by fewer listeners than this (Last.fm scores 0 to 100) are noise.
 const MIN_COUNT = 10;
 const CACHE_MS = 7 * 24 * 60 * 60 * 1000;
+// Lookups run a few at a time, to stay within Last.fm's rate limit.
+const BATCH_SIZE = 5;
 
 // Popular tags that describe the listener or the artist, not the music.
 const NOT_GENRES = new Set([
@@ -34,12 +36,18 @@ const NOT_GENRES = new Set([
   "german",
   "french",
   "irish",
+  "italian",
+  "spanish",
+  "dutch",
+  "germany",
+  "japan",
+  "korea",
 ]);
 
 const cache = new Map();
 
 function isGenre(tag) {
-  return !NOT_GENRES.has(tag) && !/^\d0s$|^\d{4}s?$/.test(tag);
+  return tag.length > 2 && !NOT_GENRES.has(tag) && !/^\d0s$|^\d{4}s?$/.test(tag);
 }
 
 async function fetchGenres(artist) {
@@ -56,34 +64,43 @@ async function fetchGenres(artist) {
     throw new Error(`Last.fm ${body.error ?? response.status}: ${body.message ?? "request failed"}`);
   }
 
+  // weight is how strongly Last.fm listeners tie the tag to the artist, 0 to 1.
   return (body.toptags?.tag ?? [])
     .filter((tag) => Number(tag.count) >= MIN_COUNT)
-    .map((tag) => tag.name.trim().toLowerCase())
-    .filter(isGenre)
+    .map((tag) => ({ name: tag.name.trim().toLowerCase(), weight: Number(tag.count) / 100 }))
+    .filter((tag) => isGenre(tag.name))
     .slice(0, MAX_GENRES);
 }
 
-// Returns { [artist name]: [genre, ...] }, looking up each artist at most once a week.
+async function genresFor(name) {
+  const cached = cache.get(name);
+  if (cached && Date.now() - cached.at < CACHE_MS) return cached.genres;
+
+  try {
+    const genres = await fetchGenres(name);
+    cache.set(name, { genres, at: Date.now() });
+    return genres;
+  } catch (error) {
+    // Not cached, so the next request tries again.
+    console.error(`[Genres] Could not get tags for ${name}:`, error.message);
+    return [];
+  }
+}
+
+// Returns { [artist name]: [{ name, weight }, ...] }, looking up each artist at
+// most once a week.
 export async function artistGenres(names) {
   if (!process.env.LASTFM_API_KEY) {
     return Object.fromEntries(names.map((name) => [name, []]));
   }
 
-  const entries = await Promise.all(
-    names.map(async (name) => {
-      const cached = cache.get(name);
-      if (cached && Date.now() - cached.at < CACHE_MS) return [name, cached.genres];
-
-      try {
-        const genres = await fetchGenres(name);
-        cache.set(name, { genres, at: Date.now() });
-        return [name, genres];
-      } catch (error) {
-        // Not cached, so the next request tries again.
-        console.error(`[Genres] Could not get tags for ${name}:`, error.message);
-        return [name, []];
-      }
-    }),
-  );
-  return Object.fromEntries(entries);
+  const result = {};
+  for (let start = 0; start < names.length; start += BATCH_SIZE) {
+    const batch = names.slice(start, start + BATCH_SIZE);
+    const genres = await Promise.all(batch.map(genresFor));
+    batch.forEach((name, index) => {
+      result[name] = genres[index];
+    });
+  }
+  return result;
 }
