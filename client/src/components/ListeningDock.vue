@@ -53,12 +53,28 @@ html.has-dock body:not(:has(.site-footer)) {
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
-  border: 1px solid var(--ui-border);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
-  background: var(--ui-bg-elevated);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  /* Frosted glass, like the sticky navbar. */
+  background: rgba(250, 248, 246, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   color: var(--ui-text);
   font-size: 13px;
+}
+:global(.dark) .listening-dock {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(23, 27, 39, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .listening-dock {
+    background: #faf8f6;
+  }
+  :global(.dark) .listening-dock {
+    background: #171b27;
+  }
 }
 img {
   width: 44px;
