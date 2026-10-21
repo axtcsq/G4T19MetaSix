@@ -20,6 +20,9 @@ api.interceptors.response.use(
 
     const { data, status } = error.response
     const message = typeof data === 'object' && data !== null ? data.error : data
-    return Promise.reject(new Error(message || `Request failed with status ${status}.`))
+    const failure = new Error(message || `Request failed with status ${status}.`)
+    // Lets callers tell "not logged in" (401) apart from other failures.
+    failure.status = status
+    return Promise.reject(failure)
   },
 )

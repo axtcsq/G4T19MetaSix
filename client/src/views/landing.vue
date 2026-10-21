@@ -84,7 +84,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 
     <section class="closing landing-shell" aria-labelledby="closing-title">
       <h2 id="closing-title">Ready to discover<br />the real you?</h2>
-      <RouterLink class="get-started glass-action" to="/signup">Get Started</RouterLink>
+      <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
     </section>
   </main>
 
