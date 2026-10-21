@@ -2,16 +2,14 @@
 // A temporary profile page: who is logged in, their MetaFor personality and a
 // few listening facts. Editing the profile and settings come later.
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import SiteFooter from '@/components/footer.vue'
 import { getPersonality } from '@/api/quiz'
 import { useAuthStore } from '@/stores/auth'
-import { useListeningRoom } from '@/composables/useListeningRoom'
+import { useLogOut } from '@/composables/useLogOut'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 defineOptions({ name: 'ProfilePage' })
 
-const router = useRouter()
 const auth = useAuthStore()
 const user = computed(() => auth.user)
 const initial = computed(() => user.value?.displayName?.trim()?.[0]?.toUpperCase() ?? '?')
@@ -54,11 +52,7 @@ const listeningFacts = computed(() => {
   ].filter(([, value]) => value)
 })
 
-async function logOut() {
-  useListeningRoom().disconnect()
-  await auth.logout()
-  router.push('/')
-}
+const logOut = useLogOut()
 </script>
 
 <template>
