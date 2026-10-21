@@ -282,7 +282,7 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 
 Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Every `/api/quiz` route needs a login, and every query filters on the logged-in user's `_id`. Attempts saved before login was added have no `userId`, so nobody sees them.
 
-**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Genres and playlist names aren't stored, so Spotify Horoscope reads every user as "Eclectic" and Maslow's Mixtape goes on the answers alone. The demo account has a year of seeded plays (`npm run db:seed`).
+**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Genres and playlist names aren't stored, so Spotify Horoscope reads every user as "Eclectic" and Maslow's Mixtape goes on the answers alone. Real users' plays are saved by the hourly Spotify sync (`server/services/sync.js`). Newly synced songs have no audio features until mood analysis runs, so energy-based lines say so instead of guessing. The demo account has a year of seeded plays with features (`npm run db:seed`).
 
 ---
 
