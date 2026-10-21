@@ -101,15 +101,26 @@ function loadMinimised() {
   }
 }
 
-function toggleMinimised() {
+// It shrinks and grows from the side of the screen it is nearer, so a dock
+// moved to the left stays on the left.
+async function toggleMinimised() {
+  const before = dock.value.getBoundingClientRect()
+  const nearerRight = before.left + before.width / 2 > window.innerWidth / 2
+
   minimised.value = !minimised.value
   try {
     localStorage.setItem(MINIMISED_KEY, String(minimised.value))
   } catch {
     // Storage blocked; it stays minimised for this visit only.
   }
-  // Growing back could push a moved dock past the edge of the screen.
-  nextTick(keepOnScreen)
+
+  await nextTick()
+  if (!position.value) return
+  const after = dock.value.getBoundingClientRect()
+  const x = nearerRight ? before.right - after.width : before.left
+  // Growing back could still push it past the edge of the screen.
+  position.value = clamp(x, position.value.y)
+  savePosition()
 }
 
 // A smaller window could leave a saved position off screen.
