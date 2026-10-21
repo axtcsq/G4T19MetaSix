@@ -1,6 +1,9 @@
 # Local Claude Code settings
 .claude/
 
+# Installed packages, wherever pnpm or npm is run
+node_modules/
+
 # Local design screenshots and scratch files
 /.taste-skill/
 /client/*-premium-audit.json
