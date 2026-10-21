@@ -9,6 +9,7 @@ import listenRoutes from "./routes/listenRoutes.js";
 import meRoutes from "./routes/meRoutes.js";
 import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
+import journalRoutes from "./routes/journalRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import spotifyRoutes from "./routes/spotifyRoutes.js";
 import syncRoutes from "./routes/syncRoutes.js";
@@ -113,6 +114,7 @@ app.use("/api/sync", requireUser, syncRoutes);
 
 // Mood routes
 app.use("/api/moods", requireUser, moodRoutes);
+app.use("/api/journal", requireUser, journalRoutes);
 
 // Connect to MongoDB before quiz requests
 app.use("/api/quiz", async (req, res, next) => {
