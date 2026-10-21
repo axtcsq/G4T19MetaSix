@@ -62,18 +62,21 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
       <h2 id="mirror-title">Your playlist is a mirror.</h2>
       <div class="feature-grid">
         <article class="feature-card">
+          <span class="feature-step" aria-hidden="true">01</span>
           <h3>Listen to yourself</h3>
           <p>
             The songs you return to can hold clues about your mood, memories, and what matters to you.
           </p>
         </article>
         <article class="feature-card">
+          <span class="feature-step" aria-hidden="true">02</span>
           <h3>Find the patterns</h3>
           <p>
             Explore your Spotify playlists and see your listening habits from a fresh perspective.
           </p>
         </article>
         <article class="feature-card">
+          <span class="feature-step" aria-hidden="true">03</span>
           <h3>Make space to reflect</h3>
           <p>
             Pair music insights with a daily mood log and journal to understand yourself over time.
@@ -84,6 +87,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 
     <section class="closing landing-shell" aria-labelledby="closing-title">
       <h2 id="closing-title">Ready to discover<br />the real you?</h2>
+      <p class="closing-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
     </section>
   </main>
@@ -210,17 +214,41 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
+/* Warm cream cards in the same palette as the intro above. */
 .feature-card {
   display: flex;
-  min-height: 285px;
+  min-height: 240px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 25px;
-  border: 1px solid #867c77;
-  border-radius: 10px;
-  background: #fff;
+  padding: 28px 25px;
+  border: 1px solid rgba(118, 62, 50, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fffaf6 0%, #fdf1e8 100%);
+  box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
   text-align: center;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(125, 71, 55, 0.14);
+}
+.feature-step {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--brown);
+  background: var(--peach);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 .feature-card h3 {
   margin: 0 0 10px;
@@ -232,7 +260,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 .feature-card p {
   max-width: 260px;
   margin: 0;
-  color: #756a64;
+  color: #6f5d55;
   font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.55;
@@ -244,20 +272,30 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 25px;
+  gap: 18px;
   margin-bottom: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 10px;
+  padding: 40px 24px;
+  border: 1px solid #763e32;
+  border-radius: 18px;
+  /* The same warm mauve-to-terracotta blend as the Patterns card. */
   background:
-    radial-gradient(ellipse at 14% 38%, rgba(88, 66, 222, 0.42) 0%, transparent 34%),
-    radial-gradient(ellipse at 76% 24%, rgba(226, 199, 255, 0.48) 0%, transparent 35%),
-    radial-gradient(ellipse at 67% 88%, rgba(113, 75, 225, 0.42) 0%, transparent 38%),
-    linear-gradient(120deg, #705be7 0%, #8465e9 52%, #a574ec 100%);
+    linear-gradient(117.92deg, rgba(102, 95, 120, 0.2) 2.94%, rgba(118, 62, 50, 0.2) 100%),
+    linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%),
+    linear-gradient(109.07deg, rgba(118, 62, 50, 0.3) 42.18%, rgba(255, 205, 166, 0.3) 91.17%),
+    linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%), #fff;
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.42),
-    inset 0 -4px 9px rgba(62, 39, 142, 0.14),
-    0 8px 20px rgba(112, 91, 231, 0.18);
+    inset 0 9px 6.2px rgba(0, 0, 0, 0.12),
+    0 10px 24px rgba(118, 62, 50, 0.16);
   text-align: center;
+}
+.closing-text {
+  max-width: 34ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.45;
+  text-shadow: 0 1px 2px rgba(60, 30, 24, 0.25);
 }
 .closing h2 {
   margin: 0;
@@ -268,6 +306,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   font-style: italic;
   font-weight: 800;
   line-height: 1.08;
+  text-shadow: 0 2px 6px rgba(60, 30, 24, 0.25);
 }
 .get-started {
   display: inline-flex;
@@ -318,7 +357,8 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
     gap: 14px;
   }
   .feature-card {
-    min-height: 185px;
+    min-height: 0;
+    padding: 24px 20px;
   }
   .closing {
     min-height: 250px;
@@ -330,8 +370,12 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   .typing-cursor {
     animation: none;
   }
-  .get-started {
+  .get-started,
+  .feature-card {
     transition: none;
+  }
+  .feature-card:hover {
+    transform: none;
   }
 }
 </style>
