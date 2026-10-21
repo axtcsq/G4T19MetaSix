@@ -280,7 +280,9 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 | `quizattempts` | `{ userId, quizId, answers, createdAt }`. Only the answers are stored; results are recalculated from them, so fixing a description also updates past results. Indexed on `userId + quizId + createdAt` |
 | `personalities` | One per user (unique `userId`): the latest Patterns result, with type, match, traits, quiz results, per-source traits, mood link, listening stats, and the AI's headline, insights and summary. It is rebuilt if a quiz's result title has changed since it was saved |
 
-Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Until login is merged, `userId` is `null` and every query filters on that, so only `currentUserId()` in `quizController.js` needs to change then.
+Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Every `/api/quiz` route needs a login, and every query filters on the logged-in user's `_id`. Attempts saved before login was added have no `userId`, so nobody sees them.
+
+**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Genres and playlist names aren't stored, so Spotify Horoscope reads every user as "Eclectic" and Maslow's Mixtape goes on the answers alone. The demo account has a year of seeded plays (`npm run db:seed`).
 
 ---
 
@@ -291,12 +293,12 @@ server/
   data/
     metaforTraits.js        the 4 MetaFor traits
     personalityTypes.js     the 6 MetaFor types
-    mockSpotify.js          stand-in Spotify data (top artists, tracks, playlists)
     quizzes/
       index.js              list of quizzes, in card order
       musicMbti.js  spotifyHoroscope.js  auxAlignment.js
       loveOnRepeat.js  soundwoods.js  musicalNeeds.js
   services/
+    listeningProfile.js     the user's listening profile, from their plays
     quizEngine.js           answer checking, tallying, shared helpers
     patterns.js             combining traits, ranking types, listening stats, mood link
     quizLlm.js              AI prompt and checks (callLlm is a stub)
@@ -350,7 +352,8 @@ The AI only writes the Patterns text; it never decides a single quiz's result. T
 
 | Waiting on | What changes |
 |---|---|
-| Login and accounts (George) | Return the signed-in user's `_id` from `currentUserId()` in `quizController.js`. Only count the signed-in user's mood logs. Read the birthday from the profile and only ask when it's missing |
-| Spotify API (Jeriel) | Replace `mockSpotifyProfile` in `quizController.js` with the user's real top artists, tracks, playlists and audio features. The field names already follow the Spotify Web API and ReccoBeats |
+| Mood logs | Mood logs don't store a `userId` yet, so Patterns counts everyone's logs. Filter `getMoodPatterns()` in `quizController.js` once they do |
+| Login and accounts (George) | Read the birthday from the profile and only ask when it's missing |
+| Spotify sync (Jeriel) | Store artist genres and playlist names, so Spotify Horoscope and Maslow's Mixtape can use them again |
 
 **Ideas for later:** card images for the five quizzes that don't have one yet; a spider web chart of the four traits; a shareable Wrapped-style result card.
