@@ -18,13 +18,7 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 
 ## Configuration
 
-Create a `.env` file in this folder with the MongoDB connection string:
-
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/<database>
-PORT=3000
-CLIENT_ORIGIN=http://localhost:5173
-```
+Copy `.env.example` to `.env` and fill in the values. The root README lists where each one comes from.
 
 For multiple allowed client origins, separate them with commas. Keep `.env` private; it is ignored by Git.
 

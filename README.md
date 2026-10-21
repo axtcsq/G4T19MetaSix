@@ -46,15 +46,24 @@ cd G4T19MetaSix
 ```
 
 ### 5.2 Configure the server
-Create `server/.env`:
+Copy the template, then fill in the values:
 
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/metafor_dev
-PORT=3000
-CLIENT_ORIGIN=http://localhost:5173
+```sh
+cp server/.env.example server/.env
 ```
 
-Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git.
+| Setting | Where it comes from |
+| --- | --- |
+| `PORT`, `CLIENT_ORIGIN`, `SPOTIFY_REDIRECT_URI` | Already filled in. Keep `127.0.0.1`: Spotify login doesn't work on `localhost`. |
+| `MONGODB_URI` | From the team. It must end in `/metafor_dev`. |
+| `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | From the team (the Spotify developer dashboard). |
+| `TOKEN_KEY` | From the team. Everyone uses the same value, since it decrypts the Spotify tokens stored in the shared database. |
+| `SESSION_SECRET` | Your own: run `openssl rand -hex 32` and paste the result. |
+| `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. |
+
+Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git. Ask for the shared values in a private message, never in a commit or a group chat.
+
+If a setting seems to be ignored, check that it isn't also set in your terminal (`env | grep -E "MONGODB|CLIENT|SPOTIFY"`). Values already in the terminal win over `.env`, so open a new terminal or `unset` them.
 
 ### 5.3 Set up the database
 ```sh
@@ -73,7 +82,7 @@ cd server
 npm run dev
 ```
 
-The API runs at http://localhost:3000. Check http://localhost:3000/api/health: it should report `"database": "connected"`.
+The API runs at http://127.0.0.1:3000. Check http://127.0.0.1:3000/api/health: it should report `"database": "connected"`.
 
 ### 5.5 Run the client
 In a second terminal:
@@ -84,7 +93,9 @@ pnpm i
 pnpm dev
 ```
 
-Open http://localhost:5173. Requests to `/api` are forwarded to the server on port 3000.
+Open http://127.0.0.1:5173 (not `localhost`). Requests to `/api` are forwarded to the server on port 3000.
+
+To log in, use **Continue with Spotify** if your Spotify email is on the app's user list (ask the team to add it), or **Use the test account**, which has a year of sample listening history but no Spotify connection.
 
 # 6. Database
 MetaFor stores everything in MongoDB. Listening history is recorded one play at a time, each song is analysed once and shared by every user, and daily mood summaries are calculated from those plays.
