@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
+import listenRoutes from "./routes/listenRoutes.js";
 import meRoutes from "./routes/meRoutes.js";
 import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
@@ -104,6 +105,9 @@ app.use("/api/moods", async (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);
 app.use("/api/spotify", requireUser, spotifyRoutes);
+
+// Listening history, from the listens collection
+app.use("/api/listens", requireUser, listenRoutes);
 
 // Mood routes
 app.use("/api/moods", requireUser, moodRoutes);
