@@ -93,16 +93,13 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 
 <style scoped>
 .landing-page {
-  --brand: #cd6651;
-  --peach: #ffd3ac;
-  --lavender: #998ba1;
-  --brown: #7d4737;
-  --ink: #292321;
-  --line: #b9aaa2;
+  --brand: var(--ui-primary);
+  --brown: var(--ui-primary);
+  --ink: var(--ui-text);
   min-height: calc(100vh - 77px);
   overflow: hidden;
   color: var(--ink);
-  background: #faf8f6;
+  background: var(--ui-bg);
 }
 
 .landing-shell {
@@ -144,7 +141,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 .intro-description {
   max-width: 550px;
   margin: 0;
-  color: #4e4642;
+  color: var(--ui-text-muted);
   font-family: var(--font-serif);
   font-size: 1.08rem;
   line-height: 1.58;
@@ -217,9 +214,9 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   align-items: center;
   justify-content: center;
   padding: 25px;
-  border: 1px solid #867c77;
+  border: 1px solid var(--ui-border);
   border-radius: 10px;
-  background: #fff;
+  background: var(--ui-bg-elevated);
   text-align: center;
 }
 .feature-card h3 {
@@ -232,7 +229,7 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
 .feature-card p {
   max-width: 260px;
   margin: 0;
-  color: #756a64;
+  color: var(--ui-text-muted);
   font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.55;
