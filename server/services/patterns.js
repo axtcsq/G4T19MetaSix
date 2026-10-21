@@ -11,13 +11,17 @@ export const SPOTIFY_WEIGHT = 0.3;
 // little about someone's habits.
 const FULL_WEIGHT_DAYS = 14;
 const FULL_WEIGHT_PLAYS = 300;
+// The weight moves in steps this size, so Patterns is rebuilt a handful of
+// times as listening builds up rather than every few plays.
+const WEIGHT_STEP = 0.05;
 
 // How much the listening data counts for this user, from 0 to SPOTIFY_WEIGHT.
 export function spotifyWeight(profile) {
   const history = profile?.history;
   if (!history) return SPOTIFY_WEIGHT;
   const share = Math.min(1, Math.max(history.days / FULL_WEIGHT_DAYS, history.plays / FULL_WEIGHT_PLAYS));
-  return Number((SPOTIFY_WEIGHT * share).toFixed(2));
+  const stepped = Math.floor((SPOTIFY_WEIGHT * share) / WEIGHT_STEP + 1e-9) * WEIGHT_STEP;
+  return Number(stepped.toFixed(2));
 }
 
 function average(values) {
