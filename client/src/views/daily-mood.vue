@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
+import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/footer.vue'
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
@@ -11,7 +12,11 @@ const isLoading = ref(true)
 const isSaving = ref(false)
 const loadError = ref('')
 const saveError = ref('')
-const saveStatus = ref('')
+const ideaPrompt = ref('')
+const journalIdea = ref('')
+const isGeneratingIdea = ref(false)
+const ideaError = ref('')
+const ideaStatus = ref('')
 
 const canSave = computed(
   () =>
@@ -39,7 +44,6 @@ async function saveEntry() {
 
   isSaving.value = true
   saveError.value = ''
-  saveStatus.value = ''
 
   try {
     const savedEntry = await createMood({
@@ -50,7 +54,6 @@ async function saveEntry() {
     logs.value = [savedEntry, ...logs.value]
     selectedMood.value = null
     journalEntry.value = ''
-    saveStatus.value = 'Journal saved.'
   } catch (error) {
     saveError.value = error.message
   } finally {
@@ -60,12 +63,51 @@ async function saveEntry() {
 
 function clearSaveFeedback() {
   saveError.value = ''
-  saveStatus.value = ''
 }
 
 function selectMood(mood) {
   selectedMood.value = mood
   clearSaveFeedback()
+}
+
+function moodBadgeClass(mood) {
+  return `mood-badge--${mood.toLowerCase()}`
+}
+
+async function createJournalIdea() {
+  const prompt = ideaPrompt.value.trim()
+  if (!prompt || isGeneratingIdea.value) return
+
+  isGeneratingIdea.value = true
+  ideaError.value = ''
+  ideaStatus.value = ''
+  journalIdea.value = ''
+
+  try {
+    journalIdea.value = await generateJournalIdea(prompt)
+    ideaStatus.value = 'Your journal idea is ready.'
+  } catch (error) {
+    ideaError.value = error.message
+  } finally {
+    isGeneratingIdea.value = false
+  }
+}
+
+function clearJournalIdea() {
+  journalIdea.value = ''
+  ideaError.value = ''
+  ideaStatus.value = ''
+}
+
+function insertJournalIdea() {
+  if (!journalIdea.value) return
+
+  const existingText = journalEntry.value.trimEnd()
+  journalEntry.value = existingText
+    ? `${existingText}\n\n${journalIdea.value}`
+    : journalIdea.value
+  clearSaveFeedback()
+  ideaStatus.value = 'Added to journal.'
 }
 
 function formatDate(date) {
@@ -139,9 +181,6 @@ onMounted(loadEntries)
               >
                 Save Journal
               </UButton>
-              <p v-if="saveStatus" role="status" aria-live="polite" class="text-sm text-muted">
-                {{ saveStatus }}
-              </p>
             </div>
 
             <p v-if="saveError" role="alert" class="mt-4 text-sm text-error">
@@ -150,10 +189,21 @@ onMounted(loadEntries)
           </form>
         </section>
 
-        <aside class="lg:col-span-2">
+        <aside class="space-y-6 lg:col-span-2">
           <div class="journal-history rounded-xl border border-default bg-white p-5">
             <div class="mb-5 flex items-center justify-between gap-3">
-              <h2 class="font-serif text-2xl text-highlighted">Journal History</h2>
+              <h2 class="journal-history-title font-serif text-2xl text-highlighted">
+                <svg
+                  aria-hidden="true"
+                  class="journal-history-clock"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3.5 2" />
+                </svg>
+                Journal History
+              </h2>
               <UBadge color="primary" variant="subtle">
                 {{ logs.length }} {{ logs.length === 1 ? 'entry' : 'entries' }}
               </UBadge>
@@ -196,7 +246,7 @@ onMounted(loadEntries)
                   <time :datetime="log.createdAt" class="font-sans text-xs text-muted">
                     {{ formatDate(log.createdAt) }}
                   </time>
-                  <UBadge color="primary" variant="soft">
+                  <UBadge :class="['mood-badge', moodBadgeClass(log.mood)]" variant="soft">
                     {{ log.mood }}
                   </UBadge>
                 </div>
@@ -209,6 +259,77 @@ onMounted(loadEntries)
               </article>
             </div>
           </div>
+
+          <section class="journal-idea-card" aria-labelledby="journal-idea-heading">
+            <h2 id="journal-idea-heading" class="journal-idea-title font-serif text-2xl">
+              <img
+                src="/images/journal-helper-sparkle.png"
+                alt=""
+                class="journal-helper-icon"
+              />
+              Helper
+            </h2>
+            <p class="mt-2 text-sm text-muted">
+              Need help? Describe what happened today
+            </p>
+
+            <form class="mt-4 space-y-3" @submit.prevent="createJournalIdea">
+              <label for="journal-idea-prompt" class="text-sm font-medium text-default">
+                Your prompt
+              </label>
+              <textarea
+                id="journal-idea-prompt"
+                v-model="ideaPrompt"
+                class="journal-idea-prompt"
+                maxlength="800"
+                rows="3"
+                placeholder="Need help ideating journal? Try writing a prompt to get started."
+                :disabled="isGeneratingIdea"
+                @input="clearJournalIdea"
+              ></textarea>
+              <div class="flex flex-wrap gap-3">
+                <UButton
+                  type="submit"
+                  color="primary"
+                  class="glass-action rounded-full font-sans"
+                  :disabled="!ideaPrompt.trim() || isGeneratingIdea"
+                  :loading="isGeneratingIdea"
+                >
+                  {{ isGeneratingIdea ? 'Thinking...' : 'Generate idea' }}
+                </UButton>
+                <UButton
+                  type="button"
+                  color="primary"
+                  variant="soft"
+                  class="rounded-full font-sans"
+                  :disabled="!journalIdea || isGeneratingIdea"
+                  @click="insertJournalIdea"
+                >
+                  Insert
+                </UButton>
+              </div>
+            </form>
+
+            <textarea
+              :value="journalIdea"
+              readonly
+              rows="4"
+              aria-label="Generated journal idea"
+              placeholder="Your journal idea will appear here after you generate one."
+              class="journal-idea-preview"
+            ></textarea>
+
+            <p class="mt-3 text-xs text-muted">
+              Your prompt would be processed by Groq AI. AI usage limit applies.
+            </p>
+
+            <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
+              {{ ideaError }}
+            </p>
+            <p v-if="ideaStatus" role="status" aria-live="polite" class="mt-3 text-sm text-muted">
+              {{ ideaStatus }}
+            </p>
+          </section>
         </aside>
       </div>
     </main>
@@ -300,6 +421,130 @@ onMounted(loadEntries)
 
 .journal-history {
   background: #fff;
+}
+
+.journal-history h2 {
+  color: #292321;
+}
+
+.journal-history-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.journal-history-clock {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.mood-badge {
+  border: 1px solid color-mix(in srgb, var(--mood-color), white 45%);
+  color: var(--mood-text) !important;
+  background: color-mix(in srgb, var(--mood-color), white 80%) !important;
+}
+
+.mood-badge--sad {
+  --mood-color: #4389d1;
+  --mood-text: #17436d;
+}
+
+.mood-badge--happy {
+  --mood-color: #f2c335;
+  --mood-text: #493713;
+}
+
+.mood-badge--relaxed {
+  --mood-color: #998ba1;
+  --mood-text: #4b4052;
+}
+
+.mood-badge--anxious {
+  --mood-color: #ed8a35;
+  --mood-text: #70400d;
+}
+
+.mood-badge--angry {
+  --mood-color: #d94a45;
+  --mood-text: #762722;
+}
+
+.journal-idea-card {
+  padding: 20px;
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  background: var(--ui-bg-elevated);
+  box-shadow: 0 5px 16px rgba(59, 43, 35, 0.05);
+}
+
+.journal-idea-card h2 {
+  color: var(--ui-text);
+}
+
+.journal-idea-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.journal-helper-icon {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.journal-idea-prompt {
+  display: block;
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  color: var(--ui-text);
+  background: var(--ui-bg);
+  font: 0.92rem/1.5 var(--font-sans);
+  resize: vertical;
+}
+
+.journal-idea-prompt::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
+}
+
+.journal-idea-prompt:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+.journal-idea-prompt:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.journal-idea-preview {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  color: var(--ui-text);
+  background: var(--ui-bg);
+  font: 0.92rem/1.5 var(--font-sans);
+  resize: vertical;
+}
+
+.journal-idea-preview::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
 }
 
 .notebook-field :deep(textarea) {

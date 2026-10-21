@@ -60,8 +60,12 @@ cp server/.env.example server/.env
 | `TOKEN_KEY` | From the team. Everyone uses the same value, since it decrypts the Spotify tokens stored in the shared database. |
 | `SESSION_SECRET` | From the team, or your own from `openssl rand -hex 32`. Either works. |
 | `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. The test account comes from `npm run db:seed` (section 5.3). |
+| `GROQ_API_KEY` | Your own API key from [Groq Console](https://console.groq.com/keys), for the journal idea helper. |
 
 Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git. Ask for the shared values in a private message, never in a commit or a group chat.
+
+### Groq journal helper
+The Helper on the Daily Mood page sends the prompt you write to Groq, which generates a short journal idea that you can insert into your journal. It sends only that prompt, not the journal entry. Each developer should create and use their own Groq API key: add `GROQ_API_KEY=your_key_here` to `server/.env`. The key stays on the server and must never be added to client code or committed. Groq usage limits apply.
 
 If a setting seems to be ignored, check that it isn't also set in your terminal (`env | grep -E "MONGODB|CLIENT|SPOTIFY"`). Values already in the terminal win over `.env`, so open a new terminal or `unset` them.
 

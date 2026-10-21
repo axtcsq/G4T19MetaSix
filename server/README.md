@@ -9,6 +9,7 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 - `config/db.js` opens and reuses the MongoDB connection.
 - `routes/moodRoutes.js` maps mood URLs to controller functions.
 - `controller/moodController.js` validates requests and chooses HTTP responses.
+- `routes/journalRoutes.js` and `controller/journalController.js` provide the journal idea helper.
 - `models/MoodLog.js` defines the MongoDB schema and mood log queries.
 - `models/User.js`, `Listen.js`, `Track.js`, `DailyMood.js` and `SyncGap.js` define the listening and mood collections.
 - `scripts/db-init.js` creates every collection and its indexes.
@@ -37,6 +38,12 @@ All endpoints use the `/api/moods` prefix. A mood must be `Sad`, `Happy`, `Relax
 | `GET` | `/api/health` | Check the API and MongoDB connection |
 
 The API starts even if MongoDB is unavailable. In that case the health endpoint returns `503`, and mood requests return a database unavailable response. This keeps the server's existing recovery and health-check behavior.
+
+## Journal idea helper
+
+The Daily Mood page's Helper sends a user's prompt to Groq and displays a short journal starter that can be inserted into the journal field. Only the prompt is sent; the existing journal text is not included. The authenticated `POST /api/journal/ideas` endpoint accepts prompts up to 800 characters and uses Groq's `openai/gpt-oss-20b` model.
+
+Each developer should create their own API key at [Groq Console](https://console.groq.com/keys) and add it as `GROQ_API_KEY` in the server's private `.env` file. The key stays on the server; never place it in client code or commit it. Groq usage limits apply.
 
 The Canvas page currently displays a static analysis placeholder. No AI provider is connected.
 
