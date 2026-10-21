@@ -3,9 +3,22 @@ import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 import { clamp } from "./quizEngine.js";
 
 // How much the quiz results count versus the user's listening data when
-// working out their MetaFor traits.
+// working out their MetaFor traits, once there is enough listening to go on.
 export const QUIZ_WEIGHT = 0.7;
 export const SPOTIFY_WEIGHT = 0.3;
+// Listening reaches its full weight after this many days or plays, whichever
+// comes first. Before that it counts for less, since a day of plays says
+// little about someone's habits.
+const FULL_WEIGHT_DAYS = 14;
+const FULL_WEIGHT_PLAYS = 300;
+
+// How much the listening data counts for this user, from 0 to SPOTIFY_WEIGHT.
+export function spotifyWeight(profile) {
+  const history = profile?.history;
+  if (!history) return SPOTIFY_WEIGHT;
+  const share = Math.min(1, Math.max(history.days / FULL_WEIGHT_DAYS, history.plays / FULL_WEIGHT_PLAYS));
+  return Number((SPOTIFY_WEIGHT * share).toFixed(2));
+}
 
 function average(values) {
   const numbers = values.filter((value) => typeof value === "number");
@@ -105,6 +118,7 @@ function describeTrait(trait, score) {
 // Averages every quiz result's trait scores, then blends in the listening data.
 export function combineTraits(results, profile) {
   const signals = spotifySignals(profile);
+  const weight = spotifyWeight(profile);
 
   return METAFOR_TRAITS.map((trait) => {
     const fromQuizzes = average(results.map((result) => result.traits[trait.id]));
@@ -112,7 +126,7 @@ export function combineTraits(results, profile) {
 
     let score = 0;
     if (fromQuizzes !== null && fromSpotify !== null) {
-      score = fromQuizzes * QUIZ_WEIGHT + fromSpotify * SPOTIFY_WEIGHT;
+      score = fromQuizzes * (1 - weight) + fromSpotify * weight;
     } else {
       score = fromQuizzes ?? fromSpotify ?? 0;
     }

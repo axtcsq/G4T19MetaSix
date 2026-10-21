@@ -11,8 +11,7 @@ import {
 import { buildListeningProfile } from "../services/listeningProfile.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
-  QUIZ_WEIGHT,
-  SPOTIFY_WEIGHT,
+  spotifyWeight,
   combineTraits,
   listeningStats,
   moodLink,
@@ -120,7 +119,7 @@ async function rebuildPersonality(userId, profile) {
     traits,
     quizResults,
     sources,
-    weights: { quizzes: QUIZ_WEIGHT, spotify: SPOTIFY_WEIGHT },
+    weights: { quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)), spotify: spotifyWeight(profile) },
     ranking: ranking.map(({ id, match }) => ({ id, name: publicType(id).name, match })),
     moodLink: moodLink(moodPatterns, stats),
     stats,
@@ -129,13 +128,17 @@ async function rebuildPersonality(userId, profile) {
 }
 
 // True when the saved results no longer match what the quizzes give now, for
-// example after a quiz or result is renamed.
+// example after a quiz or result is renamed, or when the listening has grown
+// enough to count for more.
 async function isOutdated(userId, personality, profile) {
   const results = await latestResults(userId, profile);
   const titles = (list) =>
     list.map((result) => `${result.quizId}:${result.quizTitle}:${result.title}`).join("|");
 
-  return titles(results) !== titles(personality.quizResults);
+  return (
+    titles(results) !== titles(personality.quizResults) ||
+    personality.weights?.spotify !== spotifyWeight(profile)
+  );
 }
 
 function formatPersonality(personality) {
