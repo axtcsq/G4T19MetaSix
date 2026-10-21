@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 const route = useRoute()
@@ -15,18 +15,27 @@ watch(visible, (shown) => document.documentElement.classList.toggle('has-dock', 
 onBeforeUnmount(() => document.documentElement.classList.remove('has-dock'))
 
 // The user can drag the dock by its grip. Where they leave it is remembered in
-// this browser; double-clicking the grip puts it back in the corner.
+// this browser, as a distance from the nearest corner, so it stays in that
+// corner when the window changes size. Double-clicking the grip puts it back.
 const STORAGE_KEY = 'metafor-dock-position'
 const EDGE = 8
 const KEY_STEP = 24
 const dock = ref(null)
+// { h: 'left' | 'right', x, v: 'top' | 'bottom', y }, or null for the default corner.
 const position = ref(loadPosition())
+// The dock's own size, so its position can be kept on screen.
+const size = ref({ width: 0, height: 0 })
 let drag = null
 
 function loadPosition() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
-    return Number.isFinite(saved?.x) && Number.isFinite(saved?.y) ? saved : null
+    const valid =
+      ['left', 'right'].includes(saved?.h) &&
+      ['top', 'bottom'].includes(saved?.v) &&
+      Number.isFinite(saved?.x) &&
+      Number.isFinite(saved?.y)
+    return valid ? saved : null
   } catch {
     return null
   }
@@ -41,12 +50,22 @@ function savePosition() {
   }
 }
 
-// Keeps the whole dock on screen.
-function clamp(x, y) {
+// Turns a top-left point into a distance from the nearest corner, keeping the
+// whole dock on screen.
+function anchorAt(left, top) {
   const { width, height } = dock.value.getBoundingClientRect()
+  const screenWidth = document.documentElement.clientWidth
+  const screenHeight = document.documentElement.clientHeight
+  const x = Math.min(Math.max(left, EDGE), screenWidth - width - EDGE)
+  const y = Math.min(Math.max(top, EDGE), screenHeight - height - EDGE)
+  const h = x + width / 2 > screenWidth / 2 ? 'right' : 'left'
+  const v = y + height / 2 > screenHeight / 2 ? 'bottom' : 'top'
+
   return {
-    x: Math.min(Math.max(x, EDGE), window.innerWidth - width - EDGE),
-    y: Math.min(Math.max(y, EDGE), window.innerHeight - height - EDGE),
+    h,
+    x: Math.round(h === 'left' ? x : screenWidth - x - width),
+    v,
+    y: Math.round(v === 'top' ? y : screenHeight - y - height),
   }
 }
 
@@ -59,7 +78,7 @@ function startDrag(event) {
 
 function moveDrag(event) {
   if (!drag) return
-  position.value = clamp(event.clientX - drag.dx, event.clientY - drag.dy)
+  position.value = anchorAt(event.clientX - drag.dx, event.clientY - drag.dy)
 }
 
 function endDrag() {
@@ -74,7 +93,7 @@ function moveByKey(event) {
   if (!step) return
   event.preventDefault()
   const rect = dock.value.getBoundingClientRect()
-  position.value = clamp(rect.left + step[0] * KEY_STEP, rect.top + step[1] * KEY_STEP)
+  position.value = anchorAt(rect.left + step[0] * KEY_STEP, rect.top + step[1] * KEY_STEP)
   savePosition()
 }
 
@@ -83,13 +102,37 @@ function resetPosition() {
   savePosition()
 }
 
-const dockStyle = computed(() =>
-  position.value
-    ? { left: `${position.value.x}px`, top: `${position.value.y}px`, right: 'auto', bottom: 'auto' }
-    : {},
-)
+// The browser keeps the dock on screen as the window resizes: never further
+// from its corner than the window has room for.
+const dockStyle = computed(() => {
+  if (!position.value) return {}
+  const { h, x, v, y } = position.value
+  const across = `max(${EDGE}px, min(${x}px, calc(100% - ${size.value.width + EDGE}px)))`
+  const down = `max(${EDGE}px, min(${y}px, calc(100% - ${size.value.height + EDGE}px)))`
+  return {
+    left: h === 'left' ? across : 'auto',
+    right: h === 'right' ? across : 'auto',
+    top: v === 'top' ? down : 'auto',
+    bottom: v === 'bottom' ? down : 'auto',
+  }
+})
 
-// Minimised, the dock shrinks to the grip, the album art and play/pause.
+function measure() {
+  if (!dock.value) return
+  const { width, height } = dock.value.getBoundingClientRect()
+  size.value = { width: Math.round(width), height: Math.round(height) }
+}
+// Measured straight after it appears or is minimised, and again whenever its
+// size changes for any other reason.
+const sizeObserver = new ResizeObserver(measure)
+watch(dock, (element, old) => {
+  if (old) sizeObserver.unobserve(old)
+  if (element) sizeObserver.observe(element)
+})
+onBeforeUnmount(() => sizeObserver.disconnect())
+
+// Minimised, the dock shrinks to the grip, the album art and play/pause. It
+// shrinks towards the corner it is kept in, so it stays on the nearer side.
 const MINIMISED_KEY = 'metafor-dock-minimised'
 const minimised = ref(loadMinimised())
 
@@ -101,38 +144,16 @@ function loadMinimised() {
   }
 }
 
-// It shrinks and grows from the side of the screen it is nearer, so a dock
-// moved to the left stays on the left.
-async function toggleMinimised() {
-  const before = dock.value.getBoundingClientRect()
-  const nearerRight = before.left + before.width / 2 > window.innerWidth / 2
-
+function toggleMinimised() {
   minimised.value = !minimised.value
   try {
     localStorage.setItem(MINIMISED_KEY, String(minimised.value))
   } catch {
     // Storage blocked; it stays minimised for this visit only.
   }
-
-  await nextTick()
-  if (!position.value) return
-  const after = dock.value.getBoundingClientRect()
-  const x = nearerRight ? before.right - after.width : before.left
-  // Growing back could still push it past the edge of the screen.
-  position.value = clamp(x, position.value.y)
-  savePosition()
 }
 
-// A smaller window could leave a saved position off screen.
-function keepOnScreen() {
-  if (position.value && dock.value) position.value = clamp(position.value.x, position.value.y)
-}
-watch(visible, (shown) => shown && nextTick(keepOnScreen))
-onMounted(() => {
-  window.addEventListener('resize', keepOnScreen)
-  nextTick(keepOnScreen)
-})
-onBeforeUnmount(() => window.removeEventListener('resize', keepOnScreen))
+watch([dock, minimised], measure, { flush: 'post' })
 </script>
 <template>
   <aside
