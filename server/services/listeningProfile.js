@@ -37,7 +37,28 @@ function topGenre(rankedArtists, genres) {
   return named?.[0] ?? top;
 }
 
-export async function buildListeningProfile(user) {
+// The Personality page asks for several quiz routes at once, and each needs
+// the profile. Each user's profile is kept briefly so they share one build.
+const PROFILE_CACHE_MS = 60 * 1000;
+const profiles = new Map();
+
+export function buildListeningProfile(user) {
+  const key = user._id.toString();
+  const cached = profiles.get(key);
+  if (cached && Date.now() - cached.at < PROFILE_CACHE_MS) return cached.profile;
+
+  const profile = loadListeningProfile(user);
+  profiles.set(key, { profile, at: Date.now() });
+  // A failed build isn't kept, so the next request tries again.
+  profile.catch(() => profiles.delete(key));
+  // Drop expired entries so the Map doesn't grow with every user.
+  for (const [otherKey, entry] of profiles) {
+    if (Date.now() - entry.at >= PROFILE_CACHE_MS) profiles.delete(otherKey);
+  }
+  return profile;
+}
+
+async function loadListeningProfile(user) {
   const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
   const plays = await Listen.aggregate([
     { $match: { userId: user._id, playedAt: { $gte: since } } },
