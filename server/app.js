@@ -1,10 +1,22 @@
 import express from "express";
+import session from "express-session";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
+import MongoStore from "connect-mongo";
+import mongoose from "mongoose";
+import authRoutes from "./routes/authRoutes.js";
+import meRoutes from "./routes/meRoutes.js";
+import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+import spotifyRoutes from "./routes/spotifyRoutes.js";
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const app = express();
+
+// Vercel sits in front of the server, so trust its proxy for secure cookies.
+app.set("trust proxy", 1);
 
 app.use(
   cors({
@@ -33,6 +45,50 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+// Every other /api route needs MongoDB, including the session store below.
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("[API] Request unavailable because MongoDB is not connected:", error.message);
+    res.status(503).json({ error: "Database unavailable" });
+  }
+});
+
+// The session store shares Mongoose's connection once it opens.
+function sessionClient() {
+  if (mongoose.connection.readyState === 1) {
+    return Promise.resolve(mongoose.connection.getClient());
+  }
+  return new Promise((resolve) => {
+    mongoose.connection.once("connected", () => resolve(mongoose.connection.getClient()));
+  });
+}
+
+// Login sessions, kept in the sessions collection for 30 days.
+app.use(
+  "/api",
+  session({
+    name: "metafor.sid",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      clientPromise: sessionClient(),
+      collectionName: "sessions",
+      ttl: THIRTY_DAYS_MS / 1000,
+      touchAfter: 24 * 60 * 60,
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: THIRTY_DAYS_MS,
+    },
+  }),
+);
+
 // Connect to MongoDB before database requests
 app.use("/api/moods", async (req, res, next) => {
   try {
@@ -44,8 +100,13 @@ app.use("/api/moods", async (req, res, next) => {
   }
 });
 
+// Login and account routes
+app.use("/api/auth", authRoutes);
+app.use("/api/me", meRoutes);
+app.use("/api/spotify", requireUser, spotifyRoutes);
+
 // Mood routes
-app.use("/api/moods", moodRoutes);
+app.use("/api/moods", requireUser, moodRoutes);
 
 // Connect to MongoDB before quiz requests
 app.use("/api/quiz", async (req, res, next) => {
@@ -59,7 +120,7 @@ app.use("/api/quiz", async (req, res, next) => {
 });
 
 // Personality quiz routes
-app.use("/api/quiz", quizRoutes);
+app.use("/api/quiz", requireUser, quizRoutes);
 
 // Unknown routes
 app.use((req, res) => {
