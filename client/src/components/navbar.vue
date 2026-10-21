@@ -201,19 +201,24 @@ watch(
         <span class="menu-bars" aria-hidden="true" />
       </button>
 
-      <!-- Placeholder until the profile page exists; swap for a RouterLink then. -->
-      <button
-        ref="profile"
-        type="button"
-        class="profile-button"
-        :aria-label="auth.user ? `Logged in as ${auth.user.displayName}` : 'Profile (coming soon)'"
-        :title="auth.user ? `Logged in as ${auth.user.displayName}` : 'Profile (coming soon)'"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 21a8 8 0 0 1 16 0" />
-        </svg>
-      </button>
+      <!-- A plain <a> inside, so the fold measurement can read its width. -->
+      <RouterLink v-slot="{ href, navigate, isActive }" to="/profile" custom>
+        <a
+          ref="profile"
+          :href="href"
+          class="profile-button"
+          :class="{ 'is-active': isActive }"
+          :aria-current="isActive ? 'page' : undefined"
+          :aria-label="auth.user ? `Your profile, logged in as ${auth.user.displayName}` : 'Your profile'"
+          :title="auth.user ? `Your profile (${auth.user.displayName})` : 'Your profile'"
+          @click="navigate"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21a8 8 0 0 1 16 0" />
+          </svg>
+        </a>
+      </RouterLink>
     </div>
 
     <nav
@@ -404,7 +409,8 @@ watch(
   cursor: pointer;
   transition: color 160ms ease, border-color 160ms ease;
 }
-.profile-button:hover {
+.profile-button:hover,
+.profile-button.is-active {
   border-color: #cd6651;
   color: #cd6651;
 }
@@ -608,6 +614,7 @@ watch(
   background: #222839;
 }
 .dark .profile-button:hover,
+.dark .profile-button.is-active,
 .dark .menu-button:hover {
   border-color: #db806d;
   color: #eaa596;
