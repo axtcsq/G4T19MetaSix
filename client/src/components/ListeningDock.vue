@@ -1,13 +1,22 @@
 <script setup>
+import { computed, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 const route = useRoute()
 const room = useListeningRoom()
 const { connected, ready, track, paused, busy } = room
+const visible = computed(() => connected.value && route.path !== '/listen')
+
+// The dock floats over the page, so while it shows, the page keeps space for
+// it at the bottom and it never covers the footer.
+watch(visible, (shown) => document.documentElement.classList.toggle('has-dock', shown), {
+  immediate: true,
+})
+onBeforeUnmount(() => document.documentElement.classList.remove('has-dock'))
 </script>
 <template>
   <aside
-    v-if="connected && route.path !== '/listen'"
+    v-if="visible"
     class="listening-dock"
     aria-label="Current Spotify playback"
   >
@@ -22,22 +31,40 @@ const { connected, ready, track, paused, busy } = room
     <button :disabled="busy" @click="room.disconnect">Disconnect</button>
   </aside>
 </template>
+<style>
+/* The dock's height plus its gap from the edge. The footer, or the page when
+   it has no footer, adds this much space at the bottom. */
+html.has-dock {
+  --dock-space: 96px;
+  scroll-padding-bottom: var(--dock-space);
+}
+html.has-dock body:not(:has(.site-footer)) {
+  padding-bottom: var(--dock-space);
+}
+</style>
 <style scoped>
 .listening-dock {
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
   z-index: 15;
   display: flex;
-  gap: 16px;
+  width: min(400px, calc(100% - 32px));
+  gap: 10px;
   align-items: center;
-  padding: 14px max(18px, calc((100% - 1180px) / 2));
+  padding: 8px 10px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
   background: var(--ui-bg-elevated);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   color: var(--ui-text);
   font-size: 13px;
 }
 img {
   width: 44px;
   height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
   object-fit: cover;
 }
 a {
@@ -50,7 +77,9 @@ span {
   display: block;
 }
 strong {
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 span {
   margin-top: 4px;
@@ -58,6 +87,7 @@ span {
 }
 button {
   min-height: 44px;
+  flex-shrink: 0;
   padding: 8px;
   cursor: pointer;
 }
