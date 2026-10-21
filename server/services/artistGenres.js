@@ -10,6 +10,11 @@ const MIN_COUNT = 10;
 const CACHE_MS = 7 * 24 * 60 * 60 * 1000;
 // Lookups run a few at a time, to stay within Last.fm's rate limit.
 const BATCH_SIZE = 5;
+// Last.fm's error code for an artist it doesn't know.
+const ARTIST_NOT_FOUND = 6;
+// After any other failure (Last.fm down, rate limited, a bad key), lookups stop
+// for this long, so one outage doesn't slow down every quiz request.
+const PAUSE_MS = 10 * 60 * 1000;
 
 // Popular tags that describe the listener or the artist, not the music.
 const NOT_GENRES = new Set([
@@ -45,6 +50,7 @@ const NOT_GENRES = new Set([
 ]);
 
 const cache = new Map();
+let pausedUntil = 0;
 
 function isGenre(tag) {
   return tag.length > 2 && !NOT_GENRES.has(tag) && !/^\d0s$|^\d{4}s?$/.test(tag);
@@ -60,6 +66,8 @@ async function fetchGenres(artist) {
   });
   const response = await fetch(`${API_URL}?${params}`, { signal: AbortSignal.timeout(5000) });
   const body = await response.json();
+  // An artist Last.fm doesn't know simply has no genres.
+  if (body.error === ARTIST_NOT_FOUND) return [];
   if (!response.ok || body.error) {
     throw new Error(`Last.fm ${body.error ?? response.status}: ${body.message ?? "request failed"}`);
   }
@@ -75,15 +83,17 @@ async function fetchGenres(artist) {
 async function genresFor(name) {
   const cached = cache.get(name);
   if (cached && Date.now() - cached.at < CACHE_MS) return cached.genres;
+  // While paused, an old answer is better than none.
+  if (Date.now() < pausedUntil) return cached?.genres ?? [];
 
   try {
     const genres = await fetchGenres(name);
     cache.set(name, { genres, at: Date.now() });
     return genres;
   } catch (error) {
-    // Not cached, so the next request tries again.
-    console.error(`[Genres] Could not get tags for ${name}:`, error.message);
-    return [];
+    pausedUntil = Date.now() + PAUSE_MS;
+    console.error(`[Genres] Last.fm lookups paused for 10 minutes after ${name} failed:`, error.message);
+    return cached?.genres ?? [];
   }
 }
 
