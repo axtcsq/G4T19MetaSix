@@ -155,7 +155,7 @@ onMounted(loadPage)
           <h2 id="patterns-heading" class="patterns-title">Patterns</h2>
           <p class="body-text patterns-intro">
             Every quiz you take adds a thread. Here we weave your answers from all of them together
-            with your Spotify listening to show the habits that keep showing up, and the unqiue
+            with your Spotify listening to show the habits that keep showing up, and the unique
             MetaFor personality they add up to. The more quizzes you take, the clearer the picture
             gets.
           </p>
