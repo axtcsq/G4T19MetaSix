@@ -5,7 +5,9 @@ import { useListeningRoom } from '@/composables/useListeningRoom'
 const route = useRoute()
 const room = useListeningRoom()
 const { connected, ready, track, paused, busy } = room
-const visible = computed(() => connected.value && route.path !== '/listen')
+// Hidden in the listening room, which has its own player, and on the landing page.
+const HIDDEN_ON = ['/', '/listen']
+const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
 
 // The dock floats over the page, so while it shows, the page keeps space for
 // it at the bottom and it never covers the footer.
