@@ -11,6 +11,7 @@ import {
 import { buildListeningProfile } from "../services/listeningProfile.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
+  SPOTIFY_WEIGHT,
   spotifyWeight,
   combineTraits,
   listeningStats,
@@ -119,7 +120,12 @@ async function rebuildPersonality(userId, profile) {
     traits,
     quizResults,
     sources,
-    weights: { quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)), spotify: spotifyWeight(profile) },
+    // full is what listening counts for once there's enough of it.
+    weights: {
+      quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)),
+      spotify: spotifyWeight(profile),
+      full: SPOTIFY_WEIGHT,
+    },
     ranking: ranking.map(({ id, match }) => ({ id, name: publicType(id).name, match })),
     moodLink: moodLink(moodPatterns, stats),
     stats,

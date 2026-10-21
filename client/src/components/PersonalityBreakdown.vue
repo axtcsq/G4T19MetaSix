@@ -12,8 +12,11 @@ const BALANCED = 0.05
 
 const showInfo = ref(false)
 const quizPercent = computed(() => Math.round((props.personality.weights?.quizzes ?? 0.7) * 100))
-// Listening counts for up to 30%, and less while there's only a little of it.
-const listeningIsNew = computed(() => 100 - quizPercent.value < 30)
+// Listening counts for less while there's only a little of it.
+const listeningIsNew = computed(() => {
+  const { spotify, full } = props.personality.weights ?? {}
+  return typeof spotify === 'number' && typeof full === 'number' && spotify < full
+})
 
 function leanings(scores) {
   return props.personality.traits
