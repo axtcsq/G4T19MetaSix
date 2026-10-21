@@ -127,6 +127,11 @@ export async function callback(req, res) {
   }
 }
 
+// GET /api/auth/demo, so the login page knows whether to offer the test account
+export function demoStatus(req, res) {
+  res.json({ enabled: process.env.DEMO_LOGIN === "true" });
+}
+
 // POST /api/auth/demo, only when DEMO_LOGIN=true
 export async function demoLogin(req, res) {
   if (process.env.DEMO_LOGIN !== "true") {

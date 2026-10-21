@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { getMe, logout, spotifyLoginUrl } from '@/api/auth'
+import { demoLogin, getMe, logout, spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 
 vi.mock('@/api/auth', async (importOriginal) => ({
   ...(await importOriginal()),
+  demoLogin: vi.fn(),
   getMe: vi.fn(),
   logout: vi.fn(),
 }))
@@ -58,6 +59,15 @@ describe('auth store', () => {
     await Promise.all([auth.load(), auth.load()])
 
     expect(getMe).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs in as the test account', async () => {
+    demoLogin.mockResolvedValue({ id: 'demo', displayName: 'Demo', isDemo: true })
+    const auth = useAuthStore()
+
+    await auth.demoLogin()
+
+    expect(auth.user).toEqual({ id: 'demo', displayName: 'Demo', isDemo: true })
   })
 
   it('clears the user on logout', async () => {
