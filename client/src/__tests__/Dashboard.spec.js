@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import Dashboard from '../views/dashboard.vue'
 import { getDashboard, spotifySearch } from '../data/spotifyDashboard'
 import ListeningChart from '../components/dashboard/ListeningChart.vue'
@@ -72,7 +73,9 @@ describe('Spotify listening portrait', () => {
     expect(repeats.html()).not.toContain('NaN')
   })
   it('shows a connection prompt instead of sample rankings', () => {
-    const wrapper = mount(Dashboard, { global: { stubs: ['RouterLink', 'ListeningArtwork'] } })
+    const wrapper = mount(Dashboard, {
+      global: { plugins: [createPinia()], stubs: ['RouterLink', 'ListeningArtwork'] },
+    })
     expect(wrapper.text()).toContain('Connect Spotify to see your listening portrait')
     expect(wrapper.find('.artist-list').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('Sample data')

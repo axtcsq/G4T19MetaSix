@@ -5,7 +5,7 @@ import {
   hasSpotifySession,
   recentSpotify,
 } from '@/api/spotify'
-import { getListens, usesStoredHistory } from '@/api/listens'
+import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
 // The dashboard shows the last 7 days or this month, whichever starts earlier.
 function historyStart(now = new Date()) {
@@ -43,6 +43,7 @@ export function useSpotifyHistory() {
     historyLoading.value = true
     historyError.value = ''
     try {
+      if (source.value === 'stored') await syncBeforeReading()
       const response =
         source.value === 'stored'
           ? await getListens({ from: historyStart(), limit: 2000 })

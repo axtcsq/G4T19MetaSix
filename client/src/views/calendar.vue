@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/footer.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
-import { getListens, usesStoredHistory } from '@/api/listens'
+import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
 const moodEmoji = { Happy: '😊', Relaxed: '😌', Sad: '😟', Anxious: '😰', Angry: '😠' }
 const moodTags = {
@@ -80,7 +80,7 @@ async function loadData() {
   spotifyError.value = ''
   const moodsRequest = getMoods().then((data) => { moodLogs.value = data }).catch((error) => { moodError.value = error.message })
   const spotifyRequest = storedHistory
-    ? loadStoredMonth()
+    ? syncBeforeReading().then(loadStoredMonth)
     : hasSpotifySession()
       ? recentSpotify().then((data) => { listens.value = data.items || [] }).catch((error) => { spotifyError.value = error.message })
       : Promise.resolve()
