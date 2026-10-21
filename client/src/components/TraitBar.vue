@@ -8,8 +8,11 @@ const props = defineProps({
   compact: { type: Boolean, default: false },
 })
 
-// The fill grows from the left, towards the first pole.
-const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 100))
+// The fill grows from the side the user leans towards, so a 100% lean either
+// way is a full bar.
+const leansSecond = computed(() => props.trait.score < 0)
+const leanName = computed(() => (leansSecond.value ? props.trait.secondPoleName : props.trait.firstPoleName))
+const fillPercent = computed(() => Math.round(((Math.abs(props.trait.score) + 1) / 2) * 100))
 </script>
 
 <template>
@@ -21,12 +24,12 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
     <div
       class="trait-track"
       role="meter"
-      :aria-label="`${trait.label}: ${fillPercent}% ${trait.firstPoleName}`"
+      :aria-label="`${trait.label}: ${fillPercent}% ${leanName}`"
       :aria-valuenow="fillPercent"
       aria-valuemin="0"
       aria-valuemax="100"
     >
-      <div class="trait-rail">
+      <div class="trait-rail" :class="{ 'is-second': leansSecond }">
         <div class="trait-fill" :style="{ width: `${fillPercent}%` }" />
       </div>
     </div>
@@ -56,6 +59,11 @@ const fillPercent = computed(() => Math.round(((props.trait.score + 1) / 2) * 10
   overflow: hidden;
   border-radius: 40px;
   background: var(--pq-rail);
+}
+
+.trait-rail.is-second {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .trait-fill {
