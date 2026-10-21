@@ -97,7 +97,12 @@ function topGenre(profile) {
   for (const artist of profile.topArtists) {
     for (const genre of artist.genres) counts[genre] = (counts[genre] ?? 0) + 1;
   }
-  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  const ranked = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([genre]) => genre);
+  // Broad tags such as "alternative" have no word, so prefer the most common
+  // genre that does.
+  return ranked.find((genre) => GENRE_WORDS.some(([keyword]) => genre.includes(keyword))) ?? ranked[0] ?? null;
 }
 
 // null when none of the top tracks have audio features yet.
