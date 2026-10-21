@@ -16,14 +16,23 @@ export const SCOPES = [
 
 function config() {
   const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } = process.env;
-  if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REDIRECT_URI) {
-    throw new Error("SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET and SPOTIFY_REDIRECT_URI are required");
+  if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+    throw new Error("SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET are required");
   }
   return {
     clientId: SPOTIFY_CLIENT_ID,
     clientSecret: SPOTIFY_CLIENT_SECRET,
     redirectUri: SPOTIFY_REDIRECT_URI,
   };
+}
+
+// Only the login needs the redirect URI; the sync job runs without it.
+function redirectUri() {
+  const { redirectUri: uri } = config();
+  if (!uri) {
+    throw new Error("SPOTIFY_REDIRECT_URI is required");
+  }
+  return uri;
 }
 
 // Throws an error with Spotify's status code, so callers can tell a user who
@@ -44,11 +53,10 @@ async function spotifyFetch(url, options) {
 }
 
 export function authorizeUrl(state) {
-  const { clientId, redirectUri } = config();
   const params = new URLSearchParams({
-    client_id: clientId,
+    client_id: config().clientId,
     response_type: "code",
-    redirect_uri: redirectUri,
+    redirect_uri: redirectUri(),
     scope: SCOPES.join(" "),
     state,
   });
@@ -72,7 +80,7 @@ export function exchangeCode(code) {
   return requestToken({
     grant_type: "authorization_code",
     code,
-    redirect_uri: config().redirectUri,
+    redirect_uri: redirectUri(),
   });
 }
 
@@ -98,6 +106,14 @@ export function isSpotifyLinked(user) {
 
 export function fetchProfile(accessToken) {
   return spotifyFetch(`${API_URL}/me`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+// The newest 50 plays, newest first. No cursor, so a run never skips plays
+// that Spotify reports late.
+export function fetchRecentlyPlayed(accessToken) {
+  return spotifyFetch(`${API_URL}/me/player/recently-played?limit=50`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 }

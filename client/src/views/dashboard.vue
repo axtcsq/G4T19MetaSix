@@ -4,11 +4,20 @@ import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
+import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'ListeningDashboard' })
 
 const period = ref('weekly')
 const spotify = useSpotifyHistory()
 const { connected, source, busy, history, historyLoading, historyError, error } = spotify
+const auth = useAuthStore()
+const historyLabel = computed(() =>
+  source.value !== 'stored'
+    ? 'Spotify recent history'
+    : auth.user?.isDemo
+      ? 'Test account listening history'
+      : 'Your listening history',
+)
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 onMounted(() => {
@@ -25,9 +34,7 @@ onMounted(() => {
           <h1>Your listening portrait</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
-            ><span>{{
-              source === 'stored' ? 'Test account listening history' : 'Spotify recent history'
-            }}</span>
+            ><span>{{ historyLabel }}</span>
           </p>
         </div>
         <div class="dashboard-toolbar" data-ui>

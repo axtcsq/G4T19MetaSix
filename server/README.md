@@ -15,6 +15,7 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 - `scripts/seed.js` creates the demo user and a year of generated listening history from `scripts/data/demo-songs.json`.
 - `services/mood/` holds the mood rules (`mood.js`) and the music-mood-to-axis table (`axes.js`).
 - `services/dailyMoods.js` rebuilds a user's daily mood summaries from their listens.
+- `services/sync.js` saves a user's newest Spotify plays into `listens` and new songs into `tracks`. `jobs/sync.js` (`npm run sync`) runs it for every active user, and GitHub Actions runs that every hour.
 
 ## Configuration
 

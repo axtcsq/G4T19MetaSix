@@ -1,0 +1,39 @@
+# Saves every active user's newest Spotify plays, every hour. Spotify only
+# keeps each user's latest 50 plays, so this is what lets history grow.
+# Needs the repo secrets MONGODB_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+# and TOKEN_KEY (Settings > Secrets and variables > Actions).
+name: Sync listening history
+
+on:
+  schedule:
+    # Minute 17, off the hour, when GitHub's scheduler is less busy.
+    - cron: "17 * * * *"
+  # Adds a "Run workflow" button in the Actions tab.
+  workflow_dispatch:
+
+# Never run two syncs at once; a second one waits for the first.
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: node jobs/sync.js
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
