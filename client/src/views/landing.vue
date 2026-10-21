@@ -26,6 +26,28 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => window.clearInterval(typingTimer))
+
+// The cards and the closing banner light up where the mouse is and tilt a
+// little towards it. Touch doesn't hover, so only the mouse drives it.
+const MAX_TILT = 5
+
+function followPointer(event) {
+  if (event.pointerType !== 'mouse') return
+  const card = event.currentTarget
+  const rect = card.getBoundingClientRect()
+  const x = (event.clientX - rect.left) / rect.width
+  const y = (event.clientY - rect.top) / rect.height
+  card.style.setProperty('--mx', `${x * 100}%`)
+  card.style.setProperty('--my', `${y * 100}%`)
+  card.style.setProperty('--ry', `${(x - 0.5) * 2 * MAX_TILT}deg`)
+  card.style.setProperty('--rx', `${(0.5 - y) * 2 * MAX_TILT}deg`)
+}
+
+function resetPointer(event) {
+  const card = event.currentTarget
+  card.style.setProperty('--rx', '0deg')
+  card.style.setProperty('--ry', '0deg')
+}
 </script>
 
 <template>
@@ -61,21 +83,21 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
       <h2 id="mirror-title">Your playlist is a mirror.</h2>
       <div class="feature-grid">
-        <article class="feature-card">
+        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">01</span>
           <h3>Listen to yourself</h3>
           <p>
             The songs you return to can hold clues about your mood, memories, and what matters to you.
           </p>
         </article>
-        <article class="feature-card">
+        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">02</span>
           <h3>Find the patterns</h3>
           <p>
             Explore your Spotify playlists and see your listening habits from a fresh perspective.
           </p>
         </article>
-        <article class="feature-card">
+        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">03</span>
           <h3>Make space to reflect</h3>
           <p>
@@ -85,7 +107,12 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
       </div>
     </section>
 
-    <section class="closing landing-shell" aria-labelledby="closing-title">
+    <section
+      class="closing landing-shell follow"
+      aria-labelledby="closing-title"
+      @pointermove="followPointer"
+      @pointerleave="resetPointer"
+    >
       <h2 id="closing-title">Ready to discover<br />the real you?</h2>
       <p class="closing-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
@@ -227,13 +254,47 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   background: linear-gradient(180deg, #fffaf6 0%, #fdf1e8 100%);
   box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
   text-align: center;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
 }
 .feature-card:hover {
-  transform: translateY(-3px);
+  --lift: -3px;
   box-shadow: 0 10px 24px rgba(125, 71, 55, 0.14);
+}
+
+/* Set from followPointer: where the mouse is, and how far to tilt. */
+.follow {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  --lift: 0px;
+  --glow: rgba(255, 211, 172, 0.6);
+  --glow-size: 220px;
+  position: relative;
+  isolation: isolate;
+  transform: perspective(900px) translateY(var(--lift))
+    rotateX(calc(var(--rx) * var(--tilt-scale, 1))) rotateY(calc(var(--ry) * var(--tilt-scale, 1)));
+  transition:
+    transform 160ms ease-out,
+    box-shadow 180ms ease;
+}
+.follow::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle var(--glow-size) at var(--mx) var(--my), var(--glow), transparent 70%);
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.follow:hover::before {
+  opacity: 1;
+}
+.closing.follow {
+  --glow: rgba(255, 236, 220, 0.4);
+  --glow-size: 360px;
+  --tilt-scale: 0.4;
 }
 .feature-step {
   display: inline-flex;
@@ -370,12 +431,13 @@ onBeforeUnmount(() => window.clearInterval(typingTimer))
   .typing-cursor {
     animation: none;
   }
-  .get-started,
-  .feature-card {
+  .get-started {
     transition: none;
   }
-  .feature-card:hover {
+  /* The light still follows the mouse, but nothing moves. */
+  .follow {
     transform: none;
+    transition: none;
   }
 }
 </style>
