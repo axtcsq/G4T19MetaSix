@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import {
   authorizeSpotify,
   clearSpotifySession,
-  finishSpotifyCallback,
   hasSpotifySession,
   recentSpotify,
 } from '@/api/spotify'
@@ -51,7 +50,6 @@ export function useSpotifyHistory() {
     error.value = ''
     const version = requestVersion
     try {
-      await finishSpotifyCallback()
       if (version !== requestVersion) return
       connected.value = hasSpotifySession()
       await refreshHistory()
@@ -63,6 +61,7 @@ export function useSpotifyHistory() {
   }
 
   async function connect() {
+    if (hasSpotifySession()) return initialize()
     if (busy.value) return
     busy.value = true
     error.value = ''

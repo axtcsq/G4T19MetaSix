@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import ListeningRoom from '../views/listen.vue'
 import { useListeningRoom } from '../composables/useListeningRoom'
 
 describe('Spotify listening room', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
   it('requires connection and never displays or plays fixture records', async () => {
     const room = useListeningRoom()
     room.disconnect()

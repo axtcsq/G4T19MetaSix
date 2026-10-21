@@ -1,9 +1,14 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer } from 'node:http'
+import { createPinia, setActivePinia } from 'pinia'
 
 // Real HTTP stand-in for Spotify; only the destination host changes. Request
 // serialization, timeout signals, status handling and token refresh run for real.
-let server, base, api, calls, mode
+// The MetaFor server's token endpoint is mocked.
+const { getToken } = vi.hoisted(() => ({ getToken: vi.fn() }))
+vi.mock('../api/http', () => ({ api: { get: getToken, defaults: { baseURL: '' } } }))
+
+let server, base, api, auth, calls, mode, tokens
 const transport = globalThis.fetch
 beforeAll(async () => {
   server = createServer(async (req, res) => {
@@ -16,15 +21,7 @@ beforeAll(async () => {
       authorization: req.headers.authorization,
     })
     res.setHeader('Content-Type', 'application/json')
-    if (req.url === '/api/token') {
-      res.end(
-        JSON.stringify({
-          access_token: 'refreshed-access',
-          refresh_token: 'rotated-refresh',
-          expires_in: 3600,
-        }),
-      )
-    } else if (mode === 'expired' && req.headers.authorization === 'Bearer original-access') {
+    if (mode === 'expired' && req.headers.authorization === 'Bearer original-access') {
       res.writeHead(401)
       res.end('{}')
     } else if (mode === 'unavailable') {
@@ -85,93 +82,80 @@ beforeAll(async () => {
 afterAll(() => new Promise((resolve) => server.close(resolve)))
 beforeEach(async () => {
   vi.resetModules()
-  vi.stubEnv('VITE_SPOTIFY_CLIENT_ID', 'public-test-client')
+  setActivePinia(createPinia())
   calls = []
   mode = 'ok'
-  sessionStorage.clear()
-  history.replaceState(null, '', '/listen')
+  tokens = ['original-access', 'refreshed-access']
+  getToken.mockReset()
+  getToken.mockImplementation(async (path) => {
+    expect(path).toBe('/api/spotify/token')
+    return { accessToken: tokens.shift() ?? 'refreshed-access', expiresAt: Date.now() + 3600000 }
+  })
   vi.stubGlobal('fetch', (url, init) =>
     transport(`${base}${new URL(url).pathname}${new URL(url).search}`, init),
   )
   api = await import('../api/spotify')
+  const { useAuthStore } = await import('../stores/auth')
+  auth = useAuthStore()
+  auth.user = { id: '1', displayName: 'Listener', spotifyLinked: true }
 })
 afterEach(() => {
   vi.unstubAllGlobals()
-  vi.unstubAllEnvs()
 })
-const session = (expires) =>
-  sessionStorage.setItem(
-    'metafor.spotify.session',
-    JSON.stringify({ access_token: 'original-access', refresh_token: 'refresh', expires }),
-  )
+const tokenCalls = () => getToken.mock.calls.length
 
 describe('Spotify HTTP integration against a local stand-in', () => {
   it('loads authenticated recent history with the explicit 50-play limit', async () => {
-    session(Date.now() + 3600000)
     const history = await api.recentSpotify()
     expect(history.items[0].track.uri).toBe('spotify:track:recent')
     expect(calls[0].path).toBe('/v1/me/player/recently-played?limit=50')
     expect(calls[0].authorization).toBe('Bearer original-access')
   })
-  it('rejects a mismatched OAuth state before sending credentials and clears the callback', async () => {
-    sessionStorage.setItem(
-      'metafor.spotify.flow',
-      JSON.stringify({ state: 'expected', verifier: 'verifier', created: Date.now() }),
-    )
-    history.replaceState(null, '', '/listen?code=private-code&state=wrong')
-    await expect(api.finishSpotifyCallback()).rejects.toThrow('could not be verified')
-    expect(calls).toHaveLength(0)
-    expect(location.search).toBe('')
-    expect(sessionStorage.getItem('metafor.spotify.flow')).toBeNull()
-  })
-  it('exchanges a valid code with PKCE and never sends a client secret', async () => {
-    sessionStorage.setItem(
-      'metafor.spotify.flow',
-      JSON.stringify({ state: 'expected', verifier: 'test-verifier', created: Date.now() }),
-    )
-    history.replaceState(null, '', '/listen?code=private-code&state=expected')
-    await api.finishSpotifyCallback()
-    const body = new URLSearchParams(calls[0].body)
-    expect(body.get('code_verifier')).toBe('test-verifier')
-    expect(body.get('client_id')).toBe('public-test-client')
-    expect(body.has('client_secret')).toBe(false)
-    expect(api.hasSpotifySession()).toBe(true)
-    expect(location.search).toBe('')
-  })
-  it('refreshes once for concurrent requests and searches within the development-mode limit', async () => {
-    session(Date.now() - 1)
+  it('gets one token from the server for concurrent requests and reuses it', async () => {
     await Promise.all([api.searchSpotify('Björk & air'), api.searchSpotify('Laufey')])
-    expect(calls.filter((call) => call.path === '/api/token')).toHaveLength(1)
+    await api.searchSpotify('again')
+    expect(tokenCalls()).toBe(1)
     const searches = calls.filter((call) => call.path.startsWith('/v1/search'))
-    expect(searches).toHaveLength(2)
+    expect(searches).toHaveLength(3)
     expect(new URL(searches[0].path, base).searchParams.get('q')).toBe('Björk & air')
     expect(new URL(searches[0].path, base).searchParams.get('limit')).toBe('10')
-    expect(searches[0].authorization).toBe('Bearer refreshed-access')
+    expect(searches[0].authorization).toBe('Bearer original-access')
   })
-  it('retries a 401 after refreshing and accepts an empty successful playback response', async () => {
-    session(Date.now() + 3600000)
+  it('asks the server for a new token after a 401 and accepts an empty playback response', async () => {
     mode = 'expired'
     await expect(api.playSpotify('device id', ['spotify:track:song'])).resolves.toBeNull()
     const play = calls.filter((call) => call.method === 'PUT')
     expect(play).toHaveLength(2)
+    expect(play[1].authorization).toBe('Bearer refreshed-access')
     expect(play[1].path).toBe('/v1/me/player/play?device_id=device%20id')
     expect(JSON.parse(play[1].body)).toEqual({ uris: ['spotify:track:song'] })
+    expect(tokenCalls()).toBe(2)
   })
   it('surfaces Premium/allowlist failures and rate-limit retry guidance', async () => {
-    session(Date.now() + 3600000)
     mode = 'forbidden'
     await expect(api.searchSpotify('song')).rejects.toThrow('Premium')
     mode = 'limited'
     await expect(api.searchSpotify('song')).rejects.toThrow('12 seconds')
   })
-  it('does not refresh a disconnected session', async () => {
-    session(Date.now() - 1)
-    api.clearSpotifySession()
-    await expect(api.searchSpotify('song')).rejects.toThrow('Connect Spotify')
+  it('makes no requests without a linked Spotify login', async () => {
+    auth.user = { id: 'demo', displayName: 'Demo', spotifyLinked: false }
+    expect(api.hasSpotifySession()).toBe(false)
+    await expect(api.searchSpotify('song')).rejects.toThrow('Log in with Spotify')
+    expect(tokenCalls()).toBe(0)
     expect(calls).toHaveLength(0)
   })
+  it('marks Spotify as unlinked when the server says access must be granted again', async () => {
+    getToken.mockRejectedValueOnce(Object.assign(new Error('Log in again'), { status: 403 }))
+    await expect(api.recentSpotify()).rejects.toThrow('Log in again')
+    expect(auth.user.spotifyLinked).toBe(false)
+    expect(api.hasSpotifySession()).toBe(false)
+  })
+  it('forgets the user when the MetaFor session has ended', async () => {
+    getToken.mockRejectedValueOnce(Object.assign(new Error('Not logged in'), { status: 401 }))
+    await expect(api.recentSpotify()).rejects.toThrow('Not logged in')
+    expect(auth.user).toBeNull()
+  })
   it('identifies temporary provider failures with their HTTP status', async () => {
-    session(Date.now() + 3600000)
     mode = 'unavailable'
     await expect(api.recentSpotify()).rejects.toThrow('temporarily unavailable (HTTP 503)')
   })

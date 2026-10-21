@@ -44,7 +44,6 @@ onMounted(() => {
             <button class="art-pause" :disabled="historyLoading" @click="spotify.refreshHistory">
               Refresh history
             </button>
-            <button class="art-pause" @click="spotify.disconnect">Disconnect</button>
           </div>
         </div>
       </div>
