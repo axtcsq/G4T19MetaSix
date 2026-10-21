@@ -241,6 +241,9 @@ watch(
   top: 0;
   z-index: 40;
   width: 100%;
+  /* The folded nav stays in the header at full width to be measured. Clipping
+     stops it widening the page, which made phones zoom out. */
+  overflow-x: clip;
   border-bottom: 1px solid #998ba155;
   background: #faf8f6;
   transition:
