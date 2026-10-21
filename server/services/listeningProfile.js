@@ -1,5 +1,6 @@
 import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
+import { genreWord } from "../data/genreWords.js";
 import { artistGenres } from "./artistGenres.js";
 
 // Builds the listening profile the quizzes and patterns read, from the user's
@@ -9,8 +10,32 @@ import { artistGenres } from "./artistGenres.js";
 
 const WINDOW_DAYS = 30;
 const TOP_ARTISTS = 5;
+// More artists than are shown, so a few untagged artists don't decide the genre.
+const GENRE_ARTISTS = 15;
+// A genre MetaFor has a word for beats the top genre if it has at least this
+// share of the top genre's weight, so a broad tag like "alternative" doesn't
+// hide "rock" just behind it.
+const NAMED_GENRE_SHARE = 0.5;
 const TOP_TRACKS = 6;
 const FEATURES = ["energy", "valence", "danceability", "acousticness", "instrumentalness", "speechiness"];
+
+// Each artist's tags count by how much the user played them, so the artist
+// they play most has the most say.
+function topGenre(rankedArtists, genres) {
+  const totals = new Map();
+  for (const [name, plays] of rankedArtists) {
+    for (const genre of genres[name]) {
+      totals.set(genre.name, (totals.get(genre.name) ?? 0) + plays * genre.weight);
+    }
+  }
+
+  const ranked = [...totals].sort((a, b) => b[1] - a[1]);
+  if (!ranked.length) return null;
+
+  const [top, topWeight] = ranked[0];
+  const named = ranked.find(([genre, weight]) => genreWord(genre) && weight >= topWeight * NAMED_GENRE_SHARE);
+  return named?.[0] ?? top;
+}
 
 export async function buildListeningProfile(user) {
   const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -44,16 +69,15 @@ export async function buildListeningProfile(user) {
     }));
 
   const totalPlays = plays.reduce((sum, play) => sum + play.plays, 0);
-  const topArtistNames = [...artistPlays]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, TOP_ARTISTS)
-    .map(([name]) => name);
-  const genres = await artistGenres(topArtistNames);
+  const rankedArtists = [...artistPlays].sort((a, b) => b[1] - a[1]).slice(0, GENRE_ARTISTS);
+  const genres = await artistGenres(rankedArtists.map(([name]) => name));
+  const topArtistNames = rankedArtists.slice(0, TOP_ARTISTS).map(([name]) => name);
 
   return {
     displayName: user.displayName,
     // Genres come from Last.fm tags, since Spotify no longer returns them.
-    topArtists: topArtistNames.map((name) => ({ name, genres: genres[name] })),
+    topArtists: topArtistNames.map((name) => ({ name, genres: genres[name].map((genre) => genre.name) })),
+    topGenre: topGenre(rankedArtists, genres),
     topTracks,
     // Playlist names aren't stored, so Maslow's Mixtape uses the answers alone.
     playlists: [],
