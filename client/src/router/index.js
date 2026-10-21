@@ -8,6 +8,7 @@ import Login from '../views/login.vue'
 import Canvas from '../views/canvas.vue'
 import Dashboard from '../views/dashboard.vue'
 import PersonalityHub from '../views/personality-hub.vue'
+import Profile from '../views/profile.vue'
 import PersonalityQuiz from '../views/personality-quiz.vue'
 import PersonalityResult from '../views/personality-result.vue'
 
@@ -66,6 +67,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: Login,
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
+    meta: { requiresAuth: true },
   },
   // Spotify is the only way in, and the first login creates the account.
   {
