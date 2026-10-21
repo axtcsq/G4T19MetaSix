@@ -100,9 +100,10 @@ function topGenre(profile) {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 }
 
+// null when none of the top tracks have audio features yet.
 function averageEnergy(profile) {
   const values = profile.topTracks.map((track) => track.energy).filter((value) => typeof value === "number");
-  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0.5;
+  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
 }
 
 export const spotifyHoroscope = {
@@ -124,7 +125,7 @@ export const spotifyHoroscope = {
     const [, genreWord, genreMeaning] =
       GENRE_WORDS.find(([keyword]) => genre?.includes(keyword)) ?? [null, "Eclectic", "a bit of everything"];
     const energy = averageEnergy(profile);
-    const [, energyWord, energyMeaning] = ENERGY_WORDS.find(([minimum]) => energy >= minimum);
+    const [, energyWord, energyMeaning] = ENERGY_WORDS.find(([minimum]) => (energy ?? 0.5) >= minimum);
     const title = `${genreWord} ${energyWord} ${sign.name}`;
 
     return {
@@ -136,7 +137,9 @@ export const spotifyHoroscope = {
       justification: [
         `Your birthday makes you a ${sign.name}, ${["air", "earth"].includes(sign.element) ? "an" : "a"} ${sign.element} sign.`,
         genre ? `Your top genre is ${genre}, which makes you ${genreWord}.` : "We couldn't find a top genre, so you're Eclectic.",
-        `Your top tracks average ${percent(energy)}% energy, which makes you ${energyWord}.`,
+        energy === null
+          ? `We couldn't read your tracks' energy yet, so you're ${energyWord} for now.`
+          : `Your top tracks average ${percent(energy)}% energy, which makes you ${energyWord}.`,
       ],
       breakdown: [
         { kind: "tag", label: "Sign", value: sign.name },
