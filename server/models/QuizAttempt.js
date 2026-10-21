@@ -5,8 +5,7 @@ import mongoose from "mongoose";
 // same result, and fixing a description updates past results too.
 const quizAttemptSchema = new mongoose.Schema(
   {
-    // Empty until auth is merged; attempts without a user are shared for now.
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     quizId: { type: String, required: true },
     answers: { type: mongoose.Schema.Types.Mixed, required: true },
   },
@@ -50,8 +49,7 @@ const quizSummarySchema = new mongoose.Schema(
 // the LLM on every visit.
 const personalitySchema = new mongoose.Schema(
   {
-    // Empty until auth is merged, like quiz attempts.
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     typeId: { type: String, required: true },
     match: Number,
     runnerUpId: String,
