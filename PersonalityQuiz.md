@@ -282,7 +282,7 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 
 Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Every `/api/quiz` route needs a login, and every query filters on the logged-in user's `_id`. Attempts saved before login was added have no `userId`, so nobody sees them.
 
-**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Spotify no longer returns artist genres, so each top artist's genres are their top Last.fm tags (`server/services/artistGenres.js`, cached for a week). This needs `LASTFM_API_KEY` in `server/.env`; without it Spotify Horoscope reads every user as "Eclectic". Playlist names aren't stored, so Maslow's Mixtape goes on the answers alone. Real users' plays are saved by the hourly Spotify sync (`server/services/sync.js`). Newly synced songs have no audio features until mood analysis runs, so energy-based lines say so instead of guessing. The demo account has a year of seeded plays with features (`npm run db:seed`).
+**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Spotify no longer returns artist genres, so each artist's genres are their top Last.fm tags (`server/services/artistGenres.js`, cached for a week). The top genre looks at the user's 15 most-played artists and counts each tag by how much they played that artist and how strongly Last.fm ties the tag to them. A genre MetaFor has a word for (`server/data/genreWords.js`) wins if it has at least half the top tag's weight, so "rock" beats a slightly bigger "alternative". Patterns and Spotify Horoscope both use this one top genre. This needs `LASTFM_API_KEY` in `server/.env`; without it Spotify Horoscope reads every user as "Eclectic". Playlist names aren't stored, so Maslow's Mixtape goes on the answers alone. Real users' plays are saved by the hourly Spotify sync (`server/services/sync.js`). Newly synced songs have no audio features until mood analysis runs, so energy-based lines say so instead of guessing. The demo account has a year of seeded plays with features (`npm run db:seed`).
 
 ---
 
@@ -293,6 +293,7 @@ server/
   data/
     metaforTraits.js        the 4 MetaFor traits
     personalityTypes.js     the 6 MetaFor types
+    genreWords.js           the genres MetaFor has a word for
     quizzes/
       index.js              list of quizzes, in card order
       musicMbti.js  spotifyHoroscope.js  auxAlignment.js
