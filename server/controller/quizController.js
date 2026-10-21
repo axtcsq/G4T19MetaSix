@@ -1,4 +1,3 @@
-import { mockSpotifyProfile } from "../data/mockSpotify.js";
 import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 import { QUIZZES, findQuiz } from "../data/quizzes/index.js";
 import { MOODS, retrieveMoodLogs } from "../models/MoodLog.js";
@@ -9,6 +8,7 @@ import {
   retrieveLatestAttempts,
   savePersonality,
 } from "../models/QuizAttempt.js";
+import { buildListeningProfile } from "../services/listeningProfile.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
   QUIZ_WEIGHT,
@@ -22,20 +22,8 @@ import {
 } from "../services/patterns.js";
 import { validateAnswers } from "../services/quizEngine.js";
 
-// The signed-in user's _id. Null until auth is merged, so every quiz query
-// still filters by user and only this needs changing then.
-function currentUserId(req) {
-  return req.user?._id ?? null;
-}
-
-// TODO: replace with the signed-in user's Spotify data once auth and the
-// Spotify API set-up are merged.
-function getSpotifyProfile() {
-  return mockSpotifyProfile;
-}
-
 // Counts recent mood logs per mood.
-// TODO: only count the signed-in user's logs once auth is merged.
+// TODO: only count this user's logs once mood logs store a userId.
 async function getMoodPatterns() {
   const logs = await retrieveMoodLogs();
 
@@ -78,8 +66,7 @@ function closingLine(typeId) {
 }
 
 // Summarises every quiz result into one MetaFor personality and saves it.
-async function rebuildPersonality(userId) {
-  const profile = getSpotifyProfile();
+async function rebuildPersonality(userId, profile) {
   const results = await latestResults(userId, profile);
   const traits = combineTraits(results, profile);
   const ranking = rankTypes(traits);
@@ -143,8 +130,8 @@ async function rebuildPersonality(userId) {
 
 // True when the saved results no longer match what the quizzes give now, for
 // example after a quiz or result is renamed.
-async function isOutdated(userId, personality) {
-  const results = await latestResults(userId, getSpotifyProfile());
+async function isOutdated(userId, personality, profile) {
+  const results = await latestResults(userId, profile);
   const titles = (list) =>
     list.map((result) => `${result.quizId}:${result.quizTitle}:${result.title}`).join("|");
 
@@ -176,7 +163,7 @@ function formatPersonality(personality) {
 
 // GET /api/quiz
 export async function getQuizzes(req, res) {
-  const results = await latestResults(currentUserId(req), getSpotifyProfile());
+  const results = await latestResults(req.user._id, await buildListeningProfile(req.user));
 
   res.json(
     QUIZZES.map((quiz) => {
@@ -196,13 +183,16 @@ export async function getQuizzes(req, res) {
 
 // GET /api/quiz/personality
 export async function getPersonality(req, res) {
-  const userId = currentUserId(req);
+  const userId = req.user._id;
   let personality = await findPersonality(userId);
 
   // Rebuild personalities saved before the "how it adds up" data existed, or
-  // whose quizzes or results have since been renamed.
-  if (personality?.quizResults?.length && (!personality.sources || (await isOutdated(userId, personality)))) {
-    personality = await rebuildPersonality(userId);
+  // whose quiz results have since changed (a rename, or new listening).
+  if (personality?.quizResults?.length) {
+    const profile = await buildListeningProfile(req.user);
+    if (!personality.sources || (await isOutdated(userId, personality, profile))) {
+      personality = await rebuildPersonality(req.user._id, profile);
+    }
   }
 
   res.json(formatPersonality(personality));
@@ -238,8 +228,8 @@ export async function getLatestResult(req, res) {
     return res.status(404).json({ error: "Quiz not found" });
   }
 
-  const attempt = await findLatestAttempt(currentUserId(req), quiz.id);
-  const result = attempt && evaluateAttempt(attempt, getSpotifyProfile());
+  const attempt = await findLatestAttempt(req.user._id, quiz.id);
+  const result = attempt && evaluateAttempt(attempt, await buildListeningProfile(req.user));
 
   if (!result) {
     return res.status(404).json({ error: "You haven't taken this quiz yet" });
@@ -267,10 +257,10 @@ export async function submitQuiz(req, res) {
   const stored = Object.fromEntries(quiz.questions.map((question) => [question.id, answers[question.id]]));
   if (quiz.needsBirthday) stored.birthday = answers.birthday;
 
-  const userId = currentUserId(req);
-  const attempt = await addQuizAttempt({ userId, quizId: quiz.id, answers: stored });
-  const result = evaluateAttempt(attempt, getSpotifyProfile());
-  const personality = await rebuildPersonality(userId);
+  const profile = await buildListeningProfile(req.user);
+  const attempt = await addQuizAttempt({ userId: req.user._id, quizId: quiz.id, answers: stored });
+  const result = evaluateAttempt(attempt, profile);
+  const personality = await rebuildPersonality(req.user._id, profile);
 
   res.status(201).json({ result, personality: formatPersonality(personality) });
 }
