@@ -89,6 +89,29 @@ const dockStyle = computed(() =>
     : {},
 )
 
+// Minimised, the dock shrinks to the grip, the album art and play/pause.
+const MINIMISED_KEY = 'metafor-dock-minimised'
+const minimised = ref(loadMinimised())
+
+function loadMinimised() {
+  try {
+    return localStorage.getItem(MINIMISED_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+function toggleMinimised() {
+  minimised.value = !minimised.value
+  try {
+    localStorage.setItem(MINIMISED_KEY, String(minimised.value))
+  } catch {
+    // Storage blocked; it stays minimised for this visit only.
+  }
+  // Growing back could push a moved dock past the edge of the screen.
+  nextTick(keepOnScreen)
+}
+
 // A smaller window could leave a saved position off screen.
 function keepOnScreen() {
   if (position.value && dock.value) position.value = clamp(position.value.x, position.value.y)
@@ -105,6 +128,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', keepOnScreen))
     v-if="visible"
     ref="dock"
     class="listening-dock"
+    :class="{ 'is-minimised': minimised }"
     :style="dockStyle"
     aria-label="Current Spotify playback"
   >
@@ -127,14 +151,42 @@ onBeforeUnmount(() => window.removeEventListener('resize', keepOnScreen))
       </svg>
     </button>
     <img v-if="track.album?.images?.length" :src="track.album.images[0].url" alt="" />
-    <RouterLink to="/listen"
-      ><strong>{{ track.name }}</strong
-      ><span>Back to your listening room ↗</span></RouterLink
+    <template v-if="!minimised">
+      <RouterLink to="/listen"
+        ><strong>{{ track.name }}</strong
+        ><span>Back to your listening room ↗</span></RouterLink
+      >
+      <button :disabled="!ready || !track.id || busy" @click="room.toggle">
+        {{ paused ? 'Play' : 'Pause' }}
+      </button>
+      <button :disabled="busy" @click="room.disconnect">Disconnect</button>
+    </template>
+    <button
+      v-else
+      class="dock-icon"
+      :disabled="!ready || !track.id || busy"
+      :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
+      :title="paused ? 'Play' : 'Pause'"
+      @click="room.toggle"
     >
-    <button :disabled="!ready || !track.id || busy" @click="room.toggle">
-      {{ paused ? 'Play' : 'Pause' }}
+      <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+      <svg v-else viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+      </svg>
     </button>
-    <button :disabled="busy" @click="room.disconnect">Disconnect</button>
+    <button
+      type="button"
+      class="dock-icon"
+      :aria-label="minimised ? 'Expand player' : 'Minimise player'"
+      :aria-expanded="!minimised"
+      :title="minimised ? 'Expand' : 'Minimise'"
+      @click="toggleMinimised"
+    >
+      <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true">
+        <path v-if="minimised" d="M3 10l5-5 5 5" />
+        <path v-else d="M3 6l5 5 5-5" />
+      </svg>
+    </button>
   </aside>
 </template>
 <style>
@@ -155,7 +207,7 @@ html.has-dock body:not(:has(.site-footer)) {
   bottom: 16px;
   z-index: 15;
   display: flex;
-  width: min(400px, calc(100% - 32px));
+  width: min(440px, calc(100% - 32px));
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
@@ -198,7 +250,8 @@ strong,
 span {
   display: block;
 }
-strong {
+strong,
+span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -212,6 +265,36 @@ button {
   flex-shrink: 0;
   padding: 8px;
   cursor: pointer;
+}
+.listening-dock.is-minimised {
+  width: auto;
+}
+.dock-icon {
+  display: inline-flex;
+  width: 36px;
+  min-height: 36px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  background: transparent;
+}
+.dock-icon:hover:not(:disabled) {
+  background: rgba(127, 127, 127, 0.16);
+}
+.dock-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.dock-icon .chevron {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .dock-grip {
   display: inline-flex;
