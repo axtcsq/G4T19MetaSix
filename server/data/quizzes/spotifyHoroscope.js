@@ -62,6 +62,10 @@ const GENRE_WORDS = [
   ["house", "Electric", "synths and pulsing beats"],
   ["edm", "Electric", "synths and pulsing beats"],
   ["indie", "Indie", "independent, offbeat sounds"],
+  ["musical", "Theatrical", "showtunes and big stage moments"],
+  ["broadway", "Theatrical", "showtunes and big stage moments"],
+  ["soundtrack", "Cinematic", "film scores and sweeping themes"],
+  ["ambient", "Ambient", "slow, spacious soundscapes"],
   ["pop", "Poppy", "bright, catchy hooks"],
 ];
 
