@@ -52,10 +52,7 @@ function clearSearch() {
   searchInput.value?.focus()
 }
 function connect() {
-  if (!room.configured)
-    error.value =
-      'Spotify is not configured yet. Add the Spotify client ID using the project setup instructions.'
-  else room.connect()
+  room.connect()
 }
 onMounted(() => {
   document.title = 'Listening room · MetaFor'
