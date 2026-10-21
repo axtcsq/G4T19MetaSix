@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Landing from '../views/landing.vue'
 import DailyMood from '../views/daily-mood.vue'
+import MoodCalendar from '../views/calendar.vue'
 import Login from '../views/login.vue'
 import Signup from '../views/signup.vue'
 import Canvas from '../views/canvas.vue'
@@ -30,6 +31,11 @@ const routes = [
     path: '/daily-mood',
     name: 'daily-mood',
     component: DailyMood,
+  },
+  {
+    path: '/calendar',
+    name: 'calendar',
+    component: MoodCalendar,
   },
   {
     path: '/canvas',
