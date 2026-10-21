@@ -120,12 +120,7 @@ async function rebuildPersonality(userId, profile) {
     traits,
     quizResults,
     sources,
-    // full is what listening counts for once there's enough of it.
-    weights: {
-      quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)),
-      spotify: spotifyWeight(profile),
-      full: SPOTIFY_WEIGHT,
-    },
+    weights: { quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)), spotify: spotifyWeight(profile) },
     ranking: ranking.map(({ id, match }) => ({ id, name: publicType(id).name, match })),
     moodLink: moodLink(moodPatterns, stats),
     stats,
@@ -161,7 +156,9 @@ function formatPersonality(personality) {
     traits: personality.traits,
     quizResults: personality.quizResults,
     sources: personality.sources,
-    weights: personality.weights,
+    // full is what listening counts for once there's enough of it. Added here
+    // rather than saved, so personalities saved before it existed have it too.
+    weights: personality.weights && { ...personality.weights, full: SPOTIFY_WEIGHT },
     ranking: personality.ranking,
     moodLink: personality.moodLink,
     stats: personality.stats,
