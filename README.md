@@ -49,12 +49,12 @@ cd G4T19MetaSix
 Create `server/.env`:
 
 ```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/metasix_dev
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/metafor_dev
 PORT=3000
 CLIENT_ORIGIN=http://localhost:5173
 ```
 
-Use the `metasix_dev` database for development and testing. Only the deployed app uses `metasix`. Keep `.env` private; it is ignored by Git.
+Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git.
 
 ### 5.3 Set up the database
 ```sh
