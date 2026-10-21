@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { getPersonality, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
+import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/footer.vue'
 import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/ShareCardDialog.vue'
@@ -13,13 +14,6 @@ import auxAlignmentImage from '@/assets/images/personality/aux-alignment.png'
 import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.png'
 import soundwoodsImage from '@/assets/images/personality/soundwoods.png'
 import musicalNeedsImage from '@/assets/images/personality/musical-needs.png'
-import starIcon from '@/assets/images/personality/star.svg'
-import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
-import poetIcon from '@/assets/images/personality/types/poet.png'
-import sparkIcon from '@/assets/images/personality/types/spark.png'
-import stormChaserIcon from '@/assets/images/personality/types/storm-chaser.png'
-import tideKeeperIcon from '@/assets/images/personality/types/tide-keeper.png'
-import wandererIcon from '@/assets/images/personality/types/wanderer.png'
 
 // Card images by quiz id, from Unsplash (credits in PersonalityQuiz.md).
 // Quizzes without one show the lilac placeholder.
@@ -30,16 +24,6 @@ const quizImages = {
   'love-on-repeat': loveOnRepeatImage,
   soundwoods: soundwoodsImage,
   'musical-needs': musicalNeedsImage,
-}
-
-// Icons by personality type id. A type without one shows the star.
-const typeIcons = {
-  'storm-chaser': stormChaserIcon,
-  'tide-keeper': tideKeeperIcon,
-  poet: poetIcon,
-  daydreamer: daydreamerIcon,
-  spark: sparkIcon,
-  wanderer: wandererIcon,
 }
 
 const quizzes = ref([])
@@ -171,7 +155,7 @@ onMounted(loadPage)
               <div class="pattern-card type-card">
                 <div class="type-header">
                   <img
-                    :src="typeIcons[personality.type.id] ?? starIcon"
+                    :src="typeIcon(personality.type.id)"
                     alt=""
                     width="136"
                     height="136"
@@ -224,7 +208,7 @@ onMounted(loadPage)
             <ShareCardDialog
               ref="shareDialog"
               :personality="personality"
-              :icon="typeIcons[personality.type.id] ?? starIcon"
+              :icon="typeIcon(personality.type.id)"
             />
           </template>
         </div>
