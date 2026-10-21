@@ -208,7 +208,7 @@ onMounted(loadPage)
                   <span class="mood-label">Mood × music</span>
                   {{ personality.moodLink.text }}
                 </p>
-                <p class="font-sans text-sm text-(--pq-muted)">
+                <p class="match-note font-sans text-sm text-(--pq-muted)">
                   {{ personality.type.match }}% match, based on
                   {{ personality.quizResults.length }}
                   {{ personality.quizResults.length === 1 ? 'quiz' : 'quizzes' }} and your
@@ -587,14 +587,18 @@ onMounted(loadPage)
   padding: 1.5rem 1.75rem;
 }
 
-/* The text card stretches to the height of the card beside it, so its
-   blocks are spread evenly down it rather than bunched at the top. */
+/* The text card stretches to the height of the card beside it. Its text
+   stays together at the top and the match note sits at the bottom. */
 .insights-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 1rem;
   padding: 1.5rem 1.75rem;
+}
+
+.match-note {
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 .insight-list {
