@@ -13,6 +13,7 @@ export const GENRE_WORDS = [
   ["hip-hop", "Hip-Hop", "rhythm and wordplay"],
   ["rap", "Hip-Hop", "rhythm and wordplay"],
   ["r&b", "Silky", "smooth, soulful grooves"],
+  ["rnb", "Silky", "smooth, soulful grooves"],
   ["soul", "Soulful", "warm, emotional vocals"],
   ["folk", "Folky", "acoustic storytelling"],
   ["country", "Country", "stories with a twang"],
