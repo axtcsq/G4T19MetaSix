@@ -38,13 +38,14 @@ export function buildAnalysisPrompt({ traits, quizResults, ranking, stats, moodP
     .map((trait) => `- ${trait.label}: ${trait.poleName} over ${trait.oppositeName}, ${trait.strength}% lean`)
     .join("\n");
 
+  const percentOrUnknown = (value) => (value === null ? "unknown" : `${value}%`);
   const listening = [
-    `Top artists: ${profile.topArtists.map((artist) => artist.name).join(", ")}`,
+    `Top artists: ${profile.topArtists.map((artist) => artist.name).join(", ") || "unknown"}`,
     `Top track: ${stats.topTrack ?? "unknown"}`,
     `Top genre: ${stats.topGenre ?? "unknown"}`,
-    `Average energy of top tracks: ${stats.averageEnergy ?? "unknown"}%`,
-    `Average happiness (valence) of top tracks: ${stats.averageHappiness ?? "unknown"}%`,
-    `Share of plays that were repeat listens: ${stats.repeatListens ?? "unknown"}%`,
+    `Average energy of top tracks: ${percentOrUnknown(stats.averageEnergy)}`,
+    `Average happiness (valence) of top tracks: ${percentOrUnknown(stats.averageHappiness)}`,
+    `Share of plays that were repeat listens: ${percentOrUnknown(stats.repeatListens)}`,
   ].join("\n");
 
   const moods = moodPatterns
