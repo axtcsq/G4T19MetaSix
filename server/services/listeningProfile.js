@@ -69,6 +69,7 @@ export async function buildListeningProfile(user) {
     }));
 
   const totalPlays = plays.reduce((sum, play) => sum + play.plays, 0);
+  const firstPlay = await Listen.findOne({ userId: user._id }, { playedAt: 1 }).sort({ playedAt: 1 }).lean();
   const rankedArtists = [...artistPlays].sort((a, b) => b[1] - a[1]).slice(0, GENRE_ARTISTS);
   const genres = await artistGenres(rankedArtists.map(([name]) => name));
   const topArtistNames = rankedArtists.slice(0, TOP_ARTISTS).map(([name]) => name);
@@ -83,5 +84,11 @@ export async function buildListeningProfile(user) {
     playlists: [],
     // Share of plays that were a song already played in the window.
     repeatListenRatio: totalPlays ? (totalPlays - plays.length) / totalPlays : null,
+    // How much listening there is to go on, so a new account's first day of
+    // plays doesn't count as much as weeks of them.
+    history: {
+      days: firstPlay ? (Date.now() - firstPlay.playedAt.getTime()) / (24 * 60 * 60 * 1000) : 0,
+      plays: totalPlays,
+    },
   };
 }
