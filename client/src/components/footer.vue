@@ -5,8 +5,10 @@
 </template>
 
 <style scoped>
+/* Room for the floating listening dock, so it never covers the footer text. */
 .site-footer {
   min-height: 64px;
+  padding-bottom: var(--dock-space, 0px);
   color: #fff;
   background: #000;
   font-family: var(--font-sans);
