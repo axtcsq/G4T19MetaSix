@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getMe, logout as logoutRequest } from '@/api/auth'
+import { demoLogin as demoLoginRequest, getMe, logout as logoutRequest } from '@/api/auth'
 
 // Who is logged in, as the server sees it. The session itself lives in an
 // httpOnly cookie, so the browser can only find out by asking /api/me.
@@ -29,10 +29,15 @@ export const useAuthStore = defineStore('auth', () => {
     return pending
   }
 
+  async function demoLogin() {
+    user.value = await demoLoginRequest()
+    error.value = ''
+  }
+
   async function logout() {
     await logoutRequest()
     user.value = null
   }
 
-  return { user, checked, error, load, logout }
+  return { user, checked, error, load, demoLogin, logout }
 })
