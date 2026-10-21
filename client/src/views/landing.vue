@@ -295,18 +295,19 @@ function resetPointer(event) {
 }
 .feature-step {
   display: inline-flex;
-  width: 38px;
-  height: 38px;
-  margin-bottom: 14px;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   color: var(--brown);
-  background: var(--peach);
+  /* A soft tint of the theme colour, so it works in light and dark mode. */
+  background: color-mix(in srgb, var(--ui-primary) 18%, transparent);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
 }
 .feature-card h3 {
   margin: 0 0 10px;
