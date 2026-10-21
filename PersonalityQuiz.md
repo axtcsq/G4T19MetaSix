@@ -282,7 +282,7 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 
 Both collections are in `server/scripts/db-init.js`, so run `npm run db:init` once to create their indexes. Every `/api/quiz` route needs a login, and every query filters on the logged-in user's `_id`. Attempts saved before login was added have no `userId`, so nobody sees them.
 
-**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Genres and playlist names aren't stored, so Spotify Horoscope reads every user as "Eclectic" and Maslow's Mixtape goes on the answers alone. Real users' plays are saved by the hourly Spotify sync (`server/services/sync.js`). Newly synced songs have no audio features until mood analysis runs, so energy-based lines say so instead of guessing. The demo account has a year of seeded plays with features (`npm run db:seed`).
+**Listening data:** `server/services/listeningProfile.js` builds the profile the quizzes read from the user's plays in `listens` over the last 30 days: top 5 artists and top 6 tracks by play count, the tracks' ReccoBeats audio features, and the share of plays that were repeats. Spotify no longer returns artist genres, so each top artist's genres are their top Last.fm tags (`server/services/artistGenres.js`, cached for a week). This needs `LASTFM_API_KEY` in `server/.env`; without it Spotify Horoscope reads every user as "Eclectic". Playlist names aren't stored, so Maslow's Mixtape goes on the answers alone. Real users' plays are saved by the hourly Spotify sync (`server/services/sync.js`). Newly synced songs have no audio features until mood analysis runs, so energy-based lines say so instead of guessing. The demo account has a year of seeded plays with features (`npm run db:seed`).
 
 ---
 
@@ -299,6 +299,7 @@ server/
       loveOnRepeat.js  soundwoods.js  musicalNeeds.js
   services/
     listeningProfile.js     the user's listening profile, from their plays
+    artistGenres.js         artist genres from Last.fm tags
     quizEngine.js           answer checking, tallying, shared helpers
     patterns.js             combining traits, ranking types, listening stats, mood link
     quizLlm.js              AI prompt and checks (callLlm is a stub)
@@ -354,6 +355,6 @@ The AI only writes the Patterns text; it never decides a single quiz's result. T
 |---|---|
 | Mood logs | Mood logs don't store a `userId` yet, so Patterns counts everyone's logs. Filter `getMoodPatterns()` in `quizController.js` once they do |
 | Login and accounts (George) | Read the birthday from the profile and only ask when it's missing |
-| Spotify sync (Jeriel) | Store artist genres and playlist names, so Spotify Horoscope and Maslow's Mixtape can use them again |
+| Spotify sync (Jeriel) | Store playlist names, so Maslow's Mixtape can use them again |
 
 **Ideas for later:** card images for the five quizzes that don't have one yet; a spider web chart of the four traits; a shareable Wrapped-style result card.
