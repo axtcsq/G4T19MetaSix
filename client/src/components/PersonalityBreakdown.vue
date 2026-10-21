@@ -12,6 +12,8 @@ const BALANCED = 0.05
 
 const showInfo = ref(false)
 const quizPercent = computed(() => Math.round((props.personality.weights?.quizzes ?? 0.7) * 100))
+// Listening counts for up to 30%, and less while there's only a little of it.
+const listeningIsNew = computed(() => 100 - quizPercent.value < 30)
 
 function leanings(scores) {
   return props.personality.traits
@@ -49,6 +51,9 @@ const rows = computed(() =>
           Each quiz nudges you along the four MetaFor traits. We blend your quizzes
           ({{ quizPercent }}%) with your Spotify listening ({{ 100 - quizPercent }}%) and match you
           to the closest MetaFor type.
+          <template v-if="listeningIsNew">
+            Your listening counts for less until MetaFor has about two weeks of it.
+          </template>
         </span>
       </span>
     </div>
