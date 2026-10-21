@@ -58,8 +58,8 @@ cp server/.env.example server/.env
 | `MONGODB_URI` | From the team. It must end in `/metafor_dev`. |
 | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | From the team (the Spotify developer dashboard). |
 | `TOKEN_KEY` | From the team. Everyone uses the same value, since it decrypts the Spotify tokens stored in the shared database. |
-| `SESSION_SECRET` | Your own: run `openssl rand -hex 32` and paste the result. |
-| `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. |
+| `SESSION_SECRET` | From the team, or your own from `openssl rand -hex 32`. Either works. |
+| `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. The test account comes from `npm run db:seed` (section 5.3). |
 
 Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git. Ask for the shared values in a private message, never in a commit or a group chat.
 
@@ -74,7 +74,7 @@ npm run db:init
 
 `db:init` creates every collection and its indexes, then lists them. Run it once per database, and again whenever an index is added or changed. It only creates what is missing, so it is safe to re-run. The server does not create indexes on startup.
 
-To add test data, run `npm run db:seed`. It creates a demo user with a year of generated listening history and daily moods. Re-running it replaces the demo user's data.
+To add test data, run `npm run db:seed`. It creates the demo user (the test account on the login page) with a year of generated listening history and daily moods. `metafor_dev` is already seeded, so you only need it to bring the test account's plays up to today, or on a new database. Re-running it replaces the demo user's listens and daily moods and nothing else, and it refuses to run on a database whose name doesn't end in `_dev`. Use `npm run db:seed -- --days 30` for a shorter history.
 
 ### 5.4 Run the server
 ```sh
@@ -96,6 +96,15 @@ pnpm dev
 Open http://127.0.0.1:5173 (not `localhost`). Requests to `/api` are forwarded to the server on port 3000.
 
 To log in, use **Continue with Spotify** if your Spotify email is on the app's user list (ask the team to add it), or **Use the test account**, which has a year of sample listening history but no Spotify connection.
+
+### 5.6 Listening history sync
+Spotify only ever returns a user's latest 50 plays, so MetaFor saves them as they happen:
+
+- **Every hour**, GitHub Actions runs `.github/workflows/sync.yml`, which saves the newest plays of every user who has logged in with Spotify. It needs four repository secrets (Settings > Secrets and variables > Actions): `MONGODB_URI`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `TOKEN_KEY`, with the same values as `server/.env`. Use **Run workflow** in the Actions tab to run it straight away.
+- **When the dashboard or calendar opens**, the client calls `POST /api/sync` to save the user's newest plays first.
+- **By hand**, run `npm run sync` from `server/`.
+
+Plays from before a user's first login can't be recovered beyond their latest 50, so new users should log in early. The test account is never synced.
 
 # 6. Database
 MetaFor stores everything in MongoDB. Listening history is recorded one play at a time, each song is analysed once and shared by every user, and daily mood summaries are calculated from those plays.
