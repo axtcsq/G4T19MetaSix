@@ -15,6 +15,8 @@ const ARTIST_NOT_FOUND = 6;
 // After any other failure (Last.fm down, rate limited, a bad key), lookups stop
 // for this long, so one outage doesn't slow down every quiz request.
 const PAUSE_MS = 10 * 60 * 1000;
+// The most artists kept in memory. The oldest lookup is dropped past this.
+const CACHE_LIMIT = 2000;
 
 // Popular tags that describe the listener or the artist, not the music.
 const NOT_GENRES = new Set([
@@ -88,7 +90,10 @@ async function genresFor(name) {
 
   try {
     const genres = await fetchGenres(name);
+    // Re-inserting keeps the Map in lookup order, oldest first.
+    cache.delete(name);
     cache.set(name, { genres, at: Date.now() });
+    if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value);
     return genres;
   } catch (error) {
     pausedUntil = Date.now() + PAUSE_MS;
