@@ -1,23 +1,20 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useListeningRoom } from '@/composables/useListeningRoom'
+import { useLogOut } from '@/composables/useLogOut'
 // Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
 import { useColorMode } from '#imports'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
-const router = useRouter()
 const auth = useAuthStore()
+const signOut = useLogOut()
 
 async function logOut() {
   closeMenu()
-  // Stop the player and clear the user's songs before the session ends.
-  useListeningRoom().disconnect()
-  await auth.logout()
-  router.push('/')
+  await signOut()
 }
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
