@@ -60,10 +60,14 @@ export function buildListeningProfile(user) {
 
 async function loadListeningProfile(user) {
   const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
-  const plays = await Listen.aggregate([
-    { $match: { userId: user._id, playedAt: { $gte: since } } },
-    { $group: { _id: "$trackId", plays: { $sum: 1 }, lastPlayed: { $max: "$playedAt" } } },
-    { $sort: { plays: -1, lastPlayed: -1 } },
+  // The first play doesn't depend on the window, so both queries run at once.
+  const [plays, firstPlay] = await Promise.all([
+    Listen.aggregate([
+      { $match: { userId: user._id, playedAt: { $gte: since } } },
+      { $group: { _id: "$trackId", plays: { $sum: 1 }, lastPlayed: { $max: "$playedAt" } } },
+      { $sort: { plays: -1, lastPlayed: -1 } },
+    ]),
+    Listen.findOne({ userId: user._id }, { playedAt: 1 }).sort({ playedAt: 1 }).lean(),
   ]);
 
   const tracks = await Track.find(
@@ -90,7 +94,6 @@ async function loadListeningProfile(user) {
     }));
 
   const totalPlays = plays.reduce((sum, play) => sum + play.plays, 0);
-  const firstPlay = await Listen.findOne({ userId: user._id }, { playedAt: 1 }).sort({ playedAt: 1 }).lean();
   const rankedArtists = [...artistPlays].sort((a, b) => b[1] - a[1]).slice(0, GENRE_ARTISTS);
   const genres = await artistGenres(rankedArtists.map(([name]) => name));
   const topArtistNames = rankedArtists.slice(0, TOP_ARTISTS).map(([name]) => name);
