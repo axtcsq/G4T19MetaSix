@@ -11,6 +11,20 @@ try {
   const page = await browser.newPage()
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))
+  // The MetaFor server is simulated too: logged out first, then logged in.
+  let loggedIn = false
+  await page.route('**/api/me', (route) =>
+    loggedIn
+      ? route.fulfill({ json: { id: 'test-user', displayName: 'Test', spotifyLinked: true } })
+      : route.fulfill({ status: 401, json: { error: 'Not logged in' } }),
+  )
+  await page.route('**/api/spotify/token', (route) =>
+    route.fulfill({ json: { accessToken: 'test', expiresAt: Date.now() + 3600000 } }),
+  )
+  await page.route('**/api/auth/logout', (route) => {
+    loggedIn = false
+    return route.fulfill({ status: 204 })
+  })
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 })
     for (const path of ['/dashboard']) {
@@ -53,15 +67,8 @@ try {
       await route.fulfill({ status: 204 })
     } else await route.fulfill({ json: { tracks: { items: [song] } } })
   })
+  loggedIn = true
   await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'metafor.spotify.session',
-      JSON.stringify({
-        access_token: 'test',
-        refresh_token: 'test',
-        expires: Date.now() + 3600000,
-      }),
-    )
     window.Spotify = {
       Player: class {
         listeners = {}
@@ -106,11 +113,13 @@ try {
   failure = false
   await page.getByRole('button', { name: 'Retry history' }).click()
   await page.locator('.song-list').waitFor()
-  await page.getByRole('button', { name: 'Disconnect', exact: true }).click()
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.getByRole('button', { name: 'Log out', exact: true }).click()
+  await page.waitForURL(`${base}/`)
   assert.equal(await page.locator('.shelf-record').count(), 0)
   assert.equal(errors.length, 0, errors.join('\n'))
   console.log(
-    'Spotify browser checks passed: desktop/mobile disconnected, connected history, selection, failure/retry, disconnect; provider/SDK simulated.',
+    'Spotify browser checks passed: desktop/mobile logged out, logged-in history, selection, failure/retry, logout; server, provider and SDK simulated.',
   )
 } finally {
   await browser.close()

@@ -2,13 +2,11 @@ import { computed, ref } from 'vue'
 import {
   authorizeSpotify,
   clearSpotifySession,
-  finishSpotifyCallback,
   hasSpotifySession,
   loadSpotifySDK,
   playSpotify,
   searchSpotify,
   recentSpotify,
-  spotifyConfigured,
   spotifyRequest,
   spotifyToken,
 } from '@/api/spotify'
@@ -209,7 +207,6 @@ async function refreshHistory() {
 function initialize() {
   if (!initPromise)
     initPromise = action(async () => {
-      await finishSpotifyCallback()
       connected.value = hasSpotifySession()
       if (connected.value) {
         await refreshHistory()
@@ -339,7 +336,6 @@ export function useListeningRoom() {
     historyLoading,
     historyError,
     refreshHistory,
-    configured: spotifyConfigured,
     initialize,
     selectRecord,
     toggle,
@@ -349,7 +345,8 @@ export function useListeningRoom() {
     search,
     cancelSearch,
     disconnect,
-    connect: () => action(authorizeSpotify),
+    // Logged-in users are already connected, so this only restarts the room.
+    connect: () => (hasSpotifySession() ? initialize() : action(authorizeSpotify)),
     reconnect: () => action(connectPlayer),
   }
 }
