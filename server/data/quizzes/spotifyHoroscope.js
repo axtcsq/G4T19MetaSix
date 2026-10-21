@@ -1,3 +1,4 @@
+import { genreWord } from "../genreWords.js";
 import { clamp, percent } from "../../services/quizEngine.js";
 
 // Spotify Horoscope: star sign (from the birthday) + top genre + average
@@ -43,32 +44,6 @@ const ELEMENT_TRAITS = {
   water: "As a water sign, music is feeling: you listen to process what's inside.",
 };
 
-// First matching keyword wins, so more specific genres come first.
-const GENRE_WORDS = [
-  ["k-pop", "K-Pop", "glossy, high-production pop"],
-  ["lo-fi", "Lo-fi", "soft, hazy beats"],
-  ["jazz", "Jazzy", "smooth chords and swing"],
-  ["metal", "Metal", "heavy riffs and raw power"],
-  ["punk", "Punk", "fast, loud and rebellious songs"],
-  ["rock", "Rock", "guitars and big choruses"],
-  ["hip hop", "Hip-Hop", "rhythm and wordplay"],
-  ["rap", "Hip-Hop", "rhythm and wordplay"],
-  ["r&b", "Silky", "smooth, soulful grooves"],
-  ["soul", "Soulful", "warm, emotional vocals"],
-  ["folk", "Folky", "acoustic storytelling"],
-  ["country", "Country", "stories with a twang"],
-  ["classical", "Classical", "orchestral, timeless pieces"],
-  ["electro", "Electric", "synths and pulsing beats"],
-  ["house", "Electric", "synths and pulsing beats"],
-  ["edm", "Electric", "synths and pulsing beats"],
-  ["indie", "Indie", "independent, offbeat sounds"],
-  ["musical", "Theatrical", "showtunes and big stage moments"],
-  ["broadway", "Theatrical", "showtunes and big stage moments"],
-  ["soundtrack", "Cinematic", "film scores and sweeping themes"],
-  ["ambient", "Ambient", "slow, spacious soundscapes"],
-  ["pop", "Poppy", "bright, catchy hooks"],
-];
-
 const ENERGY_WORDS = [
   [0.75, "Fierce", "Your music runs hot: loud, fast and full of adrenaline."],
   [0.6, "Bold", "Your music has drive: upbeat and confident without being overwhelming."],
@@ -96,19 +71,6 @@ function parseBirthday(value) {
   return valid ? { month, day } : null;
 }
 
-function topGenre(profile) {
-  const counts = {};
-  for (const artist of profile.topArtists) {
-    for (const genre of artist.genres) counts[genre] = (counts[genre] ?? 0) + 1;
-  }
-  const ranked = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([genre]) => genre);
-  // Broad tags such as "alternative" have no word, so prefer the most common
-  // genre that does.
-  return ranked.find((genre) => GENRE_WORDS.some(([keyword]) => genre.includes(keyword))) ?? ranked[0] ?? null;
-}
-
 // null when none of the top tracks have audio features yet.
 function averageEnergy(profile) {
   const values = profile.topTracks.map((track) => track.energy).filter((value) => typeof value === "number");
@@ -130,29 +92,32 @@ export const spotifyHoroscope = {
   evaluate(answers, profile) {
     const { month, day } = parseBirthday(answers.birthday);
     const sign = starSign(month, day);
-    const genre = topGenre(profile);
-    const [, genreWord, genreMeaning] =
-      GENRE_WORDS.find(([keyword]) => genre?.includes(keyword)) ?? [null, "Eclectic", "a bit of everything"];
+    // The same top genre Patterns shows, worked out in the listening profile.
+    const genre = profile.topGenre ?? null;
+    const { word: genreName, meaning: genreMeaning } = genreWord(genre) ?? {
+      word: "Eclectic",
+      meaning: "a bit of everything",
+    };
     const energy = averageEnergy(profile);
     const [, energyWord, energyMeaning] = ENERGY_WORDS.find(([minimum]) => (energy ?? 0.5) >= minimum);
-    const title = `${genreWord} ${energyWord} ${sign.name}`;
+    const title = `${genreName} ${energyWord} ${sign.name}`;
 
     return {
-      resultId: `${genreWord}-${energyWord}-${sign.name}`.toLowerCase(),
+      resultId: `${genreName}-${energyWord}-${sign.name}`.toLowerCase(),
       title,
       subtitle: `${sign.name}, ${sign.element} sign`,
       headline: `Based on the quiz, we think you are ${/^[AEIOU]/.test(title) ? "an" : "a"} ${title}.`,
       description: `${SIGN_TRAITS[sign.name]} ${ELEMENT_TRAITS[sign.element]} Your stars are written in ${genreMeaning}. ${energyMeaning}`,
       justification: [
         `Your birthday makes you a ${sign.name}, ${["air", "earth"].includes(sign.element) ? "an" : "a"} ${sign.element} sign.`,
-        genre ? `Your top genre is ${genre}, which makes you ${genreWord}.` : "We couldn't find a top genre, so you're Eclectic.",
+        genre ? `Your top genre is ${genre}, which makes you ${genreName}.` : "We couldn't find a top genre, so you're Eclectic.",
         energy === null
           ? `We couldn't read your tracks' energy yet, so you're ${energyWord} for now.`
           : `Your top tracks average ${percent(energy)}% energy, which makes you ${energyWord}.`,
       ],
       breakdown: [
         { kind: "tag", label: "Sign", value: sign.name },
-        { kind: "tag", label: "Genre", value: genreWord },
+        { kind: "tag", label: "Genre", value: genreName },
         { kind: "tag", label: "Energy", value: energyWord },
       ],
       // Fire and air signs lean Crowd, earth and water lean Solo.

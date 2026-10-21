@@ -139,21 +139,14 @@ export function rankTypes(traits) {
 // Wrapped-style facts about the user's listening, shown in Patterns and given
 // to the LLM as evidence.
 export function listeningStats(profile) {
-  const genreCounts = {};
-
-  for (const artist of profile?.topArtists ?? []) {
-    for (const genre of artist.genres) {
-      genreCounts[genre] = (genreCounts[genre] ?? 0) + 1;
-    }
-  }
-
   const topTrack = profile?.topTracks?.[0];
   const percent = (value) => (value === null ? null : Math.round(value * 100));
 
   return {
     topArtist: profile?.topArtists?.[0]?.name ?? null,
     topTrack: topTrack ? `${topTrack.name} by ${topTrack.artist}` : null,
-    topGenre: Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null,
+    // The same top genre Spotify Horoscope uses.
+    topGenre: profile?.topGenre ?? null,
     averageEnergy: percent(averageFeature(profile, "energy")),
     averageHappiness: percent(averageFeature(profile, "valence")),
     averageDanceability: percent(averageFeature(profile, "danceability")),
