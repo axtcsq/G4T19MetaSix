@@ -330,6 +330,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   min-height: calc(100vh - 76px);
   flex-direction: column;
   background: var(--ui-bg-accented);
+  color: var(--ui-text);
 }
 
 .canvas-content {
@@ -355,14 +356,14 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .canvas-heading h1 {
   margin: 0;
-  color: #292321;
+  color: var(--ui-text);
   font-family: var(--font-serif);
   font-size: clamp(2.2rem, 4vw, 3rem);
 }
 
 .canvas-heading > p:last-child {
   margin: 5px 0 0;
-  color: #756c68;
+  color: var(--ui-text-muted);
   font-size: 1rem;
 }
 
@@ -370,7 +371,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   padding: 20px;
   border: 1px solid var(--ui-border);
   border-radius: 18px;
-  background: #fff;
+  background: var(--ui-bg-elevated);
   box-shadow: 0 8px 24px rgba(59, 43, 35, 0.06);
 }
 
@@ -510,7 +511,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 }
 
 .toolbar-label {
-  color: #756c68;
+  color: var(--ui-text-muted);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -581,7 +582,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #756c68;
+  color: var(--ui-text-muted);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -619,7 +620,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .canvas-hint {
   margin: 16px 0 12px;
-  color: #756c68;
+  color: var(--ui-text-muted);
   font-size: 0.85rem;
 }
 
@@ -627,7 +628,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   position: relative;
   height: clamp(360px, 58vw, 620px);
   overflow: hidden;
-  border: 1px solid #e7dcd7;
+  border: 1px solid var(--ui-border);
   border-radius: 14px;
   background: #faf8f6;
 }
@@ -646,7 +647,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .analysis-section h2 {
   margin: 0 0 12px;
-  color: #292321;
+  color: var(--ui-text);
   font-family: var(--font-serif);
   font-size: 1.7rem;
 }
@@ -659,8 +660,8 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   resize: vertical;
   border: 1px solid var(--ui-border);
   border-radius: 14px;
-  color: #514742;
-  background: #fff;
+  color: var(--ui-text);
+  background: var(--ui-bg-elevated);
   box-shadow: inset 0 2px 5px rgba(59, 43, 35, 0.04);
   font: 1rem/1.65 var(--font-sans);
 }
