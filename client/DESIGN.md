@@ -2,7 +2,7 @@
 
 ## Existing visual direction
 
-MetaFor uses a calm journal-like interface for personal mood reflection. Keep the current warm neutral surfaces, terracotta primary color, and restrained lavender accent. Use Crimson Text for editorial headings and Raleway for controls and body copy. Runtime color and type tokens live in `src/assets/css/main.css`; Nuxt UI components consume those tokens.
+MetaFor uses a calm journal-like interface for personal mood reflection. Keep the current warm neutral surfaces, terracotta primary color, and restrained lavender accent. Raleway owns headings and controls; Crimson Text owns prose. The shared rules for every page (tokens, type scale, layout, components) are in `STYLE.md`. Runtime color and type tokens live in `src/assets/css/main.css`; Nuxt UI components consume those tokens.
 
 The Daily Mood screen keeps the form and journal history side by side on wide screens and stacked on narrow screens. Preserve this structure and the existing spacing when adding behavior. Use clear, conversational labels and keep mood choices visually distinct when selected.
 
