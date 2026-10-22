@@ -224,7 +224,7 @@ function resetPointer(event) {
   align-items: center;
   justify-content: center;
   gap: clamp(24px, 5vw, 64px);
-  padding-block: 12px 24px;
+  padding-block: 24px 56px;
 }
 .spotify-image {
   display: block;
@@ -247,15 +247,15 @@ function resetPointer(event) {
 }
 
 .mirror-section {
-  padding-block: 8px 30px;
+  padding-block: 24px 80px;
 }
 .mirror-section h2 {
   width: fit-content;
-  margin: 0 auto 20px;
+  margin: 0 auto 40px;
   padding: 7px 0;
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 800;
   letter-spacing: -0.035em;
   text-align: center;
@@ -263,7 +263,7 @@ function resetPointer(event) {
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  gap: 28px;
 }
 /* Warm cream cards in the same palette as the intro above. */
 .feature-card {
@@ -405,7 +405,7 @@ function resetPointer(event) {
   align-items: center;
   justify-content: center;
   gap: 24px;
-  margin-bottom: 44px;
+  margin-bottom: 72px;
   padding: 64px 24px;
   border: 1px solid #763e32;
   border-radius: 18px;
