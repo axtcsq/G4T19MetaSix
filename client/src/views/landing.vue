@@ -121,7 +121,7 @@ function resetPointer(event) {
       @pointermove="followPointer"
       @pointerleave="resetPointer"
     >
-      <!-- Slowly flowing marbled paint behind the text. -->
+      <!-- Sunset-coloured liquid behind the text that swirls around the pointer. -->
       <MarbleBackground class="liquid" />
       <div class="liquid-scrim" aria-hidden="true" />
       <h2 id="closing-title" class="glow-text">Ready to discover<br />the real you?</h2>
@@ -300,9 +300,12 @@ function resetPointer(event) {
   opacity: 1;
 }
 .closing.follow {
-  --glow: rgba(255, 236, 220, 0.4);
   --glow-size: 360px;
   --tilt-scale: 0.4;
+}
+/* The banner's liquid reacts to the pointer itself, so it has no glow. */
+.closing.follow::before {
+  display: none;
 }
 /* The words under the glow turn white: the text is filled with a gradient
    centred on the pointer (set per text block by followPointer), white where
@@ -435,7 +438,7 @@ function resetPointer(event) {
   position: absolute;
   z-index: -2;
   inset: 0;
-  background: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(35, 5, 9, 0.62), transparent 100%);
+  background: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(40, 24, 42, 0.5), transparent 100%);
   pointer-events: none;
 }
 .closing h2 {
