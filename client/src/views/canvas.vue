@@ -696,7 +696,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   background: var(--color-brand-500);
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .canvas-content {
     width: calc(100% - 32px);
   }

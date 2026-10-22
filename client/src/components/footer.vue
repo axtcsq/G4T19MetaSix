@@ -188,7 +188,7 @@ function backToTop() {
   outline-offset: 3px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .footer-inner {
     width: calc(100% - 36px);
   }

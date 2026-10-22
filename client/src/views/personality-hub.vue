@@ -594,7 +594,7 @@ onMounted(loadPage)
   text-align: center;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1000px) {
   .pattern-row,
   .insights-row {
     grid-template-columns: 1fr;

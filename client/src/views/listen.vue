@@ -809,7 +809,7 @@ input:disabled {
     justify-self: end;
   }
 }
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .listening-room {
     padding-top: 28px;
   }

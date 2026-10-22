@@ -325,7 +325,7 @@ dd {
   cursor: pointer;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
   }
