@@ -345,15 +345,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   text-align: center;
 }
 
-.canvas-eyebrow {
-  margin: 0 0 4px;
-  color: #7d4737;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .canvas-heading h1 {
   margin: 0;
 }
@@ -479,7 +470,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 .tool-button:hover,
 .canvas-action:hover:not(:disabled),
 .text-editor-actions button:hover {
-  border-color: #cd6651;
+  border-color: var(--color-brand-500);
 }
 
 .tool-button:hover,
@@ -540,7 +531,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .color-swatch.is-selected {
   box-shadow:
-    0 0 0 2px #cd6651,
+    0 0 0 2px var(--color-brand-500),
     inset 0 2px 2px rgba(255, 255, 255, 0.66),
     inset 0 -2px 3px rgba(50, 38, 33, 0.2),
     0 3px 8px rgba(59, 43, 35, 0.17);
@@ -586,7 +577,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .size-control input {
   width: 100px;
-  accent-color: #cd6651;
+  accent-color: var(--color-brand-500);
 }
 
 .canvas-actions {
@@ -700,9 +691,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 }
 
 .text-editor-actions button[type='submit'] {
-  border-color: #cd6651;
+  border-color: var(--color-brand-500);
   color: #fff;
-  background: #cd6651;
+  background: var(--color-brand-500);
 }
 
 @media (max-width: 700px) {
