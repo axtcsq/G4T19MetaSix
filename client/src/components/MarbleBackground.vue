@@ -1,7 +1,8 @@
 <script setup>
 // Slowly flowing liquid in sunset tones from MetaFor's palette, drawn with a
 // small WebGL shader: noise warped into itself (domain warping), coloured from
-// dusky plum at the top to peach near the bottom. The liquid swirls around
+// dusky plum at the top to peach near the bottom, with marbled streaks and a
+// lit, glossy surface so it reads as thick, viscous paint. The liquid swirls around
 // the pointer and settles back when it leaves. It only animates while it's on
 // screen and the tab is visible, draws one still frame (with no swirling) for
 // people who reduce motion, and leaves the plain gradient behind it showing
@@ -24,6 +25,9 @@ void main() { gl_Position = vec4(position, 0.0, 1.0); }
 `
 
 const FRAGMENT = `
+// Slopes of the liquid's surface, for its shading and gloss. Nearly every
+// device has this; without it the liquid is drawn flat.
+#extension GL_OES_standard_derivatives : enable
 // Full precision where the device has it; lower precision leaves straight
 // seams in the noise.
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -91,7 +95,7 @@ void main() {
   float f = fbm(p + 1.8 * r);
 
   // Sunset: dusk at the top, warm light low down like a horizon.
-  float v = clamp(f * 1.1 + 0.25 * r.x + (0.55 - uv.y) * 0.55, 0.0, 1.0);
+  float v = clamp(f * 1.15 + 0.25 * r.x + (0.5 - uv.y) * 0.55 - 0.08, 0.0, 1.0);
 
   vec3 plum = vec3(0.23, 0.16, 0.27);
   vec3 mauve = vec3(0.40, 0.33, 0.45);
@@ -106,10 +110,34 @@ void main() {
   colour = mix(colour, apricot, smoothstep(0.62, 0.8, v));
   colour = mix(colour, peach, smoothstep(0.8, 0.97, v));
 
-  // A few faint glossy lines along the flow, like light on a liquid surface.
-  float contour = abs(fract(f * 3.0 + r.y * 0.5) - 0.5);
-  float gloss = 1.0 - smoothstep(0.0, 0.03, contour);
-  colour = mix(colour, vec3(1.0, 0.93, 0.86), gloss * 0.2);
+  // Fine streaks along the flow, like marbled paint, lighter and darker.
+  float phase = (f * 3.0 + r.y * 1.2) * 22.0;
+  float streaks = sin(phase);
+#ifdef GL_OES_standard_derivatives
+  // Where the streaks would be squeezed thinner than a pixel they flicker and
+  // leave moire rings, so they fade out there.
+  streaks *= clamp(1.5 - fwidth(phase) * 0.6, 0.0, 1.0);
+#endif
+  colour *= 1.0 + 0.14 * streaks;
+
+#ifdef GL_OES_standard_derivatives
+  // Treat the liquid as a thick surface whose height follows the flow, with
+  // the streaks as small ridges, and light it from the top left: soft shading
+  // in the hollows and sharp glossy highlights on the crests.
+  float height = f + 0.03 * streaks;
+  vec2 slope = vec2(dFdx(height), dFdy(height)) * resolution.y * 0.55;
+  // Sharp folds in the flow make the slope jump between neighbouring pixels,
+  // which would draw hairline rings; softening steep slopes keeps them as
+  // soft creases.
+  slope /= 1.0 + length(slope) * 0.9;
+  vec3 normal = normalize(vec3(-slope, 1.0));
+  vec3 light = normalize(vec3(-0.45, 0.6, 0.65));
+  vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
+  float diffuse = clamp(dot(normal, light), 0.0, 1.0);
+  float shine = pow(max(dot(normal, halfway), 0.0), 50.0);
+  colour *= 0.6 + 0.55 * diffuse;
+  colour += vec3(1.0, 0.92, 0.84) * shine * 0.75;
+#endif
 
   gl_FragColor = vec4(colour, 1.0);
 }
@@ -145,6 +173,8 @@ function compile(type, source) {
 function setUp() {
   gl = canvas.value.getContext('webgl', { antialias: false, premultipliedAlpha: false })
   if (!gl) return false
+  // Turns on the slopes the shader uses for shading; it skips them if missing.
+  gl.getExtension('OES_standard_derivatives')
 
   const program = gl.createProgram()
   gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX))
