@@ -41,6 +41,13 @@ function followPointer(event) {
   card.style.setProperty('--my', `${y * 100}%`)
   card.style.setProperty('--ry', `${(x - 0.5) * 2 * MAX_TILT}deg`)
   card.style.setProperty('--rx', `${(0.5 - y) * 2 * MAX_TILT}deg`)
+  // Each text block needs the pointer in its own coordinates, so the words
+  // under the glow can change colour.
+  for (const text of card.querySelectorAll('.glow-text')) {
+    const box = text.getBoundingClientRect()
+    text.style.setProperty('--tx', `${event.clientX - box.left}px`)
+    text.style.setProperty('--ty', `${event.clientY - box.top}px`)
+  }
 }
 
 function resetPointer(event) {
@@ -85,22 +92,22 @@ function resetPointer(event) {
       <div class="feature-grid">
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">01</span>
-          <h3>Listen to yourself</h3>
-          <p>
+          <h3 class="glow-text">Listen to yourself</h3>
+          <p class="glow-text">
             The songs you return to can hold clues about your mood, memories, and what matters to you.
           </p>
         </article>
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">02</span>
-          <h3>Find the patterns</h3>
-          <p>
+          <h3 class="glow-text">Find the patterns</h3>
+          <p class="glow-text">
             Explore your Spotify playlists and see your listening habits from a fresh perspective.
           </p>
         </article>
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">03</span>
-          <h3>Make space to reflect</h3>
-          <p>
+          <h3 class="glow-text">Make space to reflect</h3>
+          <p class="glow-text">
             Pair music insights with a daily mood log and journal to understand yourself over time.
           </p>
         </article>
@@ -113,8 +120,8 @@ function resetPointer(event) {
       @pointermove="followPointer"
       @pointerleave="resetPointer"
     >
-      <h2 id="closing-title">Ready to discover<br />the real you?</h2>
-      <p class="closing-text">Connect Spotify, log how you feel, and see what your music says.</p>
+      <h2 id="closing-title" class="glow-text">Ready to discover<br />the real you?</h2>
+      <p class="closing-text glow-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
     </section>
   </main>
@@ -266,6 +273,7 @@ function resetPointer(event) {
   --lift: 0px;
   --glow: rgba(255, 211, 172, 0.6);
   --glow-size: 220px;
+  --glow-ink: #140c0a;
   position: relative;
   isolation: isolate;
   transform: perspective(900px) translateY(var(--lift))
@@ -291,15 +299,58 @@ function resetPointer(event) {
 .closing.follow {
   --glow: rgba(255, 236, 220, 0.4);
   --glow-size: 360px;
+  --glow-ink: #140c0a;
   --tilt-scale: 0.4;
 }
-/* Dark mode has light text, so a light glow would wash it out. A soft
-   terracotta glow lights the card without hiding the words. */
-:global(.dark .landing-page .follow) {
-  --glow: rgba(219, 128, 109, 0.16);
+/* Light text under the bright glow would wash out, so the words it covers
+   change colour: the text is filled with a gradient centred on the pointer
+   (set per text block by followPointer). Near-black where the glow is
+   brightest, white where it fades, then the usual colour. The stops are where
+   each colour keeps about 4.5:1 contrast against the glow; a gradual blend
+   between them would pass through a mid-tone that matches the glow. */
+.glow-text {
+  --tx: 50%;
+  --ty: 50%;
 }
-:global(.dark .landing-page .closing.follow) {
-  --glow: rgba(60, 30, 24, 0.28);
+.feature-card .glow-text {
+  --ink-until: 18%;
+}
+.feature-card h3 {
+  --text: var(--ink);
+  --white-until: 25%;
+  --text-from: 25%;
+}
+.feature-card p {
+  --text: var(--ui-text-muted);
+  --white-until: 57%;
+  --text-from: 64%;
+}
+/* On the terracotta banner the dark ink reads better than white across the
+   whole glow, so the words stay dark until it fades out. */
+.closing .glow-text {
+  --ink-until: 70%;
+  --white-until: 70%;
+  --text-from: 70%;
+}
+.closing h2 {
+  --text: #fff;
+}
+.closing-text {
+  --text: rgba(255, 255, 255, 0.92);
+}
+/* The cards only need it in dark mode; the banner's text is white in both. */
+:global(.dark .landing-page .feature-card.follow:hover .glow-text),
+.closing.follow:hover .glow-text {
+  color: transparent;
+  background: radial-gradient(
+    circle var(--glow-size) at var(--tx) var(--ty),
+    var(--glow-ink) var(--ink-until),
+    #fff var(--ink-until) var(--white-until),
+    var(--text) var(--text-from)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
 }
 .feature-step {
   display: inline-flex;
