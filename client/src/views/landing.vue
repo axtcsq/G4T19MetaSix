@@ -328,17 +328,17 @@ function resetPointer(event) {
 .closing.follow::before {
   display: none;
 }
-/* The words under the glow turn white: the text is filled with a gradient
-   centred on the pointer (set per text block by followPointer), white where
-   the glow is and the usual colour beyond it. */
+/* The words under the glow change colour: the text is filled with a gradient
+   centred on the pointer (set per text block by followPointer), --lit where
+   the glow is and the usual colour beyond it. Light mode darkens them, dark
+   mode turns them white. */
 .glow-text {
   --tx: 50%;
   --ty: 50%;
 }
-/* On the cards the words under the glow just turn white, with no dark
-   centre, and fade back to their usual colour where the glow ends. */
 .feature-card .glow-text {
-  --white-until: 57%;
+  --lit: #3d1f17;
+  --lit-until: 57%;
 }
 .feature-card h3 {
   --text: var(--ink);
@@ -348,23 +348,25 @@ function resetPointer(event) {
   --text: var(--ui-text-muted);
   --text-from: 64%;
 }
-/* Only needed in dark mode, where the card text is dark-on-dark. */
-:global(.dark .landing-page .feature-card.follow:hover .glow-text) {
+:global(.dark .landing-page .feature-card .glow-text) {
+  --lit: #fff;
+}
+.feature-card.follow:hover .glow-text {
   color: transparent;
   background: radial-gradient(
     circle var(--glow-size) at var(--tx) var(--ty),
-    #fff 0 var(--white-until),
+    var(--lit) 0 var(--lit-until),
     var(--text) var(--text-from)
   );
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow: none;
 }
-/* A thin white outline makes the hovered headings bolder without changing the
-   font weight, which would re-wrap the text and make it jump. The cards' body
-   text only turns white. */
-:global(.dark .landing-page .feature-card.follow:hover h3.glow-text) {
-  -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.6);
+/* A thin outline in the lit colour makes the hovered headings bolder without
+   changing the font weight, which would re-wrap the text and make it jump.
+   The body text only changes colour. */
+.feature-card.follow:hover h3.glow-text {
+  -webkit-text-stroke: 0.45px color-mix(in srgb, var(--lit) 60%, transparent);
 }
 .feature-step {
   display: inline-flex;
