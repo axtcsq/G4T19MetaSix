@@ -61,7 +61,7 @@ onMounted(async () => {
 <template>
   <div class="login-page">
     <main class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
-      <h1 class="font-serif text-4xl text-highlighted">Welcome to MetaFor</h1>
+      <h1 class="page-title">Welcome to MetaFor</h1>
       <p class="mt-3 font-sans text-muted">
         Log in with Spotify to see how your music and your mood move together.
       </p>

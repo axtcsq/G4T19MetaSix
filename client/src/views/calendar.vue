@@ -212,7 +212,7 @@ onMounted(loadData)
     <main class="calendar-content">
       <header class="calendar-intro">
         <p class="eyebrow">Your listening, your feelings</p>
-        <h1>Mood Calendar</h1>
+        <h1 class="page-title">Mood Calendar</h1>
         <p>Track your daily moods and the songs that soundtracked them.</p>
       </header>
 
@@ -345,8 +345,8 @@ onMounted(loadData)
 .calendar-page :is(h1, h2, h3, h4) { font-family: var(--font-sans); }
 .calendar-content { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 64px; flex: 1; }
 .calendar-intro { text-align: center; margin-bottom: 22px; }
-.eyebrow { margin: 0 0 8px; color: var(--calendar-accent); font-size: .77rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
-.calendar-intro h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.2rem); }
+.eyebrow { margin: 0 0 8px; }
+.calendar-intro h1 { margin: 0; }
 .calendar-intro > p:last-child { margin: 10px 0 0; color: var(--ui-text-muted); }
 .month-summary { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 20px; color: var(--ui-text-muted); text-align: center; }
 .month-summary strong { color: var(--ui-text); }

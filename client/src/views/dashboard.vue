@@ -31,7 +31,7 @@ onMounted(() => {
     <div class="dashboard-inner">
       <div class="dashboard-top">
         <div>
-          <h1>Your listening portrait</h1>
+          <h1 class="page-title">Your listening portrait</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
             ><span>{{ historyLabel }}</span>
@@ -317,13 +317,10 @@ onMounted(() => {
 }
 .dashboard :is(h1, h2) {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.15;
   text-wrap: balance;
-}
-.dashboard h1 {
-  font-size: 36px;
 }
 .dashboard h2 {
   font-size: 28px;
@@ -639,9 +636,6 @@ onMounted(() => {
   .habits-layout {
     gap: 30px;
   }
-  .dashboard h1 {
-    font-size: 36px;
-  }
 }
 @media (max-width: 750px) {
   .dashboard-inner {
@@ -652,9 +646,6 @@ onMounted(() => {
     flex-direction: column;
     gap: 16px;
     margin-bottom: 20px;
-  }
-  .dashboard h1 {
-    font-size: 32px;
   }
   .dashboard-toolbar {
     width: 100%;

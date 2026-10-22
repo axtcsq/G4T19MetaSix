@@ -235,11 +235,6 @@ onMounted(loadPage)
   margin-inline: auto;
 }
 
-.page-title {
-  color: var(--ui-text);
-  font-size: 2rem;
-  font-weight: 700;
-}
 
 .body-text {
   font-family: var(--font-serif);
@@ -621,7 +616,6 @@ onMounted(loadPage)
   }
 
   .quiz-title,
-  .page-title,
   .patterns-title,
   .type-name {
     font-size: 1.6rem;

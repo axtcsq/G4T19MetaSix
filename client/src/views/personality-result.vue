@@ -175,12 +175,6 @@ onMounted(loadResult)
   line-height: 1.25;
 }
 
-.section-title {
-  font-family: var(--font-sans);
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
 .body-text {
   font-family: var(--font-serif);
   font-size: 1.25rem;
@@ -293,7 +287,6 @@ onMounted(loadResult)
   }
 
   .sub-header,
-  .section-title,
   .quiz-name {
     font-size: 1.25rem;
   }

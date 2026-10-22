@@ -161,11 +161,6 @@ const logOut = useLogOut()
   padding-block: 40px 56px;
 }
 
-.page-title {
-  font-family: var(--font-sans);
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
-  font-weight: 700;
-}
 
 .card {
   padding: 1.5rem 1.75rem;

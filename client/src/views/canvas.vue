@@ -179,7 +179,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   <div class="canvas-page">
     <main class="canvas-content">
       <div class="canvas-heading">
-        <h1>Canvas</h1>
+        <h1 class="page-title">Canvas</h1>
         <p>Can't describe your thoughts? Draw it.</p>
       </div>
 
@@ -311,7 +311,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
       </section>
 
       <section class="analysis-section" aria-labelledby="analysis-heading">
-        <h2 id="analysis-heading">AI Analysis</h2>
+        <h2 id="analysis-heading" class="section-title">AI Analysis</h2>
         <textarea
           class="analysis-output"
           value="Your canvas analysis will appear here once an AI service is connected."
@@ -356,9 +356,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .canvas-heading h1 {
   margin: 0;
-  color: var(--ui-text);
-  font-family: var(--font-serif);
-  font-size: clamp(2.2rem, 4vw, 3rem);
 }
 
 .canvas-heading > p:last-child {
@@ -647,9 +644,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .analysis-section h2 {
   margin: 0 0 12px;
-  color: var(--ui-text);
-  font-family: var(--font-serif);
-  font-size: 1.7rem;
 }
 
 .analysis-output {
