@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-// Shared axios client for every call to our server. In development Vite
-// proxies /api to the server; deployments set VITE_API_BASE_URL instead.
+// Use the same /api paths locally and in Vercel Services. Vite proxies them
+// during development; the top-level Vercel rewrite routes them in deployments.
 export const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''),
+  baseURL: '',
   headers: { 'Content-Type': 'application/json' },
 })
 
