@@ -4,13 +4,13 @@
    navy background. */
 .personality-theme {
   --pq-surface: #fff;
-  --pq-on-surface: #000;
+  --pq-on-surface: var(--ui-text);
   --pq-muted: #665f78;
   --pq-brown: #763e32;
   --pq-accent: #ce5b4b;
   --pq-peach: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
   --pq-peach-hover: #ffd6b6;
-  --pq-on-peach: #000;
+  --pq-on-peach: var(--ui-text);
   --pq-quiet: #fff;
   --pq-result: #ffe6d2;
   --pq-rail: #ffcda6;

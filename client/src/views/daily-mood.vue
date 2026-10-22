@@ -420,11 +420,11 @@ onMounted(loadEntries)
 }
 
 .journal-history {
-  background: #fff;
+  background: var(--ui-bg-elevated);
 }
 
 .journal-history h2 {
-  color: #292321;
+  color: var(--ui-text);
 }
 
 .journal-history-title {
