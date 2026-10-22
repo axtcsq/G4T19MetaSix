@@ -400,13 +400,13 @@ function resetPointer(event) {
 
 .closing {
   display: flex;
-  min-height: 275px;
+  min-height: 380px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 24px;
   margin-bottom: 44px;
-  padding: 40px 24px;
+  padding: 64px 24px;
   border: 1px solid #763e32;
   border-radius: 18px;
   /* The same warm mauve-to-terracotta blend as the Patterns card. */
@@ -456,7 +456,7 @@ function resetPointer(event) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   margin: 0;
   color: #fff;
   line-height: 1;
@@ -480,7 +480,7 @@ function resetPointer(event) {
   background-clip: text;
   color: transparent;
   font-family: var(--font-sans);
-  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-size: clamp(2.8rem, 7vw, 4.2rem);
   font-weight: 800;
   filter: drop-shadow(0 2px 10px rgba(60, 24, 30, 0.35));
 }
@@ -537,8 +537,8 @@ function resetPointer(event) {
     padding: 24px 20px;
   }
   .closing {
-    min-height: 250px;
-    gap: 22px;
+    min-height: 320px;
+    gap: 24px;
   }
 }
 
