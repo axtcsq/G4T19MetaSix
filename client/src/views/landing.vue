@@ -445,7 +445,7 @@ function resetPointer(event) {
   color: #fff;
   line-height: 1;
 }
-/* A small, spaced-out lead-in, then the question in a large serif italic. */
+/* A small, spaced-out lead-in, then the question in large type. */
 .closing-lead {
   font-family: var(--font-sans);
   font-size: clamp(0.85rem, 1.6vw, 1rem);
@@ -455,20 +455,17 @@ function resetPointer(event) {
   opacity: 0.88;
   text-shadow: 0 1px 4px rgba(40, 20, 30, 0.35);
 }
-/* White fading into peach. The side padding stops the italic's overhang from
-   being cut off by the gradient fill, and drop-shadow (unlike text-shadow)
-   works with transparent text. */
+/* The site's heading font, white fading into peach. drop-shadow (unlike
+   text-shadow) works with transparent text. */
 .closing-accent {
-  padding: 0 0.15em 0.08em;
+  padding-bottom: 0.08em;
   background: linear-gradient(100deg, #fff 20%, #ffe1c9 55%, #ffc9a3 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-family: var(--font-serif);
-  font-size: clamp(2.6rem, 6vw, 3.6rem);
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 800;
   filter: drop-shadow(0 2px 10px rgba(60, 24, 30, 0.35));
 }
 .get-started {
