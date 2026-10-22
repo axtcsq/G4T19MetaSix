@@ -31,7 +31,7 @@ The daily reflection field is a ruled notebook: warm paper, subtle grain, a red 
 
 Mood entries are stored by the server. Load the history on entry, show a loading state while it arrives, distinguish an empty history from a failed request, and offer retry after a load failure. Save only after server confirmation, prevent duplicate saves while the request is pending, and keep the selected mood and journal text if saving fails.
 
-The frontend calls the relative `/api` path. Vite proxies that path to the local server during development; deployments should provide `VITE_API_BASE_URL` or route `/api` to the backend on the same origin.
+The frontend calls the relative `/api` path. Vite proxies it to the local server during development; Vercel Services routes it to the server service on the same origin using the root `vercel.json` rewrite.
 
 
 ### Listening room
