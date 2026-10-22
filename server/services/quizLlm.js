@@ -24,8 +24,26 @@ export function isLlmConfigured() {
   return Boolean(process.env.GROQ_API_KEY);
 }
 
-// Returns the raw text of the model's reply, asked for as a JSON object.
-async function callLlm(prompt) {
+// The exact shape of the reply. Groq's strict structured outputs make the
+// model return every field, and only one of the candidate types.
+function analysisSchema(typeIds) {
+  return {
+    type: "object",
+    properties: {
+      typeId: { type: "string", enum: typeIds },
+      headline: { type: "string" },
+      // Before insights: the model writes fields in order and tends to stop
+      // after a list, so the last field was often dropped.
+      summary: { type: "string" },
+      insights: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
+    },
+    required: ["typeId", "headline", "summary", "insights"],
+    additionalProperties: false,
+  };
+}
+
+// Returns the raw text of the model's reply, which follows the schema.
+async function callLlm(prompt, schema) {
   const response = await fetch(GROQ_URL, {
     method: "POST",
     headers: {
@@ -35,7 +53,10 @@ async function callLlm(prompt) {
     body: JSON.stringify({
       model: GROQ_MODEL,
       messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: "personality_analysis", strict: true, schema },
+      },
       temperature: 0.7,
       reasoning_effort: "low",
       max_completion_tokens: MAX_TOKENS,
@@ -45,7 +66,9 @@ async function callLlm(prompt) {
 
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(`Groq ${response.status}: ${body.error?.message ?? "request failed"}`);
+    const error = new Error(`Groq ${response.status}: ${body.error?.message ?? "request failed"}`);
+    error.status = response.status;
+    throw error;
   }
 
   const text = body.choices?.[0]?.message?.content;
@@ -104,10 +127,11 @@ Mood log patterns: ${moods}
 Choose the personality type that fits this user best from these candidates only:
 ${candidates}
 
-Then write, in the second person:
-- a one-sentence headline,
-- 3 short insights, each pointing to a specific pattern in the data above (an artist, a stat or a trait) and saying what it suggests about them,
-- a summary: a warm closing line of 1 to 2 sentences for their type, like a send-off. Don't list or repeat the quiz results, since the page already shows them.
+Then fill in all four fields, writing in the second person:
+1. "typeId": the id of the type you chose.
+2. "headline": one sentence.
+3. "summary": a warm closing line of 1 to 2 sentences for their type, like a send-off. Don't list or repeat the quiz results, since the page already shows them.
+4. "insights": exactly 3 short insights, each pointing to a specific pattern in the data above (an artist, a stat or a trait) and saying what it suggests about them.
 
 Rules:
 - Keep it warm and light. This is for fun: do not diagnose, mention mental health conditions or give advice.
@@ -115,7 +139,7 @@ Rules:
 - Headline at most 140 characters, each insight at most 240 characters, summary at most 280 characters.
 
 Reply with JSON only, no markdown, in this shape:
-{"typeId": "...", "headline": "...", "insights": ["...", "...", "..."], "summary": "..."}`;
+{"typeId": "...", "headline": "...", "summary": "...", "insights": ["...", "...", "..."]}`;
 }
 
 function parseJson(text) {
@@ -139,11 +163,26 @@ function isValidAnalysis(analysis, ranking) {
   );
 }
 
+// Groq rejects a reply that doesn't match the schema with a 400. The model
+// sometimes drops a field, so that gets one more try.
+const RETRIES = 1;
+
+async function callLlmWithRetry(prompt, schema) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await callLlm(prompt, schema);
+    } catch (error) {
+      if (error.status !== 400 || attempt >= RETRIES) throw error;
+    }
+  }
+}
+
 export async function analysePersonality(input) {
   if (!isLlmConfigured()) return null;
 
   try {
-    const analysis = parseJson(await callLlm(buildAnalysisPrompt(input)));
+    const typeIds = input.ranking.slice(0, CANDIDATE_COUNT).map((type) => type.id);
+    const analysis = parseJson(await callLlmWithRetry(buildAnalysisPrompt(input), analysisSchema(typeIds)));
 
     if (!isValidAnalysis(analysis, input.ranking)) {
       console.error("[Quiz] LLM analysis was rejected:", analysis);
