@@ -299,6 +299,11 @@ function resetPointer(event) {
 .follow:hover::before {
   opacity: 1;
 }
+/* Peach looks grey on the dark cards, so dark mode uses a warmer orange to
+   match how the glow looks in light mode. */
+:global(.dark .landing-page .feature-card.follow) {
+  --glow: rgba(255, 135, 60, 0.42);
+}
 .closing.follow {
   --glow-size: 360px;
   --tilt-scale: 0.4;
@@ -352,9 +357,10 @@ function resetPointer(event) {
   background-clip: text;
   text-shadow: none;
 }
-/* A thin white outline makes the hovered words bolder without changing the
-   font weight, which would re-wrap the text and make it jump. */
-:global(.dark .landing-page .feature-card.follow:hover .glow-text),
+/* A thin white outline makes the hovered headings bolder without changing the
+   font weight, which would re-wrap the text and make it jump. The cards' body
+   text only turns white. */
+:global(.dark .landing-page .feature-card.follow:hover h3.glow-text),
 .closing.follow:hover .glow-text {
   -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.6);
 }
