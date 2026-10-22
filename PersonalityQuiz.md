@@ -303,7 +303,7 @@ server/
     artistGenres.js         artist genres from Last.fm tags
     quizEngine.js           answer checking, tallying, shared helpers
     patterns.js             combining traits, ranking types, listening stats, mood link
-    quizLlm.js              AI prompt and checks (callLlm is a stub)
+    quizLlm.js              AI prompt, the Groq call and checks
   models/QuizAttempt.js     MongoDB models
   controller/quizController.js
   routes/quizRoutes.js
@@ -339,10 +339,9 @@ client/src/
 
 ## Setting up the AI
 
-The AI only writes the Patterns text; it never decides a single quiz's result. To turn it on:
+The AI only writes the Patterns text; it never decides a single quiz's result. It uses Groq (`openai/gpt-oss-20b`), the same provider and key as the Daily Mood journal helper. To turn it on, add your own key from the [Groq Console](https://console.groq.com/keys) to `server/.env` as `GROQ_API_KEY`. It never goes to the client. Without a key, Patterns uses the scoring result and fixed text.
 
-1. Pick a provider and fill in `callLlm(prompt)` in `server/services/quizLlm.js`. It should return the model's raw text reply.
-2. Put the key in `server/.env` as `LLM_API_KEY`. Never send it to the client.
+The model gets the quiz results, combined traits, top artists and listening stats, and how many of each mood the user logged. It never gets journal text. Groq's free usage limits apply; a call that fails, is rate limited or takes over 15 seconds falls back to the scoring result.
 
 `buildAnalysisPrompt()` already asks for JSON with `typeId`, `headline`, `insights` and `summary`. `analysePersonality()` checks the reply: the type must be one of the 3 closest, and every text field has a length limit. If anything is wrong, it falls back to the fixed text.
 
