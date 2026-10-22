@@ -1,7 +1,8 @@
 <script setup>
-// Slowly flowing marbled paint, drawn with a small WebGL shader: noise warped
-// into itself a few times (domain warping), turned into bands of deep red,
-// rose and pale pink. It only animates while it's on screen and the tab is
+// Slowly flowing liquid, drawn with a small WebGL shader: noise warped into
+// itself a few times (domain warping), split into rounded pools with glossy
+// rims, plus a few drifting bubbles, in MetaFor's browns, terracotta, peach
+// and lavender. It only animates while it's on screen and the tab is
 // visible, draws one still frame for people who reduce motion, and leaves the
 // plain gradient behind it showing if WebGL isn't available.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -71,19 +72,42 @@ void main() {
   );
   float f = fbm(p + 2.6 * r);
 
-  // Bands across the warped field, like streaks of paint.
-  // Many fine streaks inside the large swirls.
-  float bands = 0.5 + 0.5 * sin((f * 7.0 + length(r) * 3.0) * 6.2832);
+  // Liquid cells: the warped field split into rounded pools, with a glossy
+  // rim where neighbouring pools meet.
+  float field = sin((f * 3.6 + length(r) * 1.8) * 6.2832);
+  float depth = abs(field);
+  float rim = 1.0 - smoothstep(0.0, 0.2, depth);
+  float inner = smoothstep(0.2, 1.0, depth);
 
-  vec3 maroon = vec3(0.18, 0.03, 0.05);
-  vec3 crimson = vec3(0.52, 0.10, 0.14);
-  vec3 rose = vec3(0.78, 0.40, 0.48);
-  vec3 blush = vec3(0.95, 0.82, 0.86);
+  // MetaFor's palette: deep brown and terracotta pools, a touch of lavender,
+  // peach rims that brighten to cream along their centre.
+  vec3 deepBrown = vec3(0.23, 0.11, 0.09);
+  vec3 brown = vec3(0.46, 0.24, 0.20);
+  vec3 terracotta = vec3(0.80, 0.40, 0.32);
+  vec3 lavender = vec3(0.60, 0.55, 0.63);
+  vec3 peach = vec3(1.0, 0.80, 0.65);
+  vec3 cream = vec3(1.0, 0.95, 0.90);
 
-  vec3 colour = mix(maroon, crimson, smoothstep(0.0, 0.55, bands));
-  colour = mix(colour, rose, smoothstep(0.55, 0.85, bands));
-  colour = mix(colour, blush, smoothstep(0.88, 0.99, bands));
-  colour *= 0.8 + 0.35 * f;
+  vec3 pool = field > 0.0 ? mix(terracotta, brown, inner) : mix(brown, deepBrown, inner);
+  pool = mix(pool, lavender, 0.22 * smoothstep(0.45, 0.75, q.x));
+  vec3 colour = mix(pool, peach, rim);
+  colour = mix(colour, cream, pow(rim, 4.0));
+
+  // Small bubbles drifting slowly upward, each with a bright rim and a glint.
+  vec2 cell = gl_FragCoord.xy / resolution.y * 8.0 + vec2(0.0, -t * 1.5);
+  vec2 id = floor(cell);
+  vec2 local = fract(cell) - 0.5;
+  if (hash(id) > 0.7) {
+    float radius = 0.1 + 0.16 * hash(id + 1.7);
+    vec2 centre = (vec2(hash(id + 3.1), hash(id + 5.9)) - 0.5) * 0.5;
+    float d = length(local - centre);
+    float body = 1.0 - smoothstep(radius - 0.03, radius, d);
+    float ring = body - (1.0 - smoothstep(radius - 0.08, radius - 0.04, d));
+    float glint = 1.0 - smoothstep(0.0, 0.05, length(local - centre - vec2(-0.35, 0.35) * radius));
+    colour = mix(colour, colour * 0.75, body * 0.5);
+    colour = mix(colour, peach, ring * 0.7);
+    colour = mix(colour, cream, glint * body);
+  }
 
   gl_FragColor = vec4(colour, 1.0);
 }
