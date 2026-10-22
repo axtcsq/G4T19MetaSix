@@ -1,10 +1,11 @@
 <script setup>
-// Slowly flowing liquid, drawn with a small WebGL shader: noise warped into
-// itself a few times (domain warping), split into rounded pools with glossy
-// rims, plus a few drifting bubbles, in MetaFor's browns, terracotta, peach
-// and lavender. It only animates while it's on screen and the tab is
-// visible, draws one still frame for people who reduce motion, and leaves the
-// plain gradient behind it showing if WebGL isn't available.
+// Slowly flowing liquid in sunset tones from MetaFor's palette, drawn with a
+// small WebGL shader: noise warped into itself (domain warping), coloured from
+// dusky plum at the top to peach near the bottom. The liquid swirls around
+// the pointer and settles back when it leaves. It only animates while it's on
+// screen and the tab is visible, draws one still frame (with no swirling) for
+// people who reduce motion, and leaves the plain gradient behind it showing
+// if WebGL isn't available.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 defineOptions({ name: 'MarbleBackground' })
 
@@ -12,6 +13,10 @@ const canvas = ref(null)
 // Seconds of flow per real second; low, so it reads as thick paint.
 const SPEED = 0.05
 const MAX_PIXEL_RATIO = 1.5
+// How quickly the swirl follows the pointer, and fades in and out (0 to 1 per
+// frame; lower is smoother).
+const FOLLOW = 0.12
+const FADE = 0.05
 
 const VERTEX = `
 attribute vec2 position;
@@ -28,6 +33,9 @@ precision mediump float;
 #endif
 uniform vec2 resolution;
 uniform float time;
+// The pointer in canvas pixels, and how strongly the liquid swirls around it.
+uniform vec2 mouse;
+uniform float pull;
 
 // A hash without sin(), which loses precision and shows grid seams.
 float hash(vec2 p) {
@@ -60,54 +68,48 @@ float fbm(vec2 p) {
 }
 
 void main() {
-  // Zoomed out, so a few large swirls fill the banner.
-  vec2 p = gl_FragCoord.xy / resolution.y * 0.9;
+  vec2 uv = gl_FragCoord.xy / resolution;
+  // Zoomed out, so a few large, calm shapes fill the banner.
+  vec2 p = gl_FragCoord.xy / resolution.y * 0.7;
+  vec2 m = mouse / resolution.y * 0.7;
   float t = time;
 
-  // Each layer of noise bends the next, which makes the swirls.
+  // The liquid near the pointer is turned around it, more strongly the closer
+  // it is, and parts slightly, like stirring thick paint.
+  vec2 offset = p - m;
+  float near = pull * exp(-dot(offset, offset) * 9.0);
+  float turn = near * 2.4;
+  p = m + mat2(cos(turn), -sin(turn), sin(turn), cos(turn)) * offset;
+  p += normalize(offset + 1e-4) * near * 0.08;
+
+  // Gentle warping: each layer of noise bends the next.
   vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, 1.3) - t));
   vec2 r = vec2(
-    fbm(p + 2.2 * q + vec2(1.7, 9.2) + 0.6 * t),
-    fbm(p + 2.2 * q + vec2(8.3, 2.8) - 0.5 * t)
+    fbm(p + 1.6 * q + vec2(1.7, 9.2) + 0.5 * t),
+    fbm(p + 1.6 * q + vec2(8.3, 2.8) - 0.4 * t)
   );
-  float f = fbm(p + 2.6 * r);
+  float f = fbm(p + 1.8 * r);
 
-  // Liquid cells: the warped field split into rounded pools, with a glossy
-  // rim where neighbouring pools meet.
-  float field = sin((f * 3.6 + length(r) * 1.8) * 6.2832);
-  float depth = abs(field);
-  float rim = 1.0 - smoothstep(0.0, 0.2, depth);
-  float inner = smoothstep(0.2, 1.0, depth);
+  // Sunset: dusk at the top, warm light low down like a horizon.
+  float v = clamp(f * 1.1 + 0.25 * r.x + (0.55 - uv.y) * 0.55, 0.0, 1.0);
 
-  // MetaFor's palette: deep brown and terracotta pools, a touch of lavender,
-  // peach rims that brighten to cream along their centre.
-  vec3 deepBrown = vec3(0.23, 0.11, 0.09);
-  vec3 brown = vec3(0.46, 0.24, 0.20);
-  vec3 terracotta = vec3(0.80, 0.40, 0.32);
-  vec3 lavender = vec3(0.60, 0.55, 0.63);
-  vec3 peach = vec3(1.0, 0.80, 0.65);
-  vec3 cream = vec3(1.0, 0.95, 0.90);
+  vec3 plum = vec3(0.23, 0.16, 0.27);
+  vec3 mauve = vec3(0.40, 0.33, 0.45);
+  vec3 rose = vec3(0.72, 0.36, 0.36);
+  vec3 terracotta = vec3(0.84, 0.44, 0.33);
+  vec3 apricot = vec3(0.94, 0.62, 0.45);
+  vec3 peach = vec3(1.0, 0.83, 0.67);
 
-  vec3 pool = field > 0.0 ? mix(terracotta, brown, inner) : mix(brown, deepBrown, inner);
-  pool = mix(pool, lavender, 0.22 * smoothstep(0.45, 0.75, q.x));
-  vec3 colour = mix(pool, peach, rim);
-  colour = mix(colour, cream, pow(rim, 4.0));
+  vec3 colour = mix(plum, mauve, smoothstep(0.0, 0.28, v));
+  colour = mix(colour, rose, smoothstep(0.28, 0.48, v));
+  colour = mix(colour, terracotta, smoothstep(0.48, 0.62, v));
+  colour = mix(colour, apricot, smoothstep(0.62, 0.8, v));
+  colour = mix(colour, peach, smoothstep(0.8, 0.97, v));
 
-  // Small bubbles drifting slowly upward, each with a bright rim and a glint.
-  vec2 cell = gl_FragCoord.xy / resolution.y * 8.0 + vec2(0.0, -t * 1.5);
-  vec2 id = floor(cell);
-  vec2 local = fract(cell) - 0.5;
-  if (hash(id) > 0.7) {
-    float radius = 0.1 + 0.16 * hash(id + 1.7);
-    vec2 centre = (vec2(hash(id + 3.1), hash(id + 5.9)) - 0.5) * 0.5;
-    float d = length(local - centre);
-    float body = 1.0 - smoothstep(radius - 0.03, radius, d);
-    float ring = body - (1.0 - smoothstep(radius - 0.08, radius - 0.04, d));
-    float glint = 1.0 - smoothstep(0.0, 0.05, length(local - centre - vec2(-0.35, 0.35) * radius));
-    colour = mix(colour, colour * 0.75, body * 0.5);
-    colour = mix(colour, peach, ring * 0.7);
-    colour = mix(colour, cream, glint * body);
-  }
+  // A few faint glossy lines along the flow, like light on a liquid surface.
+  float contour = abs(fract(f * 3.0 + r.y * 0.5) - 0.5);
+  float gloss = 1.0 - smoothstep(0.0, 0.03, contour);
+  colour = mix(colour, vec3(1.0, 0.93, 0.86), gloss * 0.2);
 
   gl_FragColor = vec4(colour, 1.0);
 }
@@ -121,6 +123,13 @@ let observer = null
 let resizeObserver = null
 let timeLocation = null
 let resolutionLocation = null
+let mouseLocation = null
+let pullLocation = null
+let ratio = 1
+// Where the pointer is and how hard it pulls, eased towards each frame.
+const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 }
+let pull = 0
+let targetPull = 0
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function compile(type, source) {
@@ -154,11 +163,13 @@ function setUp() {
 
   timeLocation = gl.getUniformLocation(program, 'time')
   resolutionLocation = gl.getUniformLocation(program, 'resolution')
+  mouseLocation = gl.getUniformLocation(program, 'mouse')
+  pullLocation = gl.getUniformLocation(program, 'pull')
   return true
 }
 
 function resize() {
-  const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
+  ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
   const { clientWidth, clientHeight } = canvas.value
   canvas.value.width = Math.max(1, Math.round(clientWidth * ratio))
   canvas.value.height = Math.max(1, Math.round(clientHeight * ratio))
@@ -168,8 +179,31 @@ function resize() {
 }
 
 function draw(now) {
+  mouse.x += (mouse.targetX - mouse.x) * FOLLOW
+  mouse.y += (mouse.targetY - mouse.y) * FOLLOW
+  pull += (targetPull - pull) * FADE
   gl.uniform1f(timeLocation, ((now - start) / 1000) * SPEED)
+  gl.uniform2f(mouseLocation, mouse.x, mouse.y)
+  gl.uniform1f(pullLocation, pull)
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+}
+
+// The canvas ignores the pointer (the text and button sit above it), so its
+// parent reports where the pointer is, in the canvas's own pixels.
+function onPointerMove(event) {
+  const box = canvas.value.getBoundingClientRect()
+  mouse.targetX = (event.clientX - box.left) * ratio
+  mouse.targetY = (box.bottom - event.clientY) * ratio
+  if (targetPull === 0) {
+    // Start the swirl where the pointer came in, not from the last spot.
+    mouse.x = mouse.targetX
+    mouse.y = mouse.targetY
+  }
+  targetPull = 1
+}
+
+function onPointerLeave() {
+  targetPull = 0
 }
 
 function loop(now) {
@@ -213,6 +247,11 @@ onMounted(() => {
   })
   observer.observe(canvas.value)
   document.addEventListener('visibilitychange', onVisibilityChange)
+
+  if (!reduceMotion) {
+    canvas.value.parentElement.addEventListener('pointermove', onPointerMove)
+    canvas.value.parentElement.addEventListener('pointerleave', onPointerLeave)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -220,6 +259,8 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   resizeObserver?.disconnect()
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  canvas.value?.parentElement?.removeEventListener('pointermove', onPointerMove)
+  canvas.value?.parentElement?.removeEventListener('pointerleave', onPointerLeave)
   gl?.getExtension('WEBGL_lose_context')?.loseContext()
 })
 </script>
