@@ -1,13 +1,15 @@
-# Saves every active user's newest Spotify plays, every hour. Spotify only
-# keeps each user's latest 50 plays, so this is what lets history grow.
+# Saves every active user's newest Spotify plays, every 15 minutes. Spotify
+# only keeps each user's latest 50 plays, so this is what lets history grow.
 # Needs the repo secrets MONGODB_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 # and TOKEN_KEY (Settings > Secrets and variables > Actions).
 name: Sync listening history
 
 on:
   schedule:
-    # Minute 17, off the hour, when GitHub's scheduler is less busy.
-    - cron: "17 * * * *"
+    # Every 15 minutes, avoiding :00 and :30 when GitHub's scheduler is busiest.
+    # GitHub delays or drops scheduled runs under load (hourly gave a run every
+    # 3-4 hours), so asking often keeps real runs well inside 50 plays apart.
+    - cron: "7,22,37,52 * * * *"
   # Adds a "Run workflow" button in the Actions tab.
   workflow_dispatch:
 

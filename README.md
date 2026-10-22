@@ -104,7 +104,7 @@ To log in, use **Continue with Spotify** if your Spotify email is on the app's u
 ### 5.6 Listening history sync
 Spotify only ever returns a user's latest 50 plays, so MetaFor saves them as they happen:
 
-- **Every hour**, GitHub Actions runs `.github/workflows/sync.yml`, which saves the newest plays of every user who has logged in with Spotify. It needs four repository secrets (Settings > Secrets and variables > Actions): `MONGODB_URI`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `TOKEN_KEY`, with the same values as `server/.env`. Use **Run workflow** in the Actions tab to run it straight away.
+- **Every 15 minutes** (GitHub often runs scheduled jobs late or skips some), GitHub Actions runs `.github/workflows/sync.yml`, which saves the newest plays of every user who has logged in with Spotify. It needs four repository secrets (Settings > Secrets and variables > Actions): `MONGODB_URI`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `TOKEN_KEY`, with the same values as `server/.env`. Use **Run workflow** in the Actions tab to run it straight away.
 - **When the dashboard or calendar opens**, the client calls `POST /api/sync` to save the user's newest plays first.
 - **By hand**, run `npm run sync` from `server/`.
 
