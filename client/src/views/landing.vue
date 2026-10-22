@@ -139,7 +139,7 @@ function resetPointer(event) {
       <div class="liquid-scrim" aria-hidden="true" />
       <h2 id="closing-title">
         <span class="closing-lead">Ready to discover</span>
-        <span class="closing-accent">the real you?</span>
+        <span class="closing-accent">The Real You?</span>
       </h2>
       <p class="closing-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
@@ -480,7 +480,7 @@ function resetPointer(event) {
   background-clip: text;
   color: transparent;
   font-family: var(--font-sans);
-  font-size: clamp(2.8rem, 7vw, 4.2rem);
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
   font-weight: 800;
   filter: drop-shadow(0 2px 10px rgba(60, 24, 30, 0.35));
 }
