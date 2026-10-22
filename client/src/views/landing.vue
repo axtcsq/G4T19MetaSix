@@ -277,7 +277,6 @@ function resetPointer(event) {
   --lift: 0px;
   --glow: rgba(255, 211, 172, 0.6);
   --glow-size: 220px;
-  --glow-ink: #3d2219;
   position: relative;
   isolation: isolate;
   transform: perspective(900px) translateY(var(--lift))
@@ -303,15 +302,11 @@ function resetPointer(event) {
 .closing.follow {
   --glow: rgba(255, 236, 220, 0.4);
   --glow-size: 360px;
-  --glow-ink: #3d2219;
   --tilt-scale: 0.4;
 }
-/* Light text under the bright glow would wash out, so the words it covers
-   change colour: the text is filled with a gradient centred on the pointer
-   (set per text block by followPointer). Near-black where the glow is
-   brightest, white where it fades, then the usual colour. The stops are where
-   each colour keeps about 4.5:1 contrast against the glow; a gradual blend
-   between them would pass through a mid-tone that matches the glow. */
+/* The words under the glow turn white: the text is filled with a gradient
+   centred on the pointer (set per text block by followPointer), white where
+   the glow is and the usual colour beyond it. */
 .glow-text {
   --tx: 50%;
   --ty: 50%;
@@ -319,7 +314,6 @@ function resetPointer(event) {
 /* On the cards the words under the glow just turn white, with no dark
    centre, and fade back to their usual colour where the glow ends. */
 .feature-card .glow-text {
-  --ink-until: 0%;
   --white-until: 57%;
 }
 .feature-card h3 {
@@ -330,10 +324,9 @@ function resetPointer(event) {
   --text: var(--ui-text-muted);
   --text-from: 64%;
 }
-/* The liquid behind the banner changes colour as it moves, so the words only
-   turn dark in the middle of the glow and are white everywhere else. */
+/* The banner's words are already white, so under the glow they just turn
+   fully white and bolder, like the cards, with no dark centre. */
 .closing .glow-text {
-  --ink-until: 30%;
   --white-until: 100%;
   --text-from: 100%;
 }
@@ -349,17 +342,17 @@ function resetPointer(event) {
   color: transparent;
   background: radial-gradient(
     circle var(--glow-size) at var(--tx) var(--ty),
-    var(--glow-ink) var(--ink-until),
-    #fff var(--ink-until) var(--white-until),
+    #fff 0 var(--white-until),
     var(--text) var(--text-from)
   );
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow: none;
 }
-/* A thin white outline makes the hovered card's words bolder without
-   changing the font weight, which would re-wrap the text and make it jump. */
-:global(.dark .landing-page .feature-card.follow:hover .glow-text) {
+/* A thin white outline makes the hovered words bolder without changing the
+   font weight, which would re-wrap the text and make it jump. */
+:global(.dark .landing-page .feature-card.follow:hover .glow-text),
+.closing.follow:hover .glow-text {
   -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.6);
 }
 .feature-step {
