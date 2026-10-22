@@ -60,17 +60,29 @@ spacing. Don't use fake bold or fake italic: Raleway is loaded at 400 to 800
 upright, Crimson Text at 400, 600 and 700 upright. Add the weight to the Google
 Fonts import first if you really need another.
 
-Type scale (use these sizes, rather than inventing new ones):
+Type scale (use these sizes, rather than inventing new ones). The first
+three have shared classes in `main.css`, so use the class instead of setting
+the size yourself:
 
-| Role | Size | Weight | Example |
+| Role | Class or size | Weight | Example |
 | --- | --- | --- | --- |
-| Display | `clamp(2.4rem, 7vw, 4.2rem)` | 800 | Landing banner, "The Real You?" |
-| Page title (`h1`) | `clamp(2rem, 4vw, 2.8rem)` | 700 | "Mood Calendar", "Find Your Personality" |
-| Section title (`h2`) | `clamp(1.5rem, 3vw, 2rem)` | 700 to 800 | "Your playlist is a mirror." |
-| Card title (`h3`) | `1.1rem` to `1.25rem` | 700 | Quiz and feature card titles |
+| Display | `clamp(2.4rem, 7vw, 4.2rem)` | 800 | Landing page only: hero, "The Real You?" |
+| Page title (`h1`) | `.page-title` | 700 | "Mood Calendar", "Find Your Personality" |
+| Section title (`h2`) | `.section-title` | 700 | "AI Analysis", "Why we think so" |
+| Eyebrow | `.eyebrow` | 800 | "YOUR LISTENING, YOUR FEELINGS" |
+| Card or panel title | `1.1rem` to `1.5rem` | 700 | Quiz cards, "Journal History" |
 | Body (serif) | `1.05rem` to `1.25rem`, line-height 1.45 to 1.6 | 400 | Descriptions, intros |
 | Small / caption | `0.85rem` to `0.9rem` | 500 to 600 | Hints, timestamps, notes |
-| Eyebrow | `0.75rem` to `0.8rem`, uppercase, letter-spacing `0.13em` | 800 | "YOUR LISTENING, YOUR FEELINGS" |
+
+```vue
+<p class="eyebrow">Your listening, your feelings</p>
+<h1 class="page-title">Mood Calendar</h1>
+<h2 class="section-title">AI Analysis</h2>
+```
+
+The classes already shrink on small screens, so don't add mobile font sizes
+for them. They take the page's text colour, and a page's own styles can still
+change their margin or colour.
 
 Don't go below `0.75rem` for anything people need to read.
 
@@ -79,7 +91,11 @@ Don't go below `0.75rem` for anything people need to read.
 - **Page width:** content sits in a centred shell, `width: min(1120px, calc(100% - 40px)); margin-inline: auto;`. Pages with a lot of data (the dashboard) can go up to 1240px.
 - **Page padding:** top `clamp(36px, 6vw, 72px)`, bottom `64px`.
 - **Page header:** centred eyebrow, then `h1`, then one or two lines of muted serif intro.
-- **Breakpoints:** `600px` (phone: stack everything, smaller padding) and `1000px` (tablet: two-column grids become one). Use these two rather than new ones.
+- **Breakpoints:** use only these, as `max-width` queries:
+  - `1000px`: tablet, wide grids drop to two columns or one
+  - `768px`: small tablet and large phone, side-by-side layouts stack
+  - `600px`: phone, smaller padding and single columns
+  - `400px`: only for small tweaks on very narrow phones
 - **Spacing:** multiples of 4px. Common values are 8, 12, 16, 20, 24, 32, 40, 56 and 72px. Use gaps between related items, and 56 to 80px between page sections.
 - **No horizontal scroll** at 375px wide. Check every page at phone width.
 
@@ -163,12 +179,12 @@ them.
 - [ ] Reduced motion is respected
 - [ ] Buttons and links have hover and focus states
 
-## Known differences to tidy up
+## Allowed exceptions
 
-These pages don't follow the guide yet. Fix them when you're next working on
-that page:
+These keep their own colours on purpose, in both modes:
 
-- Page titles use different sizes (`2rem`, `clamp(1.6rem, 3vw, 2.1rem)`, `clamp(2rem, 5vw, 3.2rem)`). Move them to the page-title size above.
-- Daily Mood's `h1` uses Crimson Text. Headings should be Raleway.
-- `canvas.vue` and `daily-mood.vue` have many hard-coded colours. Swap the theme ones for tokens. The journal paper colours are fine.
-- Breakpoints vary (`650px`, `680px`, `700px`, `750px`, `760px`, `860px`). Move them to `600px` and `1000px`.
+- The journal paper on Daily Mood and the drawing paper on Canvas.
+- Mood colours, the drawing palette, album-cover colours and the dashboard garden. These are data, not theme.
+- The glossy white pills (mood choices, canvas tools), which are a component style like `.glass-action`.
+- The dashboard and listening room have their own feature tokens, documented in `DESIGN.md`. The Personality pages have theirs in `src/assets/css/personality-theme.css` (plum cards in dark mode).
+- The landing page's typed "What's MetaFor?" title uses Crimson Text at display size, from the Figma.
