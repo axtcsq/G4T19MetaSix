@@ -293,6 +293,14 @@ function resetPointer(event) {
   --glow-size: 360px;
   --tilt-scale: 0.4;
 }
+/* Dark mode has light text, so a light glow would wash it out. A soft
+   terracotta glow lights the card without hiding the words. */
+:global(.dark .landing-page .follow) {
+  --glow: rgba(219, 128, 109, 0.16);
+}
+:global(.dark .landing-page .closing.follow) {
+  --glow: rgba(60, 30, 24, 0.28);
+}
 .feature-step {
   display: inline-flex;
   width: 56px;
