@@ -126,7 +126,7 @@ onMounted(loadEntries)
     <main class="daily-mood-content mx-auto w-full max-w-7xl flex-1 px-6 py-12">
       <div class="grid grid-cols-1 gap-12 lg:grid-cols-5">
         <section class="lg:col-span-3">
-          <h1 class="font-serif text-4xl text-highlighted">Daily Mood Log</h1>
+          <h1 class="page-title">Daily Mood Log</h1>
           <p class="mt-2 font-sans text-muted">How are you feeling today?</p>
 
           <form class="mt-10" novalidate @submit.prevent="saveEntry">
@@ -192,7 +192,7 @@ onMounted(loadEntries)
         <aside class="space-y-6 lg:col-span-2">
           <div class="journal-history rounded-xl border border-default bg-white p-5">
             <div class="mb-5 flex items-center justify-between gap-3">
-              <h2 class="journal-history-title font-serif text-2xl text-highlighted">
+              <h2 class="journal-history-title text-2xl">
                 <svg
                   aria-hidden="true"
                   class="journal-history-clock"
@@ -261,7 +261,7 @@ onMounted(loadEntries)
           </div>
 
           <section class="journal-idea-card" aria-labelledby="journal-idea-heading">
-            <h2 id="journal-idea-heading" class="journal-idea-title font-serif text-2xl">
+            <h2 id="journal-idea-heading" class="journal-idea-title text-2xl">
               <img
                 src="/images/journal-helper-sparkle.png"
                 alt=""

@@ -192,11 +192,6 @@ onMounted(loadQuiz)
   background: var(--ui-bg);
 }
 
-.page-title {
-  color: var(--ui-text);
-  font-size: 2rem;
-  font-weight: 700;
-}
 
 .sub-header {
   color: var(--pq-on-surface);
@@ -365,9 +360,6 @@ onMounted(loadQuiz)
     padding: 1.25rem;
   }
 
-  .page-title {
-    font-size: 1.6rem;
-  }
 
   .sub-header {
     font-size: 1.25rem;

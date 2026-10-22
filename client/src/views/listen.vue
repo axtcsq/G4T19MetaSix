@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
     <div class="room-inner">
       <header class="room-heading">
         <div>
-          <h1>Listening room</h1>
+          <h1 class="page-title">Listening room</h1>
           <p>Put a record on. Let the rest wait.</p>
         </div>
         <div class="connection">
@@ -367,8 +367,6 @@ onBeforeUnmount(() => {
   gap: 28px;
 }
 h1 {
-  font: 600 36px/1.15 var(--font-sans);
-  letter-spacing: -0.025em;
   margin: 0 0 10px;
 }
 .room-heading p {
@@ -822,9 +820,6 @@ input:disabled {
     align-items: flex-start;
     flex-direction: column;
     gap: 20px;
-  }
-  h1 {
-    font-size: 30px;
   }
   .connection {
     align-items: flex-start;
