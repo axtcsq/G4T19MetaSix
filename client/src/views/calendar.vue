@@ -429,7 +429,7 @@ onMounted(loadData)
 .empty-note { margin: 10px 0; color: var(--ui-text-muted); font-size: .86rem; }
 .mood-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .mood-tags span { padding: 6px 13px; border-radius: 999px; color: var(--ui-text); background: var(--ui-bg-accented); font-size: .72rem; font-weight: 700; }
-@media (max-width: 680px) {
+@media (max-width: 768px) {
   .calendar-content { width: min(100% - 24px, 520px); padding-top: 34px; }
   .calendar-shell { display: block; margin-top: 18px; }
   .month-heading { justify-content: space-between; gap: 8px; margin-bottom: 10px; }

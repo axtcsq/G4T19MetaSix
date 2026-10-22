@@ -314,7 +314,7 @@ button:disabled {
   line-height: 1.6;
   margin: 0;
 }
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .garden-caption {
     gap: 12px;
   }

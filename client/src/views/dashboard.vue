@@ -288,7 +288,7 @@ onMounted(() => {
   opacity: 0.5;
   cursor: default;
 }
-@media (max-width: 750px) {
+@media (max-width: 768px) {
   .restored-charts {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -637,7 +637,7 @@ onMounted(() => {
     gap: 30px;
   }
 }
-@media (max-width: 750px) {
+@media (max-width: 768px) {
   .dashboard-inner {
     padding: 24px 20px 20px;
   }
@@ -762,7 +762,7 @@ onMounted(() => {
   background: var(--dash-ink);
   color: white;
 }
-@media (min-width: 751px) {
+@media (min-width: 769px) {
   .mood-layout {
     grid-template-rows: repeat(6, auto);
     row-gap: 0;
@@ -794,7 +794,7 @@ onMounted(() => {
     grid-row: 6;
   }
 }
-@media (max-width: 750px) {
+@media (max-width: 768px) {
   .mood-summary strong {
     font-size: 30px;
   }
