@@ -1,5 +1,5 @@
 // Saves every active user's newest Spotify plays. GitHub Actions runs it every
-// hour (.github/workflows/sync.yml); run it by hand from the server folder with
+// 15 minutes (.github/workflows/sync.yml); run it by hand from the server folder with
 //   node jobs/sync.js
 // The paused demo user and users who revoked access are skipped. Exits with an
 // error code if any user failed, so GitHub reports the failed run.
