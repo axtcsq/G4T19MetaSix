@@ -111,7 +111,7 @@ onMounted(loadPage)
       <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
         <WaveBackground />
         <div class="page-width py-12">
-          <!-- Sits in the corner beside the heading, so the section keeps its size. -->
+          <!-- Sits in the corner above the heading, so the section keeps its size. -->
           <button
             v-if="personality"
             type="button"
@@ -389,9 +389,11 @@ onMounted(loadPage)
 
 /* Taken out of the flow and lined up with the heading, so adding it doesn't
    change the section's height. */
+/* In the card's top corner, above the heading, so it stays clear of the
+   title and intro text at every width. */
 .share-trigger {
   position: absolute;
-  top: 3rem;
+  top: 1rem;
   right: 0;
   display: flex;
   height: 42px;
@@ -646,8 +648,9 @@ onMounted(loadPage)
     height: 88px;
   }
 
-  /* Icon only on phones, so it doesn't crowd the heading. */
+  /* Icon only on phones, so it takes less room. */
   .share-trigger {
+    top: 0.75rem;
     width: 42px;
     justify-content: center;
     padding: 0;
