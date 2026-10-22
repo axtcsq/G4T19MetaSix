@@ -345,17 +345,18 @@ function resetPointer(event) {
   --tx: 50%;
   --ty: 50%;
 }
+/* On the cards the words under the glow just turn white, with no dark
+   centre, and fade back to their usual colour where the glow ends. */
 .feature-card .glow-text {
-  --ink-until: 12%;
+  --ink-until: 0%;
+  --white-until: 57%;
 }
 .feature-card h3 {
   --text: var(--ink);
-  --white-until: 25%;
-  --text-from: 25%;
+  --text-from: 64%;
 }
 .feature-card p {
   --text: var(--ui-text-muted);
-  --white-until: 57%;
   --text-from: 64%;
 }
 /* The liquid behind the banner changes colour as it moves, so the words only
@@ -384,6 +385,11 @@ function resetPointer(event) {
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow: none;
+}
+/* A thin white outline makes the hovered card's words bolder without
+   changing the font weight, which would re-wrap the text and make it jump. */
+:global(.dark .landing-page .feature-card.follow:hover .glow-text) {
+  -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.6);
 }
 .feature-step {
   display: inline-flex;
