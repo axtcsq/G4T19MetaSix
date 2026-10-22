@@ -3,6 +3,8 @@ import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/footer.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/CassetteViewer.vue'))
+// The closing banner's liquid stays still for people who reduce motion.
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 
@@ -120,6 +122,37 @@ function resetPointer(event) {
       @pointermove="followPointer"
       @pointerleave="resetPointer"
     >
+      <!-- Slow-moving colour blobs that merge like thick liquid (the blur and
+           alpha contrast) with rippling edges (the moving noise). -->
+      <svg class="liquid-filter" aria-hidden="true" focusable="false">
+        <filter id="closing-liquid" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur" />
+          <feColorMatrix
+            in="blur"
+            mode="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"
+            result="goo"
+          />
+          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.018" numOctaves="2" seed="3" result="noise">
+            <animate
+              v-if="!reduceMotion"
+              attributeName="baseFrequency"
+              dur="18s"
+              values="0.006 0.018; 0.009 0.026; 0.006 0.018"
+              repeatCount="indefinite"
+            />
+          </feTurbulence>
+          <feDisplacementMap in="goo" in2="noise" scale="38" xChannelSelector="R" yChannelSelector="G" result="wave" />
+          <feGaussianBlur in="wave" stdDeviation="1.5" />
+        </filter>
+      </svg>
+      <div class="liquid" aria-hidden="true">
+        <span class="blob blob-1" />
+        <span class="blob blob-2" />
+        <span class="blob blob-3" />
+        <span class="blob blob-4" />
+        <span class="blob blob-5" />
+      </div>
       <h2 id="closing-title" class="glow-text">Ready to discover<br />the real you?</h2>
       <p class="closing-text glow-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
@@ -273,7 +306,7 @@ function resetPointer(event) {
   --lift: 0px;
   --glow: rgba(255, 211, 172, 0.6);
   --glow-size: 220px;
-  --glow-ink: #140c0a;
+  --glow-ink: #3d2219;
   position: relative;
   isolation: isolate;
   transform: perspective(900px) translateY(var(--lift))
@@ -299,7 +332,7 @@ function resetPointer(event) {
 .closing.follow {
   --glow: rgba(255, 236, 220, 0.4);
   --glow-size: 360px;
-  --glow-ink: #140c0a;
+  --glow-ink: #3d2219;
   --tilt-scale: 0.4;
 }
 /* Light text under the bright glow would wash out, so the words it covers
@@ -313,7 +346,7 @@ function resetPointer(event) {
   --ty: 50%;
 }
 .feature-card .glow-text {
-  --ink-until: 18%;
+  --ink-until: 12%;
 }
 .feature-card h3 {
   --text: var(--ink);
@@ -325,12 +358,12 @@ function resetPointer(event) {
   --white-until: 57%;
   --text-from: 64%;
 }
-/* On the terracotta banner the dark ink reads better than white across the
-   whole glow, so the words stay dark until it fades out. */
+/* The liquid behind the banner changes colour as it moves, so the words only
+   turn dark in the middle of the glow and are white everywhere else. */
 .closing .glow-text {
-  --ink-until: 70%;
-  --white-until: 70%;
-  --text-from: 70%;
+  --ink-until: 30%;
+  --white-until: 100%;
+  --text-from: 100%;
 }
 .closing h2 {
   --text: #fff;
@@ -415,6 +448,88 @@ function resetPointer(event) {
   line-height: 1.45;
   text-shadow: 0 1px 2px rgba(60, 30, 24, 0.25);
 }
+
+/* The liquid layer sits under the glow and the text. The banner clips it. */
+.closing {
+  overflow: hidden;
+}
+.liquid-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.liquid {
+  position: absolute;
+  z-index: -2;
+  inset: -10%;
+  filter: url(#closing-liquid);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.blob {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: blob-drift var(--duration) ease-in-out infinite alternate;
+  will-change: transform;
+}
+/* Mid and deep tones only, so the white text stays readable over them. */
+.blob-1 {
+  --duration: 14s;
+  --dx: 18%;
+  --dy: 12%;
+  top: 18%;
+  left: 4%;
+  width: 34%;
+  background: #b9543f;
+}
+.blob-2 {
+  --duration: 18s;
+  --dx: -14%;
+  --dy: -16%;
+  top: 44%;
+  left: 28%;
+  width: 28%;
+  background: #8f7ea0;
+}
+.blob-3 {
+  --duration: 16s;
+  --dx: -20%;
+  --dy: 14%;
+  top: 6%;
+  left: 52%;
+  width: 32%;
+  background: #cd6651;
+}
+.blob-4 {
+  --duration: 20s;
+  --dx: 12%;
+  --dy: -18%;
+  top: 48%;
+  left: 70%;
+  width: 28%;
+  background: #763e32;
+}
+.blob-5 {
+  --duration: 22s;
+  --dx: 22%;
+  --dy: -10%;
+  top: 60%;
+  left: 12%;
+  width: 24%;
+  background: #6f5a7a;
+}
+@keyframes blob-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(var(--dx), var(--dy)) scale(1.15);
+  }
+  100% {
+    transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * 0.8)) scale(0.9);
+  }
+}
 .closing h2 {
   margin: 0;
   padding: 8px 0;
@@ -490,6 +605,9 @@ function resetPointer(event) {
   }
   .get-started {
     transition: none;
+  }
+  .blob {
+    animation: none;
   }
   /* The light still follows the mouse, but nothing moves. */
   .follow {
