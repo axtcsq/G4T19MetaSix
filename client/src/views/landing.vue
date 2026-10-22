@@ -1,16 +1,18 @@
 <script setup>
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/footer.vue'
-import MarbleBackground from '@/components/MarbleBackground.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
+const bannerVideo = ref(null)
 
 let typingTimer
 
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // The banner shows the video's first frame instead of playing it.
+    bannerVideo.value?.pause()
     displayedTitle.value = fullTitle
     return
   }
@@ -121,8 +123,19 @@ function resetPointer(event) {
       @pointermove="followPointer"
       @pointerleave="resetPointer"
     >
-      <!-- Sunset-coloured liquid behind the text that swirls around the pointer. -->
-      <MarbleBackground class="liquid" />
+      <!-- Mesh Gradient from motion.page/backgrounds (free, no attribution
+           needed), recoloured to the sunset palette and shrunk for the web. -->
+      <video
+        ref="bannerVideo"
+        class="liquid"
+        src="/videos/banner-sunset.mp4"
+        poster="/videos/banner-sunset.jpg"
+        autoplay
+        muted
+        loop
+        playsinline
+        aria-hidden="true"
+      />
       <div class="liquid-scrim" aria-hidden="true" />
       <h2 id="closing-title">
         <span class="closing-lead">Ready to discover</span>
@@ -311,7 +324,7 @@ function resetPointer(event) {
   --glow-size: 360px;
   --tilt-scale: 0.4;
 }
-/* The banner's liquid reacts to the pointer itself, so it has no glow. */
+/* The banner's moving background is enough, so it has no glow. */
 .closing.follow::before {
   display: none;
 }
@@ -417,15 +430,18 @@ function resetPointer(event) {
   text-shadow: 0 1px 2px rgba(60, 30, 24, 0.25);
 }
 
-/* The marble sits under the glow and the text, and the banner clips it. If
-   WebGL isn't available the banner's own gradient shows instead. */
+/* The video sits under the text, and the banner clips it. Until it loads the
+   banner's own gradient shows instead. */
 .closing {
   overflow: hidden;
 }
 .liquid {
   position: absolute;
   z-index: -2;
+  width: 100%;
+  height: 100%;
   inset: 0;
+  object-fit: cover;
   pointer-events: none;
 }
 /* Darkens the middle so the white text stays readable over the pale bands. */
