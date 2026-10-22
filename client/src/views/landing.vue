@@ -124,8 +124,11 @@ function resetPointer(event) {
       <!-- Sunset-coloured liquid behind the text that swirls around the pointer. -->
       <MarbleBackground class="liquid" />
       <div class="liquid-scrim" aria-hidden="true" />
-      <h2 id="closing-title" class="glow-text">Ready to discover<br />the real you?</h2>
-      <p class="closing-text glow-text">Connect Spotify, log how you feel, and see what your music says.</p>
+      <h2 id="closing-title">
+        <span class="closing-lead">Ready to discover</span>
+        <span class="closing-accent">the real you?</span>
+      </h2>
+      <p class="closing-text">Connect Spotify, log how you feel, and see what your music says.</p>
       <RouterLink class="get-started glass-action" to="/login">Get Started</RouterLink>
     </section>
   </main>
@@ -332,21 +335,8 @@ function resetPointer(event) {
   --text: var(--ui-text-muted);
   --text-from: 64%;
 }
-/* The banner's words are already white, so under the glow they just turn
-   fully white and bolder, like the cards, with no dark centre. */
-.closing .glow-text {
-  --white-until: 100%;
-  --text-from: 100%;
-}
-.closing h2 {
-  --text: #fff;
-}
-.closing-text {
-  --text: rgba(255, 255, 255, 0.92);
-}
-/* The cards only need it in dark mode; the banner's text is white in both. */
-:global(.dark .landing-page .feature-card.follow:hover .glow-text),
-.closing.follow:hover .glow-text {
+/* Only needed in dark mode, where the card text is dark-on-dark. */
+:global(.dark .landing-page .feature-card.follow:hover .glow-text) {
   color: transparent;
   background: radial-gradient(
     circle var(--glow-size) at var(--tx) var(--ty),
@@ -360,8 +350,7 @@ function resetPointer(event) {
 /* A thin white outline makes the hovered headings bolder without changing the
    font weight, which would re-wrap the text and make it jump. The cards' body
    text only turns white. */
-:global(.dark .landing-page .feature-card.follow:hover h3.glow-text),
-.closing.follow:hover .glow-text {
+:global(.dark .landing-page .feature-card.follow:hover h3.glow-text) {
   -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.6);
 }
 .feature-step {
@@ -448,15 +437,39 @@ function resetPointer(event) {
   pointer-events: none;
 }
 .closing h2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   margin: 0;
-  padding: 8px 0;
   color: #fff;
+  line-height: 1;
+}
+/* A small, spaced-out lead-in, then the question in a large serif italic. */
+.closing-lead {
   font-family: var(--font-sans);
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-size: clamp(0.85rem, 1.6vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.88;
+  text-shadow: 0 1px 4px rgba(40, 20, 30, 0.35);
+}
+/* White fading into peach. The side padding stops the italic's overhang from
+   being cut off by the gradient fill, and drop-shadow (unlike text-shadow)
+   works with transparent text. */
+.closing-accent {
+  padding: 0 0.15em 0.08em;
+  background: linear-gradient(100deg, #fff 20%, #ffe1c9 55%, #ffc9a3 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 6vw, 3.6rem);
   font-style: italic;
-  font-weight: 800;
-  line-height: 1.08;
-  text-shadow: 0 2px 6px rgba(60, 30, 24, 0.25);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  filter: drop-shadow(0 2px 10px rgba(60, 24, 30, 0.35));
 }
 .get-started {
   display: inline-flex;
