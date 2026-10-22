@@ -11,16 +11,46 @@ import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 // The LLM may choose among this many of the best-scoring types.
 const CANDIDATE_COUNT = 3;
 
+// Groq, the same provider and key as the Daily Mood journal helper. The key
+// stays in server/.env (GROQ_API_KEY) and is never sent to the client.
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = "openai/gpt-oss-20b";
+// Long enough for the model's reasoning plus the JSON reply.
+const MAX_TOKENS = 1500;
+// Patterns falls back to the scoring result rather than keep the user waiting.
+const TIMEOUT_MS = 15000;
+
 export function isLlmConfigured() {
-  return Boolean(process.env.LLM_API_KEY);
+  return Boolean(process.env.GROQ_API_KEY);
 }
 
-// TODO: call the chosen LLM provider here. Keep the API key in server/.env
-// (LLM_API_KEY) and never send it to the client. Ask the model for JSON only,
-// then return the raw text of its reply.
+// Returns the raw text of the model's reply, asked for as a JSON object.
 async function callLlm(prompt) {
-  void prompt;
-  throw new Error("LLM provider not set up yet");
+  const response = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+      reasoning_effort: "low",
+      max_completion_tokens: MAX_TOKENS,
+    }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(`Groq ${response.status}: ${body.error?.message ?? "request failed"}`);
+  }
+
+  const text = body.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Groq returned no text");
+  return text;
 }
 
 function candidateTypes(ranking) {
