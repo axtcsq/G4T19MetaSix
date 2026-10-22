@@ -1,8 +1,8 @@
 <script setup>
 // Slowly flowing liquid in sunset tones from MetaFor's palette, drawn with a
-// small WebGL shader: noise warped into itself (domain warping), coloured from
-// dusky plum at the top to peach near the bottom, with marbled streaks and a
-// lit, glossy surface so it reads as thick, viscous paint. The liquid swirls around
+// small WebGL shader: noise gently warped into itself (domain warping),
+// coloured from dusky plum at the top to peach near the bottom, with a lit,
+// glossy surface so it reads as thick, viscous paint. The liquid swirls around
 // the pointer and settles back when it leaves. It only animates while it's on
 // screen and the tab is visible, draws one still frame (with no swirling) for
 // people who reduce motion, and leaves the plain gradient behind it showing
@@ -13,7 +13,9 @@ defineOptions({ name: 'MarbleBackground' })
 const canvas = ref(null)
 // Seconds of flow per real second; low, so it reads as thick paint.
 const SPEED = 0.05
-const MAX_PIXEL_RATIO = 1.5
+// The shader samples the liquid three times per pixel for its lighting, so
+// the canvas stays a little below full sharpness on high-density screens.
+const MAX_PIXEL_RATIO = 1.25
 // How quickly the swirl follows the pointer, and fades in and out (0 to 1 per
 // frame; lower is smoother).
 const FOLLOW = 0.12
@@ -25,9 +27,6 @@ void main() { gl_Position = vec4(position, 0.0, 1.0); }
 `
 
 const FRAGMENT = `
-// Slopes of the liquid's surface, for its shading and gloss. Nearly every
-// device has this; without it the liquid is drawn flat.
-#extension GL_OES_standard_derivatives : enable
 // Full precision where the device has it; lower precision leaves straight
 // seams in the noise.
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -59,10 +58,19 @@ float noise(vec2 p) {
   );
 }
 
+// Two layers, each rotated off the noise grid: smooth enough that warping by
+// it doesn't fold into creases, and no straight grid lines show through.
+float smoothNoise(vec2 p) {
+  p = mat2(0.8, 0.6, -0.6, 0.8) * p;
+  float value = 0.65 * noise(p);
+  p = mat2(1.6, 1.2, -1.2, 1.6) * p;
+  return value + 0.35 * noise(p);
+}
+
 float fbm(vec2 p) {
   float value = 0.0;
   float amplitude = 0.5;
-  // Few layers keep the folds smooth; the streaks come from the bands.
+  // Few layers keep the folds smooth.
   for (int i = 0; i < 3; i++) {
     value += amplitude * noise(p);
     p = mat2(1.6, 1.2, -1.2, 1.6) * p;
@@ -71,31 +79,42 @@ float fbm(vec2 p) {
   return value;
 }
 
+// Scale from canvas pixels to noise space. Lower is more zoomed out: fewer,
+// broader curves.
+const float ZOOM = 0.6;
+
+// The liquid's flow at a point: gently warped noise (each layer bends the
+// next), turned around the pointer when it's near, like stirring paint.
+// Returns the field and its warp, which the colour uses.
+float flow(vec2 p, out vec2 r) {
+  vec2 m = mouse / resolution.y * ZOOM;
+  vec2 offset = p - m;
+  float near = pull * exp(-dot(offset, offset) * 12.0);
+  float turn = near * 2.0;
+  p = m + mat2(cos(turn), -sin(turn), sin(turn), cos(turn)) * offset;
+
+  float t = time;
+  // The warp layers use smooth noise: finer detail in them gets stretched
+  // and folded into knife-edge creases that catch the light as thin lines.
+  // The detail lives only in the final layer.
+  vec2 q = vec2(smoothNoise(p + vec2(0.0, t)), smoothNoise(p + vec2(5.2, 1.3) - t));
+  r = vec2(
+    smoothNoise(p + 1.2 * q + vec2(1.7, 9.2) + 0.5 * t),
+    smoothNoise(p + 1.2 * q + vec2(8.3, 2.8) - 0.4 * t)
+  );
+  return fbm(p + 1.3 * r);
+}
+
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
-  // Zoomed out, so a few large, calm shapes fill the banner.
-  vec2 p = gl_FragCoord.xy / resolution.y * 0.7;
-  vec2 m = mouse / resolution.y * 0.7;
-  float t = time;
+  vec2 p = gl_FragCoord.xy / resolution.y * ZOOM;
 
-  // The liquid near the pointer is turned around it, more strongly the closer
-  // it is, and parts slightly, like stirring thick paint.
-  vec2 offset = p - m;
-  float near = pull * exp(-dot(offset, offset) * 9.0);
-  float turn = near * 2.4;
-  p = m + mat2(cos(turn), -sin(turn), sin(turn), cos(turn)) * offset;
-  p += normalize(offset + 1e-4) * near * 0.08;
-
-  // Gentle warping: each layer of noise bends the next.
-  vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, 1.3) - t));
-  vec2 r = vec2(
-    fbm(p + 1.6 * q + vec2(1.7, 9.2) + 0.5 * t),
-    fbm(p + 1.6 * q + vec2(8.3, 2.8) - 0.4 * t)
-  );
-  float f = fbm(p + 1.8 * r);
+  vec2 r;
+  float f = flow(p, r);
+  float height = f;
 
   // Sunset: dusk at the top, warm light low down like a horizon.
-  float v = clamp(f * 1.15 + 0.25 * r.x + (0.5 - uv.y) * 0.55 - 0.08, 0.0, 1.0);
+  float v = clamp(f * 1.15 + 0.25 * r.x + (0.5 - uv.y) * 0.55, 0.0, 1.0);
 
   vec3 plum = vec3(0.23, 0.16, 0.27);
   vec3 mauve = vec3(0.40, 0.33, 0.45);
@@ -110,34 +129,24 @@ void main() {
   colour = mix(colour, apricot, smoothstep(0.62, 0.8, v));
   colour = mix(colour, peach, smoothstep(0.8, 0.97, v));
 
-  // Fine streaks along the flow, like marbled paint, lighter and darker.
-  float phase = (f * 3.0 + r.y * 1.2) * 22.0;
-  float streaks = sin(phase);
-#ifdef GL_OES_standard_derivatives
-  // Where the streaks would be squeezed thinner than a pixel they flicker and
-  // leave moire rings, so they fade out there.
-  streaks *= clamp(1.5 - fwidth(phase) * 0.6, 0.0, 1.0);
-#endif
-  colour *= 1.0 + 0.14 * streaks;
-
-#ifdef GL_OES_standard_derivatives
-  // Treat the liquid as a thick surface whose height follows the flow, with
-  // the streaks as small ridges, and light it from the top left: soft shading
-  // in the hollows and sharp glossy highlights on the crests.
-  float height = f + 0.03 * streaks;
-  vec2 slope = vec2(dFdx(height), dFdy(height)) * resolution.y * 0.55;
-  // Sharp folds in the flow make the slope jump between neighbouring pixels,
-  // which would draw hairline rings; softening steep slopes keeps them as
-  // soft creases.
-  slope /= 1.0 + length(slope) * 0.9;
+  // Light it as a thick, glossy surface from the top left. The slope comes
+  // from sampling the height several pixels away, which rounds off tight
+  // folds instead of catching them as thin bright lines (the GPU's own
+  // per-block slopes drew dotted ones).
+  float delta = 8.0 / resolution.y * ZOOM;
+  vec2 rx;
+  vec2 ry;
+  float hx = flow(p + vec2(delta, 0.0), rx);
+  float hy = flow(p + vec2(0.0, delta), ry);
+  vec2 slope = vec2(hx - height, hy - height) / delta * 0.3;
+  slope /= 1.0 + length(slope) * 0.6;
   vec3 normal = normalize(vec3(-slope, 1.0));
   vec3 light = normalize(vec3(-0.45, 0.6, 0.65));
   vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
   float diffuse = clamp(dot(normal, light), 0.0, 1.0);
   float shine = pow(max(dot(normal, halfway), 0.0), 50.0);
   colour *= 0.6 + 0.55 * diffuse;
-  colour += vec3(1.0, 0.92, 0.84) * shine * 0.75;
-#endif
+  colour += vec3(1.0, 0.92, 0.84) * shine * 0.7;
 
   gl_FragColor = vec4(colour, 1.0);
 }
@@ -173,8 +182,6 @@ function compile(type, source) {
 function setUp() {
   gl = canvas.value.getContext('webgl', { antialias: false, premultipliedAlpha: false })
   if (!gl) return false
-  // Turns on the slopes the shader uses for shading; it skips them if missing.
-  gl.getExtension('OES_standard_derivatives')
 
   const program = gl.createProgram()
   gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX))
