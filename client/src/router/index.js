@@ -5,7 +5,6 @@ import Landing from '../views/landing.vue'
 import DailyMood from '../views/daily-mood.vue'
 import MoodCalendar from '../views/calendar.vue'
 import Login from '../views/login.vue'
-import Canvas from '../views/canvas.vue'
 import Dashboard from '../views/dashboard.vue'
 import PersonalityHub from '../views/personality-hub.vue'
 import Profile from '../views/profile.vue'
@@ -35,15 +34,14 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/canvas',
+    redirect: '/daily-mood',
+  },
+  {
     path: '/calendar',
     name: 'calendar',
     component: MoodCalendar,
     meta: { requiresAuth: true },
-  },
-  {
-    path: '/canvas',
-    name: 'canvas',
-    component: Canvas,
   },
   {
     path: '/quiz',

@@ -1,6 +1,5 @@
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import SiteFooter from '@/components/footer.vue'
 
 const stage = ref(null)
 const canvas = ref(null)
@@ -176,185 +175,134 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 </script>
 
 <template>
-  <div class="canvas-page">
-    <main class="canvas-content">
-      <div class="canvas-heading">
-        <h1 class="page-title">Canvas</h1>
-        <p>Can't describe your thoughts? Draw it.</p>
+  <section class="drawing-panel" aria-label="Drawing canvas">
+    <div class="drawing-toolbar">
+      <div class="tool-group" role="group" aria-label="Drawing tools">
+        <button
+          v-for="tool in tools"
+          :key="tool.value"
+          type="button"
+          class="tool-button"
+          :class="{ 'is-active': selectedTool === tool.value }"
+          :style="{ '--tool-accent': tool.color }"
+          :data-tooltip="tool.label"
+          :aria-label="`${tool.label} tool`"
+          :title="tool.label"
+          :aria-pressed="selectedTool === tool.value"
+          @click="selectedTool = tool.value"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <template v-if="tool.value === 'pen'">
+              <path d="m4 20 4.2-1 10.9-10.9-3.2-3.2L5 15.8 4 20Z" />
+              <path d="m14.8 6.2 3.2 3.2M4 20l4.2-1" />
+            </template>
+            <template v-else-if="tool.value === 'marker'">
+              <path d="m4 16 10-10 5 5L9 21H4v-5Z" />
+              <path d="m12 8 5 5M4 18h5" />
+            </template>
+            <template v-else-if="tool.value === 'eraser'">
+              <path d="m4 14 9-10 7 7-9 10H7l-3-3v-4Z" />
+              <path d="m10 21 7-8" />
+            </template>
+            <template v-else-if="tool.value === 'line'"><path d="m4 19 16-14" /></template>
+            <template v-else-if="tool.value === 'rectangle'">
+              <rect x="4" y="5" width="16" height="14" rx="1" />
+            </template>
+            <template v-else-if="tool.value === 'circle'">
+              <circle cx="12" cy="12" r="8" />
+            </template>
+            <template v-else><path d="M5 4h14v16H5zM9 8h6M12 8v9" /></template>
+          </svg>
+        </button>
       </div>
 
-      <section class="drawing-panel" aria-label="Drawing canvas">
-        <div class="drawing-toolbar">
-          <div class="tool-group" role="group" aria-label="Drawing tools">
-            <button
-              v-for="tool in tools"
-              :key="tool.value"
-              type="button"
-              class="tool-button"
-              :class="{ 'is-active': selectedTool === tool.value }"
-              :style="{ '--tool-accent': tool.color }"
-              :data-tooltip="tool.label"
-              :aria-label="`${tool.label} tool`"
-              :title="tool.label"
-              :aria-pressed="selectedTool === tool.value"
-              @click="selectedTool = tool.value"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <template v-if="tool.value === 'pen'">
-                  <path d="m4 20 4.2-1 10.9-10.9-3.2-3.2L5 15.8 4 20Z" />
-                  <path d="m14.8 6.2 3.2 3.2M4 20l4.2-1" />
-                </template>
-                <template v-else-if="tool.value === 'marker'">
-                  <path d="m4 16 10-10 5 5L9 21H4v-5Z" />
-                  <path d="m12 8 5 5M4 18h5" />
-                </template>
-                <template v-else-if="tool.value === 'eraser'">
-                  <path d="m4 14 9-10 7 7-9 10H7l-3-3v-4Z" />
-                  <path d="m10 21 7-8" />
-                </template>
-                <template v-else-if="tool.value === 'line'"><path d="m4 19 16-14" /></template>
-                <template v-else-if="tool.value === 'rectangle'"><rect x="4" y="5" width="16" height="14" rx="1" /></template>
-                <template v-else-if="tool.value === 'circle'"><circle cx="12" cy="12" r="8" /></template>
-                <template v-else><path d="M5 4h14v16H5zM9 8h6M12 8v9" /></template>
-              </svg>
-            </button>
-          </div>
+      <div class="color-controls">
+        <span class="toolbar-label">Color</span>
+        <button
+          v-for="color in colors"
+          :key="color"
+          type="button"
+          class="color-swatch"
+          :class="{ 'is-selected': selectedColor === color }"
+          :style="{ '--swatch-color': color }"
+          :aria-label="`Choose ${color} color`"
+          :title="`Choose ${color} color`"
+          :aria-pressed="selectedColor === color"
+          @click="selectedColor = color"
+        ></button>
+        <label class="custom-color" aria-label="Choose a custom color">
+          <span aria-hidden="true">+</span>
+          <input v-model="selectedColor" type="color" title="Choose a custom color" />
+        </label>
+      </div>
 
-          <div class="color-controls">
-            <span class="toolbar-label">Color</span>
-            <button
-              v-for="color in colors"
-              :key="color"
-              type="button"
-              class="color-swatch"
-              :class="{ 'is-selected': selectedColor === color }"
-              :style="{ '--swatch-color': color }"
-              :aria-label="`Choose ${color} color`"
-              :title="`Choose ${color} color`"
-              :aria-pressed="selectedColor === color"
-              @click="selectedColor = color"
-            ></button>
-            <label class="custom-color" aria-label="Choose a custom color">
-              <span aria-hidden="true">+</span>
-              <input v-model="selectedColor" type="color" title="Choose a custom color" />
-            </label>
-          </div>
+      <label class="size-control">
+        <span class="toolbar-label">Size</span>
+        <input v-model="brushSize" type="range" min="2" max="14" />
+      </label>
 
-          <label class="size-control">
-            <span class="toolbar-label">Size</span>
-            <input v-model="brushSize" type="range" min="2" max="14" />
-          </label>
+      <div class="canvas-actions">
+        <button
+          type="button"
+          class="canvas-action"
+          aria-label="Undo last action"
+          title="Undo"
+          :disabled="drawings.length === 0"
+          @click="undoDrawing"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 14 4 9l5-5" />
+            <path d="M4 9h9a7 7 0 0 1 0 14h-2" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="canvas-action"
+          aria-label="Clear canvas"
+          title="Clear canvas"
+          :disabled="drawings.length === 0"
+          @click="clearCanvas"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+          </svg>
+        </button>
+      </div>
+    </div>
 
-          <div class="canvas-actions">
-            <button
-              type="button"
-              class="canvas-action"
-              aria-label="Undo last action"
-              title="Undo"
-              :disabled="drawings.length === 0"
-              @click="undoDrawing"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 14 4 9l5-5" />
-                <path d="M4 9h9a7 7 0 0 1 0 14h-2" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="canvas-action"
-              aria-label="Clear canvas"
-              title="Clear canvas"
-              :disabled="drawings.length === 0"
-              @click="clearCanvas"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" />
-              </svg>
-            </button>
-          </div>
+    <p class="canvas-hint">
+      Choose a tool and draw on the canvas. Select Text, then click where you want your words.
+    </p>
+
+    <div ref="stage" class="drawing-stage">
+      <canvas
+        ref="canvas"
+        aria-label="Drawing area"
+        @pointerdown="startDrawing"
+        @pointermove="continueDrawing"
+        @pointerup="finishDrawing"
+        @pointercancel="finishDrawing"
+        @lostpointercapture="finishDrawing"
+      ></canvas>
+
+      <form
+        v-if="textPosition"
+        class="text-editor"
+        :style="{ left: `${textPosition.x}px`, top: `${textPosition.y}px` }"
+        @submit.prevent="addText"
+        @pointerdown.stop
+      >
+        <textarea ref="textInput" v-model="textDraft" placeholder="Write something..." rows="3" />
+        <div class="text-editor-actions">
+          <button type="button" @click="cancelText">Cancel</button>
+          <button type="submit">Add text</button>
         </div>
-
-        <p class="canvas-hint">
-          Choose a tool and draw on the canvas. Select Text, then click where you want your words.
-        </p>
-
-        <div ref="stage" class="drawing-stage">
-          <canvas
-            ref="canvas"
-            aria-label="Drawing area"
-            @pointerdown="startDrawing"
-            @pointermove="continueDrawing"
-            @pointerup="finishDrawing"
-            @pointercancel="finishDrawing"
-            @lostpointercapture="finishDrawing"
-          ></canvas>
-
-          <form
-            v-if="textPosition"
-            class="text-editor"
-            :style="{ left: `${textPosition.x}px`, top: `${textPosition.y}px` }"
-            @submit.prevent="addText"
-            @pointerdown.stop
-          >
-            <textarea
-              ref="textInput"
-              v-model="textDraft"
-              placeholder="Write something..."
-              rows="3"
-            />
-            <div class="text-editor-actions">
-              <button type="button" @click="cancelText">Cancel</button>
-              <button type="submit">Add text</button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <section class="analysis-section" aria-labelledby="analysis-heading">
-        <h2 id="analysis-heading" class="section-title">AI Analysis</h2>
-        <textarea
-          class="analysis-output"
-          value="Your canvas analysis will appear here once an AI service is connected."
-          readonly
-          aria-label="Canvas analysis placeholder"
-        ></textarea>
-      </section>
-    </main>
-    <SiteFooter />
-  </div>
+      </form>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.canvas-page {
-  display: flex;
-  min-height: calc(100vh - 76px);
-  flex-direction: column;
-  background: var(--ui-bg-accented);
-  color: var(--ui-text);
-}
-
-.canvas-content {
-  width: min(1180px, calc(100% - 56px));
-  flex: 1;
-  margin-inline: auto;
-  padding-block: clamp(32px, 5vw, 58px) 56px;
-}
-
-.canvas-heading {
-  margin-bottom: 26px;
-  text-align: center;
-}
-
-.canvas-heading h1 {
-  margin: 0;
-}
-
-.canvas-heading > p:last-child {
-  margin: 5px 0 0;
-  color: var(--ui-text-muted);
-  font-size: 1rem;
-}
-
 .drawing-panel {
   padding: 20px;
   border: 1px solid var(--ui-border);
@@ -390,7 +338,10 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   background: #faf8f6;
   font: 600 0.85rem var(--font-sans);
   cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .tool-button,
@@ -434,7 +385,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   left: 50%;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .tool-button::after {
@@ -518,7 +471,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
     inset 0 -2px 3px rgba(50, 38, 33, 0.2),
     0 2px 6px rgba(59, 43, 35, 0.16);
   cursor: pointer;
-  transition: box-shadow 140ms ease, transform 140ms ease;
+  transition:
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
 .color-swatch:hover {
@@ -629,33 +584,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   cursor: crosshair;
 }
 
-.analysis-section {
-  margin-top: 34px;
-}
-
-.analysis-section h2 {
-  margin: 0 0 12px;
-}
-
-.analysis-output {
-  display: block;
-  width: 100%;
-  min-height: 205px;
-  padding: 20px;
-  resize: vertical;
-  border: 1px solid var(--ui-border);
-  border-radius: 14px;
-  color: var(--ui-text);
-  background: var(--ui-bg-elevated);
-  box-shadow: inset 0 2px 5px rgba(59, 43, 35, 0.04);
-  font: 1rem/1.65 var(--font-sans);
-}
-
-.analysis-output:focus {
-  outline: 2px solid rgba(205, 102, 81, 0.3);
-  outline-offset: 2px;
-}
-
 .text-editor {
   position: absolute;
   z-index: 1;
@@ -697,10 +625,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 }
 
 @media (max-width: 768px) {
-  .canvas-content {
-    width: calc(100% - 32px);
-  }
-
   .drawing-panel {
     padding: 13px;
   }
@@ -715,11 +639,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
   .drawing-stage {
     height: min(125vw, 540px);
-  }
-
-  .analysis-output {
-    min-height: 180px;
-    padding: 15px;
   }
 }
 </style>
