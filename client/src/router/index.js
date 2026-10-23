@@ -87,7 +87,15 @@ const router = createRouter({
 // Pages that read or write the user's own data need a login first.
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
-  if (!auth.checked) await auth.load()
+  if (!auth.checked) {
+    // Public pages can render while the session check runs. Protected pages
+    // still wait so they never flash content the user cannot access.
+    if (to.meta.requiresAuth || to.name === 'login') {
+      await auth.load()
+    } else {
+      auth.load()
+    }
+  }
 
   if (to.meta.requiresAuth && !auth.user) {
     return { name: 'login', query: { next: to.fullPath } }
