@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/footer.vue'
@@ -8,6 +8,8 @@ import JournalCanvas from '@/components/JournalCanvas.vue'
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
 const selectedMood = ref(null)
 const journalEntry = ref('')
+const drawingData = ref(null)
+const drawingSource = ref('')
 const logs = ref([])
 const isLoading = ref(true)
 const isSaving = ref(false)
@@ -22,7 +24,7 @@ const ideaStatus = ref('')
 const canSave = computed(
   () =>
     selectedMood.value !== null &&
-    journalEntry.value.trim().length > 0 &&
+    (journalEntry.value.trim().length > 0 || drawingData.value?.items?.length > 0) &&
     !isLoading.value &&
     !isSaving.value,
 )
@@ -50,11 +52,14 @@ async function saveEntry() {
     const savedEntry = await createMood({
       mood: selectedMood.value,
       journal: journalEntry.value.trim(),
+      drawing: drawingData.value,
     })
 
     logs.value = [savedEntry, ...logs.value]
     selectedMood.value = null
     journalEntry.value = ''
+    drawingData.value = null
+    drawingSource.value = ''
   } catch (error) {
     saveError.value = error.message
   } finally {
@@ -117,6 +122,18 @@ function formatDate(date) {
   })
 }
 
+async function viewDrawing(log) {
+  if (!log.drawing?.items?.length) return
+
+  drawingData.value = JSON.parse(JSON.stringify(log.drawing))
+  drawingSource.value = `Showing drawing saved on ${formatDate(log.createdAt)}. Saving it again creates a new journal entry.`
+  await nextTick()
+  document.getElementById('journal-canvas-heading')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
 onMounted(loadEntries)
 </script>
 
@@ -124,11 +141,16 @@ onMounted(loadEntries)
   <div class="daily-mood-page">
     <main class="daily-mood-content mx-auto w-full max-w-7xl flex-1 px-6 py-12">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-12">
-        <section class="lg:col-span-2 xl:col-span-6">
+        <section class="journal-column lg:col-span-2 xl:col-span-6">
           <h1 class="page-title">Daily Mood Log</h1>
           <p class="mt-2 font-sans text-muted">How are you feeling today?</p>
 
-          <form id="daily-journal-form" class="mt-10" novalidate @submit.prevent="saveEntry">
+          <form
+            id="daily-journal-form"
+            class="journal-form mt-10"
+            novalidate
+            @submit.prevent="saveEntry"
+          >
             <fieldset>
               <legend class="font-sans font-medium">Choose your emotions</legend>
               <div class="mt-4 flex flex-wrap gap-3" role="group" aria-label="Choose a mood">
@@ -149,7 +171,7 @@ onMounted(loadEntries)
               </div>
             </fieldset>
 
-            <div class="mt-10">
+            <div class="journal-field-group mt-10">
               <label for="journal-entry" class="font-sans font-medium"
                 >Tell us about your day</label
               >
@@ -239,6 +261,14 @@ onMounted(loadEntries)
                 >
                   {{ log.journal || 'No written reflection.' }}
                 </p>
+                <button
+                  v-if="log.drawing?.items?.length"
+                  type="button"
+                  class="view-drawing-button mt-3"
+                  @click="viewDrawing(log)"
+                >
+                  View drawing
+                </button>
               </article>
             </div>
           </div>
@@ -311,12 +341,7 @@ onMounted(loadEntries)
               <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
                 {{ ideaError }}
               </p>
-              <p
-                v-if="ideaStatus"
-                role="status"
-                aria-live="polite"
-                class="mt-3 text-sm text-muted"
-              >
+              <p v-if="ideaStatus" role="status" aria-live="polite" class="mt-3 text-sm text-muted">
                 {{ ideaStatus }}
               </p>
 
@@ -336,7 +361,10 @@ onMounted(loadEntries)
           <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
           <p class="mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
         </div>
-        <JournalCanvas />
+        <p v-if="drawingSource" class="mb-3 text-sm text-muted" role="status">
+          {{ drawingSource }}
+        </p>
+        <JournalCanvas v-model="drawingData" />
       </section>
 
       <div class="mt-6 flex flex-wrap items-center gap-4">
@@ -365,6 +393,35 @@ onMounted(loadEntries)
   min-height: calc(100vh - 76px);
   flex-direction: column;
   background: var(--ui-bg-accented);
+}
+
+@media (min-width: 1280px) {
+  .journal-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .journal-form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .journal-field-group {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .journal-field-group .notebook-field {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .journal-field-group .notebook-field :deep(textarea) {
+    flex: 1;
+  }
 }
 
 .mood-option {
@@ -677,6 +734,19 @@ onMounted(loadEntries)
 }
 .journal-entry {
   background: var(--ui-bg);
+}
+
+.view-drawing-button {
+  padding: 0;
+  border: 0;
+  color: var(--ui-primary);
+  background: transparent;
+  font: 600 0.82rem var(--font-sans);
+  cursor: pointer;
+}
+
+.view-drawing-button:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 600px) {

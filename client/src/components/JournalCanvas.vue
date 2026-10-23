@@ -1,5 +1,13 @@
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: null,
+  },
+})
+const emit = defineEmits(['update:modelValue'])
 
 const stage = ref(null)
 const canvas = ref(null)
@@ -7,6 +15,7 @@ const selectedTool = ref('pen')
 const selectedColor = ref('#292321')
 const brushSize = ref(5)
 const drawings = ref([])
+const drawingSize = ref({ width: 0, height: 0 })
 const textPosition = ref(null)
 const textDraft = ref('')
 const textInput = ref(null)
@@ -71,9 +80,16 @@ function redrawCanvas() {
   const context = canvas.value.getContext('2d')
   if (!context) return
 
-  context.clearRect(0, 0, stage.value.clientWidth, stage.value.clientHeight)
+  const width = stage.value.clientWidth
+  const height = stage.value.clientHeight
+  context.clearRect(0, 0, width, height)
+  if (drawingSize.value.width && drawingSize.value.height) {
+    context.save()
+    context.scale(width / drawingSize.value.width, height / drawingSize.value.height)
+  }
   drawings.value.forEach((item) => drawItem(context, item))
   if (activeDrawing) drawItem(context, activeDrawing)
+  if (drawingSize.value.width && drawingSize.value.height) context.restore()
 }
 
 function resizeCanvas() {
@@ -81,6 +97,9 @@ function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1
   const width = stage.value.clientWidth
   const height = stage.value.clientHeight
+  if (!drawingSize.value.width || !drawingSize.value.height) {
+    drawingSize.value = { width, height }
+  }
   canvas.value.width = width * ratio
   canvas.value.height = height * ratio
   const context = canvas.value.getContext('2d')
@@ -90,22 +109,51 @@ function resizeCanvas() {
 
 function getPoint(event) {
   const bounds = canvas.value.getBoundingClientRect()
-  return { x: event.clientX - bounds.left, y: event.clientY - bounds.top }
+  return {
+    x: ((event.clientX - bounds.left) / bounds.width) * drawingSize.value.width,
+    y: ((event.clientY - bounds.top) / bounds.height) * drawingSize.value.height,
+  }
+}
+
+function updateDrawingModel() {
+  if (drawings.value.length === 0) {
+    emit('update:modelValue', null)
+    return
+  }
+
+  emit('update:modelValue', {
+    version: 1,
+    width: drawingSize.value.width,
+    height: drawingSize.value.height,
+    items: drawings.value.map((item) => ({
+      ...item,
+      points: item.points?.map((point) => ({ ...point })),
+    })),
+  })
 }
 
 function startDrawing(event) {
   if (selectedTool.value === 'text') {
-    textPosition.value = getPoint(event)
+    const bounds = canvas.value.getBoundingClientRect()
+    const point = getPoint(event)
+    textPosition.value = {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+      drawingX: point.x,
+      drawingY: point.y,
+    }
     textDraft.value = ''
     nextTick(() => textInput.value?.focus())
     return
   }
 
   const point = getPoint(event)
+  const bounds = canvas.value.getBoundingClientRect()
+  const sizeScale = drawingSize.value.width / bounds.width
   activeDrawing = {
     type: selectedTool.value,
     color: selectedColor.value,
-    width: selectedTool.value === 'marker' ? brushSize.value * 3 : brushSize.value,
+    width: (selectedTool.value === 'marker' ? brushSize.value * 3 : brushSize.value) * sizeScale,
     startX: point.x,
     startY: point.y,
     endX: point.x,
@@ -118,7 +166,16 @@ function startDrawing(event) {
 function continueDrawing(event) {
   if (!activeDrawing) return
   const point = getPoint(event)
-  if (activeDrawing.points) activeDrawing.points.push(point)
+  if (activeDrawing.points) {
+    const previousPoint = activeDrawing.points[activeDrawing.points.length - 1]
+    const distance = Math.hypot(point.x - previousPoint.x, point.y - previousPoint.y)
+    if (
+      distance >= drawingSize.value.width / canvas.value.clientWidth &&
+      activeDrawing.points.length < 20000
+    ) {
+      activeDrawing.points.push(point)
+    }
+  }
   activeDrawing.endX = point.x
   activeDrawing.endY = point.y
   redrawCanvas()
@@ -129,6 +186,7 @@ function finishDrawing() {
   drawings.value.push(activeDrawing)
   activeDrawing = null
   redrawCanvas()
+  updateDrawingModel()
 }
 
 function addText() {
@@ -138,14 +196,17 @@ function addText() {
   drawings.value.push({
     type: 'text',
     text,
-    x: textPosition.value.x,
-    y: textPosition.value.y + brushSize.value * 2,
-    width: Math.max(16, brushSize.value * 4),
+    x: textPosition.value.drawingX,
+    y:
+      textPosition.value.drawingY +
+      brushSize.value * 2 * (drawingSize.value.height / canvas.value.clientHeight),
+    width: Math.max(16, brushSize.value * 4 * (drawingSize.value.width / canvas.value.clientWidth)),
     color: selectedColor.value,
   })
   textPosition.value = null
   textDraft.value = ''
   redrawCanvas()
+  updateDrawingModel()
 }
 
 function cancelText() {
@@ -156,6 +217,7 @@ function cancelText() {
 function undoDrawing() {
   drawings.value.pop()
   redrawCanvas()
+  updateDrawingModel()
 }
 
 function clearCanvas() {
@@ -163,7 +225,24 @@ function clearCanvas() {
   activeDrawing = null
   cancelText()
   redrawCanvas()
+  updateDrawingModel()
 }
+
+watch(
+  () => props.modelValue,
+  (drawing) => {
+    drawings.value = Array.isArray(drawing?.items) ? drawing.items : []
+    if (drawing?.width && drawing?.height) {
+      drawingSize.value = { width: drawing.width, height: drawing.height }
+    } else if (stage.value) {
+      drawingSize.value = { width: stage.value.clientWidth, height: stage.value.clientHeight }
+    }
+    activeDrawing = null
+    cancelText()
+    redrawCanvas()
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
   resizeObserver = new ResizeObserver(resizeCanvas)

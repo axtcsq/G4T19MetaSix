@@ -22,10 +22,9 @@ import {
 } from "../services/patterns.js";
 import { validateAnswers } from "../services/quizEngine.js";
 
-// Counts recent mood logs per mood.
-// TODO: only count this user's logs once mood logs store a userId.
-async function getMoodPatterns() {
-  const logs = await retrieveMoodLogs();
+// Counts recent mood logs per mood for the signed-in user.
+async function getMoodPatterns(userId) {
+  const logs = await retrieveMoodLogs(userId);
 
   if (logs.length === 0) return null;
 
@@ -41,12 +40,18 @@ function evaluateAttempt(attempt, profile) {
   const quiz = findQuiz(attempt.quizId);
   if (!quiz || validateAnswers(quiz, attempt.answers)) return null;
 
-  return { quizId: quiz.id, quizTitle: quiz.title, takenAt: attempt.createdAt, ...quiz.evaluate(attempt.answers, profile) };
+  return {
+    quizId: quiz.id,
+    quizTitle: quiz.title,
+    takenAt: attempt.createdAt,
+    ...quiz.evaluate(attempt.answers, profile),
+  };
 }
 
 async function latestResults(userId, profile) {
   const attempts = await retrieveLatestAttempts(userId);
-  const order = (result) => QUIZZES.findIndex((quiz) => quiz.id === result.quizId);
+  const order = (result) =>
+    QUIZZES.findIndex((quiz) => quiz.id === result.quizId);
 
   return attempts
     .map((attempt) => evaluateAttempt(attempt, profile))
@@ -55,7 +60,9 @@ async function latestResults(userId, profile) {
 }
 
 function publicType(id) {
-  const { name, tagline, description } = PERSONALITY_TYPES.find((type) => type.id === id);
+  const { name, tagline, description } = PERSONALITY_TYPES.find(
+    (type) => type.id === id,
+  );
   return { id, name, tagline, description };
 }
 
@@ -71,11 +78,17 @@ async function rebuildPersonality(userId, profile) {
   const traits = combineTraits(results, profile);
   const ranking = rankTypes(traits);
   const stats = listeningStats(profile);
-  const quizResults = results.map(({ quizId, quizTitle, title, subtitle }) => ({ quizId, quizTitle, title, subtitle }));
-  const moodPatterns = await getMoodPatterns();
+  const quizResults = results.map(({ quizId, quizTitle, title, subtitle }) => ({
+    quizId,
+    quizTitle,
+    title,
+    subtitle,
+  }));
+  const moodPatterns = await getMoodPatterns(userId);
 
   // Every row of the "how it adds up" table: one per quiz, then Spotify.
-  const round = (value) => (typeof value === "number" ? Number(value.toFixed(2)) : null);
+  const round = (value) =>
+    typeof value === "number" ? Number(value.toFixed(2)) : null;
   const evidence = spotifyEvidence(profile);
   const signals = spotifySignals(profile);
   const sources = [
@@ -84,14 +97,20 @@ async function rebuildPersonality(userId, profile) {
       id: result.quizId,
       label: result.quizTitle,
       result: result.title,
-      traits: Object.fromEntries(Object.entries(result.traits).map(([id, value]) => [id, round(value)])),
+      traits: Object.fromEntries(
+        Object.entries(result.traits).map(([id, value]) => [id, round(value)]),
+      ),
     })),
     {
       kind: "spotify",
       id: "spotify",
       label: "Your Spotify listening",
-      result: stats.topArtist ? `Top artist: ${stats.topArtist}` : "Listening data",
-      traits: Object.fromEntries(Object.entries(signals).map(([id, value]) => [id, round(value)])),
+      result: stats.topArtist
+        ? `Top artist: ${stats.topArtist}`
+        : "Listening data",
+      traits: Object.fromEntries(
+        Object.entries(signals).map(([id, value]) => [id, round(value)]),
+      ),
       evidence,
     },
   ];
@@ -114,14 +133,22 @@ async function rebuildPersonality(userId, profile) {
     runnerUpId: runnerUp.id,
     runnerUpMatch: runnerUp.match,
     headline:
-      analysis?.headline ?? `So far you lean ${traits.map((trait) => trait.poleName).join(", ")}.`,
+      analysis?.headline ??
+      `So far you lean ${traits.map((trait) => trait.poleName).join(", ")}.`,
     insights: analysis?.insights ?? traits.map((trait) => trait.trait),
     summary: analysis?.summary ?? closingLine(typeId),
     traits,
     quizResults,
     sources,
-    weights: { quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)), spotify: spotifyWeight(profile) },
-    ranking: ranking.map(({ id, match }) => ({ id, name: publicType(id).name, match })),
+    weights: {
+      quizzes: Number((1 - spotifyWeight(profile)).toFixed(2)),
+      spotify: spotifyWeight(profile),
+    },
+    ranking: ranking.map(({ id, match }) => ({
+      id,
+      name: publicType(id).name,
+      match,
+    })),
     moodLink: moodLink(moodPatterns, stats),
     stats,
     source: analysis ? "llm" : "scoring",
@@ -134,7 +161,9 @@ async function rebuildPersonality(userId, profile) {
 async function isOutdated(userId, personality, profile) {
   const results = await latestResults(userId, profile);
   const titles = (list) =>
-    list.map((result) => `${result.quizId}:${result.quizTitle}:${result.title}`).join("|");
+    list
+      .map((result) => `${result.quizId}:${result.quizTitle}:${result.title}`)
+      .join("|");
 
   return (
     titles(results) !== titles(personality.quizResults) ||
@@ -148,17 +177,26 @@ function formatPersonality(personality) {
 
   return {
     type: { ...publicType(personality.typeId), match: personality.match },
-    runnerUp: { ...publicType(personality.runnerUpId), match: personality.runnerUpMatch },
+    runnerUp: {
+      ...publicType(personality.runnerUpId),
+      match: personality.runnerUpMatch,
+    },
     headline: personality.headline,
     insights: personality.insights,
     // Read live, so edits to a type's closing line show without a rebuild.
-    summary: personality.source === "llm" ? personality.summary : closingLine(personality.typeId),
+    summary:
+      personality.source === "llm"
+        ? personality.summary
+        : closingLine(personality.typeId),
     traits: personality.traits,
     quizResults: personality.quizResults,
     sources: personality.sources,
     // full is what listening counts for once there's enough of it. Added here
     // rather than saved, so personalities saved before it existed have it too.
-    weights: personality.weights && { ...personality.weights, full: SPOTIFY_WEIGHT },
+    weights: personality.weights && {
+      ...personality.weights,
+      full: SPOTIFY_WEIGHT,
+    },
     ranking: personality.ranking,
     moodLink: personality.moodLink,
     stats: personality.stats,
@@ -169,7 +207,10 @@ function formatPersonality(personality) {
 
 // GET /api/quiz
 export async function getQuizzes(req, res) {
-  const results = await latestResults(req.user._id, await buildListeningProfile(req.user));
+  const results = await latestResults(
+    req.user._id,
+    await buildListeningProfile(req.user),
+  );
 
   res.json(
     QUIZZES.map((quiz) => {
@@ -181,7 +222,9 @@ export async function getQuizzes(req, res) {
         description: quiz.description,
         questionCount: quiz.questions.length,
         needsBirthday: Boolean(quiz.needsBirthday),
-        latestResult: result ? { title: result.title, subtitle: result.subtitle } : null,
+        latestResult: result
+          ? { title: result.title, subtitle: result.subtitle }
+          : null,
       };
     }),
   );
@@ -196,7 +239,10 @@ export async function getPersonality(req, res) {
   // whose quiz results have since changed (a rename, or new listening).
   if (personality?.quizResults?.length) {
     const profile = await buildListeningProfile(req.user);
-    if (!personality.sources || (await isOutdated(userId, personality, profile))) {
+    if (
+      !personality.sources ||
+      (await isOutdated(userId, personality, profile))
+    ) {
       personality = await rebuildPersonality(req.user._id, profile);
     }
   }
@@ -235,7 +281,8 @@ export async function getLatestResult(req, res) {
   }
 
   const attempt = await findLatestAttempt(req.user._id, quiz.id);
-  const result = attempt && evaluateAttempt(attempt, await buildListeningProfile(req.user));
+  const result =
+    attempt && evaluateAttempt(attempt, await buildListeningProfile(req.user));
 
   if (!result) {
     return res.status(404).json({ error: "You haven't taken this quiz yet" });
@@ -260,11 +307,17 @@ export async function submitQuiz(req, res) {
   }
 
   // Keep only the fields the quiz uses.
-  const stored = Object.fromEntries(quiz.questions.map((question) => [question.id, answers[question.id]]));
+  const stored = Object.fromEntries(
+    quiz.questions.map((question) => [question.id, answers[question.id]]),
+  );
   if (quiz.needsBirthday) stored.birthday = answers.birthday;
 
   const profile = await buildListeningProfile(req.user);
-  const attempt = await addQuizAttempt({ userId: req.user._id, quizId: quiz.id, answers: stored });
+  const attempt = await addQuizAttempt({
+    userId: req.user._id,
+    quizId: quiz.id,
+    answers: stored,
+  });
   const result = evaluateAttempt(attempt, profile);
   const personality = await rebuildPersonality(req.user._id, profile);
 
