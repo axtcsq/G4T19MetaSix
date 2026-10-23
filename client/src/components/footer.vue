@@ -16,7 +16,6 @@ const groups = [
     title: 'Explore',
     links: [
       { to: '/listen', label: 'Listening room' },
-      { to: '/canvas', label: 'Canvas' },
       { to: '/quiz', label: 'Personality' },
     ],
   },

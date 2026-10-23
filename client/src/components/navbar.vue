@@ -26,12 +26,10 @@ const isLanding = computed(() => route.path === '/')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
 
 const links = [
-  { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/daily-mood', label: 'Daily Mood' },
   { to: '/calendar', label: 'Calendar' },
   { to: '/listen', label: 'Listening room' },
-  { to: '/canvas', label: 'Canvas' },
   { to: '/quiz', label: 'Personality' },
 ]
 
