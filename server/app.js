@@ -27,7 +27,8 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: "20kb" }));
+// Journal drawings are stored as vector data, so allow a larger JSON body.
+app.use(express.json({ limit: "1mb" }));
 
 // Health check
 app.get("/api/health", async (req, res) => {
@@ -39,7 +40,10 @@ app.get("/api/health", async (req, res) => {
       database: "connected",
     });
   } catch (error) {
-    console.error("[API] Health check failed because MongoDB is unavailable:", error.message);
+    console.error(
+      "[API] Health check failed because MongoDB is unavailable:",
+      error.message,
+    );
     res.status(503).json({
       status: "degraded",
       message: "MetaFor API is running, but MongoDB is unavailable",
@@ -54,7 +58,10 @@ app.use("/api", async (req, res, next) => {
     await connectDB();
     next();
   } catch (error) {
-    console.error("[API] Request unavailable because MongoDB is not connected:", error.message);
+    console.error(
+      "[API] Request unavailable because MongoDB is not connected:",
+      error.message,
+    );
     res.status(503).json({ error: "Database unavailable" });
   }
 });
@@ -65,7 +72,9 @@ function sessionClient() {
     return Promise.resolve(mongoose.connection.getClient());
   }
   return new Promise((resolve) => {
-    mongoose.connection.once("connected", () => resolve(mongoose.connection.getClient()));
+    mongoose.connection.once("connected", () =>
+      resolve(mongoose.connection.getClient()),
+    );
   });
 }
 
@@ -98,7 +107,10 @@ app.use("/api/moods", async (req, res, next) => {
     await connectDB();
     next();
   } catch (error) {
-    console.error("[API] Mood request unavailable because MongoDB is not connected:", error.message);
+    console.error(
+      "[API] Mood request unavailable because MongoDB is not connected:",
+      error.message,
+    );
     res.status(503).json({ error: "Database unavailable" });
   }
 });
@@ -122,7 +134,10 @@ app.use("/api/quiz", async (req, res, next) => {
     await connectDB();
     next();
   } catch (error) {
-    console.error("[API] Quiz request unavailable because MongoDB is not connected:", error.message);
+    console.error(
+      "[API] Quiz request unavailable because MongoDB is not connected:",
+      error.message,
+    );
     res.status(503).json({ error: "Database unavailable" });
   }
 });

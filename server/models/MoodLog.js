@@ -4,6 +4,11 @@ const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry"];
 
 const moodLogSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     mood: {
       type: String,
       required: true,
@@ -15,6 +20,11 @@ const moodLogSchema = new mongoose.Schema(
       maxlength: 5000,
       default: "",
     },
+    // Versioned vector drawing data from the Daily Mood canvas.
+    drawing: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -22,30 +32,36 @@ const moodLogSchema = new mongoose.Schema(
   },
 );
 
-const MoodLog = mongoose.models.MoodLog || mongoose.model("MoodLog", moodLogSchema);
+moodLogSchema.index({ userId: 1, createdAt: -1 });
+const MoodLog =
+  mongoose.models.MoodLog || mongoose.model("MoodLog", moodLogSchema);
 
 // Keep MongoDB operations here so the controller can focus on HTTP behavior.
-export function addMoodLog(entry) {
-  return MoodLog.create(entry);
+export function addMoodLog(userId, entry) {
+  return MoodLog.create({ ...entry, userId });
 }
 
-export function retrieveMoodLogs() {
-  return MoodLog.find().sort({ createdAt: -1 }).limit(100);
+export function retrieveMoodLogs(userId) {
+  return MoodLog.find({ userId }).sort({ createdAt: -1 }).limit(100);
 }
 
-export function findMoodLogById(id) {
-  return MoodLog.findById(id);
+export function findMoodLogById(id, userId) {
+  return MoodLog.findOne({ _id: id, userId });
 }
 
-export function editMoodLog(id, changes) {
-  return MoodLog.findByIdAndUpdate(id, { $set: changes }, {
-    returnDocument: "after",
-    runValidators: true,
-  });
+export function editMoodLog(id, userId, changes) {
+  return MoodLog.findOneAndUpdate(
+    { _id: id, userId },
+    { $set: changes },
+    {
+      returnDocument: "after",
+      runValidators: true,
+    },
+  );
 }
 
-export function removeMoodLog(id) {
-  return MoodLog.findByIdAndDelete(id);
+export function removeMoodLog(id, userId) {
+  return MoodLog.findOneAndDelete({ _id: id, userId });
 }
 
 export { MOODS };

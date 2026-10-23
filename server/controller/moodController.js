@@ -12,6 +12,86 @@ function validId(id) {
   return mongoose.isObjectIdOrHexString(id);
 }
 
+const DRAWING_TYPES = new Set([
+  "pen",
+  "marker",
+  "eraser",
+  "line",
+  "rectangle",
+  "circle",
+  "text",
+]);
+
+function validCoordinate(value) {
+  return Number.isFinite(value) && Math.abs(value) <= 10000;
+}
+
+function validDrawing(drawing) {
+  if (drawing === null) return true;
+  if (!drawing || typeof drawing !== "object" || Array.isArray(drawing))
+    return false;
+  if (
+    drawing.version !== 1 ||
+    !Number.isFinite(drawing.width) ||
+    drawing.width < 1 ||
+    drawing.width > 5000 ||
+    !Number.isFinite(drawing.height) ||
+    drawing.height < 1 ||
+    drawing.height > 5000 ||
+    !Array.isArray(drawing.items) ||
+    drawing.items.length > 500 ||
+    Buffer.byteLength(JSON.stringify(drawing)) > 900_000
+  ) {
+    return false;
+  }
+
+  let totalPoints = 0;
+
+  return drawing.items.every((item) => {
+    if (
+      !item ||
+      typeof item !== "object" ||
+      Array.isArray(item) ||
+      !DRAWING_TYPES.has(item.type) ||
+      typeof item.color !== "string" ||
+      !/^#[\da-f]{6}$/i.test(item.color) ||
+      !Number.isFinite(item.width) ||
+      item.width < 1 ||
+      item.width > 500
+    ) {
+      return false;
+    }
+
+    if (item.type === "text") {
+      return (
+        typeof item.text === "string" &&
+        item.text.length > 0 &&
+        item.text.length <= 1000 &&
+        validCoordinate(item.x) &&
+        validCoordinate(item.y)
+      );
+    }
+
+    if (
+      !validCoordinate(item.startX) ||
+      !validCoordinate(item.startY) ||
+      !validCoordinate(item.endX) ||
+      !validCoordinate(item.endY) ||
+      !Array.isArray(item.points) ||
+      item.points.length === 0
+    ) {
+      return false;
+    }
+
+    totalPoints += item.points.length;
+    if (totalPoints > 20000) return false;
+
+    return item.points.every(
+      (point) => point && validCoordinate(point.x) && validCoordinate(point.y),
+    );
+  });
+}
+
 function validateEntry(body, requireMood = false) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return "Request body must be an object";
@@ -19,7 +99,7 @@ function validateEntry(body, requireMood = false) {
 
   const keys = Object.keys(body);
 
-  if (keys.some((key) => !["mood", "journal"].includes(key))) {
+  if (keys.some((key) => !["mood", "journal", "drawing"].includes(key))) {
     return "Unsupported field";
   }
 
@@ -38,6 +118,10 @@ function validateEntry(body, requireMood = false) {
     return "Journal must be a string of at most 5000 characters";
   }
 
+  if ("drawing" in body && !validDrawing(body.drawing)) {
+    return "Drawing data is invalid or exceeds the supported size";
+  }
+
   return null;
 }
 
@@ -49,9 +133,10 @@ export async function createMood(req, res) {
     return res.status(400).json({ error });
   }
 
-  const log = await addMoodLog({
+  const log = await addMoodLog(req.user._id, {
     mood: req.body.mood,
     journal: req.body.journal ?? "",
+    drawing: req.body.drawing ?? null,
   });
 
   res.status(201).json(log);
@@ -59,7 +144,7 @@ export async function createMood(req, res) {
 
 // READ ALL
 export async function getMoods(req, res) {
-  const logs = await retrieveMoodLogs();
+  const logs = await retrieveMoodLogs(req.user._id);
 
   res.json(logs);
 }
@@ -70,7 +155,7 @@ export async function getMood(req, res) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const log = await findMoodLogById(req.params.id);
+  const log = await findMoodLogById(req.params.id, req.user._id);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
@@ -95,7 +180,7 @@ export async function updateMood(req, res) {
     return res.status(400).json({ error: "No fields supplied" });
   }
 
-  const log = await editMoodLog(req.params.id, req.body);
+  const log = await editMoodLog(req.params.id, req.user._id, req.body);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
@@ -110,7 +195,7 @@ export async function deleteMood(req, res) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const log = await removeMoodLog(req.params.id);
+  const log = await removeMoodLog(req.params.id, req.user._id);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });

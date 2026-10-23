@@ -26,18 +26,20 @@ For multiple allowed client origins, separate them with commas. Keep `.env` priv
 
 ## Mood API
 
-All endpoints use the `/api/moods` prefix. A mood must be `Sad`, `Happy`, `Relaxed`, `Anxious`, or `Angry`. The journal is optional and limited to 5,000 characters.
+All endpoints use the `/api/moods` prefix and are scoped to the signed-in user. A mood must be `Sad`, `Happy`, `Relaxed`, `Anxious`, or `Angry`. The journal is optional and limited to 5,000 characters. Entries may also include an optional version 1 vector drawing (`width`, `height`, and `items`); the API limits drawings to 900 KB, 500 items, and 20,000 points.
 
-| Method | Path | Purpose |
-| --- | --- | --- |
-| `GET` | `/api/moods` | List the 100 newest logs |
-| `GET` | `/api/moods/:id` | Get one log |
-| `POST` | `/api/moods` | Create a log with `mood` and optional `journal` |
-| `PATCH` | `/api/moods/:id` | Update `mood`, `journal`, or both |
-| `DELETE` | `/api/moods/:id` | Delete a log |
-| `GET` | `/api/health` | Check the API and MongoDB connection |
+| Method   | Path             | Purpose                                                              |
+| -------- | ---------------- | -------------------------------------------------------------------- |
+| `GET`    | `/api/moods`     | List the 100 newest logs                                             |
+| `GET`    | `/api/moods/:id` | Get one log                                                          |
+| `POST`   | `/api/moods`     | Create a log with `mood`, optional `journal`, and optional `drawing` |
+| `PATCH`  | `/api/moods/:id` | Update `mood`, `journal`, and/or `drawing`                           |
+| `DELETE` | `/api/moods/:id` | Delete a log                                                         |
+| `GET`    | `/api/health`    | Check the API and MongoDB connection                                 |
 
 The API starts even if MongoDB is unavailable. In that case the health endpoint returns `503`, and mood requests return a database unavailable response. This keeps the server's existing recovery and health-check behavior.
+
+Mood logs are stored with their owner's `userId`; list, read, update, delete, and personality mood summaries only use that user's logs. Older logs created before `userId` was added remain in MongoDB but are not returned because they cannot be safely attributed to an account. Run `npm run db:init` once after deploying this schema change to create the new owner/date index.
 
 ## Journal idea helper
 
@@ -65,7 +67,6 @@ npm run db:seed -- --days 30    # only the last 30 days
 ```
 
 This adds the 156 test songs to `tracks` with both mood readings, creates the demo user (`spotifyId: "demo"`, never synced), generates 10–40 plays a day, and rebuilds their `dailyMoods`. Exam weeks lean sad, holidays lean happy, and weekends are quieter. Re-running replaces the demo user's data, so it is safe to repeat. It refuses to run on a database whose name doesn't end in `_dev` unless you pass `--yes`.
-
 
 ## Run
 
