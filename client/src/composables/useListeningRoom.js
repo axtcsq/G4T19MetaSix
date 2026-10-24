@@ -33,7 +33,7 @@ const paused = ref(true)
 const position = ref(0)
 const duration = ref(track.value.duration_ms)
 const volume = ref(65)
-const accent = ref('#c9d0b5')
+const accent = ref('#f0c4a8')
 const results = ref([])
 const searching = ref(false)
 const query = ref('')
@@ -51,7 +51,7 @@ function updateArtwork(next) {
     accent.value = next.color
     return
   }
-  accent.value = '#c9d0b5'
+  accent.value = '#f0c4a8'
   const image = new Image()
   image.crossOrigin = 'anonymous'
   image.onload = () => {

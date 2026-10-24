@@ -392,7 +392,7 @@ onMounted(loadEntries)
   display: flex;
   min-height: calc(100vh - 76px);
   flex-direction: column;
-  background: var(--ui-bg-accented);
+  background: var(--ui-bg);
 }
 
 @media (min-width: 1280px) {

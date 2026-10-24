@@ -3,9 +3,9 @@
    white cards and peach buttons for warm plum ones that sit on the app's
    navy background. */
 .personality-theme {
-  --pq-surface: #fff;
+  --pq-surface: var(--ui-bg-elevated);
   --pq-on-surface: var(--ui-text);
-  --pq-muted: #665f78;
+  --pq-muted: var(--ui-text-muted);
   --pq-brown: #763e32;
   --pq-accent: #ce5b4b;
   --pq-peach: #ffe6d2; /* Figma: rgba(255, 205, 166, 0.5) on white */
@@ -26,9 +26,9 @@
 }
 
 .dark .personality-theme {
-  --pq-surface: #262234;
+  --pq-surface: var(--ui-bg-elevated);
   --pq-on-surface: #f5ece6;
-  --pq-muted: #b9aec4;
+  --pq-muted: var(--ui-text-muted);
   --pq-brown: #eaa596;
   --pq-accent: #db806d;
   --pq-peach: #3a2a30;
