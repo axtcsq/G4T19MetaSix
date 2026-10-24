@@ -50,8 +50,16 @@ function describe(day) {
 
 <template>
   <div class="mood-music">
-    <h3 class="sub-header">Mood × Music</h3>
-    <p class="insight-text mt-2">{{ summary }}</p>
+    <div class="mood-copy">
+      <h3 class="sub-header">Mood × Music</h3>
+      <p class="insight-text mt-2">{{ summary }}</p>
+      <p class="legend" aria-hidden="true">
+        <span class="legend-item"><span class="legend-bar" /> How happy your music sounded</span>
+        <span v-for="mood in loggedMoods" :key="mood" class="legend-item">
+          <span class="legend-dot" :style="{ background: MOOD_COLORS[mood] }" /> {{ mood }}
+        </span>
+      </p>
+    </div>
 
     <ol class="chart" aria-label="The last two weeks, day by day">
       <li v-for="day in days" :key="day.date" class="chart-day">
@@ -74,22 +82,22 @@ function describe(day) {
         <span class="day-number" aria-hidden="true">{{ day.dayNumber }}</span>
       </li>
     </ol>
-
-    <p class="legend" aria-hidden="true">
-      <span class="legend-item"><span class="legend-bar" /> How happy your music sounded</span>
-      <span v-for="mood in loggedMoods" :key="mood" class="legend-item">
-        <span class="legend-dot" :style="{ background: MOOD_COLORS[mood] }" /> {{ mood }}
-      </span>
-    </p>
   </div>
 </template>
 
 <style scoped>
+/* A wide, short card: the words on the left and the chart on the right. */
+.mood-music {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  align-items: center;
+  gap: 2.5rem;
+}
+
 .chart {
   display: grid;
   grid-template-columns: repeat(14, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 1.25rem;
+  gap: 8px;
 }
 
 .chart-day {
@@ -112,7 +120,7 @@ function describe(day) {
 .bar-track {
   display: flex;
   width: 100%;
-  height: 120px;
+  height: 80px;
   align-items: flex-end;
   overflow: hidden;
   border-radius: 6px;
@@ -172,13 +180,20 @@ function describe(day) {
   line-height: 1.4;
 }
 
+@media (max-width: 1000px) {
+  .mood-music {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
 @media (max-width: 600px) {
   .chart {
     gap: 3px;
   }
 
   .bar-track {
-    height: 90px;
+    height: 64px;
   }
 
   .mood-dot {
