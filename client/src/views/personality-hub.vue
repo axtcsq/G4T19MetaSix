@@ -101,33 +101,38 @@ onMounted(loadPage)
   <div class="personality-page personality-theme">
     <main class="flex-1">
       <section class="page-width pt-12 pb-16">
-        <h1 class="page-title">Find Your Personality</h1>
-        <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
-
-        <!-- One segment per quiz, filled once it's been taken. -->
-        <div
-          v-if="!isLoading && quizzes.length"
-          class="quiz-progress mt-6"
-          role="progressbar"
-          :aria-valuenow="takenCount"
-          aria-valuemin="0"
-          :aria-valuemax="quizzes.length"
-          :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
-        >
+        <!-- The title on the left, and quiz progress beside it. -->
+        <div class="hub-header">
           <div>
-            <p class="progress-count">
-              <span class="progress-number">{{ takenCount }}</span>/{{ quizzes.length }} quizzes taken
-            </p>
-            <p class="progress-nudge">{{ progressNudge }}</p>
+            <h1 class="page-title">Find Your Personality</h1>
+            <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
           </div>
-          <ol class="progress-steps" aria-hidden="true">
-            <li
-              v-for="quiz in quizzes"
-              :key="quiz.id"
-              :class="{ 'is-done': quiz.latestResult }"
-              :title="quiz.title"
-            />
-          </ol>
+
+          <!-- One segment per quiz, filled once it's been taken. -->
+          <div
+            v-if="!isLoading && quizzes.length"
+            class="quiz-progress"
+            role="progressbar"
+            :aria-valuenow="takenCount"
+            aria-valuemin="0"
+            :aria-valuemax="quizzes.length"
+            :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
+          >
+            <div>
+              <p class="progress-count">
+                <span class="progress-number">{{ takenCount }}</span>/{{ quizzes.length }} quizzes taken
+              </p>
+              <p class="progress-nudge">{{ progressNudge }}</p>
+            </div>
+            <ol class="progress-steps" aria-hidden="true">
+              <li
+                v-for="quiz in quizzes"
+                :key="quiz.id"
+                :class="{ 'is-done': quiz.latestResult }"
+                :title="quiz.title"
+              />
+            </ol>
+          </div>
         </div>
 
         <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-10 text-muted">
@@ -791,11 +796,18 @@ onMounted(loadPage)
   font-size: 0.85rem;
 }
 
-/* Progress across all the quizzes, under the page title: a small card with
+.hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+}
+
+/* Progress across all the quizzes, beside the page title: a small card with
    the count on the left and one segment per quiz on the right. */
 .quiz-progress {
   display: flex;
-  max-width: 640px;
+  width: min(100%, 520px);
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
@@ -1026,6 +1038,12 @@ onMounted(loadPage)
   .song-card {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  /* The progress card drops under the title. */
+  .hub-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .song-actions {
