@@ -1,11 +1,12 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { getPersonality, getQuizzes } from '@/api/quiz'
+import { computed, onMounted, ref } from 'vue'
+import { getMoodMusic, getPersonality, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/footer.vue'
 import PersonalityBreakdown from '@/components/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/ShareCardDialog.vue'
+import MoodMusicChart from '@/components/MoodMusicChart.vue'
 import TraitBar from '@/components/TraitBar.vue'
 import WaveBackground from '@/components/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
@@ -28,18 +29,64 @@ const quizImages = {
 
 const quizzes = ref([])
 const personality = ref(null)
+const moodMusic = ref(null)
 const isLoading = ref(true)
 const loadError = ref('')
+// Patterns loads on its own, since its AI write-up can take a few seconds and
+// the quizzes shouldn't wait for it.
+const patternsLoading = ref(true)
+const patternsError = ref('')
 const shareDialog = ref(null)
+// The quiz whose Retake is waiting to be confirmed.
+const confirmingRetake = ref(null)
+
+const takenCount = computed(() => quizzes.value.filter((quiz) => quiz.latestResult).length)
+const progressNudge = computed(() => {
+  const left = quizzes.value.length - takenCount.value
+  if (!takenCount.value) return 'Take your first quiz to meet your MetaFor type.'
+  if (left) return `Take ${left} more for a sharper Patterns match.`
+  return 'All done. Your Patterns match is as sharp as it gets.'
+})
+// Where the empty Patterns card sends a new user.
+const firstQuiz = computed(() => quizzes.value.find((quiz) => !quiz.latestResult) ?? quizzes.value[0])
+
+// Scores this close to 0 don't lean either way (the same as How It Adds Up).
+const BALANCED = 0.05
+
+// What each source said about one trait, for the explanation under its bar.
+function traitSources(trait) {
+  return (personality.value.sources ?? []).map((source) => {
+    const score = source.traits[trait.id]
+    const leaning =
+      typeof score !== 'number' || Math.abs(score) < BALANCED
+        ? 'no lean either way'
+        : `leans ${score > 0 ? trait.firstPoleName : trait.secondPoleName}`
+    return { id: source.id, label: source.label, leaning }
+  })
+}
+
+async function loadPatterns() {
+  patternsLoading.value = true
+  patternsError.value = ''
+
+  try {
+    const [profile, mood] = await Promise.all([getPersonality(), getMoodMusic()])
+    personality.value = profile
+    moodMusic.value = mood
+  } catch (error) {
+    patternsError.value = error.message
+  } finally {
+    patternsLoading.value = false
+  }
+}
 
 async function loadPage() {
   isLoading.value = true
   loadError.value = ''
+  loadPatterns()
 
   try {
-    const [quizList, profile] = await Promise.all([getQuizzes(), getPersonality()])
-    quizzes.value = quizList
-    personality.value = profile
+    quizzes.value = await getQuizzes()
   } catch (error) {
     loadError.value = error.message
   } finally {
@@ -56,6 +103,23 @@ onMounted(loadPage)
       <section class="page-width pt-12 pb-16">
         <h1 class="page-title">Find Your Personality</h1>
         <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
+
+        <div v-if="!isLoading && quizzes.length" class="quiz-progress mt-6">
+          <p class="progress-text">
+            <strong>{{ takenCount }} of {{ quizzes.length }} quizzes taken.</strong>
+            {{ progressNudge }}
+          </p>
+          <div
+            class="progress-track"
+            role="progressbar"
+            :aria-valuenow="takenCount"
+            aria-valuemin="0"
+            :aria-valuemax="quizzes.length"
+            :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
+          >
+            <span :style="{ width: `${(takenCount / quizzes.length) * 100}%` }" />
+          </div>
+        </div>
 
         <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-10 text-muted">
           Loading quizzes...
@@ -82,19 +146,51 @@ onMounted(loadPage)
                 <span class="latest-title">{{ quiz.latestResult.title }}</span>
                 <span class="latest-subtitle">{{ quiz.latestResult.subtitle }}</span>
               </p>
-              <div class="card-actions">
+              <div v-if="confirmingRetake === quiz.id" class="retake-confirm" role="group" :aria-label="`Retake ${quiz.title}?`">
+                <p class="retake-question">
+                  Retaking replaces your {{ quiz.latestResult.title }} result.
+                </p>
+                <div class="card-actions">
+                  <RouterLink
+                    class="peach-button"
+                    :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
+                  >
+                    Retake
+                  </RouterLink>
+                  <button type="button" class="peach-button peach-button--quiet" @click="confirmingRetake = null">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+              <div v-else class="card-actions card-actions--retry">
                 <RouterLink
                   class="peach-button"
                   :to="{ name: 'personality-result', params: { quizId: quiz.id } }"
                 >
                   View result
                 </RouterLink>
-                <RouterLink
-                  class="peach-button peach-button--quiet"
-                  :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
+                <button
+                  type="button"
+                  class="peach-button peach-button--quiet retry-button"
+                  :aria-label="`Retake ${quiz.title}`"
+                  title="Retake"
+                  @click="confirmingRetake = quiz.id"
                 >
-                  Retake
-                </RouterLink>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 12a9 9 0 1 0 3-6.7" />
+                    <path d="M3 4v5h5" />
+                  </svg>
+                </button>
               </div>
             </template>
             <RouterLink
@@ -144,10 +240,47 @@ onMounted(loadPage)
             gets.
           </p>
 
-          <div v-if="!isLoading && !loadError && !personality" class="pattern-card mt-8 p-10">
-            <p class="body-text text-center">
-              Take a quiz above and we'll start finding the patterns in how you listen.
+          <div v-if="patternsLoading" class="pattern-card patterns-loading mt-8" role="status">
+            <p class="sub-header">Reading your patterns…</p>
+            <p class="body-text mt-1">Weaving your quiz answers together with your listening.</p>
+            <span class="skeleton-line" aria-hidden="true" />
+            <span class="skeleton-line is-short" aria-hidden="true" />
+          </div>
+
+          <div v-else-if="patternsError" class="pattern-card patterns-empty mt-8" role="alert">
+            <p class="body-text">Your patterns couldn't load: {{ patternsError }}</p>
+            <button type="button" class="peach-button empty-button" @click="loadPatterns">Try again</button>
+          </div>
+
+          <div v-else-if="!personality" class="pattern-card patterns-empty mt-8">
+            <svg
+              class="empty-icon"
+              viewBox="0 0 24 24"
+              width="64"
+              height="64"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+            <p class="sub-header">Meet your MetaFor type</p>
+            <p class="body-text">
+              Take a quiz and we'll start finding the patterns in how you listen, then match you
+              with one of six MetaFor personalities.
             </p>
+            <RouterLink
+              v-if="firstQuiz"
+              class="peach-button empty-button"
+              :to="{ name: 'personality-quiz', params: { quizId: firstQuiz.id } }"
+            >
+              Start with {{ firstQuiz.title }}
+            </RouterLink>
           </div>
 
           <template v-else-if="personality">
@@ -171,12 +304,20 @@ onMounted(loadPage)
               </div>
 
               <div class="pattern-card traits-card">
-                <TraitBar
-                  v-for="trait in personality.traits"
-                  :key="trait.id"
-                  :trait="trait"
-                  compact
-                />
+                <p class="traits-hint">Tap a trait to see what shaped it.</p>
+                <details v-for="trait in personality.traits" :key="trait.id" class="trait-details">
+                  <summary>
+                    <TraitBar :trait="trait" compact />
+                  </summary>
+                  <div class="trait-explain">
+                    <p class="insight-text">{{ trait.trait }}</p>
+                    <ul v-if="personality.sources" class="trait-sources">
+                      <li v-for="source in traitSources(trait)" :key="source.id">
+                        <span>{{ source.label }}</span> {{ source.leaning }}
+                      </li>
+                    </ul>
+                  </div>
+                </details>
               </div>
             </div>
 
@@ -188,9 +329,9 @@ onMounted(loadPage)
                     {{ insight }}
                   </li>
                 </ul>
-                <p v-if="personality.moodLink" class="mood-link insight-text">
-                  <span class="mood-label">Mood × music</span>
-                  {{ personality.moodLink.text }}
+                <p v-if="personality.source === 'scoring'" class="fallback-note">
+                  These insights come from your scores, as the AI write-up isn't available right
+                  now. Check back in a minute.
                 </p>
                 <p class="match-note font-sans text-sm text-(--pq-muted)">
                   {{ personality.type.match }}% match, based on
@@ -202,6 +343,50 @@ onMounted(loadPage)
 
               <div v-if="personality.sources" class="pattern-card breakdown-card">
                 <PersonalityBreakdown :personality="personality" />
+              </div>
+            </div>
+
+            <div class="insights-row mt-8">
+              <div v-if="personality.song" class="pattern-card song-card">
+                <h3 class="sub-header">A Song for You</h3>
+                <div class="song-body">
+                  <img
+                    v-if="personality.song.imageUrl"
+                    :src="personality.song.imageUrl"
+                    alt=""
+                    width="112"
+                    height="112"
+                    class="song-art"
+                  />
+                  <svg v-else class="song-art song-art--vinyl" viewBox="0 0 112 112" aria-hidden="true">
+                    <circle cx="56" cy="56" r="54" />
+                    <circle cx="56" cy="56" r="38" class="groove" />
+                    <circle cx="56" cy="56" r="26" class="groove" />
+                    <circle cx="56" cy="56" r="14" class="label" />
+                  </svg>
+                  <div>
+                    <p class="song-name">{{ personality.song.name }}</p>
+                    <p class="song-artist">{{ personality.song.artist }}</p>
+                  </div>
+                </div>
+                <p class="insight-text">{{ personality.song.reason }}</p>
+                <div class="song-actions">
+                  <a
+                    class="peach-button"
+                    :href="`https://open.spotify.com/track/${personality.song.id}`"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Open in Spotify
+                  </a>
+                  <RouterLink class="peach-button peach-button--quiet" to="/listen">
+                    Listening Room
+                  </RouterLink>
+                </div>
+              </div>
+
+              <div v-if="moodMusic" class="pattern-card mood-card">
+                <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
               </div>
             </div>
 
@@ -542,20 +727,217 @@ onMounted(loadPage)
   line-height: 1.4;
 }
 
-.mood-link {
-  padding: 0.6rem 0.85rem;
+/* Explanation under each trait bar, opened by tapping the bar. */
+.traits-hint {
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+}
+
+.trait-details summary {
+  list-style: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.trait-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.trait-details summary:hover {
+  background: var(--pq-tint);
+}
+
+.trait-details summary:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.trait-explain {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: 10px;
   background: var(--pq-tint);
 }
 
-.mood-label {
-  display: block;
+.trait-sources {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.trait-sources span {
+  color: var(--pq-on-surface);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+}
+
+.fallback-note {
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  color: var(--pq-muted);
+  background: var(--pq-tint);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+}
+
+/* Progress across all the quizzes, under the page title. */
+.quiz-progress {
+  max-width: 560px;
+}
+
+.progress-text {
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+}
+
+.progress-text strong {
+  font-weight: 600;
+}
+
+.progress-track {
+  height: 10px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--pq-rail);
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pq-accent);
+  transition: width 320ms ease;
+}
+
+/* View result takes the room, and Retake is a square icon button beside it. */
+.card-actions--retry {
+  grid-template-columns: 1fr 55px;
+}
+
+.retry-button {
+  padding: 0;
+}
+
+.retake-confirm {
+  margin-top: 0.75rem;
+}
+
+.retake-question {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+}
+
+/* Patterns while it loads, has no quizzes yet, or fails. */
+.patterns-loading,
+.patterns-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.patterns-empty .body-text {
+  max-width: 560px;
+}
+
+.empty-icon {
+  color: var(--pq-accent);
+}
+
+.empty-button {
+  max-width: 334px;
+}
+
+.skeleton-line {
+  width: min(420px, 80%);
+  height: 14px;
+  margin-top: 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pq-rail), var(--pq-tint), var(--pq-rail));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-line.is-short {
+  width: min(260px, 55%);
+  margin-top: 0.25rem;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line {
+    animation: none;
+  }
+}
+
+/* A song for your type, and the mood chart beside it. */
+.song-card,
+.mood-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+}
+
+.song-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.song-art {
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.song-art--vinyl {
+  width: 112px;
+  height: 112px;
+  fill: #2b2422;
+}
+
+.song-art--vinyl .groove {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.14);
+}
+
+.song-art--vinyl .label {
+  fill: var(--pq-accent);
+}
+
+.song-name {
+  font-family: var(--font-sans);
+  font-size: var(--text-subheader);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.song-artist {
+  color: var(--pq-muted);
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+}
+
+.song-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: auto;
 }
 
 .insights-row {
