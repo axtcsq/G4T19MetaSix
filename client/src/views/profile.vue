@@ -129,7 +129,7 @@ const logOut = useLogOut()
           <p v-else-if="!loading" class="muted">
             Your top artist, track and genre show here once you've taken a quiz.
           </p>
-          <RouterLink class="text-link" to="/dashboard">Open your dashboard →</RouterLink>
+          <RouterLink class="text-link" to="/dashboard">Go to Home →</RouterLink>
         </section>
       </div>
 
