@@ -21,7 +21,7 @@ const historyLabel = computed(() =>
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 onMounted(() => {
-  document.title = 'Your listening portrait · MetaFor'
+  document.title = 'Your Listening Portrait · MetaFor'
   spotify.initialize()
 })
 </script>
@@ -31,7 +31,7 @@ onMounted(() => {
     <div class="dashboard-inner">
       <div class="dashboard-top">
         <div>
-          <h1 class="page-title">Your listening portrait</h1>
+          <h1 class="page-title">Your Listening Portrait</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
             ><span>{{ historyLabel }}</span>
@@ -76,7 +76,7 @@ onMounted(() => {
         <section class="portrait-layout" aria-labelledby="garden-heading">
           <div class="portrait-art">
             <div class="art-heading">
-              <h2 id="garden-heading">Your listening garden</h2>
+              <h2 id="garden-heading">Your Listening Garden</h2>
               <button
                 type="button"
                 class="art-pause"
@@ -113,7 +113,7 @@ onMounted(() => {
         <section class="restored-charts" aria-label="Mood insights">
           <article class="chart-panel">
             <div class="panel-heading">
-              <h3>Mood over time</h3>
+              <h3>Mood Over Time</h3>
               <span>Unavailable</span>
             </div>
             <p class="unavailable-note">
@@ -123,7 +123,7 @@ onMounted(() => {
           </article>
           <article class="chart-panel">
             <div class="panel-heading">
-              <h3>Emotion profile</h3>
+              <h3>Emotion Profile</h3>
               <span>Unavailable</span>
             </div>
             <p class="unavailable-note">
@@ -135,7 +135,7 @@ onMounted(() => {
         <section class="music-section" aria-labelledby="music-heading">
           <div class="section-intro">
             <div>
-              <h2 id="music-heading">Most played in returned history</h2>
+              <h2 id="music-heading">Most Played in Returned History</h2>
             </div>
             <a
               href="https://open.spotify.com/"
@@ -149,7 +149,7 @@ onMounted(() => {
           <div class="music-layout">
             <article class="artists-panel">
               <div class="panel-heading">
-                <h3>Top artists</h3>
+                <h3>Top Artists</h3>
                 <span>Recorded plays</span>
               </div>
               <ol class="artist-list">
@@ -179,7 +179,7 @@ onMounted(() => {
             </article>
             <article class="songs-panel">
               <div class="panel-heading">
-                <h3>Top tracks</h3>
+                <h3>Top Tracks</h3>
                 <span>Plays</span>
               </div>
               <ol class="song-list">
@@ -216,7 +216,7 @@ onMounted(() => {
           <article class="chart-panel hours-panel">
             <div class="panel-heading">
               <div>
-                <h3>Recorded plays by hour</h3>
+                <h3>Recorded Plays by Hour</h3>
               </div>
               <svg
                 class="night-icon"
@@ -237,7 +237,7 @@ onMounted(() => {
           </article>
           <article class="chart-panel">
             <div class="panel-heading">
-              <h3>Genre mix</h3>
+              <h3>Genre Mix</h3>
               <span>Unavailable</span>
             </div>
             <p class="unavailable-note">
@@ -246,11 +246,11 @@ onMounted(() => {
             </p>
           </article>
           <article class="chart-panel">
-            <div class="panel-heading"><h3>Recorded plays by day</h3></div>
+            <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart :key="`days-${period}`" type="days" :data="data" />
           </article>
           <article class="chart-panel">
-            <div class="panel-heading"><h3>Repeat listening</h3></div>
+            <div class="panel-heading"><h3>Repeat Listening</h3></div>
             <ListeningChart :key="`repeats-${period}`" type="repeats" :data="data" />
           </article>
         </section>

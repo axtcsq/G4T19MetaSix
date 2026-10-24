@@ -58,7 +58,7 @@ const logOut = useLogOut()
 <template>
   <div class="profile-page personality-theme">
     <main class="profile-shell">
-      <h1 class="page-title">Your profile</h1>
+      <h1 class="page-title">Your Profile</h1>
 
       <section class="card identity" aria-label="Account">
         <img v-if="user?.avatarUrl" class="avatar" :src="user.avatarUrl" alt="" />
@@ -87,7 +87,7 @@ const logOut = useLogOut()
 
       <div class="grid">
         <section class="card" aria-labelledby="personality-title">
-          <h2 id="personality-title" class="card-title">Your MetaFor personality</h2>
+          <h2 id="personality-title" class="card-title">Your MetaFor Personality</h2>
           <p v-if="loading" class="muted">Loading…</p>
           <p v-else-if="loadError" class="muted">{{ loadError }}</p>
           <template v-else-if="personality">
@@ -119,7 +119,7 @@ const logOut = useLogOut()
         </section>
 
         <section class="card" aria-labelledby="listening-title">
-          <h2 id="listening-title" class="card-title">Your listening</h2>
+          <h2 id="listening-title" class="card-title">Your Listening</h2>
           <dl v-if="listeningFacts.length" class="facts">
             <div v-for="[label, value] in listeningFacts" :key="label">
               <dt>{{ label }}</dt>
@@ -134,7 +134,7 @@ const logOut = useLogOut()
       </div>
 
       <section class="card coming-soon" aria-labelledby="soon-title">
-        <h2 id="soon-title" class="card-title">Coming soon</h2>
+        <h2 id="soon-title" class="card-title">Coming Soon</h2>
         <p class="muted">
           Editing your profile, your birthday for Spotify Horoscope, and privacy settings.
         </p>

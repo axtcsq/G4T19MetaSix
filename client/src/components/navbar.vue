@@ -29,7 +29,7 @@ const links = [
   { to: '/dashboard', label: 'Home' },
   { to: '/daily-mood', label: 'Daily Mood' },
   { to: '/calendar', label: 'Calendar' },
-  { to: '/listen', label: 'Listening room' },
+  { to: '/listen', label: 'Listening Room' },
   { to: '/quiz', label: 'Personality' },
 ]
 

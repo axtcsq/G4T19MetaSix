@@ -61,14 +61,14 @@ onMounted(loadResult)
           <p class="sub-header mt-1">{{ result.subtitle }}</p>
           <p class="body-text mt-5">{{ result.description }}</p>
 
-          <h2 class="section-title mt-8">Why we think so</h2>
+          <h2 class="section-title mt-8">Why We Think So</h2>
           <ul class="mt-3 space-y-2">
             <li v-for="reason in result.justification" :key="reason" class="body-text reason">
               {{ reason }}
             </li>
           </ul>
 
-          <h2 class="section-title mt-8">Your breakdown</h2>
+          <h2 class="section-title mt-8">Your Breakdown</h2>
           <div class="mt-4 space-y-4">
             <template v-for="row in result.breakdown" :key="row.label">
               <div v-if="row.kind === 'scale'">

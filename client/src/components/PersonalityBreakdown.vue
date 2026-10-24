@@ -36,7 +36,7 @@ const rows = computed(() =>
 <template>
   <div class="breakdown">
     <div class="breakdown-heading">
-      <h3 class="breakdown-title">How it adds up</h3>
+      <h3 class="breakdown-title">How It Adds Up</h3>
       <span class="info" @mouseenter="showInfo = true" @mouseleave="showInfo = false">
         <button
           type="button"

@@ -55,7 +55,7 @@ function connect() {
   room.connect()
 }
 onMounted(() => {
-  document.title = 'Listening room · MetaFor'
+  document.title = 'Listening Room · MetaFor'
   room.initialize()
 })
 onBeforeUnmount(() => {
@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
     <div class="room-inner">
       <header class="room-heading">
         <div>
-          <h1 class="page-title">Listening room</h1>
+          <h1 class="page-title">Listening Room</h1>
           <p>Put a record on. Let the rest wait.</p>
         </div>
         <div class="connection">
