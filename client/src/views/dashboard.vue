@@ -301,11 +301,27 @@ onMounted(() => {
   --dash-muted: #655e56;
   --dash-accent: #a54b3b;
   --dash-rule: #e3ddd5;
+  --dash-hover: #e5dfd7;
+  --dash-meter: #8caa9b;
+  --dash-meter-soft: #9baa9c;
   background: var(--dash-ground);
   color: var(--dash-ink);
   min-height: 100svh;
   font: 20px/1.5 var(--font-serif);
   padding-bottom: 90px;
+}
+/* Dark mode uses the app's theme colours. The garden keeps its light paper,
+   like the journal, since its flowers are drawn for it. */
+:global(.dark .dashboard) {
+  --dash-ground: var(--ui-bg);
+  --dash-paper: var(--ui-bg-elevated);
+  --dash-ink: var(--ui-text);
+  --dash-muted: var(--ui-text-muted);
+  --dash-accent: var(--color-brand-300);
+  --dash-rule: var(--ui-border);
+  --dash-hover: var(--ui-bg-accented);
+  --dash-meter: #9cbcab;
+  --dash-meter-soft: #6f8476;
 }
 .dashboard-inner {
   max-width: 1240px;
@@ -365,7 +381,7 @@ onMounted(() => {
   color: var(--dash-paper);
 }
 .period-control button:hover {
-  background: #e5dfd7;
+  background: var(--dash-hover);
   color: var(--dash-ink);
 }
 .portrait-layout {
@@ -535,13 +551,13 @@ onMounted(() => {
 .artist-meter {
   height: 3px;
   width: 85%;
-  background: #e5dfd7;
+  background: var(--dash-hover);
   margin-top: 8px;
 }
 .artist-meter > span {
   display: block;
   height: 100%;
-  background: #8caa9b;
+  background: var(--dash-meter);
   transition: width 0.3s;
 }
 .artist-list strong,
@@ -760,7 +776,7 @@ onMounted(() => {
 }
 .period-control button[aria-pressed='true']:hover {
   background: var(--dash-ink);
-  color: white;
+  color: var(--dash-paper);
 }
 @media (min-width: 769px) {
   .mood-layout {

@@ -10,7 +10,7 @@ The Daily Mood screen keeps the form and journal history side by side on wide sc
 
 ### Listening dashboard
 
-The dashboard is a portrait of real Spotify recent history. Preserve the existing Crimson Text/Raleway pair, compact open layout and p5 botanical garden. Raleway owns headings and controls; Crimson Text owns music names, prose and summary numerals. Shared tokens and scrollbars live in `src/assets/css/main.css`. Dashboard semantic colors belong to `.dashboard` in `src/views/dashboard.vue`: paper `#fff`, ground `#f4f1ee`, ink `#30352f`, muted `#655e56`, accent `#a54b3b`, rule `#e3ddd5`.
+The dashboard is a portrait of real Spotify recent history. Preserve the existing Crimson Text/Raleway pair, compact open layout and p5 botanical garden. Raleway owns headings and controls; Crimson Text owns music names, prose and summary numerals. Shared tokens and scrollbars live in `src/assets/css/main.css`. Dashboard semantic colors belong to `.dashboard` in `src/views/dashboard.vue`: paper `#fff`, ground `#f4f1ee`, ink `#30352f`, muted `#655e56`, accent `#a54b3b`, rule `#e3ddd5`. In dark mode they map to the app theme tokens; the garden keeps its own sky.
 
 `useSpotifyHistory` owns dashboard loading and retry without playback or search. Spotify access comes from the MetaFor login; `api/spotify.js` remains the shared token/request boundary. `useListeningRoom` belongs to the separate listening-room branch. Refresh sits beneath the weekly/monthly selector.
 
