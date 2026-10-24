@@ -333,12 +333,12 @@ onMounted(() => {
   text-wrap: balance;
 }
 .dashboard h2 {
-  font-size: 28px;
+  font-size: var(--text-header);
 }
 .dashboard h3 {
-  font-size: 16px;
+  font-size: var(--text-subheader);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 .dashboard p {
   max-width: 65ch;
@@ -394,9 +394,6 @@ onMounted(() => {
   gap: 20px;
   margin-bottom: 12px;
 }
-.art-heading h2 {
-  font-size: 28px;
-}
 .art-pause {
   cursor: pointer;
   font-size: 13px;
@@ -410,8 +407,9 @@ onMounted(() => {
 }
 .mood-summary {
   font-family: var(--font-serif);
-  font-size: 28px;
-  line-height: 1.3;
+  font-size: var(--text-quote);
+  font-style: italic;
+  line-height: 1.4;
   max-width: 28ch !important;
 }
 .sleeve-totals {
@@ -664,9 +662,6 @@ onMounted(() => {
     grid-template-columns: 1fr;
     gap: 22px;
   }
-  .art-heading h2 {
-    font-size: 28px;
-  }
   .portrait-notes {
     padding: 0;
   }
@@ -695,9 +690,6 @@ onMounted(() => {
   .section-intro {
     margin-top: 28px;
   }
-  .section-intro h2 {
-    font-size: 28px;
-  }
   .artist-list li,
   .song-list li {
     gap: 12px;
@@ -710,9 +702,6 @@ onMounted(() => {
   }
   .art-heading {
     gap: 14px;
-  }
-  .art-heading h2 {
-    font-size: 26px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -727,7 +716,7 @@ onMounted(() => {
   font-family: var(--font-sans);
 }
 .dashboard .panel-heading :is(h2, h3) {
-  font-size: 18px;
+  font-size: var(--text-subheader);
 }
 .sleeve-totals {
   gap: 24px;
@@ -738,12 +727,13 @@ onMounted(() => {
   gap: 4px;
 }
 .sleeve-totals div > span {
-  font-size: 17px;
+  font-size: var(--text-body);
   line-height: 1.3;
 }
 .mood-summary strong {
   display: block;
-  font: 600 38px/1.2 var(--font-sans);
+  font: 700 var(--text-header)/1.2 var(--font-sans);
+  font-style: normal;
   margin-bottom: 8px;
 }
 .portrait-notes .peak-note {

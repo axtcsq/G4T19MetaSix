@@ -149,8 +149,8 @@ onBeforeUnmount(clearImage)
 
 .share-title {
   font-family: var(--font-sans);
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: var(--text-subheader);
+  font-weight: 600;
 }
 
 .close-button {

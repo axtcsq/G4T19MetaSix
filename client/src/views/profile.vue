@@ -258,8 +258,8 @@ dd {
 
 .card-title {
   font-family: var(--font-sans);
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: var(--text-subheader);
+  font-weight: 600;
 }
 
 .type-row {
@@ -279,7 +279,7 @@ dd {
 
 .type-name {
   font-family: var(--font-sans);
-  font-size: 1.4rem;
+  font-size: var(--text-subheader);
   font-weight: 700;
 }
 

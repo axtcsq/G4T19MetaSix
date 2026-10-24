@@ -339,7 +339,7 @@ onMounted(loadData)
 </template>
 
 <style scoped>
-.calendar-page { --calendar-accent: var(--color-brand-700); --calendar-accent-soft: var(--color-brand-100); min-height: calc(100vh - 76px); display: flex; flex-direction: column; background: var(--ui-bg); color: var(--ui-text); font: 18px/1.5 var(--font-serif); }
+.calendar-page { --calendar-accent: var(--color-brand-700); --calendar-accent-soft: var(--color-brand-100); min-height: calc(100vh - 76px); display: flex; flex-direction: column; background: var(--ui-bg); color: var(--ui-text); font: var(--text-body)/1.5 var(--font-serif); }
 .calendar-page :is(button, time, .eyebrow, .weekday, .day-number, .song-count, .inline-note, .calendar-hint, .track-copy, .play-time, .mood-tags, .calendar-message) { font-family: var(--font-sans); }
 .calendar-page :is(h1, h2, h3, h4) { font-family: var(--font-sans); }
 .calendar-content { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 64px; flex: 1; }
@@ -356,7 +356,7 @@ onMounted(loadData)
 .connect-spotify { min-height: 40px !important; padding: .5rem 1rem !important; font-size: .82rem !important; }
 .recommendation-panel { width: min(790px, 100%); margin: 24px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.recommendation-heading h2 { margin: 0; font-size: 1.25rem; }
+.recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: .94rem; }
 .recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 800; }
 .recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
@@ -372,7 +372,7 @@ onMounted(loadData)
 .calendar-shell { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: min(100%, 790px); }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
-.month-heading h2 { min-width: 230px; margin: 0; text-align: center; font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); }
+.month-heading h2 { min-width: 230px; margin: 0; text-align: center; font-family: var(--font-sans); font-size: var(--text-header); }
 .month-step { display: none; }
 .month-arrow { width: 56px; height: 70px; border: 0; color: var(--calendar-accent); background: transparent; font-size: 4.4rem; line-height: 1; cursor: pointer; transition: transform .16s ease; }
 .month-arrow:hover { transform: scale(1.12); }
@@ -394,11 +394,11 @@ onMounted(loadData)
 .error-message { color: #a53e36; }
 .day-detail { width: min(1040px, 100%); margin: 28px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.detail-header h3 { margin: 0; font-size: 1.35rem; }
+.detail-header h3 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: 1.4rem; cursor: pointer; }
 .day-detail-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; }
 .day-detail-column { min-width: 0; padding: 16px; border: 1px solid var(--ui-border); border-radius: 14px; background: color-mix(in srgb, var(--ui-bg), var(--ui-bg-elevated) 55%); }
-.column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: .95rem; }
+.column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: var(--text-subheader); font-weight: 600; }
 .column-title span { color: var(--ui-text-muted); font-size: .76rem; }
 .listening-mood-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 11px; background: var(--ui-bg-elevated); }
 .listening-mood-icon { font-size: 1.5rem; }
@@ -410,7 +410,7 @@ onMounted(loadData)
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
 .detail-emoji { font-size: 1.6rem; }
-.mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: 1.02rem; }
+.mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
 .mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
 .track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
@@ -432,7 +432,7 @@ onMounted(loadData)
   .calendar-content { width: min(100% - 24px, 520px); padding-top: 34px; }
   .calendar-shell { display: block; margin-top: 18px; }
   .month-heading { justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-  .month-heading h2 { min-width: 0; font-size: 1.45rem; }
+  .month-heading h2 { min-width: 0; }
   .month-step { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--ui-border); border-radius: 50%; color: var(--calendar-accent); background: var(--ui-bg-elevated); font-size: 1.7rem; line-height: 1; }
   .month-arrow { display: none; }
   .weekday { padding: 8px 1px; font-size: .58rem; }

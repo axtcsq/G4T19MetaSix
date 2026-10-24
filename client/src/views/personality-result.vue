@@ -163,7 +163,7 @@ onMounted(loadResult)
 .result-title {
   color: var(--pq-brown);
   font-family: var(--font-sans);
-  font-size: clamp(2rem, 7vw, 3rem);
+  font-size: var(--text-title);
   font-weight: 800;
   line-height: 1.1;
 }
