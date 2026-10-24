@@ -304,6 +304,8 @@ onMounted(() => {
   --dash-hover: var(--ui-bg-accented);
   --dash-meter: var(--color-brand-400);
   --dash-meter-soft: var(--color-brand-200);
+  /* Selected pills and highlighted bars: the Personality brown. */
+  --dash-strong: #763e32;
   background: var(--dash-ground);
   color: var(--dash-ink);
   min-height: 100svh;
@@ -316,6 +318,7 @@ onMounted(() => {
   --dash-accent: var(--color-brand-300);
   --dash-meter: var(--color-brand-400);
   --dash-meter-soft: #4a3a3f;
+  --dash-strong: var(--ui-text);
 }
 .dashboard-inner {
   max-width: 1240px;
@@ -371,7 +374,7 @@ onMounted(() => {
   font-size: 13px;
 }
 .period-control button[aria-pressed='true'] {
-  background: var(--dash-ink);
+  background: var(--dash-strong);
   color: var(--dash-paper);
 }
 .period-control button:hover {
@@ -759,7 +762,7 @@ onMounted(() => {
   font-size: 17px;
 }
 .period-control button[aria-pressed='true']:hover {
-  background: var(--dash-ink);
+  background: var(--dash-strong);
   color: var(--dash-paper);
 }
 @media (min-width: 769px) {
