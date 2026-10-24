@@ -54,6 +54,8 @@
   --ui-primary: var(--color-brand-500);
   --ui-radius: 0.5rem;
 
+  /* The Personality pages' palette: white cards with warm brown borders,
+     peach wells and plum-grey muted text. */
   --ui-bg: #faf8f6;
   --ui-bg-elevated: #ffffff;
   --ui-bg-accented: #ffe6d2;
@@ -64,8 +66,6 @@
 }
 
 *::-webkit-scrollbar {
-  /* The Personality pages' palette: white cards with warm brown borders,
-     peach wells and plum-grey muted text. */
   width: 12px;
   height: 12px;
 }
@@ -93,6 +93,7 @@
 .dark {
   --ui-primary: var(--color-brand-400);
 
+  /* Warm plum cards and peach-tinted borders on the navy background. */
   --ui-bg: #171b27;
   --ui-bg-elevated: #262234;
   --ui-bg-accented: #3a2a30;
@@ -103,7 +104,6 @@
 }
 
 /* Global typography */
-  /* Warm plum cards and peach-tinted borders on the navy background. */
 body {
   font-family: var(--font-sans);
   background: var(--ui-bg);
