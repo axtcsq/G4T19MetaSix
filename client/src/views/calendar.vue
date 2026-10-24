@@ -242,7 +242,7 @@ onMounted(loadData)
           <div class="recommendation-heading">
             <div>
               <p class="eyebrow">A small listening nudge</p>
-              <h2 id="recommendations-title">Songs for a brighter moment</h2>
+              <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
               <p class="recommendation-reason">{{ moodTrendSummary }}</p>
             </div>
             <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
@@ -302,7 +302,7 @@ onMounted(loadData)
           </div>
           <div class="day-detail-grid">
             <section class="day-detail-column journal-column" aria-labelledby="journal-history-title">
-              <h4 id="journal-history-title" class="column-title">Mood &amp; journal <span>{{ selectedLogs.length }}</span></h4>
+              <h4 id="journal-history-title" class="column-title">Mood &amp; Journal <span>{{ selectedLogs.length }}</span></h4>
               <div v-if="selectedLogs.length" class="mood-logs">
                 <article v-for="(entry, index) in selectedLogs" :key="entry._id || index" class="mood-entry">
                   <span class="detail-emoji">{{ moodEmoji[entry.mood] }}</span>
@@ -314,7 +314,7 @@ onMounted(loadData)
             </section>
 
             <section class="day-detail-column listening-column" aria-labelledby="listening-history-title">
-              <h4 id="listening-history-title" class="column-title">Songs you played <span>{{ selectedListens.length }}</span></h4>
+              <h4 id="listening-history-title" class="column-title">Songs You Played <span>{{ selectedListens.length }}</span></h4>
               <div v-if="selectedListeningMood" class="listening-mood-summary">
                 <span class="listening-mood-icon">{{ musicMoodEmoji[selectedListeningMood.family] || '♫' }}</span>
                 <span class="listening-mood-copy"><small>Most common music mood</small><strong>{{ selectedListeningMood.name }}</strong></span>

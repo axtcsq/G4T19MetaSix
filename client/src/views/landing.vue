@@ -91,25 +91,25 @@ function resetPointer(event) {
     </section>
 
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
-      <h2 id="mirror-title">Your playlist is a mirror.</h2>
+      <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
       <div class="feature-grid">
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">01</span>
-          <h3 class="glow-text">Listen to yourself</h3>
+          <h3 class="glow-text">Listen to Yourself</h3>
           <p class="glow-text">
             The songs you return to can hold clues about your mood, memories, and what matters to you.
           </p>
         </article>
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">02</span>
-          <h3 class="glow-text">Find the patterns</h3>
+          <h3 class="glow-text">Find the Patterns</h3>
           <p class="glow-text">
             Explore your Spotify playlists and see your listening habits from a fresh perspective.
           </p>
         </article>
         <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
           <span class="feature-step" aria-hidden="true">03</span>
-          <h3 class="glow-text">Make space to reflect</h3>
+          <h3 class="glow-text">Make Space to Reflect</h3>
           <p class="glow-text">
             Pair music insights with a daily mood log and journal to understand yourself over time.
           </p>

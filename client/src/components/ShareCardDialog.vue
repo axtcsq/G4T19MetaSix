@@ -78,7 +78,7 @@ onBeforeUnmount(clearImage)
   >
     <div class="share-panel">
       <div class="share-header">
-        <h2 id="share-dialog-title" class="share-title">Your personality card</h2>
+        <h2 id="share-dialog-title" class="share-title">Your Personality Card</h2>
         <button type="button" class="close-button" aria-label="Close" @click="close">×</button>
       </div>
 
