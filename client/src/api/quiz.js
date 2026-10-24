@@ -20,3 +20,7 @@ export function submitQuiz(quizId, answers) {
 export function getLatestResult(quizId) {
   return api.get(`${quizPath(quizId)}/result`)
 }
+
+export function getMoodMusic() {
+  return api.get('/api/quiz/mood-music')
+}
