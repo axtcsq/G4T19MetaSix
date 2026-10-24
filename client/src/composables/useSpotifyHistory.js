@@ -6,6 +6,7 @@ import {
   recentSpotify,
 } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
+import { useAuthStore } from '@/stores/auth'
 
 // The dashboard shows the last 7 days or this month, whichever starts earlier.
 function historyStart(now = new Date()) {
@@ -64,6 +65,10 @@ export function useSpotifyHistory() {
     error.value = ''
     const version = requestVersion
     try {
+      // The router no longer waits for the login check on public pages, and
+      // whether to read stored plays depends on it.
+      const auth = useAuthStore()
+      if (!auth.checked) await auth.load()
       if (version !== requestVersion) return
       source.value = usesStoredHistory() ? 'stored' : 'spotify'
       connected.value = hasSpotifySession() || source.value === 'stored'
