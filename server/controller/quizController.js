@@ -9,6 +9,7 @@ import {
   savePersonality,
 } from "../models/QuizAttempt.js";
 import { buildListeningProfile } from "../services/listeningProfile.js";
+import { moodMusic } from "../services/moodMusic.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
   SPOTIFY_WEIGHT,
@@ -17,6 +18,7 @@ import {
   listeningStats,
   moodLink,
   rankTypes,
+  songForType,
   spotifyEvidence,
   spotifySignals,
 } from "../services/patterns.js";
@@ -237,17 +239,28 @@ export async function getPersonality(req, res) {
 
   // Rebuild personalities saved before the "how it adds up" data existed, or
   // whose quiz results have since changed (a rename, or new listening).
-  if (personality?.quizResults?.length) {
-    const profile = await buildListeningProfile(req.user);
-    if (
-      !personality.sources ||
-      (await isOutdated(userId, personality, profile))
-    ) {
-      personality = await rebuildPersonality(req.user._id, profile);
-    }
+  if (!personality?.quizResults?.length) {
+    return res.json(formatPersonality(personality));
   }
 
-  res.json(formatPersonality(personality));
+  const profile = await buildListeningProfile(req.user);
+  if (
+    !personality.sources ||
+    (await isOutdated(userId, personality, profile))
+  ) {
+    personality = await rebuildPersonality(req.user._id, profile);
+  }
+
+  // Worked out live, so it follows the latest listening without a rebuild.
+  res.json({
+    ...formatPersonality(personality),
+    song: songForType(profile, personality.traits),
+  });
+}
+
+// GET /api/quiz/mood-music
+export async function getMoodMusic(req, res) {
+  res.json(await moodMusic(req.user));
 }
 
 // GET /api/quiz/:quizId
