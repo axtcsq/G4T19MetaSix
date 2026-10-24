@@ -7,7 +7,7 @@ const groups = [
   {
     title: 'Track',
     links: [
-      { to: '/dashboard', label: 'Dashboard' },
+      { to: '/dashboard', label: 'Home' },
       { to: '/daily-mood', label: 'Daily Mood' },
       { to: '/calendar', label: 'Calendar' },
     ],
