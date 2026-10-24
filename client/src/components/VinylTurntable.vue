@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 const props = defineProps({
   spinning: Boolean,
   artwork: String,
-  color: { type: String, default: '#c9d0b5' },
+  color: { type: String, default: '#f0c4a8' },
 })
 const emit = defineEmits(['toggle'])
 const canvas = ref(null)

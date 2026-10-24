@@ -341,11 +341,11 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .listening-room {
-  --room-paper: #faf8f6;
-  --room-ground: #edeae5;
-  --room-ink: #30352f;
-  --room-muted: #655e56;
-  --room-dark: #303a32;
+  --room-paper: var(--ui-bg);
+  --room-ground: var(--ui-bg-accented);
+  --room-ink: var(--ui-text);
+  --room-muted: var(--ui-text-muted);
+  --room-dark: #763e32;
   --room-white: #fff;
   --room-error: #f5dfd8;
   --room-error-ink: #7c3224;
@@ -355,6 +355,13 @@ onBeforeUnmount(() => {
   min-height: 100svh;
   padding: 40px 0 24px;
   font: 20px/1.5 var(--font-serif);
+}
+/* The shared tokens switch for dark mode; the controls and alerts follow. */
+:global(.dark .listening-room) {
+  --room-dark: var(--color-brand-600);
+  --room-error: #3a2a30;
+  --room-error-ink: #f09595;
+  --room-focus: var(--color-brand-300);
 }
 .room-inner {
   width: min(1180px, calc(100% - 64px));
