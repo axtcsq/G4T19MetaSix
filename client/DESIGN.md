@@ -10,7 +10,7 @@ The Daily Mood screen keeps the form and journal history side by side on wide sc
 
 ### Listening dashboard
 
-The dashboard is a portrait of real Spotify recent history. Preserve the existing Crimson Text/Raleway pair, compact open layout and p5 botanical garden. Raleway owns headings and controls; Crimson Text owns music names, prose and summary numerals. Shared tokens and scrollbars live in `src/assets/css/main.css`. Dashboard semantic colors belong to `.dashboard` in `src/views/dashboard.vue`: paper `#fff`, ground `#f4f1ee`, ink `#30352f`, muted `#655e56`, accent `#a54b3b`, rule `#e3ddd5`. In dark mode they map to the app theme tokens; the garden keeps its own sky.
+The dashboard is a portrait of real Spotify recent history. Preserve the existing Crimson Text/Raleway pair, compact open layout and p5 botanical garden. Raleway owns headings and controls; Crimson Text owns music names, prose and summary numerals. Shared tokens and scrollbars live in `src/assets/css/main.css`. Dashboard semantic colors belong to `.dashboard` in `src/views/dashboard.vue` and point at the shared theme tokens (the Personality palette), with terracotta play bars; they follow dark mode, and the garden keeps its own sky.
 
 `useSpotifyHistory` owns dashboard loading and retry without playback or search. Spotify access comes from the MetaFor login; `api/spotify.js` remains the shared token/request boundary. `useListeningRoom` belongs to the separate listening-room branch. Refresh sits beneath the weekly/monthly selector.
 
@@ -36,7 +36,7 @@ The frontend calls the relative `/api` path. Vite proxies it to the local server
 
 ### Listening room
 
-`/listen` is the active listening destination, linked beside Daily Mood; the dashboard remains a retrospective portrait. Preserve the established Crimson Text/Raleway families. The listening room's semantic surface tokens are owned by `.listening-room` in `src/views/listen.vue`: paper `#faf8f6`, ground `#f0eeea`, ink `#30352f`, muted `#655e56`, dark controls `#303a32`, and sage `#dce6dd`. Dynamic `--record-color` comes from the current album cover, lightened for contrast; the fallback is `#c9d0b5`. These are feature tokens, not a replacement of the shared brand palette.
+`/listen` is the active listening destination, linked beside Daily Mood; the dashboard remains a retrospective portrait. Preserve the established Crimson Text/Raleway families. The listening room's semantic surface tokens are owned by `.listening-room` in `src/views/listen.vue` and point at the shared theme tokens, with brown `#763e32` controls (brand-600 in dark mode). Dynamic `--record-color` comes from the current album cover, lightened for contrast; the fallback is peach `#f0c4a8`.
 
 MetaFor's song-as-feeling ritual becomes a physical record on a Three.js turntable. The turntable is the focal point; the sleeve, controls, and example record shelf remain quiet and functional. Keep the full album cover visible beside the scene. No new art direction was drawn for this application feature; it follows the existing design context and uses the requested taste skill's component guidance. Existing shared navigation keeps its brand accent.
 
