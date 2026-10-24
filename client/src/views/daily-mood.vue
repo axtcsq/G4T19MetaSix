@@ -733,7 +733,7 @@ onMounted(loadEntries)
   }
 }
 .journal-entry {
-  background: var(--ui-bg);
+  background: var(--ui-bg-accented);
 }
 
 .view-drawing-button {
