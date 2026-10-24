@@ -89,7 +89,7 @@ const repeatTotal = computed(() =>
   font-variant-numeric: tabular-nums;
 }
 .daily-plays .bar-track span {
-  background: #8caa9b;
+  background: var(--dash-meter);
 }
 .repeat-plays li > div:first-child {
   display: flex;
@@ -135,7 +135,7 @@ const repeatTotal = computed(() =>
 .hour-column span {
   width: 100%;
   min-height: 3px;
-  background: #9baa9c;
+  background: var(--dash-meter-soft);
 }
 .hour-column .peak {
   background: var(--dash-ink);
