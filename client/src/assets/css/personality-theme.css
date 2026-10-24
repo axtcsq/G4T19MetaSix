@@ -1,6 +1,6 @@
 /* Colours for the Personality pages. Each page root has the
    .personality-theme class, so these only apply there. Dark mode swaps the
-   white cards and peach buttons for warm plum ones that sit on the app's
+   white cards and peach buttons for warm dark ones that sit on the app's
    navy background. */
 .personality-theme {
   --pq-surface: var(--ui-bg-elevated);

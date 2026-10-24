@@ -16,7 +16,7 @@ rather than hard-coding it in one page.
 
 Calm, warm and personal, like a journal. Every page uses the Personality
 pages' palette: white cards with warm brown borders, peach wells and
-plum-grey muted text, with plum cards in dark mode. Terracotta is the main
+plum-grey muted text, with warm dark cards in dark mode. Terracotta is the main
 colour. Lots of space, soft
 shadows, rounded corners. One thing on a page can be playful (the cassette, the
 garden, the turntable, the banner video); everything around it stays quiet.
@@ -28,7 +28,7 @@ Always use the theme tokens, so the page works in light and dark mode for free.
 | Token | Use for | Light | Dark |
 | --- | --- | --- | --- |
 | `--ui-bg` | Page background | `#faf8f6` | `#171b27` |
-| `--ui-bg-elevated` | Cards, panels, dialogs | `#ffffff` | `#262234` (plum) |
+| `--ui-bg-elevated` | Cards, panels, dialogs | `#ffffff` | `#25222b` (warm dark) |
 | `--ui-bg-accented` | Hover rows, chips, wells, result boxes | `#ffe6d2` (peach) | `#3a2a30` |
 | `--ui-text` | Headings and main text | `#292321` | `#f5f1ee` |
 | `--ui-text-muted` | Descriptions, captions, labels | `#665f78` | `#b9aec4` |
