@@ -21,7 +21,6 @@ const historyLabel = computed(() =>
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 onMounted(() => {
-  document.title = 'Your Listening Portrait · MetaFor'
   spotify.initialize()
 })
 </script>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { setPageTitle } from '@/utils/pageTitle'
 
 import Landing from '../views/landing.vue'
 import DailyMood from '../views/daily-mood.vue'
@@ -16,11 +17,13 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
+    meta: { title: 'Your Listening Portrait' },
   },
   {
     path: '/listen',
     name: 'listen',
     component: () => import('../views/listen.vue'),
+    meta: { title: 'Listening Room' },
   },
   {
     path: '/',
@@ -31,7 +34,7 @@ const routes = [
     path: '/daily-mood',
     name: 'daily-mood',
     component: DailyMood,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Daily Mood Log' },
   },
   {
     path: '/canvas',
@@ -41,36 +44,37 @@ const routes = [
     path: '/calendar',
     name: 'calendar',
     component: MoodCalendar,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Mood Calendar' },
   },
   {
     path: '/quiz',
     name: 'personality',
     component: PersonalityHub,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Find Your Personality' },
   },
   {
     path: '/quiz/:quizId',
     name: 'personality-quiz',
     component: PersonalityQuiz,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Personality Quiz' },
   },
   {
     path: '/quiz/:quizId/result',
     name: 'personality-result',
     component: PersonalityResult,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Your Result' },
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
+    meta: { title: 'Sign In' },
   },
   {
     path: '/profile',
     name: 'profile',
     component: Profile,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Your Profile' },
   },
   // Spotify is the only way in, and the first login creates the account.
   {
@@ -106,5 +110,7 @@ router.beforeEach(async (to) => {
       : '/dashboard'
   }
 })
+
+router.afterEach((to) => setPageTitle(to.meta.title))
 
 export default router
