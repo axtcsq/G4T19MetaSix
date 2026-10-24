@@ -796,9 +796,10 @@ onMounted(loadPage)
   font-size: 0.85rem;
 }
 
+/* stretch makes the progress card exactly as tall as the title and subtext. */
 .hub-header {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: 1.5rem 3rem;
 }
@@ -811,7 +812,7 @@ onMounted(loadPage)
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 0.9rem 1.25rem;
+  padding: 0.4rem 1.1rem;
   border: 1px solid var(--pq-border);
   border-radius: 14px;
   background: var(--pq-surface);
@@ -820,20 +821,22 @@ onMounted(loadPage)
 
 .progress-count {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .progress-number {
   color: var(--pq-accent);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
 }
 
 .progress-nudge {
   color: var(--pq-muted);
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
+  line-height: 1.3;
 }
 
 .progress-steps {
