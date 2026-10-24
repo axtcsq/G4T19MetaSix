@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { getLatestResult } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/footer.vue'
+import { setPageTitle } from '@/utils/pageTitle'
 import TraitBar from '@/components/TraitBar.vue'
 
 const route = useRoute()
@@ -18,6 +19,7 @@ async function loadResult() {
 
   try {
     result.value = await getLatestResult(route.params.quizId)
+    setPageTitle(`${result.value.quizTitle} Result`)
   } catch (error) {
     loadError.value = error.message
   } finally {

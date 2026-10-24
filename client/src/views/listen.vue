@@ -55,7 +55,6 @@ function connect() {
   room.connect()
 }
 onMounted(() => {
-  document.title = 'Listening Room · MetaFor'
   room.initialize()
 })
 onBeforeUnmount(() => {

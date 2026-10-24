@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getQuiz, submitQuiz } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/footer.vue'
+import { setPageTitle } from '@/utils/pageTitle'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,6 +44,7 @@ async function loadQuiz() {
 
   try {
     quiz.value = await getQuiz(route.params.quizId)
+    setPageTitle(quiz.value.title)
   } catch (error) {
     loadError.value = error.message
   } finally {
