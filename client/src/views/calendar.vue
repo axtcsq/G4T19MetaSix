@@ -211,7 +211,6 @@ onMounted(loadData)
   <div class="calendar-page">
     <main class="calendar-content">
       <header class="calendar-intro">
-        <p class="eyebrow">Your listening, your feelings</p>
         <h1 class="page-title">Mood Calendar</h1>
         <p>Track your daily moods and the songs that soundtracked them.</p>
       </header>
@@ -344,15 +343,15 @@ onMounted(loadData)
 .calendar-page :is(button, time, .eyebrow, .weekday, .day-number, .song-count, .inline-note, .calendar-hint, .track-copy, .play-time, .mood-tags, .calendar-message) { font-family: var(--font-sans); }
 .calendar-page :is(h1, h2, h3, h4) { font-family: var(--font-sans); }
 .calendar-content { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 64px; flex: 1; }
-.calendar-intro { text-align: center; margin-bottom: 22px; }
+.calendar-intro { margin-bottom: 22px; }
 .eyebrow { margin: 0 0 8px; }
 .calendar-intro h1 { margin: 0; }
 .calendar-intro > p:last-child { margin: 10px 0 0; color: var(--ui-text-muted); }
-.month-summary { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 20px; color: var(--ui-text-muted); text-align: center; }
+.month-summary { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--ui-text-muted); }
 .month-summary strong { color: var(--ui-text); }
 .song-summary { color: var(--calendar-accent); font-family: var(--font-sans); font-weight: 700; }
-.inline-note { margin: 12px auto 0; color: var(--ui-text-muted); font-size: .84rem; text-align: center; }
-.spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin: 16px auto 0; color: var(--ui-text-muted); text-align: center; }
+.inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .84rem; }
+.spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }
 .spotify-connect-note p { margin: 0; font-size: .9rem; }
 .connect-spotify { min-height: 40px !important; padding: .5rem 1rem !important; font-size: .82rem !important; }
 .recommendation-panel { width: min(790px, 100%); margin: 24px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
@@ -371,7 +370,7 @@ onMounted(loadData)
 .recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
 .calendar-shell { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; margin: 24px auto 0; }
-.calendar-center { width: min(100%, 790px); margin: 0 auto; }
+.calendar-center { width: min(100%, 790px); }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
 .month-heading h2 { min-width: 230px; margin: 0; text-align: center; font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); }
 .month-step { display: none; }
@@ -390,7 +389,7 @@ onMounted(loadData)
 .listening-mood-dot { position: absolute; top: 8px; right: 8px; color: var(--calendar-accent); font-family: var(--font-sans); font-size: .7rem; font-weight: 800; }
 .song-count { color: var(--calendar-accent); font-size: .68rem; font-weight: 800; }
 .empty-day { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
-.calendar-hint { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .78rem; text-align: center; }
+.calendar-hint { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .78rem; }
 .calendar-message { padding: 52px 20px; color: var(--ui-text-muted); text-align: center; }
 .error-message { color: #a53e36; }
 .day-detail { width: min(1040px, 100%); margin: 28px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
