@@ -340,6 +340,6 @@ button:disabled {
   margin-bottom: 8px;
 }
 .garden-caption p {
-  font: 18px/1.4 var(--font-serif);
+  font: var(--text-body)/1.5 var(--font-serif);
 }
 </style>

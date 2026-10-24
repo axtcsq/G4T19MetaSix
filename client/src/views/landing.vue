@@ -201,7 +201,7 @@ function resetPointer(event) {
   margin: 0;
   color: var(--ui-text-muted);
   font-family: var(--font-serif);
-  font-size: 1.08rem;
+  font-size: var(--text-body);
   line-height: 1.58;
 }
 .cassette-area {
@@ -255,7 +255,7 @@ function resetPointer(event) {
   padding: 7px 0;
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-size: var(--text-title);
   font-weight: 800;
   letter-spacing: -0.035em;
   text-align: center;
@@ -388,15 +388,15 @@ function resetPointer(event) {
   margin: 0 0 10px;
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 1.08rem;
-  font-weight: 700;
+  font-size: var(--text-subheader);
+  font-weight: 600;
 }
 .feature-card p {
   max-width: 260px;
   margin: 0;
   color: var(--ui-text-muted);
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.55;
 }
 
@@ -427,7 +427,7 @@ function resetPointer(event) {
   margin: 0;
   color: rgba(255, 255, 255, 0.92);
   font-family: var(--font-serif);
-  font-size: 1.1rem;
+  font-size: var(--text-body);
   line-height: 1.45;
   text-shadow: 0 1px 2px rgba(60, 30, 24, 0.25);
 }
@@ -508,9 +508,6 @@ function resetPointer(event) {
     grid-template-columns: 1fr;
     gap: 0;
     padding-top: 32px;
-  }
-  .intro-description {
-    font-size: 1rem;
   }
   .cassette-area {
     min-height: 270px;

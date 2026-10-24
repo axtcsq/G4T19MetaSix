@@ -507,18 +507,18 @@ button:disabled {
   box-shadow: 0 14px 28px #30352f24; /* taste-skill-ignore: user requested glow around the album cover. */
 }
 .track-copy h2 {
-  font: 600 26px/1.2 var(--font-sans);
+  font: 600 var(--text-subheader)/1.3 var(--font-sans);
   letter-spacing: -0.025em;
   margin: 0 0 8px;
   overflow-wrap: anywhere;
 }
 .track-copy p {
-  font-size: 24px;
+  font-size: var(--text-body);
   line-height: 1.3;
   margin: 0 0 4px;
 }
 .track-copy > span {
-  font-size: 18px;
+  font-size: var(--text-body);
   color: var(--room-muted);
 }
 .spotify-link {
@@ -694,7 +694,7 @@ input:disabled {
   outline-offset: 5px;
 }
 .shelf-record > strong {
-  font: 400 22px/1.3 var(--font-serif);
+  font: 400 var(--text-body)/1.3 var(--font-serif);
   margin-top: 14px;
 }
 .shelf-record[aria-pressed='true'] > strong {
@@ -779,7 +779,7 @@ input:disabled {
   color: var(--room-error-ink);
   padding: 16px 20px;
   margin: 24px 0 0;
-  font-size: 18px;
+  font-size: var(--text-body);
 }
 .room-footer {
   display: flex;
@@ -853,15 +853,6 @@ input:disabled {
   .album-sleeve::before {
     inset: -8px;
     filter: blur(18px);
-  }
-  .track-copy h2 {
-    font-size: 20px;
-  }
-  .track-copy p {
-    font-size: 21px;
-  }
-  .track-copy > span {
-    font-size: 16px;
   }
   .spotify-link {
     font-size: 12px;

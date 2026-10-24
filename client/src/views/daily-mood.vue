@@ -143,7 +143,7 @@ onMounted(loadEntries)
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-12">
         <section class="journal-column lg:col-span-2 xl:col-span-6">
           <h1 class="page-title">Daily Mood Log</h1>
-          <p class="mt-2 font-sans text-muted">How are you feeling today?</p>
+          <p class="body-text mt-2 text-muted">How are you feeling today?</p>
 
           <form
             id="daily-journal-form"
@@ -152,7 +152,7 @@ onMounted(loadEntries)
             @submit.prevent="saveEntry"
           >
             <fieldset>
-              <legend class="font-sans font-medium">Choose your emotions</legend>
+              <legend class="sub-header">Choose your emotions</legend>
               <div class="mt-4 flex flex-wrap gap-3" role="group" aria-label="Choose a mood">
                 <button
                   v-for="mood in moods"
@@ -172,7 +172,7 @@ onMounted(loadEntries)
             </fieldset>
 
             <div class="journal-field-group mt-10">
-              <label for="journal-entry" class="font-sans font-medium"
+              <label for="journal-entry" class="sub-header"
                 >Tell us about your day</label
               >
               <UTextarea
@@ -197,7 +197,7 @@ onMounted(loadEntries)
         <aside class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:col-span-2 xl:contents">
           <div class="journal-history rounded-xl border border-default bg-white p-5 xl:col-span-3">
             <div class="mb-5 flex items-center justify-between gap-3">
-              <h2 class="journal-history-title text-2xl">
+              <h2 class="journal-history-title sub-header">
                 <svg
                   aria-hidden="true"
                   class="journal-history-clock"
@@ -257,7 +257,7 @@ onMounted(loadEntries)
                 </div>
 
                 <p
-                  class="mt-3 whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-default"
+                  class="body-text mt-3 whitespace-pre-wrap break-words text-default"
                 >
                   {{ log.journal || 'No written reflection.' }}
                 </p>
@@ -286,7 +286,7 @@ onMounted(loadEntries)
             />
             <div class="helper-liquid-scrim" aria-hidden="true" />
             <div class="journal-idea-content">
-              <h2 id="journal-idea-heading" class="journal-idea-title text-2xl">
+              <h2 id="journal-idea-heading" class="journal-idea-title sub-header">
                 <img src="/images/journal-helper-sparkle.png" alt="" class="journal-helper-icon" />
                 Helper
               </h2>
@@ -359,7 +359,7 @@ onMounted(loadEntries)
       <section class="mt-10" aria-labelledby="journal-canvas-heading">
         <div class="mb-5">
           <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
-          <p class="mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
+          <p class="body-text mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
         </div>
         <p v-if="drawingSource" class="mb-3 text-sm text-muted" role="status">
           {{ drawingSource }}

@@ -110,7 +110,7 @@ const rows = computed(() =>
 
 .breakdown-title {
   font-family: var(--font-sans);
-  font-size: 1.15rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
 }
 

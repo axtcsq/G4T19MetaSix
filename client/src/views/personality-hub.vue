@@ -277,7 +277,7 @@ onMounted(loadPage)
 .quiz-title {
   margin-top: 0.75rem;
   color: var(--ui-text);
-  font-size: 2rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
   letter-spacing: normal;
 }
@@ -421,7 +421,7 @@ onMounted(loadPage)
 
 .patterns-title {
   color: #fff;
-  font-size: 2rem;
+  font-size: var(--text-header);
   font-weight: 700;
   text-align: center;
 }
@@ -503,14 +503,14 @@ onMounted(loadPage)
 
 .type-intro {
   font-family: var(--font-sans);
-  font-size: 1.15rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
 }
 
 .type-name {
   margin-top: 0.15rem;
   font-family: var(--font-sans);
-  font-size: 2rem;
+  font-size: var(--text-header);
   font-weight: 700;
   line-height: 1.15;
 }
@@ -524,8 +524,8 @@ onMounted(loadPage)
   padding-top: 1.1rem;
   border-top: 1px solid var(--pq-line);
   font-family: var(--font-serif);
-  font-size: 1.05rem;
-  line-height: 1.4;
+  font-size: var(--text-body);
+  line-height: 1.45;
 }
 
 .traits-card {
@@ -538,8 +538,8 @@ onMounted(loadPage)
 
 .insight-text {
   font-family: var(--font-serif);
-  font-size: 1.05rem;
-  line-height: 1.35;
+  font-size: var(--text-body);
+  line-height: 1.4;
 }
 
 .mood-link {
@@ -613,17 +613,6 @@ onMounted(loadPage)
 
   .page-width {
     width: calc(100% - 32px);
-  }
-
-  .quiz-title,
-  .patterns-title,
-  .type-name {
-    font-size: 1.6rem;
-  }
-
-  .body-text,
-  .emphasis-text {
-    font-size: 1.1rem;
   }
 
   .insights-card,

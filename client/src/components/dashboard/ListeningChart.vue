@@ -102,7 +102,7 @@ const repeatTotal = computed(() =>
   gap: 24px;
 }
 .listening-chart {
-  font: 18px/1.4 var(--font-serif);
+  font: var(--text-body)/1.5 var(--font-serif);
 }
 .listening-chart .chart-explanation {
   margin: 0 0 18px;
@@ -117,7 +117,8 @@ const repeatTotal = computed(() =>
   height: 100%;
 }
 .listening-chart .hours-summary {
-  font-size: 24px;
+  font-size: var(--text-quote);
+  font-style: italic;
   margin: 0 0 22px;
 }
 .hour-chart {
