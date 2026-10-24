@@ -104,21 +104,30 @@ onMounted(loadPage)
         <h1 class="page-title">Find Your Personality</h1>
         <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
 
-        <div v-if="!isLoading && quizzes.length" class="quiz-progress mt-6">
-          <p class="progress-text">
-            <strong>{{ takenCount }} of {{ quizzes.length }} quizzes taken.</strong>
-            {{ progressNudge }}
-          </p>
-          <div
-            class="progress-track"
-            role="progressbar"
-            :aria-valuenow="takenCount"
-            aria-valuemin="0"
-            :aria-valuemax="quizzes.length"
-            :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
-          >
-            <span :style="{ width: `${(takenCount / quizzes.length) * 100}%` }" />
+        <!-- One segment per quiz, filled once it's been taken. -->
+        <div
+          v-if="!isLoading && quizzes.length"
+          class="quiz-progress mt-6"
+          role="progressbar"
+          :aria-valuenow="takenCount"
+          aria-valuemin="0"
+          :aria-valuemax="quizzes.length"
+          :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
+        >
+          <div>
+            <p class="progress-count">
+              <span class="progress-number">{{ takenCount }}</span>/{{ quizzes.length }} quizzes taken
+            </p>
+            <p class="progress-nudge">{{ progressNudge }}</p>
           </div>
+          <ol class="progress-steps" aria-hidden="true">
+            <li
+              v-for="quiz in quizzes"
+              :key="quiz.id"
+              :class="{ 'is-done': quiz.latestResult }"
+              :title="quiz.title"
+            />
+          </ol>
         </div>
 
         <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-10 text-muted">
@@ -346,48 +355,47 @@ onMounted(loadPage)
               </div>
             </div>
 
-            <div class="insights-row mt-8">
-              <div v-if="personality.song" class="pattern-card song-card">
-                <h3 class="sub-header">A Song for You</h3>
-                <div class="song-body">
-                  <img
-                    v-if="personality.song.imageUrl"
-                    :src="personality.song.imageUrl"
-                    alt=""
-                    width="112"
-                    height="112"
-                    class="song-art"
-                  />
-                  <svg v-else class="song-art song-art--vinyl" viewBox="0 0 112 112" aria-hidden="true">
-                    <circle cx="56" cy="56" r="54" />
-                    <circle cx="56" cy="56" r="38" class="groove" />
-                    <circle cx="56" cy="56" r="26" class="groove" />
-                    <circle cx="56" cy="56" r="14" class="label" />
-                  </svg>
-                  <div>
-                    <p class="song-name">{{ personality.song.name }}</p>
-                    <p class="song-artist">{{ personality.song.artist }}</p>
-                  </div>
-                </div>
-                <p class="insight-text">{{ personality.song.reason }}</p>
-                <div class="song-actions">
-                  <a
-                    class="peach-button"
-                    :href="`https://open.spotify.com/track/${personality.song.id}`"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Open in Spotify
-                  </a>
-                  <RouterLink class="peach-button peach-button--quiet" to="/listen">
-                    Listening Room
-                  </RouterLink>
+            <!-- A wide, short card: the song, why it was picked, then where to play it. -->
+            <div v-if="personality.song" class="pattern-card song-card mt-8">
+              <div class="song-body">
+                <img
+                  v-if="personality.song.imageUrl"
+                  :src="personality.song.imageUrl"
+                  alt=""
+                  width="96"
+                  height="96"
+                  class="song-art"
+                />
+                <svg v-else class="song-art song-art--vinyl" viewBox="0 0 112 112" aria-hidden="true">
+                  <circle cx="56" cy="56" r="54" />
+                  <circle cx="56" cy="56" r="38" class="groove" />
+                  <circle cx="56" cy="56" r="26" class="groove" />
+                  <circle cx="56" cy="56" r="14" class="label" />
+                </svg>
+                <div>
+                  <h3 class="song-heading">A Song for You</h3>
+                  <p class="song-name">{{ personality.song.name }}</p>
+                  <p class="song-artist">{{ personality.song.artist }}</p>
                 </div>
               </div>
+              <p class="insight-text">{{ personality.song.reason }}</p>
+              <div class="song-actions">
+                <a
+                  class="peach-button"
+                  :href="`https://open.spotify.com/track/${personality.song.id}`"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Open in Spotify
+                </a>
+                <RouterLink class="peach-button peach-button--quiet" to="/listen">
+                  Listening Room
+                </RouterLink>
+              </div>
+            </div>
 
-              <div v-if="moodMusic" class="pattern-card mood-card">
-                <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
-              </div>
+            <div v-if="moodMusic" class="pattern-card mood-card mt-8">
+              <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
             </div>
 
             <ShareCardDialog
@@ -783,34 +791,55 @@ onMounted(loadPage)
   font-size: 0.85rem;
 }
 
-/* Progress across all the quizzes, under the page title. */
+/* Progress across all the quizzes, under the page title: a small card with
+   the count on the left and one segment per quiz on the right. */
 .quiz-progress {
-  max-width: 560px;
+  display: flex;
+  max-width: 640px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 1.25rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 14px;
+  background: var(--pq-surface);
+  box-shadow: 0 4px 12px rgba(125, 71, 55, 0.08);
 }
 
-.progress-text {
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-}
-
-.progress-text strong {
+.progress-count {
+  font-family: var(--font-sans);
+  font-size: 1rem;
   font-weight: 600;
 }
 
-.progress-track {
-  height: 10px;
-  margin-top: 0.5rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--pq-rail);
+.progress-number {
+  color: var(--pq-accent);
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
-.progress-track span {
-  display: block;
-  height: 100%;
+.progress-nudge {
+  color: var(--pq-muted);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+}
+
+.progress-steps {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.progress-steps li {
+  width: 26px;
+  height: 8px;
   border-radius: 999px;
+  background: var(--pq-rail);
+  transition: background-color 320ms ease;
+}
+
+.progress-steps li.is-done {
   background: var(--pq-accent);
-  transition: width 320ms ease;
 }
 
 /* View result takes the room, and Retake is a square icon button beside it. */
@@ -884,13 +913,26 @@ onMounted(loadPage)
   }
 }
 
-/* A song for your type, and the mood chart beside it. */
-.song-card,
-.mood-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* A song for your type, and the mood chart under it: both full-width rows. */
+.song-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 300px;
+  align-items: center;
+  gap: 2rem;
   padding: 1.5rem 1.75rem;
+}
+
+.mood-card {
+  padding: 1.5rem 1.75rem;
+}
+
+.song-heading {
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .song-body {
@@ -906,8 +948,8 @@ onMounted(loadPage)
 }
 
 .song-art--vinyl {
-  width: 112px;
-  height: 112px;
+  width: 96px;
+  height: 96px;
   fill: #2b2422;
 }
 
@@ -935,9 +977,7 @@ onMounted(loadPage)
 
 .song-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-top: auto;
+  gap: 0.25rem;
 }
 
 .insights-row {
@@ -983,6 +1023,16 @@ onMounted(loadPage)
     gap: 24px;
   }
 
+  .song-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .song-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
   .traits-card {
     padding: 1.25rem;
   }
@@ -991,6 +1041,16 @@ onMounted(loadPage)
 @media (max-width: 600px) {
   .personality-page {
     min-height: calc(100vh - 66px);
+  }
+
+  .quiz-progress {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .progress-steps li {
+    width: 22px;
   }
 
   .page-width {
