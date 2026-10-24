@@ -112,6 +112,7 @@ onMounted(loadPage)
           <div
             v-if="!isLoading && quizzes.length"
             class="quiz-progress"
+            :class="{ 'is-complete': takenCount === quizzes.length }"
             role="progressbar"
             :aria-valuenow="takenCount"
             aria-valuemin="0"
@@ -812,11 +813,19 @@ onMounted(loadPage)
   width: min(100%, 560px);
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 0.75rem 0.5rem 1.1rem;
+  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
   border: 1px solid var(--pq-border);
-  border-radius: 14px;
-  background: var(--pq-surface);
-  box-shadow: 0 4px 12px rgba(125, 71, 55, 0.08);
+  border-radius: 16px;
+  /* A soft peach wash from the left, like the Patterns band. */
+  background:
+    linear-gradient(110deg, color-mix(in srgb, var(--pq-peach) 70%, transparent), transparent 55%),
+    var(--pq-surface);
+  box-shadow: 0 6px 16px rgba(125, 71, 55, 0.1);
+  transition: border-color 320ms ease;
+}
+
+.quiz-progress.is-complete {
+  border-color: color-mix(in srgb, var(--pq-accent) 55%, transparent);
 }
 
 .progress-number {
@@ -825,11 +834,14 @@ onMounted(loadPage)
   font-family: var(--font-sans);
   font-size: 2.25rem;
   font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
 .progress-number span {
+  margin-left: 1px;
   color: var(--pq-muted);
+  font-size: 1.25rem;
   font-weight: 700;
 }
 
@@ -859,15 +871,56 @@ onMounted(loadPage)
   gap: 6px;
 }
 
+/* Quizzes still to take are dashed outlines. */
 .progress-steps li {
+  display: grid;
   flex: 1;
-  border-radius: 8px;
-  background: var(--pq-rail);
-  transition: background-color 320ms ease;
+  place-items: center;
+  border: 1.5px dashed var(--pq-border-strong);
+  border-radius: 10px;
+  transition:
+    transform 160ms ease,
+    background 320ms ease;
 }
 
+.progress-steps li:hover {
+  transform: translateY(-2px);
+}
+
+/* Taken ones are glossy terracotta, like the app's main buttons, with a tick. */
 .progress-steps li.is-done {
-  background: var(--pq-accent);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.04) 58%),
+    linear-gradient(180deg, #dc806d, #cd6651 68%);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.5),
+    inset 0 -3px 5px rgba(75, 32, 24, 0.18),
+    0 3px 8px rgba(125, 71, 55, 0.2);
+}
+
+.progress-steps li.is-done::after {
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  content: '';
+  /* A tick, drawn with a mask so it takes the background colour. */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.dark .progress-steps li.is-done {
+  border-color: rgba(255, 205, 166, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-steps li {
+    transition: none;
+  }
+
+  .progress-steps li:hover {
+    transform: none;
+  }
 }
 
 /* View result takes the room, and Retake is a square icon button beside it. */
