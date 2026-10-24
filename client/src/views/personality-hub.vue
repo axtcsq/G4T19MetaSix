@@ -108,24 +108,19 @@ onMounted(loadPage)
             <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
           </div>
 
-          <!-- One segment per quiz, filled once it's been taken. -->
+          <!-- A quiet line of text, and one thin segment per quiz under it. -->
           <div
             v-if="!isLoading && quizzes.length"
             class="quiz-progress"
-            :class="{ 'is-complete': takenCount === quizzes.length }"
             role="progressbar"
             :aria-valuenow="takenCount"
             aria-valuemin="0"
             :aria-valuemax="quizzes.length"
             :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
           >
-            <p class="progress-number">
-              {{ takenCount }}<span>/{{ quizzes.length }}</span>
+            <p class="progress-text">
+              <strong>{{ takenCount }} of {{ quizzes.length }}</strong> quizzes taken · {{ progressNudge }}
             </p>
-            <div class="progress-copy">
-              <p class="progress-label">Quizzes taken</p>
-              <p class="progress-nudge">{{ progressNudge }}</p>
-            </div>
             <ol class="progress-steps" aria-hidden="true">
               <li
                 v-for="quiz in quizzes"
@@ -798,129 +793,48 @@ onMounted(loadPage)
   font-size: 0.85rem;
 }
 
-/* stretch makes the progress card exactly as tall as the title and subtext. */
+/* The title on the left, and the progress at the bottom right, level with
+   the subtext. */
 .hub-header {
   display: flex;
-  align-items: stretch;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 1.5rem 3rem;
+  gap: 1rem 3rem;
 }
 
-/* Progress across all the quizzes, beside the page title: the count, what it
-   means, then one tall segment per quiz filling the rest of the card. */
+/* Quiet on purpose: muted text and a thin line, no card. */
 .quiz-progress {
-  display: flex;
-  width: min(100%, 560px);
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
-  border: 1px solid var(--pq-border);
-  border-radius: 16px;
-  /* A soft peach wash from the left, like the Patterns band. */
-  background:
-    linear-gradient(110deg, color-mix(in srgb, var(--pq-peach) 70%, transparent), transparent 55%),
-    var(--pq-surface);
-  box-shadow: 0 6px 16px rgba(125, 71, 55, 0.1);
-  transition: border-color 320ms ease;
+  width: min(100%, 340px);
 }
 
-.quiz-progress.is-complete {
-  border-color: color-mix(in srgb, var(--pq-accent) 55%, transparent);
-}
-
-.progress-number {
-  flex-shrink: 0;
-  color: var(--pq-accent);
-  font-family: var(--font-sans);
-  font-size: 2.25rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.progress-number span {
-  margin-left: 1px;
-  color: var(--pq-muted);
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.progress-copy {
-  flex-shrink: 0;
-}
-
-.progress-label {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.progress-nudge {
+.progress-text {
   color: var(--pq-muted);
   font-family: var(--font-serif);
-  font-size: 0.95rem;
-  line-height: 1.3;
-  white-space: nowrap;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.progress-text strong {
+  color: var(--pq-on-surface);
+  font-weight: 600;
 }
 
 .progress-steps {
   display: flex;
-  flex: 1;
-  align-self: stretch;
-  gap: 6px;
+  gap: 4px;
+  margin-top: 0.4rem;
 }
 
-/* Quizzes still to take are dashed outlines. */
 .progress-steps li {
-  display: grid;
   flex: 1;
-  place-items: center;
-  border: 1.5px dashed var(--pq-border-strong);
-  border-radius: 10px;
-  transition:
-    transform 160ms ease,
-    background 320ms ease;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--pq-rail);
+  transition: background-color 320ms ease;
 }
 
-.progress-steps li:hover {
-  transform: translateY(-2px);
-}
-
-/* Taken ones are glossy terracotta, like the app's main buttons, with a tick. */
 .progress-steps li.is-done {
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.04) 58%),
-    linear-gradient(180deg, #dc806d, #cd6651 68%);
-  box-shadow:
-    inset 0 2px 2px rgba(255, 255, 255, 0.5),
-    inset 0 -3px 5px rgba(75, 32, 24, 0.18),
-    0 3px 8px rgba(125, 71, 55, 0.2);
-}
-
-.progress-steps li.is-done::after {
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  content: '';
-  /* A tick, drawn with a mask so it takes the background colour. */
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
-}
-
-.dark .progress-steps li.is-done {
-  border-color: rgba(255, 205, 166, 0.35);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .progress-steps li {
-    transition: none;
-  }
-
-  .progress-steps li:hover {
-    transform: none;
-  }
+  background: var(--pq-accent);
 }
 
 /* View result takes the room, and Retake is a square icon button beside it. */
@@ -1109,10 +1023,10 @@ onMounted(loadPage)
     gap: 1rem;
   }
 
-  /* The progress card drops under the title. */
+  /* The progress drops under the title. */
   .hub-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .song-actions {
@@ -1128,10 +1042,6 @@ onMounted(loadPage)
 @media (max-width: 600px) {
   .personality-page {
     min-height: calc(100vh - 66px);
-  }
-
-  .progress-steps {
-    min-height: 40px;
   }
 
   .page-width {
