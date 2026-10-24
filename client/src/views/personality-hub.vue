@@ -43,9 +43,9 @@ const confirmingRetake = ref(null)
 const takenCount = computed(() => quizzes.value.filter((quiz) => quiz.latestResult).length)
 const progressNudge = computed(() => {
   const left = quizzes.value.length - takenCount.value
-  if (!takenCount.value) return 'Take your first quiz to meet your MetaFor type.'
-  if (left) return `Take ${left} more for a sharper Patterns match.`
-  return 'All done. Your Patterns match is as sharp as it gets.'
+  if (!takenCount.value) return 'Take one to meet your MetaFor type.'
+  if (left) return `${left} more for a sharper match.`
+  return 'Your match is as sharp as it gets.'
 })
 // Where the empty Patterns card sends a new user.
 const firstQuiz = computed(() => quizzes.value.find((quiz) => !quiz.latestResult) ?? quizzes.value[0])
@@ -118,10 +118,11 @@ onMounted(loadPage)
             :aria-valuemax="quizzes.length"
             :aria-label="`${takenCount} of ${quizzes.length} quizzes taken`"
           >
-            <div>
-              <p class="progress-count">
-                <span class="progress-number">{{ takenCount }}</span>/{{ quizzes.length }} quizzes taken
-              </p>
+            <p class="progress-number">
+              {{ takenCount }}<span>/{{ quizzes.length }}</span>
+            </p>
+            <div class="progress-copy">
+              <p class="progress-label">Quizzes taken</p>
               <p class="progress-nudge">{{ progressNudge }}</p>
             </div>
             <ol class="progress-steps" aria-hidden="true">
@@ -804,32 +805,43 @@ onMounted(loadPage)
   gap: 1.5rem 3rem;
 }
 
-/* Progress across all the quizzes, beside the page title: a small card with
-   the count on the left and one segment per quiz on the right. */
+/* Progress across all the quizzes, beside the page title: the count, what it
+   means, then one tall segment per quiz filling the rest of the card. */
 .quiz-progress {
   display: flex;
-  width: min(100%, 520px);
+  width: min(100%, 560px);
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0.4rem 1.1rem;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem 0.5rem 1.1rem;
   border: 1px solid var(--pq-border);
   border-radius: 14px;
   background: var(--pq-surface);
   box-shadow: 0 4px 12px rgba(125, 71, 55, 0.08);
 }
 
-.progress-count {
+.progress-number {
+  flex-shrink: 0;
+  color: var(--pq-accent);
+  font-family: var(--font-sans);
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.progress-number span {
+  color: var(--pq-muted);
+  font-weight: 700;
+}
+
+.progress-copy {
+  flex-shrink: 0;
+}
+
+.progress-label {
   font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.3;
-}
-
-.progress-number {
-  color: var(--pq-accent);
-  font-size: 1.25rem;
-  font-weight: 800;
 }
 
 .progress-nudge {
@@ -837,18 +849,19 @@ onMounted(loadPage)
   font-family: var(--font-serif);
   font-size: 0.95rem;
   line-height: 1.3;
+  white-space: nowrap;
 }
 
 .progress-steps {
   display: flex;
-  flex-shrink: 0;
+  flex: 1;
+  align-self: stretch;
   gap: 6px;
 }
 
 .progress-steps li {
-  width: 26px;
-  height: 8px;
-  border-radius: 999px;
+  flex: 1;
+  border-radius: 8px;
   background: var(--pq-rail);
   transition: background-color 320ms ease;
 }
@@ -1064,14 +1077,8 @@ onMounted(loadPage)
     min-height: calc(100vh - 66px);
   }
 
-  .quiz-progress {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .progress-steps li {
-    width: 22px;
+  .progress-steps {
+    min-height: 40px;
   }
 
   .page-width {
