@@ -3,19 +3,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useLogOut } from '@/composables/useLogOut'
 // Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
 import { useColorMode } from '#imports'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
 const auth = useAuthStore()
-const signOut = useLogOut()
-
-async function logOut() {
-  closeMenu()
-  await signOut()
-}
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
@@ -165,17 +158,9 @@ watch(
         <RouterLink v-for="link in links" :key="link.to" class="header-link" :to="link.to">
           {{ link.label }}
         </RouterLink>
-        <button
-          v-if="auth.user"
-          type="button"
-          class="header-cta"
-          :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
-          @click="logOut"
-        >
-          Log out
-        </button>
+        <!-- Log out lives on the profile page. -->
         <RouterLink
-          v-else
+          v-if="!auth.user"
           class="header-cta"
           :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
           to="/login"
@@ -226,10 +211,7 @@ watch(
       <RouterLink v-for="link in links" :key="link.to" class="menu-link" :to="link.to">
         {{ link.label }}
       </RouterLink>
-      <button v-if="auth.user" type="button" class="header-cta glass-action menu-cta" @click="logOut">
-        Log out
-      </button>
-      <RouterLink v-else class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
+      <RouterLink v-if="!auth.user" class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
     </nav>
   </header>
 </template>
@@ -546,12 +528,6 @@ watch(
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-}
-/* Log out is a button, so it drops the browser's button look to match Sign in. */
-:where(button).header-cta {
-  border: 0;
-  font-family: var(--font-sans);
-  cursor: pointer;
 }
 .dashboard-signin:hover {
   background: #873c2f;
