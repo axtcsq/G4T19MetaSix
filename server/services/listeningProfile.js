@@ -72,7 +72,7 @@ async function loadListeningProfile(user) {
 
   const tracks = await Track.find(
     { _id: { $in: plays.map((play) => play._id) } },
-    { name: 1, artists: 1, features: 1 },
+    { name: 1, artists: 1, album: 1, features: 1 },
   ).lean();
   const tracksById = new Map(tracks.map((track) => [track._id, track]));
 
@@ -88,8 +88,10 @@ async function loadListeningProfile(user) {
     .filter(Boolean)
     .slice(0, TOP_TRACKS)
     .map((track) => ({
+      id: track._id,
       name: track.name,
       artist: track.artists?.[0]?.name ?? "Unknown artist",
+      imageUrl: track.album?.imageUrl ?? null,
       ...Object.fromEntries(FEATURES.map((feature) => [feature, track.features?.[feature] ?? null])),
     }));
 

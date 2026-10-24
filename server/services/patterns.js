@@ -71,6 +71,50 @@ export function spotifyEvidence(profile) {
   };
 }
 
+// The same signals as spotifySignals, for one track.
+function trackSignals(track) {
+  const signal = (value, toScore) => (typeof value === "number" ? clamp(toScore(value)) : null);
+  return {
+    energy: signal(track.energy, (energy) => (energy - 0.5) * 2),
+    focus: signal(track.instrumentalness, (instrumentalness) => (0.25 - instrumentalness) * 4),
+    setting: signal(track.danceability, (danceability) => (danceability - 0.5) * 2),
+  };
+}
+
+// The user's top track that sounds most like their traits, with a short reason.
+// Ties go to the more played track, since topTracks is ordered by plays.
+export function songForType(profile, traits) {
+  const scores = Object.fromEntries(traits.map((trait) => [trait.id, trait]));
+  let best = null;
+
+  for (const track of profile?.topTracks ?? []) {
+    if (!track.id) continue;
+    const signals = Object.entries(trackSignals(track)).filter(([, value]) => value !== null);
+    if (!signals.length) continue;
+
+    const distance =
+      signals.reduce((sum, [id, value]) => sum + Math.abs(value - (scores[id]?.score ?? 0)), 0) /
+      signals.length;
+    if (!best || distance < best.distance) best = { track, signals, distance };
+  }
+  if (!best) return null;
+
+  // The reason names the traits the song matches most closely.
+  const matched = best.signals
+    .sort((a, b) => Math.abs(a[1] - scores[a[0]].score) - Math.abs(b[1] - scores[b[0]].score))
+    .slice(0, 2)
+    .map(([id]) => scores[id].poleName);
+  const { id, name, artist, imageUrl } = best.track;
+
+  return {
+    id,
+    name,
+    artist,
+    imageUrl,
+    reason: `Of your most played songs, this one sounds the most like you: ${matched.join(" and ")}.`,
+  };
+}
+
 // Roughly how happy (valence) music tends to sound for each logged mood.
 const MOOD_VALENCE = { Happy: 0.75, Relaxed: 0.55, Anxious: 0.4, Angry: 0.35, Sad: 0.25 };
 
