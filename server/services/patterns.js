@@ -82,7 +82,8 @@ function trackSignals(track) {
 }
 
 // The user's top track that sounds most like their traits, with a short reason.
-// Ties go to the more played track, since topTracks is ordered by plays.
+// Ties go to the more played track, since topTracks is ordered by plays. When
+// none of them has audio features yet, it's simply the most played one.
 export function songForType(profile, traits) {
   const scores = Object.fromEntries(traits.map((trait) => [trait.id, trait]));
   let best = null;
@@ -97,7 +98,12 @@ export function songForType(profile, traits) {
       signals.length;
     if (!best || distance < best.distance) best = { track, signals, distance };
   }
-  if (!best) return null;
+  if (!best) {
+    const mostPlayed = profile?.topTracks?.find((track) => track.id);
+    if (!mostPlayed) return null;
+    const { id, name, artist, imageUrl } = mostPlayed;
+    return { id, name, artist, imageUrl, reason: "Your most played song lately, the soundtrack of your patterns right now." };
+  }
 
   // The reason names the traits the song matches most closely.
   const matched = best.signals
