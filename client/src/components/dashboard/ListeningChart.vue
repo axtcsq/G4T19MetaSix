@@ -139,7 +139,7 @@ const repeatTotal = computed(() =>
   background: var(--dash-meter-soft);
 }
 .hour-column .peak {
-  background: var(--dash-ink);
+  background: var(--dash-strong);
 }
 .hour-axis {
   display: flex;

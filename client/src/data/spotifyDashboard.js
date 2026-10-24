@@ -61,8 +61,8 @@ export function getDashboard(period, history = [], now = new Date()) {
     hourly,
     daily,
     repeatListening: [
-      { name: 'First play in returned history', value: songs.size, color: '#8caa9b' },
-      { name: 'Repeat plays', value: items.length - songs.size, color: '#a54b3b' },
+      { name: 'First play in returned history', value: songs.size, color: 'var(--dash-meter)' },
+      { name: 'Repeat plays', value: items.length - songs.size, color: 'var(--dash-strong)' },
     ],
     metric: 'plays',
     peak: items.length
