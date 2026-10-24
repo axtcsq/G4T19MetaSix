@@ -318,7 +318,7 @@ onMounted(() => {
   --dash-accent: var(--color-brand-300);
   --dash-meter: var(--color-brand-400);
   --dash-meter-soft: #4a3a3f;
-  --dash-strong: var(--ui-text);
+  --dash-strong: var(--color-brand-300);
 }
 .dashboard-inner {
   max-width: 1240px;
