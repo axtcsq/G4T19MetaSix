@@ -158,7 +158,7 @@ const logOut = useLogOut()
   width: min(900px, var(--page-width));
   gap: 20px;
   margin-inline: auto;
-  padding-block: var(--page-top) 56px;
+  padding-block: var(--page-top) var(--page-bottom);
 }
 
 

@@ -93,7 +93,7 @@ styles can still change their margin or colour.
 
 ## Layout
 
-- **Page width:** content sits in a centred shell, `width: var(--page-width); margin-inline: auto;`. `--page-width` is 1180px at most, with a `--page-gutter` on each side: 32px on desktop, 24px at 768px and below, 16px at 400px and below. The nav and footer use the same width, so every page lines up with them. Don't add your own mobile widths or side padding; the gutter already shrinks. Form and reading pages (Profile, a quiz result) can use a narrower centred column.
+- **Page width:** content sits in a centred shell, `width: var(--page-width); margin-inline: auto;`. `--page-width` is 1180px at most, with a `--page-gutter` on each side: 32px on desktop, 24px at 768px and below, 16px at 400px and below. The nav and footer use the same width, so every page lines up with them. Don't add your own mobile widths or side padding; the gutter already shrinks. Form and reading pages (Profile, a quiz result) can use a narrower centred column. Space the top of the page with `--page-top` (under the nav) and the bottom with `--page-bottom` (above the footer), not your own padding.
 - **Page padding:** top `clamp(36px, 6vw, 72px)`, bottom `64px`.
 - **Page header:** left-aligned `h1` with `.page-title`, then one or two lines of muted serif intro. No eyebrow above the page title.
 - **Breakpoints:** use only these, as `max-width` queries:

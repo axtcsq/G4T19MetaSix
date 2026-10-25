@@ -407,7 +407,7 @@ function resetPointer(event) {
   align-items: center;
   justify-content: center;
   gap: 32px;
-  margin-bottom: 72px;
+  margin-bottom: var(--page-bottom);
   padding: 88px 24px;
   border: 1px solid #763e32;
   border-radius: 18px;

@@ -311,7 +311,6 @@ onMounted(() => {
   color: var(--dash-ink);
   min-height: 100svh;
   font: 20px/1.5 var(--font-serif);
-  padding-bottom: 90px;
 }
 /* The shared tokens switch for dark mode; only the accents need lightening.
    The garden draws its own sky. */
@@ -323,7 +322,7 @@ onMounted(() => {
 }
 .dashboard-inner {
   width: var(--page-width);
-  padding: var(--page-top) 0 20px;
+  padding: var(--page-top) 0 var(--page-bottom);
   margin: auto;
 }
 .dashboard :is(h1, h2, h3, p) {

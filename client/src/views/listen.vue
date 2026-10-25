@@ -347,8 +347,7 @@ onBeforeUnmount(() => {
   --room-focus: var(--color-brand-700);
   background: var(--room-paper);
   color: var(--room-ink);
-  min-height: 100svh;
-  padding: var(--page-top) 0 64px;
+  padding: var(--page-top) 0 var(--page-bottom);
   font: 20px/1.5 var(--font-serif);
 }
 /* The shared tokens switch for dark mode; the controls and alerts follow. */

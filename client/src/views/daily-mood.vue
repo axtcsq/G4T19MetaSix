@@ -139,7 +139,7 @@ onMounted(loadEntries)
 
 <template>
   <div class="daily-mood-page">
-    <main class="daily-mood-content flex-1 pb-12">
+    <main class="daily-mood-content flex-1">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-12">
         <section class="journal-column lg:col-span-2 xl:col-span-6">
           <h1 class="page-title">Daily Mood Log</h1>
@@ -398,7 +398,7 @@ onMounted(loadEntries)
 .daily-mood-content {
   width: var(--page-width);
   margin-inline: auto;
-  padding-top: var(--page-top);
+  padding-block: var(--page-top) var(--page-bottom);
 }
 
 @media (min-width: 1280px) {
