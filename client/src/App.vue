@@ -1,6 +1,6 @@
 <script setup>
-import Navbar from "./components/navbar.vue"
-import ListeningDock from "./components/ListeningDock.vue"
+import Navbar from "./components/layout/navbar.vue"
+import ListeningDock from "./components/listening/ListeningDock.vue"
 </script>
 
 <template>

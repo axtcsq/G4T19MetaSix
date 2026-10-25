@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'

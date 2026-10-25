@@ -2,8 +2,8 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
-import SiteFooter from '@/components/footer.vue'
-import JournalCanvas from '@/components/JournalCanvas.vue'
+import SiteFooter from '@/components/layout/footer.vue'
+import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
 const selectedMood = ref(null)

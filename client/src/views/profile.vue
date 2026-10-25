@@ -2,7 +2,7 @@
 // A temporary profile page: who is logged in, their MetaFor personality and a
 // few listening facts. Editing the profile and settings come later.
 import { computed, onMounted, ref } from 'vue'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { getPersonality } from '@/api/quiz'
 import { useAuthStore } from '@/stores/auth'
 import { useLogOut } from '@/composables/useLogOut'
