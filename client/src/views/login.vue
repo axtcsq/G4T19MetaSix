@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDemoStatus, spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 defineOptions({ name: 'LoginPage' })
 
 const route = useRoute()

@@ -1,8 +1,8 @@
 <script setup>
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 
-const CassetteViewer = defineAsyncComponent(() => import('@/components/CassetteViewer.vue'))
+const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 const bannerVideo = ref(null)

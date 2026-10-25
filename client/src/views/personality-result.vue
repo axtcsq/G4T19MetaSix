@@ -3,9 +3,9 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getLatestResult } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { setPageTitle } from '@/utils/pageTitle'
-import TraitBar from '@/components/TraitBar.vue'
+import TraitBar from '@/components/personality/TraitBar.vue'
 
 const route = useRoute()
 

@@ -210,7 +210,7 @@ Drafts in `server/data/personalityTypes.js`. Each has a name, tagline, longer de
 The **Share card** button in the top-right corner of Patterns opens a pop-up with a story-sized (1080 × 1920) image of the user's personality, in the style of a year-in-review card. It shows their type and icon, tagline, the four traits with their strength, every quiz result, and the match. **Save image** downloads it as `metafor-<type>.png`. On phones that support sharing files, a **Share** button sends it straight to other apps.
 
 - The image is drawn in the browser with the Canvas API (`client/src/utils/shareCard.js`), so there is no extra library and nothing is sent to the server.
-- The pop-up is `client/src/components/ShareCardDialog.vue`, a native `<dialog>`. It closes with Esc, the × button or a click outside it.
+- The pop-up is `client/src/components/personality/ShareCardDialog.vue`, a native `<dialog>`. It closes with Esc, the × button or a click outside it.
 - The button sits on top of the corner beside the heading instead of taking up its own row, so the Patterns section stays the same size. On phones it shrinks to an icon.
 
 ---
@@ -310,7 +310,7 @@ server/
 client/src/
   api/quiz.js
   views/personality-hub.vue  personality-quiz.vue  personality-result.vue
-  components/TraitBar.vue  PersonalityBreakdown.vue  WaveBackground.vue  ShareCardDialog.vue
+  components/personality/TraitBar.vue  PersonalityBreakdown.vue  WaveBackground.vue  ShareCardDialog.vue  MoodMusicChart.vue
   utils/shareCard.js        draws the shareable card
   assets/images/personality/   card images, star and type icons
 ```

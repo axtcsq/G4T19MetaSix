@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getQuiz, submitQuiz } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
-import SiteFooter from '@/components/footer.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { setPageTitle } from '@/utils/pageTitle'
 
 const route = useRoute()

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import VinylTurntable from '@/components/VinylTurntable.vue'
+import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: 'ListeningRoom' })
