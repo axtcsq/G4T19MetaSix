@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 defineOptions({ name: 'SiteFooter' })
 
@@ -22,6 +24,11 @@ const groups = [
 ]
 
 const year = new Date().getFullYear()
+
+// The Personality pages use quiz card photos from Unsplash, credited here.
+const route = useRoute()
+const onPersonalityPage = computed(() => route.path.startsWith('/quiz'))
+const photographers = 'Egor Litvinov, Sarah Brown, Jupter Moon, Jackson Hendry, Łukasz Szmigiel and Sean Stratton'
 
 function backToTop() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -59,6 +66,10 @@ function backToTop() {
           <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
         </p>
         <button type="button" class="top-button" @click="backToTop">Back to top ↑</button>
+        <p v-if="onPersonalityPage" class="photo-credit">
+          Quiz photos by {{ photographers }} on
+          <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>
+        </p>
       </div>
     </div>
   </footer>
@@ -184,6 +195,11 @@ function backToTop() {
 
 .footer-bottom a:hover {
   color: var(--footer-accent);
+}
+
+.photo-credit {
+  flex-basis: 100%;
+  padding-bottom: 0.75rem;
 }
 
 .top-button {
