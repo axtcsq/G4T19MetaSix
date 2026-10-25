@@ -105,7 +105,7 @@ onMounted(loadQuiz)
 
       <template v-else>
         <h1 class="page-title mt-6">{{ quiz.title }}</h1>
-        <p class="body-text mt-1">{{ quiz.description }}</p>
+        <p class="body-text mt-1 text-(--pq-muted)">{{ quiz.description }}</p>
 
         <form class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
           <template v-if="steps.length > 1">
