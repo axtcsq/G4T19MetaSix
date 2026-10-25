@@ -479,6 +479,7 @@ onMounted(() => {
 }
 .section-intro {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
@@ -486,6 +487,7 @@ onMounted(() => {
 }
 .spotify-link {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 8px;
   color: var(--dash-ink);
