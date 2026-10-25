@@ -787,7 +787,7 @@ input:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 36px 0 12px;
+  padding-top: 24px;
   color: var(--room-muted);
   font: 12px var(--font-sans);
 }
