@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: 'ListeningRoom' })
@@ -336,6 +337,7 @@ onBeforeUnmount(() => {
       </footer>
     </div>
   </main>
+  <SiteFooter />
 </template>
 
 <style scoped>
