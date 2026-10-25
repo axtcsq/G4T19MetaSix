@@ -204,10 +204,6 @@ function backToTop() {
 }
 
 @media (max-width: 768px) {
-  .footer-inner {
-    width: calc(100% - 36px);
-  }
-
   .footer-top {
     flex-direction: column;
     padding-block: 2rem 1.5rem;

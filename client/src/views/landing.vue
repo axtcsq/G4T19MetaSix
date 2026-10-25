@@ -501,9 +501,6 @@ function resetPointer(event) {
 }
 
 @media (max-width: 768px) {
-  .landing-shell {
-    width: calc(100% - 36px);
-  }
   .intro {
     grid-template-columns: 1fr;
     gap: 0;

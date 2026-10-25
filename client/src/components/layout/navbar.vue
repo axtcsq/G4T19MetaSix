@@ -604,7 +604,7 @@ watch(
 }
 
 @media (max-width: 600px) {
-  .header-inner { width: calc(100% - 36px); min-height: 66px; }
+  .header-inner { min-height: 66px; }
   .brand { font-size: 1.48rem; gap: 5px; }
   .brand-butterfly { width: 26px; height: 23px; }
   .header-nav { gap: 14px; }
