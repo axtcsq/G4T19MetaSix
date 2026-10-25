@@ -287,7 +287,7 @@ onMounted(loadEntries)
             <div class="helper-liquid-scrim" aria-hidden="true" />
             <div class="journal-idea-content">
               <h2 id="journal-idea-heading" class="journal-idea-title sub-header">
-                <img src="/images/journal-helper-sparkle.png" alt="" class="journal-helper-icon" />
+                <img src="@/assets/images/journal-helper-sparkle.png" alt="" class="journal-helper-icon" />
                 Helper
               </h2>
               <p class="mt-2 text-sm text-muted">Need help? Describe what happened today</p>
@@ -349,7 +349,7 @@ onMounted(loadEntries)
                 <p class="text-xs text-muted">
                   Your prompt would be processed by Groq AI. AI usage limit applies.
                 </p>
-                <img class="groq-mark" src="/images/groq-logo.svg" alt="Groq" />
+                <img class="groq-mark" src="@/assets/images/groq-logo.svg" alt="Groq" />
               </div>
             </div>
           </section>
@@ -691,7 +691,7 @@ onMounted(loadEntries)
   background-image:
     linear-gradient(90deg, transparent 31px, #d6a09a 31px, #d6a09a 32px, transparent 32px),
     repeating-linear-gradient(180deg, transparent 0, transparent 35px, #b8c9d5 35px, #b8c9d5 36px),
-    url('/images/paper-grain.svg');
+    url('@/assets/images/paper-grain.svg');
   background-position:
     0 0,
     0 12px,
@@ -710,7 +710,7 @@ onMounted(loadEntries)
   resize: none;
   overflow-wrap: anywhere;
   cursor:
-    url('/images/ink-pen-cursor.svg') 3 29,
+    url('@/assets/images/ink-pen-cursor.svg') 3 29,
     text;
 }
 
