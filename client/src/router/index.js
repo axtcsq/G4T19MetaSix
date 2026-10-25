@@ -7,10 +7,10 @@ import DailyMood from '../views/daily-mood.vue'
 import MoodCalendar from '../views/calendar.vue'
 import Login from '../views/login.vue'
 import Dashboard from '../views/dashboard.vue'
-import PersonalityHub from '../views/personality-hub.vue'
+import PersonalityHub from '../views/personality/personality-hub.vue'
 import Profile from '../views/profile.vue'
-import PersonalityQuiz from '../views/personality-quiz.vue'
-import PersonalityResult from '../views/personality-result.vue'
+import PersonalityQuiz from '../views/personality/personality-quiz.vue'
+import PersonalityResult from '../views/personality/personality-result.vue'
 
 const routes = [
   {
