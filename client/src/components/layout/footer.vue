@@ -64,13 +64,19 @@ function backToTop() {
       <div class="footer-bottom">
         <p>
           © {{ year }} MetaFor · Made by MetaSix · Music and artwork from
-          <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
+          <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a
+          ><template v-if="onPersonalityPage">
+            · Quiz photos from
+            <a
+              href="https://unsplash.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              :title="`Photos by ${photographers}`"
+              >Unsplash</a
+            ></template
+          >
         </p>
         <button type="button" class="top-button" @click="backToTop">Back to top ↑</button>
-        <p v-if="onPersonalityPage" class="photo-credit">
-          Quiz photos by {{ photographers }} on
-          <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>
-        </p>
       </div>
     </div>
   </footer>
@@ -196,11 +202,6 @@ function backToTop() {
 
 .footer-bottom a:hover {
   color: var(--footer-accent);
-}
-
-.photo-credit {
-  flex-basis: 100%;
-  padding-bottom: 0.75rem;
 }
 
 .top-button {
