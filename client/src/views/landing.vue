@@ -81,11 +81,11 @@ function resetPointer(event) {
     </section>
 
     <section class="music-journal landing-shell" aria-label="Spotify and journal">
-      <img class="spotify-image" src="/images/spotify-logo.png" alt="Spotify" />
+      <img class="spotify-image" src="@/assets/images/spotify-logo.png" alt="Spotify" />
       <span class="plus-sign" aria-hidden="true">+</span>
       <img
         class="journal-image"
-        src="/images/journal.png"
+        src="@/assets/images/journal.png"
         alt="Journal, ribbon bookmark, and pencil"
       />
     </section>
