@@ -358,7 +358,8 @@ onMounted(() => {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  font-size: 16px;
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
   color: var(--dash-muted);
   margin-top: 10px !important;
 }
@@ -717,7 +718,7 @@ onMounted(() => {
     animation: none !important;
   }
 }
-.dashboard :is(button, summary, .dashboard-meta, .panel-heading > span, .spotify-link, .rank) {
+.dashboard :is(button, summary, .panel-heading > span, .spotify-link, .rank) {
   font-family: var(--font-sans);
 }
 .dashboard .panel-heading :is(h2, h3) {
