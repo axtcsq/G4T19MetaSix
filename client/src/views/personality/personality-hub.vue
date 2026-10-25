@@ -809,8 +809,8 @@ onMounted(loadPage)
 
 .progress-text {
   color: var(--pq-muted);
-  font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
   line-height: 1.35;
 }
 
