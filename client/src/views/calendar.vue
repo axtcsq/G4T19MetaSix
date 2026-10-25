@@ -369,8 +369,8 @@ onMounted(loadData)
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
 .recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
-.calendar-shell { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; margin: 24px auto 0; }
-.calendar-center { width: min(100%, 790px); }
+.calendar-shell { display: grid; width: min(100%, 938px); grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; margin: 24px auto 0; }
+.calendar-center { width: 100%; }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
 .month-heading h2 { min-width: 230px; margin: 0; text-align: center; font-family: var(--font-sans); font-size: var(--text-header); }
 .month-step { display: none; }
