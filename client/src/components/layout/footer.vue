@@ -27,7 +27,8 @@ const year = new Date().getFullYear()
 
 // The Personality pages use quiz card photos from Unsplash, credited here.
 const route = useRoute()
-const onPersonalityPage = computed(() => route.path.startsWith('/quiz'))
+// No route when a page is mounted on its own, as in the tests.
+const onPersonalityPage = computed(() => Boolean(route?.path.startsWith('/quiz')))
 const photographers = 'Egor Litvinov, Sarah Brown, Jupter Moon, Jackson Hendry, Łukasz Szmigiel and Sean Stratton'
 
 function backToTop() {
