@@ -365,7 +365,9 @@ onBeforeUnmount(() => {
 .room-heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* Top-aligned, so the title stays at the same height as on other pages
+     however tall the Spotify controls get. */
+  align-items: flex-start;
   gap: 28px;
 }
 h1 {
