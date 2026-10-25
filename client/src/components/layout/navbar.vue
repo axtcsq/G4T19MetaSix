@@ -107,7 +107,6 @@ watch(
     class="site-header"
     :class="{
       'site-header-landing': isLanding,
-      'site-header-dashboard': isListeningPage,
       'is-scrolled': isScrolled || menuOpen,
     }"
   >
@@ -517,9 +516,6 @@ watch(
   .menu-bars::after {
     transition: none;
   }
-}
-.site-header-dashboard {
-  border-bottom: 0;
 }
 .dashboard-signin {
   color: #fff;
