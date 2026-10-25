@@ -215,7 +215,18 @@ onMounted(loadData)
         <p>Track your daily moods and the songs that soundtracked them.</p>
       </header>
 
-      <div v-if="loading" class="calendar-message" role="status">Gathering your days…</div>
+      <!-- A faded calendar stands in while the month loads. -->
+      <section v-if="loading" class="calendar-shell calendar-skeleton" role="status" aria-label="Loading your mood calendar">
+        <span class="month-arrow" aria-hidden="true" />
+        <div class="calendar-center" aria-hidden="true">
+          <div class="month-heading"><span class="skeleton-bar skeleton-month" /></div>
+          <div class="calendar-grid">
+            <div v-for="weekday in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="weekday" class="weekday">{{ weekday }}</div>
+            <span v-for="cell in 35" :key="cell" class="day-cell skeleton-cell" />
+          </div>
+        </div>
+        <span class="month-arrow" aria-hidden="true" />
+      </section>
       <div v-else-if="moodError" class="calendar-message error-message" role="alert">Could not load mood logs: {{ moodError }}</div>
 
       <template v-else>
@@ -391,6 +402,12 @@ onMounted(loadData)
 .empty-day { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
 .calendar-hint { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .78rem; }
 .calendar-message { padding: 52px 20px; color: var(--ui-text-muted); text-align: center; }
+.calendar-skeleton { opacity: .55; cursor: progress; }
+.calendar-skeleton .skeleton-cell { cursor: progress; animation: skeleton-pulse 1.4s ease-in-out infinite; }
+.skeleton-bar { display: block; border-radius: 999px; background: var(--ui-bg-accented); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+.skeleton-month { width: 230px; height: 2rem; }
+@keyframes skeleton-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .calendar-skeleton .skeleton-cell, .skeleton-bar { animation: none; } }
 .error-message { color: #a53e36; }
 .day-detail { width: min(1040px, 100%); margin: 28px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
