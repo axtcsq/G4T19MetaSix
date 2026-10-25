@@ -4,7 +4,11 @@ import { useRoute } from 'vue-router'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 const route = useRoute()
 const room = useListeningRoom()
-const { connected, ready, track, paused, busy } = room
+const { connected, ready, track, paused, busy, duration } = room
+// Where the song is up to (the dock's own `position` is where it sits on screen).
+const playPosition = room.position
+const formatTime = (ms) =>
+  `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`
 // Hidden in the listening room, which has its own player, and on the landing page.
 const HIDDEN_ON = ['/', '/listen']
 const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
@@ -190,10 +194,40 @@ watch([dock, minimised], measure, { flush: 'post' })
         ><strong>{{ track.name }}</strong
         ><span>Back to your listening room ↗</span></RouterLink
       >
-      <button :disabled="!ready || !track.id || busy" @click="room.toggle">
-        {{ paused ? 'Play' : 'Pause' }}
+      <button
+        type="button"
+        class="dock-icon"
+        aria-label="Previous track"
+        title="Previous"
+        :disabled="!ready || busy"
+        @click="room.skip(-1)"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" /></svg>
       </button>
-      <button :disabled="busy" @click="room.disconnect">Disconnect</button>
+      <button
+        type="button"
+        class="dock-icon"
+        :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
+        :title="paused ? 'Play' : 'Pause'"
+        :disabled="!ready || !track.id || busy"
+        @click="room.toggle"
+      >
+        <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+        <svg v-else viewBox="0 0 16 16" aria-hidden="true">
+          <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="dock-icon"
+        aria-label="Next track"
+        title="Next"
+        :disabled="!ready || busy"
+        @click="room.skip(1)"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" /></svg>
+      </button>
+      <button type="button" class="dock-text" :disabled="busy" @click="room.disconnect">Disconnect</button>
     </template>
     <button
       v-else
@@ -221,6 +255,22 @@ watch([dock, minimised], measure, { flush: 'post' })
         <path v-else d="M3 6l5 5 5-5" />
       </svg>
     </button>
+    <!-- Its own row under the controls, the full width of the dock. -->
+    <div v-if="!minimised" class="dock-seek">
+      <span aria-hidden="true">{{ formatTime(playPosition) }}</span>
+      <input
+        type="range"
+        min="0"
+        :max="duration || 1"
+        step="1000"
+        :value="playPosition"
+        aria-label="Playback position"
+        :aria-valuetext="formatTime(playPosition)"
+        :disabled="!ready || !track.id || busy"
+        @change="room.seek($event.target.value)"
+      />
+      <span aria-hidden="true">{{ formatTime(duration) }}</span>
+    </div>
   </aside>
 </template>
 <style>
@@ -242,9 +292,10 @@ html.has-dock body:not(:has(.site-footer)) {
   z-index: 15;
   display: flex;
   width: min(440px, calc(100% - 32px));
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 2px 8px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 6px 10px 4px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   /* Frosted glass, like the sticky navbar. */
@@ -302,6 +353,46 @@ button {
 }
 .listening-dock.is-minimised {
   width: auto;
+  padding-bottom: 6px;
+}
+.dock-text {
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  background: transparent;
+  font-size: 12px;
+}
+.dock-text:hover:not(:disabled) {
+  background: rgba(127, 127, 127, 0.16);
+}
+/* On phones the song title needs the room; Disconnect stays in the
+   Listening Room, which the title links to. */
+@media (max-width: 600px) {
+  .dock-text {
+    display: none;
+  }
+}
+.dock-seek {
+  display: flex;
+  flex-basis: 100%;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.dock-seek span {
+  margin: 0;
+  opacity: 0.75;
+}
+.dock-seek input {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  accent-color: var(--color-brand-500);
+  cursor: pointer;
+}
+.dock-seek input:disabled {
+  cursor: not-allowed;
 }
 .dock-icon {
   display: inline-flex;
@@ -361,7 +452,8 @@ button:disabled {
   cursor: not-allowed;
 }
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible {
   outline: 3px solid var(--color-brand-700);
   outline-offset: 3px;
 }
