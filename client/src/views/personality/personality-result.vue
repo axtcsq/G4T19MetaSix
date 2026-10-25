@@ -32,7 +32,7 @@ onMounted(loadResult)
 
 <template>
   <div class="result-page personality-theme">
-    <main class="mx-auto w-[min(48rem,var(--page-width))] flex-1 pt-(--page-top) pb-12">
+    <main class="mx-auto w-[min(48rem,var(--page-width))] flex-1 pt-(--page-top) pb-(--page-bottom)">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
       <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-8 text-muted">

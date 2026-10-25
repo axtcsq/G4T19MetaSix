@@ -1010,7 +1010,7 @@ onMounted(loadPage)
 
 .summary-text {
   max-width: 1135px;
-  padding-block: 3.5rem 4rem;
+  padding-block: 3.5rem var(--page-bottom);
   color: var(--ui-text);
   text-align: center;
 }
