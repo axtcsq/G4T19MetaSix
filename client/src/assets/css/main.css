@@ -46,6 +46,8 @@
 
   /* One content width for the nav and every wide page, so they line up. */
   --page-width: min(1180px, calc(100% - 64px));
+  /* The space between the nav and each page's title. */
+  --page-top: clamp(32px, 4vw, 48px);
 }
 
 /* Keep room for the scrollbar, so the header doesn't jump sideways when a

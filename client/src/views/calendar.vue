@@ -342,7 +342,7 @@ onMounted(loadData)
 .calendar-page { --calendar-accent: var(--color-brand-700); --calendar-accent-soft: var(--color-brand-100); min-height: calc(100vh - 76px); display: flex; flex-direction: column; background: var(--ui-bg); color: var(--ui-text); font: var(--text-body)/1.5 var(--font-serif); }
 .calendar-page :is(button, time, .eyebrow, .weekday, .day-number, .song-count, .inline-note, .calendar-hint, .track-copy, .play-time, .mood-tags, .calendar-message) { font-family: var(--font-sans); }
 .calendar-page :is(h1, h2, h3, h4) { font-family: var(--font-sans); }
-.calendar-content { width: var(--page-width); margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 64px; flex: 1; }
+.calendar-content { width: var(--page-width); margin: 0 auto; padding: var(--page-top) 0 64px; flex: 1; }
 .calendar-intro { margin-bottom: 22px; }
 .eyebrow { margin: 0 0 8px; }
 .calendar-intro h1 { margin: 0; }
@@ -429,7 +429,7 @@ onMounted(loadData)
 .mood-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .mood-tags span { padding: 6px 13px; border-radius: 999px; color: var(--ui-text); background: var(--ui-bg-accented); font-size: .72rem; font-weight: 700; }
 @media (max-width: 768px) {
-  .calendar-content { width: min(100% - 24px, 520px); padding-top: 34px; }
+  .calendar-content { width: min(100% - 24px, 520px); }
   .calendar-shell { display: block; margin-top: 18px; }
   .month-heading { justify-content: space-between; gap: 8px; margin-bottom: 10px; }
   .month-heading h2 { min-width: 0; }

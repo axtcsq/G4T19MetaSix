@@ -354,7 +354,7 @@ onBeforeUnmount(() => {
   background: var(--room-paper);
   color: var(--room-ink);
   min-height: 100svh;
-  padding: 40px 0 24px;
+  padding: var(--page-top) 0 64px;
   font: 20px/1.5 var(--font-serif);
 }
 /* The shared tokens switch for dark mode; the controls and alerts follow. */
@@ -818,9 +818,6 @@ input:disabled {
   }
 }
 @media (max-width: 768px) {
-  .listening-room {
-    padding-top: 28px;
-  }
   .room-inner {
     width: calc(100% - 40px);
   }
