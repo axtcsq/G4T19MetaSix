@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
+import SiteFooter from '@/components/layout/footer.vue'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
@@ -256,6 +257,7 @@ onMounted(() => {
       </template>
     </div>
   </main>
+  <SiteFooter />
 </template>
 
 <style scoped>
