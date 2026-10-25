@@ -6,8 +6,8 @@ journal, the listening room) stay in `DESIGN.md`.
 
 The real values live in code. Use these and don't copy their hex codes:
 
-- `src/assets/css/main.css`: fonts, brand colours, light and dark theme tokens, the `.glass-action` button
-- `app.config.ts`: Nuxt UI colours (`primary: 'brand'`)
+- `client/src/assets/css/main.css`: fonts, brand colours, light and dark theme tokens, the `.glass-action` button
+- `client/app.config.ts`: Nuxt UI colours (`primary: 'brand'`)
 
 If you need a value that isn't here, add it to `main.css` (and to this file)
 rather than hard-coding it in one page.

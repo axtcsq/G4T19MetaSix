@@ -6,7 +6,7 @@ The dashboard, calendar and listening room use the Spotify Web API and Web Playb
 
 1. The user logs in with "Continue with Spotify" (`/api/auth/login`). The server asks Spotify for every scope the app needs and stores the refresh token, encrypted, in `users`.
 2. The browser asks `GET /api/spotify/token` for a short-lived access token (1 hour). The refresh token never reaches the browser.
-3. `src/api/spotify.js` caches that token in memory, fetches a new one when it is about to expire or Spotify answers 401, and shares one request between concurrent callers.
+3. `client/src/api/spotify.js` caches that token in memory, fetches a new one when it is about to expire or Spotify answers 401, and shares one request between concurrent callers.
 
 `hasSpotifySession()` is true when `/api/me` reports `spotifyLinked`. It is false when logged out, for the demo account (no Spotify account), after the user removes MetaFor's access in Spotify, and for users who logged in before a scope was added. "Connect Spotify" sends those users to the login, which asks Spotify again.
 
