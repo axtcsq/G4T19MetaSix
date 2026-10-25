@@ -219,9 +219,9 @@ The **Share card** button in the top-right corner of Patterns opens a pop-up wit
 
 | Route | View | Shows |
 |---|---|---|
-| `/quiz` | `views/personality-hub.vue` | Quiz cards and Patterns |
-| `/quiz/:quizId` | `views/personality-quiz.vue` | One question per step, birthday step for Spotify Horoscope |
-| `/quiz/:quizId/result` | `views/personality-result.vue` | The user's latest result for that quiz |
+| `/quiz` | `views/personality/personality-hub.vue` | Quiz cards and Patterns |
+| `/quiz/:quizId` | `views/personality/personality-quiz.vue` | One question per step, birthday step for Spotify Horoscope |
+| `/quiz/:quizId/result` | `views/personality/personality-result.vue` | The user's latest result for that quiz |
 
 The design follows the "Personality Test" frame in the team Figma: Raleway headers, Crimson Text body, peach `#ffcda6` and terracotta `#ce5b4b` bars, `#763e32` accents and the gradient Patterns band.
 
@@ -309,7 +309,7 @@ server/
   routes/quizRoutes.js
 client/src/
   api/quiz.js
-  views/personality-hub.vue  personality-quiz.vue  personality-result.vue
+  views/personality/personality-hub.vue  personality-quiz.vue  personality-result.vue
   components/personality/TraitBar.vue  PersonalityBreakdown.vue  WaveBackground.vue  ShareCardDialog.vue  MoodMusicChart.vue
   utils/shareCard.js        draws the shareable card
   assets/images/personality/   card images, star and type icons
