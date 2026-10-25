@@ -31,6 +31,9 @@ async function initialise() {
   try {
     const { default: P5 } = await import('p5')
     if (disposed) return
+    // p5's beginner checks scan the page's scripts and wrongly flag other
+    // bundled code (a function named nf), and they slow the sketch down.
+    P5.disableFriendlyErrors = true
     instance = new P5((p) => {
       p.setup = () => {
         const canvas = p.createCanvas(1000, 650)
