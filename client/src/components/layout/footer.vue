@@ -54,7 +54,10 @@ function backToTop() {
       </div>
 
       <div class="footer-bottom">
-        <p>© {{ year }} MetaFor · Made by MetaSix</p>
+        <p>
+          © {{ year }} MetaFor · Made by MetaSix · Music and artwork from
+          <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
+        </p>
         <button type="button" class="top-button" @click="backToTop">Back to top ↑</button>
       </div>
     </div>
@@ -171,6 +174,16 @@ function backToTop() {
   font-size: 0.8rem;
 }
 
+.footer-bottom a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-bottom a:hover {
+  color: var(--footer-accent);
+}
+
 .top-button {
   padding: 0.5rem 0;
   border: 0;
@@ -180,6 +193,7 @@ function backToTop() {
 }
 
 .link-group a:focus-visible,
+.footer-bottom a:focus-visible,
 .brand:focus-visible,
 .top-button:focus-visible {
   border-radius: 4px;

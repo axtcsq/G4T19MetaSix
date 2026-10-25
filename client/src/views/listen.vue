@@ -329,12 +329,6 @@ onBeforeUnmount(() => {
           </div>
         </template>
       </section>
-
-      <footer class="room-footer">
-        <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"
-          >Music and artwork from Spotify</a
-        >
-      </footer>
     </div>
   </main>
   <SiteFooter />
@@ -531,8 +525,7 @@ button:disabled {
   text-decoration: underline;
   text-underline-offset: 5px;
 }
-.spotify-link:hover,
-.room-footer a:hover {
+.spotify-link:hover {
   color: var(--room-focus);
 }
 .transport {
@@ -782,21 +775,6 @@ input:disabled {
   margin: 24px 0 0;
   font-size: var(--text-body);
 }
-.room-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding-top: 24px;
-  color: var(--room-muted);
-  font: 12px var(--font-sans);
-}
-.room-footer a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  text-underline-offset: 4px;
-}
 @media (max-width: 1000px) {
   .record-room {
     gap: 24px;
@@ -882,10 +860,6 @@ input:disabled {
   }
   .shelf-record > strong {
     font-size: 21px;
-  }
-  .room-footer {
-    gap: 12px;
-    font-size: 11px;
   }
   .search-form {
     gap: 8px;
