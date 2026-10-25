@@ -100,12 +100,12 @@ onMounted(loadPage)
 <template>
   <div class="personality-page personality-theme">
     <main class="flex-1">
-      <section class="page-width pt-12 pb-16">
+      <section class="page-width hub-intro pb-16">
         <!-- The title on the left, and quiz progress beside it. -->
         <div class="hub-header">
           <div>
             <h1 class="page-title">Find Your Personality</h1>
-            <p class="body-text mt-1">A light-hearted and easier way to understand yourself.</p>
+            <p class="body-text mt-1 text-(--pq-muted)">A light-hearted and easier way to understand yourself.</p>
           </div>
 
           <!-- A quiet line of text, and one thin segment per quiz under it. -->
@@ -428,6 +428,10 @@ onMounted(loadPage)
 .page-width {
   width: var(--page-width);
   margin-inline: auto;
+}
+
+.hub-intro {
+  padding-top: var(--page-top);
 }
 
 

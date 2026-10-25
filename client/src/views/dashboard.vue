@@ -323,7 +323,7 @@ onMounted(() => {
 }
 .dashboard-inner {
   width: var(--page-width);
-  padding: 32px 0 20px;
+  padding: var(--page-top) 0 20px;
   margin: auto;
 }
 .dashboard :is(h1, h2, h3, p) {
@@ -349,7 +349,7 @@ onMounted(() => {
 }
 .dashboard-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 28px;
@@ -653,7 +653,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .dashboard-inner {
     width: calc(100% - 40px);
-    padding: 24px 0 20px;
+    padding: var(--page-top) 0 20px;
   }
   .dashboard-top {
     align-items: start;
