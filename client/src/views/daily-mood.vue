@@ -401,12 +401,6 @@ onMounted(loadEntries)
   padding-top: var(--page-top);
 }
 
-@media (max-width: 600px) {
-  .daily-mood-content {
-    width: calc(100% - 48px);
-  }
-}
-
 @media (min-width: 1280px) {
   .journal-column {
     display: flex;

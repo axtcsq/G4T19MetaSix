@@ -651,10 +651,6 @@ onMounted(() => {
   }
 }
 @media (max-width: 768px) {
-  .dashboard-inner {
-    width: calc(100% - 40px);
-    padding: var(--page-top) 0 20px;
-  }
   .dashboard-top {
     align-items: start;
     flex-direction: column;

@@ -44,10 +44,24 @@
   --text-body: 1.25rem; /* 20px */
   --text-quote: 1.5rem; /* 24px */
 
-  /* One content width for the nav and every wide page, so they line up. */
-  --page-width: min(1180px, calc(100% - 64px));
+  /* One content width for the nav and every page, so they line up. The
+     gutter is the space between the screen edge and the content. */
+  --page-gutter: 32px;
+  --page-width: min(1180px, calc(100% - 2 * var(--page-gutter)));
   /* The space between the nav and each page's title. */
   --page-top: clamp(32px, 4vw, 48px);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-gutter: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  :root {
+    --page-gutter: 16px;
+  }
 }
 
 /* Keep room for the scrollbar, so the header doesn't jump sideways when a

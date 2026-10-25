@@ -155,7 +155,7 @@ const logOut = useLogOut()
 
 .profile-shell {
   display: grid;
-  width: min(900px, calc(100% - 32px));
+  width: min(900px, var(--page-width));
   gap: 20px;
   margin-inline: auto;
   padding-block: var(--page-top) 56px;

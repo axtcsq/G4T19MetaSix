@@ -1048,10 +1048,6 @@ onMounted(loadPage)
     min-height: calc(100vh - 66px);
   }
 
-  .page-width {
-    width: calc(100% - 32px);
-  }
-
   .insights-card,
   .breakdown-card,
   .type-card,

@@ -798,9 +798,6 @@ input:disabled {
   }
 }
 @media (max-width: 768px) {
-  .room-inner {
-    width: calc(100% - 40px);
-  }
   .room-heading {
     align-items: flex-start;
     flex-direction: column;
