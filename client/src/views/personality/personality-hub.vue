@@ -426,7 +426,7 @@ onMounted(loadPage)
 }
 
 .page-width {
-  width: min(1210px, calc(100% - 48px));
+  width: var(--page-width);
   margin-inline: auto;
 }
 

@@ -247,7 +247,7 @@ watch(
 }
 .header-inner {
   display: flex;
-  width: min(1180px, calc(100% - 64px));
+  width: var(--page-width);
   min-height: 76px;
   align-items: center;
   justify-content: space-between;
