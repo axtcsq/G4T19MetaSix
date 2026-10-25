@@ -363,7 +363,7 @@ onBeforeUnmount(() => {
   --room-focus: var(--color-brand-300);
 }
 .room-inner {
-  width: min(1180px, calc(100% - 64px));
+  width: var(--page-width);
   margin-inline: auto;
 }
 .room-heading {

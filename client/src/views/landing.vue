@@ -161,7 +161,7 @@ function resetPointer(event) {
 }
 
 .landing-shell {
-  width: min(1110px, calc(100% - 56px));
+  width: var(--page-width);
   margin-inline: auto;
 }
 

@@ -43,6 +43,15 @@
   --text-subheader: clamp(1.25rem, 2.5vw, 1.5rem); /* 24px */
   --text-body: 1.25rem; /* 20px */
   --text-quote: 1.5rem; /* 24px */
+
+  /* One content width for the nav and every wide page, so they line up. */
+  --page-width: min(1180px, calc(100% - 64px));
+}
+
+/* Keep room for the scrollbar, so the header doesn't jump sideways when a
+   page grows tall enough to scroll. */
+html {
+  scrollbar-gutter: stable;
 }
 
 /* Light theme */

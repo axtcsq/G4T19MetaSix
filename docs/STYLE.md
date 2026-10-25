@@ -93,7 +93,7 @@ styles can still change their margin or colour.
 
 ## Layout
 
-- **Page width:** content sits in a centred shell, `width: min(1120px, calc(100% - 40px)); margin-inline: auto;`. Pages with a lot of data (the dashboard) can go up to 1240px.
+- **Page width:** content sits in a centred shell, `width: var(--page-width); margin-inline: auto;`. `--page-width` is `min(1180px, calc(100% - 64px))`, the same width as the nav and footer, so every page lines up with them. Form and reading pages (Profile, a quiz result) can use a narrower centred column.
 - **Page padding:** top `clamp(36px, 6vw, 72px)`, bottom `64px`.
 - **Page header:** left-aligned `h1` with `.page-title`, then one or two lines of muted serif intro. No eyebrow above the page title.
 - **Breakpoints:** use only these, as `max-width` queries:

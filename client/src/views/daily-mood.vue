@@ -139,7 +139,7 @@ onMounted(loadEntries)
 
 <template>
   <div class="daily-mood-page">
-    <main class="daily-mood-content mx-auto w-full max-w-7xl flex-1 px-6 py-12">
+    <main class="daily-mood-content flex-1 py-12">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-12">
         <section class="journal-column lg:col-span-2 xl:col-span-6">
           <h1 class="page-title">Daily Mood Log</h1>
@@ -393,6 +393,17 @@ onMounted(loadEntries)
   min-height: calc(100vh - 76px);
   flex-direction: column;
   background: var(--ui-bg);
+}
+
+.daily-mood-content {
+  width: var(--page-width);
+  margin-inline: auto;
+}
+
+@media (max-width: 600px) {
+  .daily-mood-content {
+    width: calc(100% - 48px);
+  }
 }
 
 @media (min-width: 1280px) {

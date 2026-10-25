@@ -322,8 +322,8 @@ onMounted(() => {
   --dash-strong: var(--color-brand-300);
 }
 .dashboard-inner {
-  max-width: 1240px;
-  padding: 32px 32px 20px;
+  width: var(--page-width);
+  padding: 32px 0 20px;
   margin: auto;
 }
 .dashboard :is(h1, h2, h3, p) {
@@ -651,7 +651,8 @@ onMounted(() => {
 }
 @media (max-width: 768px) {
   .dashboard-inner {
-    padding: 24px 20px 20px;
+    width: calc(100% - 40px);
+    padding: 24px 0 20px;
   }
   .dashboard-top {
     align-items: start;
