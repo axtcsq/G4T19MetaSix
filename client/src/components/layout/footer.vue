@@ -72,7 +72,9 @@ function backToTop() {
   --footer-muted: #6f625d;
   --footer-line: rgba(43, 35, 33, 0.12);
   --footer-accent: #b9543f;
-  padding-bottom: var(--dock-space, 0px);
+  /* The dock's space, even on pages without the dock, so every footer ends
+     the same way. */
+  padding-bottom: var(--dock-space, 96px);
   border-top: 1px solid var(--footer-line);
   color: var(--footer-text);
   background: var(--footer-bg);
