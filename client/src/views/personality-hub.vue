@@ -16,7 +16,7 @@ import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.png'
 import soundwoodsImage from '@/assets/images/personality/soundwoods.png'
 import musicalNeedsImage from '@/assets/images/personality/musical-needs.png'
 
-// Card images by quiz id, from Unsplash (credits in PersonalityQuiz.md).
+// Card images by quiz id, from Unsplash (credits in docs/PersonalityQuiz.md).
 // Quizzes without one show the lilac placeholder.
 const quizImages = {
   'music-mbti': musicMbtiImage,

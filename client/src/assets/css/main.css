@@ -187,7 +187,7 @@ body {
   font-family: var(--font-serif);
 }
 
-/* The MetaFor type scale (see STYLE.md): Raleway for headers, Crimson Text
+/* The MetaFor type scale (see docs/STYLE.md): Raleway for headers, Crimson Text
    for body. Desktop sizes are the design's; titles shrink a little on phones.
    In a layer so a page's scoped styles and Tailwind utilities can still adjust
    spacing or colour. Titles take the page's text colour. */

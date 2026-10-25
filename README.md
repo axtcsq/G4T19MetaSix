@@ -164,3 +164,12 @@ The Anxious and Hope in the dark rows are still being agreed.
 - Treat `users`, `listens`, `tracks`, `dailyMoods` and `syncGaps` as read-only, and agree any change with the team first.
 - A new collection needs a `userId`, an index starting with `userId`, and an entry in `server/scripts/db-init.js`.
 - Store drawings as vector data (paths and points), not images. Atlas's free tier has 512 MB in total.
+
+# 7. More docs
+| File | What it covers |
+| -------- | ------- |
+| [docs/STYLE.md](docs/STYLE.md) | Shared styling rules: colours, type scale, layout |
+| [docs/DESIGN.md](docs/DESIGN.md) | Design notes for the dashboard, journal and listening room |
+| [docs/PersonalityQuiz.md](docs/PersonalityQuiz.md) | The personality quizzes and Patterns |
+| [docs/SPOTIFY.md](docs/SPOTIFY.md) | Spotify auth and playback |
+| [docs/WEATHER.md](docs/WEATHER.md) | Live weather in the listening garden |
