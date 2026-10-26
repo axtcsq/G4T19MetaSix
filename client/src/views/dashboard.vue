@@ -1,11 +1,12 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
+import { getMoodInsights } from '@/api/listens'
 defineOptions({ name: 'ListeningDashboard' })
 
 const period = ref('weekly')
@@ -23,6 +24,97 @@ const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 onMounted(() => {
   spotify.initialize()
+})
+
+// Mood Over Time and Emotion Profile, from the moods of the songs played.
+// Only logged-in users have stored plays to read them from.
+const MOOD_AXES = [
+  { key: 'happy', label: 'Happy', color: '#e9a23b' },
+  { key: 'relaxed', label: 'Relaxed', color: '#6fae8a' },
+  { key: 'sad', label: 'Sad', color: '#6b83c4' },
+  { key: 'anxious', label: 'Anxious', color: '#9a6fb0' },
+  { key: 'angry', label: 'Angry', color: '#c8553d' },
+]
+const insights = ref(null)
+const insightsError = ref('')
+
+async function loadInsights() {
+  const days = data.value.daily
+  if (!auth.user || !days.length) return
+  insightsError.value = ''
+  try {
+    insights.value = await getMoodInsights(days[0].date, days[days.length - 1].date)
+  } catch (failure) {
+    insightsError.value = failure.message
+  }
+}
+// Reload when the period changes or new plays arrive.
+watch([period, history], loadInsights)
+onMounted(loadInsights)
+
+// One stacked bar per day: each mood's share of that day's analysed plays,
+// scaled against the busiest day.
+const moodDays = computed(() => {
+  const byDate = new Map((insights.value?.days ?? []).map((day) => [day.date, day]))
+  const rows = data.value.daily.map(({ date, label }) => {
+    const day = byDate.get(date)
+    const parts = MOOD_AXES.map((axis) => ({ ...axis, value: day?.axes?.[axis.key] ?? 0 }))
+    return { date, label, parts, total: parts.reduce((sum, part) => sum + part.value, 0) }
+  })
+  const busiest = Math.max(1, ...rows.map((row) => row.total))
+  return rows.map((row) => ({
+    ...row,
+    parts: row.parts.map((part) => ({ ...part, height: (part.value / busiest) * 100 })),
+  }))
+})
+const hasMoodDays = computed(() => moodDays.value.some((day) => day.total > 0))
+
+// The overall listening mood for the period: the top music moods, how the
+// plays lean, and what was played on the days each journal mood was logged.
+const percentOf = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0)
+const moodSummary = computed(() => {
+  const plays = insights.value?.analysedPlays ?? 0
+  if (!plays) return null
+  const moods = insights.value.musicMoods.map((mood) => ({
+    ...mood,
+    percent: percentOf(mood.count, plays),
+  }))
+  // Each play adds up to 1 across the five moods, so the shares add up too.
+  const totals = Object.fromEntries(
+    MOOD_AXES.map((axis) => [
+      axis.key,
+      insights.value.days.reduce((sum, day) => sum + (day.axes?.[axis.key] ?? 0), 0),
+    ]),
+  )
+  const brighter = totals.happy + totals.relaxed
+  return {
+    plays,
+    top: moods[0],
+    others: moods.slice(1, 5),
+    brighterPercent: percentOf(brighter, plays),
+    heavierPercent: percentOf(plays - brighter, plays),
+    journal: insights.value.journal.map((entry) => ({
+      ...entry,
+      percent: Math.round(entry.share * 100),
+    })),
+  }
+})
+
+// The lyric emotions, strongest first. "neutral" is left out: it says how much
+// of the lyrics carry no emotion, not a feeling.
+const emotionRows = computed(() => {
+  const emotions = insights.value?.emotions
+  if (!emotions) return []
+  const rows = Object.entries(emotions)
+    .filter(([name]) => name !== 'neutral')
+    .sort((a, b) => b[1] - a[1])
+  // The strongest emotion fills its bar; the rest are drawn against it.
+  const strongest = rows[0]?.[1] || 1
+  return rows.map(([name, value]) => ({
+    name: name[0].toUpperCase() + name.slice(1),
+    percent: Math.round(value * 100),
+    width: (value / strongest) * 100,
+  }))
 })
 </script>
 
@@ -110,26 +202,97 @@ onMounted(() => {
             </p>
           </aside>
         </section>
+        <section v-if="moodSummary" class="listening-mood" aria-labelledby="mood-summary-heading">
+          <p class="summary-label">Your listening mood</p>
+          <h2 id="mood-summary-heading" class="summary-title">
+            Mostly <strong>{{ moodSummary.top.name }}</strong>
+          </h2>
+          <p class="summary-text">
+            {{ moodSummary.top.percent }}% of the {{ moodSummary.plays }} analysed plays in this
+            period.
+            <template v-if="moodSummary.brighterPercent >= moodSummary.heavierPercent">
+              Overall, {{ moodSummary.brighterPercent }}% of your listening leaned happy or relaxed.
+            </template>
+            <template v-else>
+              Overall, {{ moodSummary.heavierPercent }}% of your listening leaned sad, anxious or
+              angry.
+            </template>
+          </p>
+          <ul v-if="moodSummary.others.length" class="summary-moods">
+            <li v-for="mood in moodSummary.others" :key="mood.name">
+              {{ mood.name }} <span>{{ mood.percent }}%</span>
+            </li>
+          </ul>
+          <ul v-if="moodSummary.journal.length" class="summary-journal">
+            <li v-for="entry in moodSummary.journal" :key="entry.mood">
+              On days you logged <strong>{{ entry.mood }}</strong> ({{ entry.days }}
+              {{ entry.days === 1 ? 'day' : 'days' }}), you mostly played
+              <strong>{{ entry.musicMood }}</strong> songs ({{ entry.percent }}%).
+            </li>
+          </ul>
+        </section>
         <section class="restored-charts" aria-label="Mood insights">
           <article class="chart-panel">
             <div class="panel-heading">
               <h3>Mood Over Time</h3>
-              <span>Unavailable</span>
+              <span>{{ insights?.lens === 'sound' ? 'From the sound' : 'Sound and lyrics' }}</span>
             </div>
-            <p class="unavailable-note">
-              Your Spotify history does not include music-mood measurements. There is no mood
-              timeline to plot yet.
+            <p v-if="insightsError" class="unavailable-note" role="alert">{{ insightsError }}</p>
+            <p v-else-if="!auth.user || !hasMoodDays" class="unavailable-note">
+              No analysed songs in this period yet. Songs get a mood shortly after they're played.
             </p>
+            <template v-else>
+              <div class="mood-columns" role="img" aria-label="Music mood for each day">
+                <div
+                  v-for="day in moodDays"
+                  :key="day.date"
+                  class="mood-column"
+                  :title="`${day.label}: ${day.parts
+                    .filter((part) => part.value)
+                    .map((part) => `${part.label} ${Math.round(part.value)}`)
+                    .join(', ')}`"
+                >
+                  <span
+                    v-for="part in day.parts"
+                    :key="part.key"
+                    :style="{ height: `${part.height}%`, background: part.color }"
+                  />
+                </div>
+              </div>
+              <p class="mood-axis">
+                <span>{{ moodDays[0].label }}</span
+                ><span>{{ moodDays[moodDays.length - 1].label }}</span>
+              </p>
+              <p class="mood-legend">
+                <span v-for="axis in MOOD_AXES" :key="axis.key">
+                  <i :style="{ background: axis.color }" />{{ axis.label }}
+                </span>
+              </p>
+            </template>
           </article>
           <article class="chart-panel">
             <div class="panel-heading">
               <h3>Emotion Profile</h3>
-              <span>Unavailable</span>
+              <span>From the lyrics</span>
             </div>
-            <p class="unavailable-note">
-              Emotion scores cannot be calculated from track names and play counts. Your mood
-              journal remains your own reflection.
+            <p v-if="!emotionRows.length" class="unavailable-note">
+              None of the songs played in this period have had their lyrics read yet.
             </p>
+            <template v-else>
+              <ul class="emotion-rows">
+                <li v-for="emotion in emotionRows" :key="emotion.name">
+                  <span>{{ emotion.name }}</span>
+                  <span class="emotion-track"
+                    ><span :style="{ width: `${emotion.width}%` }"
+                  /></span>
+                  <span>{{ emotion.percent }}%</span>
+                </li>
+              </ul>
+              <p class="emotion-note">
+                Based on {{ insights.lyricPlays }} of {{ insights.totalPlays }} plays whose lyrics
+                were read.
+              </p>
+            </template>
           </article>
         </section>
         <section class="music-section" aria-labelledby="music-heading">
@@ -142,8 +305,8 @@ onMounted(() => {
               target="_blank"
               rel="noopener noreferrer"
               class="spotify-link"
-              ><img src="@/assets/images/spotify-logo.png" alt="" width="18" height="18" />Open Spotify
-              <span aria-hidden="true">↗</span></a
+              ><img src="@/assets/images/spotify-logo.png" alt="" width="18" height="18" />Open
+              Spotify <span aria-hidden="true">↗</span></a
             >
           </div>
           <div class="music-layout">
@@ -268,6 +431,130 @@ onMounted(() => {
   border-top: 1px solid var(--dash-rule);
   padding-top: 32px;
   margin-top: 40px;
+}
+.listening-mood {
+  margin-top: 40px;
+  padding: 28px 32px;
+  border: 1px solid var(--dash-rule);
+  border-radius: 16px;
+  background: var(--dash-paper);
+}
+.summary-label {
+  color: var(--dash-accent);
+  font: 800 12px var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.dashboard .summary-title {
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: var(--text-header);
+  font-weight: 700;
+}
+.summary-title strong {
+  color: var(--dash-accent);
+}
+.summary-text {
+  margin-top: 8px;
+  color: var(--dash-muted);
+  font: 18px/1.5 var(--font-serif);
+}
+.summary-moods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+.summary-moods li {
+  padding: 4px 12px;
+  border: 1px solid var(--dash-rule);
+  border-radius: 9999px;
+  font-size: 14px;
+}
+.summary-moods span {
+  color: var(--dash-muted);
+}
+.summary-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--dash-rule);
+  color: var(--dash-muted);
+  list-style: none;
+  font: 17px/1.5 var(--font-serif);
+}
+.summary-journal strong {
+  color: var(--dash-ink);
+}
+.mood-columns {
+  display: flex;
+  height: 160px;
+  align-items: flex-end;
+  gap: 3px;
+}
+/* One day: its moods stacked from the bottom. */
+.mood-column {
+  display: flex;
+  height: 100%;
+  flex: 1;
+  flex-direction: column-reverse;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mood-axis,
+.mood-legend,
+.emotion-note {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--dash-muted);
+  font-size: 13px;
+}
+/* The page caps paragraph width for reading; these lines run under a chart. */
+.dashboard :is(.mood-axis, .mood-legend, .emotion-note) {
+  max-width: none;
+}
+.mood-legend {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 14px;
+}
+.mood-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+.emotion-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.emotion-rows li {
+  display: grid;
+  grid-template-columns: 80px 1fr 40px;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.emotion-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--dash-hover);
+}
+.emotion-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--dash-meter);
 }
 .unavailable-note {
   color: var(--dash-muted);
