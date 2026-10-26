@@ -38,7 +38,7 @@ async function happinessByDay(userId, dates) {
 }
 
 // The mood logged last on each day, since a later log is how the day ended up.
-async function moodByDay(userId, timezone) {
+export async function moodByDay(userId, timezone) {
   const logs = await retrieveMoodLogs(userId);
   const moods = new Map();
   // Logs come newest first, so the first one seen for a day is its last.

@@ -11,6 +11,7 @@ import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+import songRoutes from "./routes/songRoutes.js";
 import spotifyRoutes from "./routes/spotifyRoutes.js";
 import syncRoutes from "./routes/syncRoutes.js";
 
@@ -123,6 +124,9 @@ app.use("/api/spotify", requireUser, spotifyRoutes);
 // Listening history, from the listens collection
 app.use("/api/listens", requireUser, listenRoutes);
 app.use("/api/sync", requireUser, syncRoutes);
+
+// Song search and analysis. Public, so the landing page can use it.
+app.use("/api/songs", songRoutes);
 
 // Mood routes
 app.use("/api/moods", requireUser, moodRoutes);
