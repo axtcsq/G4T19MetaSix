@@ -3,18 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 import { useAuthStore } from '@/stores/auth'
-// Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
-import { useColorMode } from '#imports'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
 const auth = useAuthStore()
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-
-function toggleTheme() {
-  colorMode.preference = isDark.value ? 'light' : 'dark'
-}
 const isLanding = computed(() => route.path === '/')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
 
@@ -117,26 +109,6 @@ watch(
           <span>MetaFor<span class="brand-mark">®</span></span>
         </RouterLink>
 
-        <button
-          type="button"
-          class="theme-toggle"
-          :class="{ 'is-dark': isDark }"
-          role="switch"
-          :aria-checked="isDark"
-          aria-label="Dark mode"
-          @click="toggleTheme"
-        >
-          <span class="theme-thumb" aria-hidden="true" />
-          <svg class="theme-icon theme-sun" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="4" />
-            <path
-              d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-            />
-          </svg>
-          <svg class="theme-icon theme-moon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" />
-          </svg>
-        </button>
       </div>
 
       <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
@@ -257,63 +229,6 @@ watch(
   display: flex;
   align-items: center;
   gap: 14px;
-}
-/* A small sun/moon switch; the thumb slides under the active icon. */
-.theme-toggle {
-  position: relative;
-  display: inline-flex;
-  width: 62px;
-  height: 32px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 7px;
-  border: 1px solid #998ba155;
-  border-radius: 999px;
-  background: #f0eae6;
-  cursor: pointer;
-}
-.theme-thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 200ms ease, background-color 200ms ease;
-}
-.theme-toggle.is-dark .theme-thumb {
-  background: #2a2f3d;
-  transform: translateX(30px);
-}
-.theme-icon {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: #9a918b;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: stroke 200ms ease;
-}
-.theme-toggle:not(.is-dark) .theme-sun {
-  stroke: #cd6651;
-}
-.theme-toggle.is-dark .theme-moon {
-  stroke: #ffcda6;
-}
-.theme-toggle:focus-visible {
-  outline: 2px solid #cd6651;
-  outline-offset: 3px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .theme-thumb,
-  .theme-icon {
-    transition: none;
-  }
 }
 .brand {
   display: inline-flex;
@@ -546,22 +461,6 @@ watch(
 .dark .menu-link.router-link-exact-active {
   color: #eaa596;
 }
-.dark .theme-toggle {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: #222839;
-}
-.dark .theme-thumb {
-  background: #3a4256;
-}
-.dark .theme-toggle.is-dark .theme-thumb {
-  background: #30384a;
-}
-.dark .theme-icon {
-  stroke: #7d7888;
-}
-.dark .theme-toggle.is-dark .theme-moon {
-  stroke: #ffcda6;
-}
 .dark .profile-button,
 .dark .menu-button {
   border-color: rgba(255, 255, 255, 0.12);
@@ -605,10 +504,6 @@ watch(
   .site-menu { padding-inline: 18px; }
   .menu-cta { align-self: stretch; }
   .brand, .header-cta { white-space: nowrap; }
-  .theme-toggle { width: 54px; height: 30px; padding: 0 6px; }
-  .theme-thumb { width: 22px; height: 22px; }
-  .theme-toggle.is-dark .theme-thumb { transform: translateX(24px); }
-  .theme-icon { width: 14px; height: 14px; }
   /* The landing CTA leads into the app; omit the duplicate profile shortcut on phones. */
   .site-header-landing .profile-button { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
