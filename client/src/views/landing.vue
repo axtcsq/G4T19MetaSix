@@ -2,7 +2,7 @@
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
-import LandingObject3D from '@/components/landing/LandingObject3D.vue'
+import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
@@ -119,11 +119,7 @@ const showcase = [
       </div>
     </section>
 
-    <section class="music-journal landing-shell" aria-label="Spotify and journal">
-      <LandingObject3D class="spotify-image" object="spotify" />
-      <span class="plus-sign" aria-hidden="true">+</span>
-      <LandingObject3D class="journal-image" object="journal" />
-    </section>
+    <MusicJournal />
 
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
       <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
@@ -265,34 +261,6 @@ const showcase = [
   color: var(--brown);
   font-family: var(--font-sans);
   font-size: 0.74rem;
-}
-
-.music-journal {
-  display: flex;
-  min-height: 245px;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(24px, 5vw, 64px);
-  padding-block: 24px 56px;
-}
-.spotify-image {
-  display: block;
-  width: clamp(130px, 18vw, 190px);
-  height: clamp(130px, 18vw, 190px);
-  object-fit: contain;
-}
-.plus-sign {
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: clamp(2.8rem, 6vw, 4.3rem);
-  font-weight: 500;
-  line-height: 1;
-}
-.journal-image {
-  display: block;
-  width: clamp(190px, 28vw, 300px);
-  height: clamp(170px, 22vw, 230px);
-  object-fit: contain;
 }
 
 .mirror-section {
@@ -624,21 +592,6 @@ const showcase = [
   }
   .cassette-area {
     min-height: 270px;
-  }
-  .music-journal {
-    min-height: 185px;
-    gap: 18px;
-  }
-  .spotify-image {
-    width: min(27vw, 150px);
-    height: min(27vw, 150px);
-  }
-  .plus-sign {
-    font-size: 2.7rem;
-  }
-  .journal-image {
-    width: min(46vw, 235px);
-    height: min(38vw, 190px);
   }
   .feature-grid {
     grid-template-columns: 1fr;
