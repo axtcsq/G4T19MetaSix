@@ -40,7 +40,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
       <template v-for="(word, index) in WORDS" :key="index">
         <span class="word" :class="{ 'is-lit': index < shown }">{{ word }}</span>
         <br v-if="BREAKS.has(index)" />
-        <template v-else> </template>
+        <template v-else>{{ ' ' }}</template>
       </template>
     </h2>
   </section>
@@ -63,7 +63,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   line-height: 0.95;
   text-align: center;
 }
-:global(.dark) .statement-line {
+:global(.dark .statement-line) {
   color: var(--color-brand-300);
 }
 .word {
