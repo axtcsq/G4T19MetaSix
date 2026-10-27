@@ -4,6 +4,7 @@ import SiteFooter from '@/components/layout/footer.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
 import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
+import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -189,6 +190,8 @@ const showcase = [
         <ShowcasePreview :kind="feature.id" :name="feature.eyebrow" />
       </article>
     </section>
+
+    <TasteQuiz />
 
     <section
       class="closing landing-shell follow"
