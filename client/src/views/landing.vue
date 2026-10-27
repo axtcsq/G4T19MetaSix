@@ -6,6 +6,7 @@ import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
+import StoryMode from '@/components/landing/StoryMode.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -211,6 +212,7 @@ const showcase = [
           </div>
           <p class="hero-mood-line" aria-live="polite">{{ heroMood ? HERO_MOODS[heroMood].line : '' }}</p>
         </div>
+        <StoryMode />
       </div>
 
       <div class="cassette-area">
