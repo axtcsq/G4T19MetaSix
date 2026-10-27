@@ -32,6 +32,9 @@ const lines = []
 const notes = []
 let audio
 let pointerShown = false
+// Where the lines become clear enough to see, set each frame. The mouse does
+// nothing above it, so hidden notes and lines can't be bumped or played.
+let shownFrom = Infinity
 
 // Browsers only allow sound after a click or tap, so the audio starts on the
 // first one anywhere on the page.
@@ -171,9 +174,13 @@ function step(dt) {
 function draw() {
   context.clearRect(0, 0, width, height)
   const area = layout()
-  if (!area) return
+  if (!area) {
+    shownFrom = Infinity
+    return
+  }
   const { gutter, bottom, fadeFrom, fadeTo } = area
   const top = Math.max(area.top, fadeFrom)
+  shownFrom = Math.max(area.top, fadeFrom + (fadeTo - fadeFrom) * 0.35)
   const styles = getComputedStyle(canvas.value)
 
   context.save()
@@ -203,6 +210,7 @@ function draw() {
     const y = area.top + note.y * (bottom - area.top)
     note.x = lineX(note.line, y, gutter) + note.dx
     note.screenY = y + note.dy
+    note.shown = note.screenY >= shownFrom && note.screenY <= bottom
     context.save()
     context.translate(note.x, note.screenY)
     context.rotate(note.angle)
@@ -238,7 +246,7 @@ function tick(time) {
 function onPointerMove(event) {
   const { clientX: px, clientY: py, movementX = 0 } = event
   for (const note of notes) {
-    if (note.x === undefined) continue
+    if (!note.shown) continue
     const ax = note.x - px
     const ay = note.screenY - py
     const distance = Math.hypot(ax, ay)
@@ -253,14 +261,14 @@ function onPointerMove(event) {
   }
   // A pointer cursor over a note, so it's clear it can be clicked.
   const overNote = notes.some(
-    (note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT,
+    (note) => note.shown && Math.hypot(note.x - px, note.screenY - py) < HIT,
   )
   if (overNote !== pointerShown) {
     document.documentElement.style.cursor = overNote ? 'pointer' : ''
     pointerShown = overNote
   }
   const area = layout()
-  if (!area || !movementX) return
+  if (!area || !movementX || py < shownFrom) return
   const now = performance.now()
   for (const line of lines) {
     if (Math.abs(lineX(line, py, area.gutter) - px) > 10) continue
@@ -280,10 +288,8 @@ function onPointerDown(event) {
   startAudio()
   const { clientX: px, clientY: py } = event
   const area = layout()
-  if (!area) return
-  const hit = notes.find(
-    (note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT,
-  )
+  if (!area || py < shownFrom) return
+  const hit = notes.find((note) => note.shown && Math.hypot(note.x - px, note.screenY - py) < HIT)
   if (hit) {
     hit.vy -= 500
     hit.vx += (Math.random() - 0.5) * 400
