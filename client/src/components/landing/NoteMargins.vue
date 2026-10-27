@@ -11,6 +11,10 @@ const LINE_SPOTS = [0.28, 0.5, 0.72] // across each side's empty space
 const NOTES_PER_LINE = 3
 const MIN_GUTTER = 70 // narrower than this and the notes would crowd the page
 const REACH = 80 // how close the mouse has to be to bump a note
+// Notes loop through a little more than the visible height, so they slide in
+// and out past the edges. All move at one speed, so the gaps never close.
+const LOOP = 1.08
+const SPEED = 0.03
 
 let context
 let frame
@@ -30,8 +34,9 @@ function setUp() {
       for (let n = 0; n < NOTES_PER_LINE; n += 1) {
         notes.push({
           line,
-          y: Math.random(), // 0 to 1 down the visible area
-          speed: 0.025 + Math.random() * 0.02,
+          // Evenly spaced along the line, and staggered from the lines beside
+          // it, so no two notes sit on top of each other.
+          y: ((n + (index + side * 0.5) / LINE_SPOTS.length) / NOTES_PER_LINE) * LOOP - 0.04,
           glyph: GLYPHS[(index + n + side) % GLYPHS.length],
           size: 26 + Math.random() * 10,
           dx: 0,
@@ -85,8 +90,8 @@ function step(dt) {
     line.pluck += line.pluckSpeed * dt
   }
   for (const note of notes) {
-    note.y -= note.speed * dt
-    if (note.y < -0.05) note.y += 1.1
+    note.y -= SPEED * dt
+    if (note.y < -0.04) note.y += LOOP
     // A stiffer spring pulls a bumped note back onto its line.
     note.vx += (-90 * note.dx - 9 * note.vx) * dt
     note.vy += (-90 * note.dy - 9 * note.vy) * dt
