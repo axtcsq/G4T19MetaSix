@@ -71,8 +71,14 @@ function updateArtwork(next) {
   }
   image.src = next.album?.images?.[0]?.url || ''
 }
+// Spotify plays on one device at a time. When the same account starts playing
+// on a phone or in the Spotify app, this browser stops being the active
+// player and its state comes back empty.
+const MOVED_AWAY =
+  'Spotify moved playback to another device, like your phone or the Spotify app. Press play to bring it back here.'
 function applyState(state) {
   if (!state) {
+    if (!paused.value && track.value.id) error.value = MOVED_AWAY
     paused.value = true
     return
   }
