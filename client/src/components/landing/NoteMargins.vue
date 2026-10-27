@@ -3,7 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 // Wavy lines with music notes drifting up them, drawn in the empty space
 // either side of the landing page. The notes jolt away from the mouse and the
-// lines twang when it sweeps across them.
+// lines twang when it sweeps across them. Clicking a note, or plucking a line
+// once sound is on, plays a soft tone.
 const canvas = ref(null)
 
 const GLYPHS = ['♪', '♫', '♩', '♬']
@@ -15,6 +16,10 @@ const REACH = 80 // how close the mouse has to be to bump a note
 // and out past the edges. All move at one speed, so the gaps never close.
 const LOOP = 1.08
 const SPEED = 0.03
+const HIT = 24 // how close a click has to be to play a note
+// C major pentatonic over two octaves, so any mix of notes sounds pleasant.
+// Each line gets its own run of the scale, lower on the left.
+const SCALE = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25, 783.99, 880]
 
 let context
 let frame
@@ -25,6 +30,49 @@ let height = 0
 let reduceMotion = false
 const lines = []
 const notes = []
+let audio
+let pointerShown = false
+
+// Browsers only allow sound after a click or tap, so the audio starts on the
+// first one anywhere on the page.
+function startAudio() {
+  if (audio) return audio.resume()
+  const AudioContext = window.AudioContext || window.webkitAudioContext
+  if (!AudioContext) return
+  audio = new AudioContext()
+}
+
+// A short bell-like tone: a triangle wave with a quiet octave above it,
+// fading out over about a second.
+function playTone(frequency, volume = 0.12) {
+  if (!audio || audio.state !== 'running') return
+  const now = audio.currentTime
+  const gain = audio.createGain()
+  gain.gain.setValueAtTime(0, now)
+  gain.gain.linearRampToValueAtTime(volume, now + 0.01)
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1)
+  gain.connect(audio.destination)
+  for (const [type, multiple, level] of [
+    ['triangle', 1, 1],
+    ['sine', 2, 0.3],
+  ]) {
+    const oscillator = audio.createOscillator()
+    const partial = audio.createGain()
+    oscillator.type = type
+    oscillator.frequency.value = frequency * multiple
+    partial.gain.value = level
+    oscillator.connect(partial).connect(gain)
+    oscillator.start(now)
+    oscillator.stop(now + 1.2)
+  }
+}
+
+// Left lines are lower, right lines higher, and higher up the line is higher.
+function pitchFor(line, y) {
+  const lineIndex = lines.indexOf(line)
+  const upward = 1 - Math.min(1, Math.max(0, y / height))
+  return SCALE[Math.min(SCALE.length - 1, Math.floor(lineIndex * 1.2 + upward * 4))]
+}
 
 function setUp() {
   for (const side of [0, 1]) {
@@ -174,13 +222,49 @@ function onPointerMove(event) {
       note.bump = 1
     }
   }
+  // A pointer cursor over a note, so it's clear it can be clicked.
+  const overNote = notes.some((note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT)
+  if (overNote !== pointerShown) {
+    document.documentElement.style.cursor = overNote ? 'pointer' : ''
+    pointerShown = overNote
+  }
   const area = layout()
   if (!area || !movementX) return
+  const now = performance.now()
   for (const line of lines) {
     if (Math.abs(lineX(line, py, area.gutter) - px) > 10) continue
     line.pluckY = py
     line.pluckSpeed += Math.sign(movementX) * Math.min(260, Math.abs(movementX) * 40)
+    // Quieter than a click, and not more than a few times a second per line.
+    if (now - (line.lastSound ?? 0) > 180) {
+      line.lastSound = now
+      playTone(pitchFor(line, py), 0.06)
+    }
   }
+}
+
+// A click near a note gives it a big bump and plays it; a click on a line
+// plucks it hard.
+function onPointerDown(event) {
+  startAudio()
+  const { clientX: px, clientY: py } = event
+  const area = layout()
+  if (!area) return
+  const hit = notes.find((note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT)
+  if (hit) {
+    hit.vy -= 500
+    hit.vx += (Math.random() - 0.5) * 400
+    hit.spin += (Math.random() < 0.5 ? -1 : 1) * 16
+    hit.bump = 1
+    // Waits a moment for the audio to start on the very first click.
+    window.setTimeout(() => playTone(pitchFor(hit.line, hit.screenY)), audio?.state === 'running' ? 0 : 60)
+    return
+  }
+  const line = lines.find((each) => Math.abs(lineX(each, py, area.gutter) - px) < 10)
+  if (!line) return
+  line.pluckY = py
+  line.pluckSpeed += 300
+  window.setTimeout(() => playTone(pitchFor(line, py), 0.09), audio?.state === 'running' ? 0 : 60)
 }
 
 onMounted(() => {
@@ -195,6 +279,7 @@ onMounted(() => {
     draw()
   } else {
     window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
     frame = requestAnimationFrame(tick)
   }
 })
@@ -204,6 +289,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', resize)
   window.removeEventListener('scroll', draw)
   window.removeEventListener('pointermove', onPointerMove)
+  window.removeEventListener('pointerdown', onPointerDown)
+  if (pointerShown) document.documentElement.style.cursor = ''
+  audio?.close()
 })
 </script>
 
