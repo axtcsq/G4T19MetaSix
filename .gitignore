@@ -1,6 +1,7 @@
 
 # Installed packages, wherever pnpm or npm is run
 node_modules/
+/.impeccable/
 
 # Local design screenshots and scratch files
 /.taste-skill/
