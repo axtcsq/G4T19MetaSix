@@ -43,6 +43,7 @@ onMounted(() => {
               v-for="option in ['weekly', 'monthly']"
               :key="option"
               type="button"
+              class="glass-secondary"
               :aria-pressed="period === option"
               @click="period = option"
             >
@@ -50,7 +51,7 @@ onMounted(() => {
             </button>
           </div>
           <div v-if="connected" class="history-actions">
-            <button class="art-pause" :disabled="historyLoading" @click="spotify.refreshHistory">
+            <button class="art-pause glass-secondary" :disabled="historyLoading" @click="spotify.refreshHistory">
               Refresh history
             </button>
           </div>
@@ -58,13 +59,13 @@ onMounted(() => {
       </div>
       <p v-if="!connected">
         Connect Spotify to see your listening portrait.
-        <button class="art-pause" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
+        <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
       <p v-if="historyLoading" role="status">Loading your listening history…</p>
       <p v-else-if="historyError" role="alert">
         {{ historyError }}
-        <button class="art-pause" @click="spotify.refreshHistory">Retry history</button>
+        <button class="art-pause glass-secondary" @click="spotify.refreshHistory">Retry history</button>
       </p>
       <template v-if="connected && !historyLoading && !historyError">
         <p v-if="!data.plays">
@@ -79,7 +80,7 @@ onMounted(() => {
               <h2 id="garden-heading">Your Listening Garden</h2>
               <button
                 type="button"
-                class="art-pause"
+                class="art-pause glass-secondary"
                 :aria-pressed="motionPaused"
                 @click="motionPaused = !motionPaused"
               >
