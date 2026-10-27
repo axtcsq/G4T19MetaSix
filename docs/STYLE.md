@@ -118,8 +118,14 @@ or `<button>`:
 <RouterLink class="glass-action" to="/login">Get Started</RouterLink>
 ```
 
-For secondary actions use a plain Nuxt UI `UButton` with `variant="outline"`,
-`"soft"` or `"ghost"`. It picks up the brand colour from `app.config.ts`.
+Use the same shared action family throughout the app:
+
+- `glass-action`: terracotta primary actions.
+- `glass-secondary`: neutral glossy pills, with dark-aware surfaces.
+- `glass-icon`: circular 44px controls; every icon-only action needs an accessible label.
+- `glass-text`: quiet inline actions with the same UI font and focus treatment.
+
+Nuxt UI solid buttons map to primary; outline/soft/subtle map to secondary; ghost/link map to text. `app.config.ts` owns these mappings and is passed into the Nuxt UI plugin in `vite.config.js`. Use the same styles on native buttons and action links. Calendar days, quiz answer cards, switches, swatches and drag handles retain their task-specific shapes. Animated mood faces stay exclusive to journal mood choices.
 
 ### Cards
 
