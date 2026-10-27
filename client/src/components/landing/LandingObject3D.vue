@@ -40,7 +40,8 @@ const matte = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, rou
 
 function buildSpotify() {
   const group = new THREE.Group()
-  const tile = new THREE.Mesh(new RoundedBoxGeometry(2, 2, 0.6, 6, 0.38), glossy(0x141414))
+  // The corner radius has to stay under half the depth, or the sides fold in.
+  const tile = new THREE.Mesh(new RoundedBoxGeometry(2, 2, 0.6, 8, 0.28), glossy(0x141414))
   group.add(tile)
 
   const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.14, 64), glossy(0x1ed760))
@@ -100,7 +101,8 @@ function buildJournal() {
   group.add(spine)
 
   const pageEdges = matte(0xffffff, { map: pagesTexture() })
-  const pages = new THREE.Mesh(new THREE.BoxGeometry(1.7, 2.2, 0.24), [
+  // A little thinner than the gap between the boards, so the faces don't flicker.
+  const pages = new THREE.Mesh(new THREE.BoxGeometry(1.7, 2.2, 0.23), [
     pageEdges,
     pageEdges,
     pageEdges,
@@ -111,8 +113,8 @@ function buildJournal() {
   pages.position.x = 0.02
   group.add(pages)
 
-  // An elastic band down the front cover.
-  const band = new THREE.Mesh(new THREE.BoxGeometry(0.07, 2.32, 0.34), matte(0xc4412f))
+  // An elastic band wrapped round the boards, sitting just proud of them.
+  const band = new THREE.Mesh(new THREE.BoxGeometry(0.07, 2.34, 0.38), matte(0xc4412f))
   band.position.x = 0.62
   group.add(band)
 
@@ -150,7 +152,8 @@ function buildJournal() {
   const eraser = new THREE.Mesh(new RoundedBoxGeometry(0.15, 0.16, 0.15, 3, 0.05), matte(0x3a6fd8))
   eraser.position.y = 0.94
   pencil.add(eraser)
-  pencil.position.set(0.15, 0.25, 0.27)
+  // Resting on the band across the cover, not hovering or cutting through it.
+  pencil.position.set(0.15, 0.25, 0.266)
   pencil.rotation.z = -0.7
   group.add(pencil)
 
@@ -237,6 +240,8 @@ onBeforeUnmount(() => {
   })
   environment?.dispose()
   renderer?.dispose()
+  // Free the WebGL context now, or reopening the page can run out of them.
+  renderer?.forceContextLoss()
 })
 </script>
 
