@@ -7,6 +7,8 @@ import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
+import MirrorDrawing from '@/components/landing/MirrorDrawing.vue'
+import StatementLine from '@/components/landing/StatementLine.vue'
 
 const CassetteViewer = defineAsyncComponent(
   () => import('@/components/listening/CassetteViewer.vue'),
@@ -77,16 +79,19 @@ const mirrorCards = [
     title: 'Find the Patterns',
     text: 'Explore your Spotify playlists and see your listening habits from a fresh perspective.',
     example: 'Your Fridays lean upbeat, and Sunday nights turn quiet and acoustic.',
+    drawing: 'repeat',
   },
   {
     title: 'Make Space to Reflect',
     text: 'Pair music insights with a daily mood log and journal to understand yourself over time.',
     example: 'On days you logged Anxious, you played twice as much lo-fi.',
+    drawing: 'pattern',
   },
 ]
 const openCard = ref(null)
 
 // A short trail of notes follows the mouse across the hero.
+    drawing: 'journal',
 const TRAIL_GLYPHS = ['♪', '♫', '♩', '♬']
 const trail = ref([])
 let trailId = 0
@@ -262,6 +267,7 @@ const showcase = [
           </p>
           <button
             type="button"
+          <MirrorDrawing :kind="card.drawing" />
             class="example-toggle"
             :aria-pressed="openCard === index"
             @click="openCard = openCard === index ? null : index"
