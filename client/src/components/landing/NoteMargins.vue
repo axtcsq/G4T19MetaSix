@@ -33,7 +33,7 @@ function setUp() {
           y: Math.random(), // 0 to 1 down the visible area
           speed: 0.025 + Math.random() * 0.02,
           glyph: GLYPHS[(index + n + side) % GLYPHS.length],
-          size: 18 + Math.random() * 8,
+          size: 26 + Math.random() * 10,
           dx: 0,
           dy: 0,
           vx: 0,
