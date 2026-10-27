@@ -93,10 +93,12 @@ export const searchSpotify = (query, signal) =>
   })
 export const recentSpotify = (signal) =>
   spotifyRequest('/me/player/recently-played?limit=50', { signal })
+// Starts at the first song. Shuffle is a setting on the whole Spotify account,
+// so without the offset a play request with shuffle on starts on a random song.
 export const playSpotify = (device, uris) =>
   spotifyRequest(`/me/player/play?device_id=${encodeURIComponent(device)}`, {
     method: 'PUT',
-    body: { uris },
+    body: { uris, offset: { position: 0 } },
   })
 
 let sdkPromise
