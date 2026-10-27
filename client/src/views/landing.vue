@@ -7,8 +7,6 @@ import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
-import MirrorDrawing from '@/components/landing/MirrorDrawing.vue'
-import StatementLine from '@/components/landing/StatementLine.vue'
 
 const CassetteViewer = defineAsyncComponent(
   () => import('@/components/listening/CassetteViewer.vue'),
