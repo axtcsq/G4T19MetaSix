@@ -155,34 +155,46 @@ const fill = (position) => {
 </template>
 
 <style scoped>
-.story-open {
+.story-open.glass-secondary {
+  --button-top: color-mix(in srgb, var(--color-peach) 55%, white);
+  --button-base: var(--color-peach);
+  --button-ink: var(--color-brand-950);
   display: inline-flex;
-  min-height: 40px;
+  min-height: 54px !important;
   align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  padding: 0 18px;
+  gap: 12px;
+  margin: 0;
+  padding: 0.85rem 1.75rem !important;
   border: 0;
   border-radius: 999px;
   color: #fff;
   background: var(--ui-primary);
   box-shadow: 0 6px 16px rgba(118, 62, 50, 0.22);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 1rem !important;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease;
 }
 .story-open:hover {
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+}
+.story-open:is(:hover, :focus-visible) svg {
+  animation: play-hop 650ms ease-out both;
+}
+@keyframes play-hop {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  30% { transform: translateY(-5px) rotate(-12deg); }
+  60% { transform: translateY(1px) rotate(8deg); }
+  80% { transform: translateY(-2px) rotate(-4deg); }
 }
 .story-open:focus-visible {
   outline: 3px solid var(--color-brand-400);
   outline-offset: 3px;
 }
 .story-open svg {
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   fill: currentColor;
 }
 
@@ -345,6 +357,9 @@ const fill = (position) => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .story-open:is(:hover, :focus-visible) svg {
+    animation: none;
+  }
   .story,
   .story-open,
   .story-enter-active,

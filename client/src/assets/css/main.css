@@ -2,6 +2,7 @@
 
 @import 'tailwindcss';
 @import '@nuxt/ui';
+@import './mood-reactions.css';
 
 /* Self-hosted so the journal font also loads on deployed clients. */
 @font-face {

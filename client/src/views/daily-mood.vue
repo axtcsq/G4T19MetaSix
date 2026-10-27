@@ -164,9 +164,10 @@ onMounted(loadEntries)
                   v-for="mood in moods"
                   :key="mood"
                   type="button"
-                  class="mood-option"
+                  class="mood-option mood-reaction"
                   :class="[
                     `mood-option--${mood.toLowerCase()}`,
+                    `mood-reaction--${mood.toLowerCase()}`,
                     { 'is-selected': selectedMood === mood },
                   ]"
                   :aria-pressed="selectedMood === mood"
@@ -371,7 +372,10 @@ onMounted(loadEntries)
   gap: 24px;
   margin-bottom: 36px;
 }
-.history-toggle {
+.history-toggle.glass-secondary {
+  --button-top: color-mix(in srgb, var(--color-peach) 55%, white);
+  --button-base: var(--color-peach);
+  --button-ink: var(--color-brand-950);
   min-height: 44px;
   color: var(--ui-primary);
   font: 600 0.9rem var(--font-sans);
@@ -445,151 +449,6 @@ onMounted(loadEntries)
   height: 34px;
   flex: none;
   transform-origin: center;
-}
-.mood-option:is(:hover, :focus-visible) :deep(.face-rest) {
-  opacity: 0;
-}
-.mood-option:is(:hover, :focus-visible) :deep(.face-expression) {
-  opacity: 1;
-}
-.mood-option--happy:is(:hover, :focus-visible) .button-mood-face {
-  animation: happy-hello 1100ms ease both;
-}
-.mood-option--happy:is(:hover, :focus-visible) :deep(.wink-eye) {
-  animation: happy-wink 1100ms ease both;
-}
-.mood-option--sad:is(:hover, :focus-visible) :deep(.sad-tear) {
-  animation: little-tear 1700ms ease-in both;
-}
-.mood-option--relaxed:is(:hover, :focus-visible) .button-mood-face {
-  animation: calm-sigh 1800ms ease-in-out both;
-}
-.mood-option--relaxed:is(:hover, :focus-visible) :deep(.calm-breath) {
-  animation: exhale 1800ms ease-out both;
-}
-.mood-option--anxious:is(:hover, :focus-visible) :deep(.anxious-pupils) {
-  animation: nervous-glance 1600ms ease-in-out both;
-}
-.mood-option--anxious:is(:hover, :focus-visible) :deep(.anxious-drop) {
-  animation: little-tear 1600ms ease-in both;
-}
-.mood-option--angry:is(:hover, :focus-visible) .button-mood-face {
-  animation: grumpy-shake 1000ms ease both;
-}
-.mood-option--angry:is(:hover, :focus-visible) :deep(.angry-brows) {
-  animation: brow-furrow 1000ms ease both;
-}
-@keyframes happy-hello {
-  0%,
-  100% {
-    transform: rotate(0) scale(1);
-  }
-  30% {
-    transform: rotate(-12deg) scale(1.15);
-  }
-  65% {
-    transform: rotate(7deg) scale(1.08);
-  }
-}
-@keyframes happy-wink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  35%,
-  55% {
-    opacity: 0.35;
-  }
-}
-@keyframes little-tear {
-  0%,
-  15% {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-  35% {
-    opacity: 1;
-  }
-  85%,
-  100% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-@keyframes calm-sigh {
-  0%,
-  100% {
-    transform: rotate(0) scale(1);
-  }
-  45% {
-    transform: rotate(-7deg) scale(1.12);
-  }
-  75% {
-    transform: rotate(3deg) scale(1.02);
-  }
-}
-@keyframes exhale {
-  0%,
-  20% {
-    opacity: 0;
-    transform: translateX(-1px);
-  }
-  45% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(3px);
-  }
-}
-@keyframes nervous-glance {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20%,
-  35% {
-    transform: translateX(-2px);
-  }
-  55%,
-  70% {
-    transform: translateX(2px);
-  }
-}
-@keyframes grumpy-shake {
-  0%,
-  100% {
-    transform: rotate(0);
-  }
-  20%,
-  50% {
-    transform: rotate(-9deg);
-  }
-  35%,
-  65% {
-    transform: rotate(9deg);
-  }
-  80% {
-    transform: rotate(-3deg);
-  }
-}
-@keyframes brow-furrow {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  35%,
-  70% {
-    transform: translateY(1.5px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mood-option,
-  .mood-option .button-mood-face,
-  .mood-option :deep(*) {
-    animation: none !important;
-    transition: none !important;
-  }
 }
 .mood-option--sad {
   --mood-color: #4389d1;
@@ -691,7 +550,10 @@ onMounted(loadEntries)
 .helper-header h2 {
   font: 600 18px var(--font-sans);
 }
-.helper-close {
+.helper-close.glass-icon {
+  --button-ink: #fff;
+  --button-top: #ca5555;
+  --button-base: #a93232;
   width: 44px;
   height: 44px;
   margin: -4px;
@@ -699,9 +561,6 @@ onMounted(loadEntries)
   place-items: center;
   cursor: pointer;
   border-radius: 50%;
-}
-.helper-close:hover {
-  background: var(--ui-bg-accented);
 }
 .helper-close svg {
   width: 18px;
@@ -850,13 +709,6 @@ onMounted(loadEntries)
   margin: 0;
   white-space: pre-wrap;
   cursor: auto;
-}
-
-.history-toggle {
-  color: var(--color-brand-700);
-}
-:global(.dark .daily-mood-page .history-toggle) {
-  color: var(--color-brand-300);
 }
 
 @media (max-width: 600px) {
