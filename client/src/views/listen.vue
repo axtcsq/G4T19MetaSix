@@ -73,41 +73,50 @@ onBeforeUnmount(() => {
       <header class="room-heading">
         <div>
           <h1 class="page-title">Listening Room</h1>
-          <p>Put a record on. Let the rest wait.</p>
+          <p>Put a record on</p>
         </div>
-        <div class="connection">
-          <template v-if="connected">
-            <span class="connection-state"
-              ><i :class="{ live: ready }" />{{
-                ready ? 'Spotify connected' : 'Player offline'
-              }}</span
+        <div class="connection" :class="{ 'is-connected': connected }">
+          <div class="connection-state" role="status">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="11" fill="currentColor" />
+              <path
+                d="M6 9c4-1.3 8-1 12 1M7 12c3.5-1 6.7-.7 10 1M8 15c2.6-.7 5-.4 7.5.7"
+                fill="none"
+                stroke="var(--spotify-mark-ink, var(--room-paper))"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span
+              ><strong>Spotify</strong
+              ><span>{{
+                connected ? (ready ? 'Connected' : 'Player offline') : 'Not connected'
+              }}</span></span
             >
+          </div>
+          <template v-if="connected">
             <button
               v-if="!ready"
-              class="text-button glass-text"
+              class="connection-action"
               :disabled="busy"
               @click="room.reconnect"
             >
               {{ busy ? 'Connecting…' : 'Reconnect player' }}
             </button>
-            <button class="text-button glass-text" :disabled="busy" @click="room.disconnect">
+            <button
+              class="connection-action disconnect-button"
+              :disabled="busy"
+              @click="room.disconnect"
+            >
               Disconnect
             </button>
           </template>
-          <template v-else
-            ><button class="connect-button glass-action" :disabled="busy" @click="connect">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="11" fill="currentColor" />
-                <path
-                  d="M6 9c4-1.3 8-1 12 1M7 12c3.5-1 6.7-.7 10 1M8 15c2.6-.7 5-.4 7.5.7"
-                  fill="none"
-                  stroke="var(--room-dark)"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                /></svg
-              >{{ busy ? 'Connecting…' : 'Connect Spotify' }}</button
-            ><span>Spotify Premium required</span></template
-          >
+          <template v-else>
+            <button class="connection-action" :disabled="busy" @click="connect">
+              {{ busy ? 'Connecting…' : 'Connect Spotify' }}
+            </button>
+            <span class="connection-note">Spotify Premium required</span>
+          </template>
         </div>
       </header>
 
@@ -140,22 +149,6 @@ onBeforeUnmount(() => {
             <p>{{ artist }}</p>
             <span>{{ track.album?.name }}</span>
           </div>
-          <a
-            v-if="track.external_urls?.spotify"
-            class="spotify-link"
-            :href="track.external_urls.spotify"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Listen on Spotify ↗</a
-          >
-          <a
-            v-else-if="track.id"
-            class="spotify-link"
-            :href="`https://open.spotify.com/search/${encodeURIComponent(track.name + ' ' + artist)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Find on Spotify ↗</a
-          >
         </div>
       </section>
 
@@ -269,9 +262,10 @@ onBeforeUnmount(() => {
             @compositionend="finishComposition"
           />
           <button
-            v-if="query"
             type="button"
-            class="text-button glass-text"
+            class="search-clear text-button glass-text"
+            :class="{ 'is-empty': !query }"
+            :disabled="!query"
             aria-label="Clear song search"
             @click="clearSearch"
           >
@@ -279,8 +273,9 @@ onBeforeUnmount(() => {
           ><button
             class="search-button glass-action"
             :disabled="!connected || searching || !query.trim()"
+            :aria-busy="searching"
           >
-            {{ searching ? 'Searching…' : 'Search' }}
+            Search
           </button>
         </form>
         <div
@@ -397,9 +392,10 @@ h1 {
 }
 .connection {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
   font: 12px/1.5 var(--font-sans);
   color: var(--room-muted);
 }
@@ -424,11 +420,6 @@ button:disabled {
   outline-offset: 5px;
 }
 
-.connect-button svg {
-  width: 20px;
-  height: 20px;
-}
-
 .text-button {
   background: none;
   border: 0;
@@ -441,16 +432,54 @@ button:disabled {
 .connection-state {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.connection-state i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--room-muted);
+.connection-note {
+  flex-basis: 100%;
+  text-align: right;
 }
-.connection-state i.live {
-  background: var(--room-dark);
+.connection.is-connected .connection-state {
+  --spotify-mark-ink: #191414;
+}
+.connection.is-connected .connection-state svg {
+  color: #1ed760;
+}
+.connection-state svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--room-muted);
+}
+.connection-state strong,
+.connection-state span span {
+  display: block;
+}
+.connection-state strong {
+  color: var(--room-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.connection-action {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, var(--room-ink) 24%, transparent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--room-ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.connection-action:hover:not(:disabled) {
+  background: var(--room-ground);
+  border-color: var(--room-muted);
+}
+.disconnect-button:hover:not(:disabled) {
+  color: var(--room-error-ink);
+  background: var(--room-error);
+  border-color: var(--room-error-ink);
 }
 .record-room {
   display: grid;
@@ -521,18 +550,6 @@ button:disabled {
 .track-copy > span {
   font-size: var(--text-body);
   color: var(--room-muted);
-}
-.spotify-link {
-  display: inline-flex;
-  align-items: center;
-  font: 13px var(--font-sans);
-  min-height: 44px;
-  margin-top: 12px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-.spotify-link:hover {
-  color: var(--room-focus);
 }
 .transport {
   display: grid;
@@ -706,16 +723,28 @@ input:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
-  background: var(--room-ground);
+  padding: 6px 8px 6px 20px;
+  border: 1px solid color-mix(in srgb, var(--room-ink) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--room-paper) 88%, var(--room-ground));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent);
   margin-bottom: 28px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.search-form:focus-within {
+  border-color: var(--room-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room-focus) 12%, transparent);
 }
 .search-form > svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  color: var(--room-muted);
 }
 .search-form input {
+  appearance: none;
   min-width: 0;
   width: 100%;
   min-height: 44px;
@@ -723,6 +752,36 @@ input:disabled {
   border: 0;
   font-size: 16px;
   color: var(--room-ink);
+  outline: none;
+  box-shadow: none;
+}
+.search-form input:focus-visible {
+  outline: none;
+}
+.search-form input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.search-clear {
+  flex-shrink: 0;
+  transition:
+    opacity 160ms ease,
+    color 160ms ease;
+}
+.search-clear.is-empty {
+  visibility: hidden;
+  opacity: 0;
+}
+.search-button {
+  flex-shrink: 0;
+  min-width: 88px;
+}
+.search-form .search-button:disabled {
+  --button-ink: var(--room-muted);
+  background: var(--room-ground) !important;
+  color: var(--room-muted) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none;
 }
 .search-form input::placeholder {
   color: var(--room-muted);
@@ -803,7 +862,10 @@ input:disabled {
     gap: 20px;
   }
   .connection {
-    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .connection-note {
+    text-align: left;
   }
   .record-room {
     grid-template-columns: 1fr;
@@ -827,10 +889,6 @@ input:disabled {
   .album-sleeve::before {
     inset: -8px;
     filter: blur(18px);
-  }
-  .spotify-link {
-    font-size: 12px;
-    margin-top: 0;
   }
   .transport {
     grid-template-columns: 1fr;
@@ -860,8 +918,8 @@ input:disabled {
     font-size: 21px;
   }
   .search-form {
-    gap: 8px;
-    padding-inline: 8px;
+    gap: 6px;
+    padding-inline: 12px 6px;
   }
   .search-form input {
     font-size: 14px;
