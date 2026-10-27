@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
+import AmbientWave from '@/components/listening/AmbientWave.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 
@@ -27,6 +28,9 @@ const {
 } = room
 const searchInput = ref(null)
 const cover = computed(() => track.value.album?.images?.[0]?.url)
+const progress = computed(
+  () => `${duration.value ? Math.min(100, (position.value / duration.value) * 100) : 0}%`,
+)
 const artist = computed(() => track.value.artists?.map((item) => item.name).join(', '))
 const formatTime = (ms) =>
   `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`
@@ -78,15 +82,20 @@ onBeforeUnmount(() => {
                 ready ? 'Spotify connected' : 'Player offline'
               }}</span
             >
-            <button v-if="!ready" class="text-button" :disabled="busy" @click="room.reconnect">
+            <button
+              v-if="!ready"
+              class="text-button glass-text"
+              :disabled="busy"
+              @click="room.reconnect"
+            >
               {{ busy ? 'Connecting…' : 'Reconnect player' }}
             </button>
-            <button class="text-button" :disabled="busy" @click="room.disconnect">
+            <button class="text-button glass-text" :disabled="busy" @click="room.disconnect">
               Disconnect
             </button>
           </template>
           <template v-else
-            ><button class="connect-button" :disabled="busy" @click="connect">
+            ><button class="connect-button glass-action" :disabled="busy" @click="connect">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="12" r="11" fill="currentColor" />
                 <path
@@ -103,7 +112,7 @@ onBeforeUnmount(() => {
       </header>
 
       <p v-if="error" class="room-error" role="alert">
-        {{ error }} <button class="text-button" @click="error = ''">Dismiss</button>
+        {{ error }} <button class="text-button glass-text" @click="error = ''">Dismiss</button>
       </p>
 
       <section class="record-room" aria-label="Record player">
@@ -153,7 +162,7 @@ onBeforeUnmount(() => {
       <section class="transport" aria-label="Playback controls">
         <div class="transport-buttons">
           <button
-            class="icon-button"
+            class="icon-button glass-icon"
             aria-label="Previous track"
             :disabled="!connected || !ready || busy"
             @click="room.skip(-1)"
@@ -163,7 +172,7 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">Previous</span>
           </button>
           <button
-            class="play-button"
+            class="play-button glass-icon"
             :aria-label="paused ? 'Play' : 'Pause'"
             :disabled="!connected || !ready || !track.id || busy"
             @click="room.toggle"
@@ -174,7 +183,7 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">{{ spinning ? 'Pause' : 'Play' }}</span>
           </button>
           <button
-            class="icon-button"
+            class="icon-button glass-icon"
             aria-label="Next track"
             :disabled="!connected || !ready || busy"
             @click="room.skip(1)"
@@ -184,20 +193,24 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">Next</span>
           </button>
         </div>
-        <div class="seek-control">
-          <span>{{ formatTime(position) }}</span
-          ><label class="sr-only" for="playback-position">Playback position</label
-          ><input
-            id="playback-position"
-            type="range"
-            min="0"
-            :max="duration || 1"
-            step="1000"
-            :value="position"
-            :aria-valuetext="formatTime(position)"
-            :disabled="!connected || !ready || busy"
-            @change="room.seek($event.target.value)"
-          /><span>{{ formatTime(duration) }}</span>
+        <div class="timeline">
+          <AmbientWave :playing="spinning" />
+          <div class="seek-control">
+            <span>{{ formatTime(position) }}</span
+            ><label class="sr-only" for="playback-position">Playback position</label
+            ><input
+              id="playback-position"
+              type="range"
+              min="0"
+              :max="duration || 1"
+              step="1000"
+              :value="position"
+              :style="{ '--fill': progress }"
+              :aria-valuetext="formatTime(position)"
+              :disabled="!connected || !ready || busy"
+              @change="room.seek($event.target.value)"
+            /><span>{{ formatTime(duration) }}</span>
+          </div>
         </div>
         <div class="volume-control">
           <label for="playback-volume"
@@ -216,6 +229,7 @@ onBeforeUnmount(() => {
             min="0"
             max="100"
             :value="volume"
+            :style="{ '--fill': `${volume}%` }"
             :disabled="!connected || !ready || busy"
             @change="room.changeVolume($event.target.value)"
           /><span>{{ volume }}%</span>
@@ -257,12 +271,15 @@ onBeforeUnmount(() => {
           <button
             v-if="query"
             type="button"
-            class="text-button"
+            class="text-button glass-text"
             aria-label="Clear song search"
             @click="clearSearch"
           >
             Clear</button
-          ><button class="search-button" :disabled="!connected || searching || !query.trim()">
+          ><button
+            class="search-button glass-action"
+            :disabled="!connected || searching || !query.trim()"
+          >
             {{ searching ? 'Searching…' : 'Search' }}
           </button>
         </form>
@@ -299,7 +316,9 @@ onBeforeUnmount(() => {
           <p v-else-if="historyLoading" role="status">Loading your recent songs…</p>
           <p v-else-if="historyError" role="alert">
             {{ historyError }}
-            <button class="text-button" @click="room.refreshHistory">Retry history</button>
+            <button class="text-button glass-text" @click="room.refreshHistory">
+              Retry history
+            </button>
           </p>
           <p v-else-if="!records.length">
             No recent songs yet. Search Spotify to choose your first record.
@@ -404,26 +423,12 @@ button:disabled {
   outline: 2px solid var(--room-focus);
   outline-offset: 5px;
 }
-.connect-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--room-white);
-  background: var(--room-dark);
-  border: 0;
-  border-radius: 999px;
-  padding: 12px 20px;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 600;
-}
+
 .connect-button svg {
   width: 20px;
   height: 20px;
 }
-.connect-button:hover:not(:disabled) {
-  background: var(--room-ink);
-}
+
 .text-button {
   background: none;
   border: 0;
@@ -531,7 +536,7 @@ button:disabled {
 }
 .transport {
   display: grid;
-  grid-template-columns: 218px minmax(0, 1fr) 150px;
+  grid-template-columns: 164px minmax(0, 1fr) 150px;
   align-items: center;
   gap: 32px;
   margin-top: 28px;
@@ -539,34 +544,20 @@ button:disabled {
 }
 .transport-buttons {
   display: flex;
-  align-items: stretch;
-  gap: 6px;
-}
-.icon-button,
-.play-button {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 7px;
-  min-width: 64px;
-  height: 66px;
-  background: var(--room-ground);
-  color: var(--room-ink);
-  border: 0;
-  border-radius: 4px;
-  transition:
-    transform 150ms ease,
-    background 150ms ease;
-  font: 11px var(--font-sans);
+  gap: 12px;
 }
-.play-button {
-  min-width: 78px;
-  background: var(--room-dark);
-  color: var(--room-white);
+.transport-buttons .play-button {
+  --button-ink: #fff;
+  --button-top: var(--color-brand-400);
+  --button-base: var(--room-dark);
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
 }
 .transport-buttons button:hover:not(:disabled) {
-  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--room-dark) 12%, var(--room-paper));
+  color: var(--room-dark);
 }
 .transport-buttons button:active:not(:disabled) {
   transform: translateY(1px);
@@ -575,6 +566,12 @@ button:disabled {
   width: 20px;
   height: 20px;
   fill: currentColor;
+}
+.timeline {
+  min-width: 0;
+}
+.transport-buttons span {
+  display: none;
 }
 .seek-control {
   display: flex;
@@ -622,30 +619,39 @@ input[type='range'] {
   margin: 0;
 }
 input[type='range']::-webkit-slider-runnable-track {
-  height: 4px;
-  background: var(--room-ink);
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--room-dark) var(--fill, 0%),
+    color-mix(in srgb, var(--room-ink) 18%, transparent) var(--fill, 0%)
+  );
   border-radius: 2px;
 }
 input[type='range']::-moz-range-track {
-  height: 4px;
-  background: var(--room-ink);
+  height: 3px;
+  background: color-mix(in srgb, var(--room-ink) 18%, transparent);
+  border-radius: 2px;
+}
+input[type='range']::-moz-range-progress {
+  height: 3px;
+  background: var(--room-dark);
   border-radius: 2px;
 }
 input[type='range']::-webkit-slider-thumb {
   appearance: none;
   width: 12px;
-  height: 20px;
-  margin-top: -8px;
+  height: 12px;
+  margin-top: -4.5px;
   background: var(--room-dark);
   border: 2px solid var(--room-paper);
-  border-radius: 3px;
+  border-radius: 50%;
 }
 input[type='range']::-moz-range-thumb {
   width: 8px;
-  height: 16px;
+  height: 8px;
   background: var(--room-dark);
   border: 2px solid var(--room-paper);
-  border-radius: 3px;
+  border-radius: 50%;
 }
 input:disabled {
   cursor: not-allowed;
@@ -722,13 +728,7 @@ input:disabled {
   color: var(--room-muted);
   opacity: 1;
 }
-.search-button {
-  min-height: 44px;
-  padding: 8px 16px;
-  background: var(--room-dark);
-  color: var(--room-white);
-  font-size: 13px;
-}
+
 .search-results {
   min-height: 120px;
 }
@@ -787,7 +787,7 @@ input:disabled {
     padding-right: 0;
   }
   .transport {
-    grid-template-columns: 218px minmax(0, 1fr);
+    grid-template-columns: 164px minmax(0, 1fr);
     gap: 12px 24px;
   }
   .volume-control {
@@ -841,8 +841,8 @@ input:disabled {
   .transport-buttons {
     justify-content: center;
   }
-  .seek-control {
-    grid-row: 2;
+  .timeline {
+    grid-row: 1;
   }
   .volume-control {
     grid-column: 1;
@@ -866,9 +866,6 @@ input:disabled {
   .search-form input {
     font-size: 14px;
   }
-  .search-button {
-    padding-inline: 10px;
-  }
 }
 @media (forced-colors: active) {
   .album-sleeve::before,
@@ -889,5 +886,12 @@ input:disabled {
     transition: none !important;
     animation: none !important;
   }
+}
+.transport-buttons .icon-button,
+.transport-buttons .play-button {
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  flex-shrink: 0;
 }
 </style>

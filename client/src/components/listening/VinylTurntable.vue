@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 
 const props = defineProps({
   spinning: Boolean,
@@ -17,6 +18,7 @@ let renderer,
   controls,
   frame,
   observer,
+  visibilityObserver,
   record,
   arm,
   deckMaterial,
@@ -29,6 +31,7 @@ let textureVersion = 0,
   resize,
   media
 const reduced = ref(false)
+let inView = true
 const geometries = new Set(),
   materials = new Set()
 function mesh(geometry, material, parent = scene) {
@@ -58,6 +61,7 @@ function updateCover() {
   const version = ++textureVersion
   labelMaterial.map?.dispose()
   labelMaterial.map = null
+  labelMaterial.color.set('#171b19')
   labelMaterial.needsUpdate = true
   if (!props.artwork) return
   new THREE.TextureLoader().load(
@@ -70,6 +74,7 @@ function updateCover() {
       texture.colorSpace = THREE.SRGBColorSpace
       labelMaterial.map?.dispose()
       labelMaterial.map = texture
+      labelMaterial.color.set('#ffffff')
       labelMaterial.needsUpdate = true
     },
     undefined,
@@ -77,6 +82,7 @@ function updateCover() {
       if (disposed || version !== textureVersion) return
       labelMaterial.map?.dispose()
       labelMaterial.map = null
+      labelMaterial.color.set('#171b19')
       labelMaterial.needsUpdate = true
     },
   )
@@ -110,7 +116,7 @@ onMounted(() => {
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.3
-    scene.add(new THREE.HemisphereLight(0xfffaf1, 0x747b71, 3))
+    scene.add(new THREE.HemisphereLight(0xfffaf1, 0x747b71, 2))
     const key = new THREE.DirectionalLight(0xfff4e2, 4)
     key.position.set(-3, 8, 4)
     key.castShadow = true
@@ -124,35 +130,62 @@ onMounted(() => {
     const fill = new THREE.DirectionalLight(0xffffff, 2)
     fill.position.set(4, 3, -4)
     scene.add(fill)
+    const rim = new THREE.DirectionalLight(0xf6d9bd, 3)
+    rim.position.set(-4, 2, -5)
+    scene.add(rim)
     const dark = material('#202723', 0.35, 0.5),
       silver = material('#b9bcb5', 0.8, 0.25)
     const brass = material('#bfa77c', 0.75, 0.3),
       vinyl = material('#141917', 0.3, 0.3)
-    const grooveMat = material('#353b37', 0.55, 0.44)
-    deckMaterial = material(props.color, 0.12, 0.55)
-    box(6.2, 0.38, 4.5, deckMaterial, 0, 0, 0)
-    box(6.1, 0.16, 4.4, dark, 0, -0.25, 0)
+    const grooveMat = material('#3f352d', 0.45, 0.32)
+    grooveMat.transparent = true
+    grooveMat.opacity = 0.2
+    deckMaterial = material(props.color, 0.18, 0.36)
+    mesh(new RoundedBoxGeometry(6.2, 0.38, 4.5, 4, 0.12), deckMaterial)
+    const trim = mesh(new RoundedBoxGeometry(6.12, 0.08, 4.42, 3, 0.06), brass)
+    trim.position.y = -0.2
+    const base = mesh(new RoundedBoxGeometry(6.08, 0.14, 4.38, 3, 0.06), dark)
+    base.position.y = -0.3
+    for (const x of [-2.85, 2.85]) {
+      for (const z of [-1.98, 1.98]) {
+        cylinder(0.045, 0.014, silver, x, 0.196, z)
+        box(0.05, 0.006, 0.009, dark, x, 0.206, z)
+      }
+    }
     for (const x of [-2.5, 2.5])
       for (const z of [-1.65, 1.65]) cylinder(0.28, 0.2, dark, x, -0.4, z)
     cylinder(1.94, 0.12, silver, -0.72, 0.25, 0)
+    for (let i = 0; i < 96; i++) {
+      const angle = (i * Math.PI * 2) / 96
+      const notch = box(
+        0.028,
+        0.045,
+        0.012,
+        dark,
+        -0.72 + Math.cos(angle) * 1.941,
+        0.25,
+        Math.sin(angle) * 1.941,
+      )
+      notch.rotation.y = -angle + Math.PI / 2
+    }
     cylinder(1.87, 0.08, dark, -0.72, 0.34, 0)
     record = new THREE.Group()
     record.position.set(-0.72, 0.4, 0)
     scene.add(record)
     const disc = cylinder(1.81, 0.035, vinyl, 0, 0, 0, record)
     disc.userData.playControl = true
-    for (let r = 0.77; r < 1.78; r += 0.036) {
+    labelMaterial = material('#ffffff', 0.08, 0.42)
+    const pictureDisc = mesh(new THREE.CircleGeometry(1.8, 128), labelMaterial, record)
+    pictureDisc.rotation.x = -Math.PI / 2
+    pictureDisc.position.y = 0.022
+    pictureDisc.userData.playControl = true
+    for (let r = 0.23; r < 1.78; r += 0.026) {
       const groove = mesh(new THREE.TorusGeometry(r, 0.003, 3, 160), grooveMat, record)
       groove.rotation.x = Math.PI / 2
-      groove.position.y = 0.021
+      groove.position.y = 0.026
       groove.userData.playControl = true
     }
-    cylinder(0.65, 0.014, brass, 0, 0.027, 0, record)
-    labelMaterial = new THREE.MeshBasicMaterial({ color: '#ffffff' })
-    const label = mesh(new THREE.PlaneGeometry(0.85, 0.85), labelMaterial, record)
-    label.rotation.x = -Math.PI / 2
-    label.position.y = 0.04
-    label.userData.playControl = true
+    cylinder(0.11, 0.02, dark, 0, 0.037, 0, record)
     cylinder(0.065, 0.12, silver, 0, 0.075, 0, record)
     cylinder(0.33, 0.17, dark, 2.1, 0.29, -1.45)
     cylinder(0.24, 0.2, brass, 2.1, 0.42, -1.45)
@@ -167,8 +200,13 @@ onMounted(() => {
     ])
     mesh(new THREE.TubeGeometry(path, 32, 0.045, 12, false), silver, arm)
     cylinder(0.15, 0.5, dark, 0, 0, -0.4, arm).rotation.x = Math.PI / 2
+    for (let z = -0.62; z < -0.2; z += 0.045) {
+      cylinder(0.154, 0.012, silver, 0, 0, z, arm).rotation.x = Math.PI / 2
+    }
+    cylinder(0.12, 0.055, silver, 0, 0.055, 0, arm)
     const head = box(0.22, 0.12, 0.43, dark, -0.53, -0.08, 2.37, arm)
     head.rotation.y = -0.28
+    for (const z of [2.26, 2.38, 2.5]) box(0.13, 0.008, 0.026, silver, -0.53, -0.015, z, arm)
     box(0.035, 0.16, 0.04, brass, -0.56, -0.2, 2.48, arm)
     box(0.12, 0.42, 0.14, silver, 2.13, 0.33, 0.45)
     cylinder(0.2, 0.07, silver, -2.54, 0.24, 1.78).userData.playControl = true
@@ -179,7 +217,7 @@ onMounted(() => {
     cylinder(0.035, 0.02, lightMaterial, -2.19, 0.22, 1.8)
     const floor = mesh(
       new THREE.PlaneGeometry(200, 200),
-      new THREE.ShadowMaterial({ opacity: 0.13 }),
+      new THREE.ShadowMaterial({ opacity: 0.22 }),
     )
     floor.rotation.x = -Math.PI / 2
     floor.position.y = -0.51
@@ -205,12 +243,16 @@ onMounted(() => {
     }
     observer = new ResizeObserver(resize)
     observer.observe(canvas.value)
+    visibilityObserver = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting
+    })
+    visibilityObserver.observe(canvas.value)
     resize()
     const animate = (now) => {
       frame = requestAnimationFrame(animate)
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
-      if (document.hidden) return
+      if (document.hidden || !inView) return
       if (props.spinning && !reduced.value) record.rotation.y -= dt * Math.PI * 1.11
       const target = props.spinning ? -0.43 : 0
       arm.rotation.y = reduced.value ? target : THREE.MathUtils.damp(arm.rotation.y, target, 5, dt)
@@ -250,6 +292,7 @@ onBeforeUnmount(() => {
   ++textureVersion
   cancelAnimationFrame(frame)
   observer?.disconnect()
+  visibilityObserver?.disconnect()
   controls?.dispose()
   media?.cleanup()
   labelMaterial?.map?.dispose()
