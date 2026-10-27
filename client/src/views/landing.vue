@@ -8,6 +8,8 @@ import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
 
+defineOptions({ name: "LandingPage" })
+
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
@@ -203,6 +205,7 @@ const showcase = [
               v-for="(mood, name) in HERO_MOODS"
               :key="name"
               type="button"
+              class="glass-secondary"
               :style="{ '--chip': mood.colour }"
               :aria-pressed="heroMood === name"
               @click="heroMood = heroMood === name ? null : name"
@@ -373,6 +376,9 @@ const showcase = [
   transform: translateY(-1px);
 }
 .hero-mood-options button[aria-pressed='true'] {
+  --button-top: color-mix(in srgb, var(--chip), white 48%);
+  --button-base: var(--chip);
+  --button-ink: #30261d;
   border-color: var(--chip);
   color: #30261d;
   background: var(--chip);

@@ -141,15 +141,19 @@ body {
 }
 
 /* Shared glossy pill style for the main page actions. */
-.glass-action {
+:is(.glass-action, .glass-secondary, .glass-icon) {
+  display: inline-flex;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
   min-height: 44px !important;
   padding: 0.65rem 1.25rem !important;
   border: 1px solid rgba(255, 255, 255, 0.9) !important;
   border-radius: 9999px !important;
-  color: #fff !important;
+  color: var(--button-ink, #fff) !important;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.04) 58%),
-    linear-gradient(180deg, #dc806d, #cd6651 68%) !important;
+    linear-gradient(180deg, var(--button-top, #dc806d), var(--button-base, #cd6651) 68%) !important;
   box-shadow:
     inset 0 2px 2px rgba(255, 255, 255, 0.62),
     inset 0 -3px 5px rgba(75, 32, 24, 0.2),
@@ -157,7 +161,9 @@ body {
   font-family: var(--font-sans) !important;
   font-size: 0.9rem !important;
   font-weight: 700 !important;
-  text-decoration: none;
+  text-decoration: none !important;
+  cursor: pointer;
+  line-height: 1.25 !important;
   transition:
     box-shadow 160ms ease,
     transform 160ms ease,
@@ -166,7 +172,7 @@ body {
   -webkit-backdrop-filter: blur(8px);
 }
 
-.glass-action:hover {
+:is(.glass-action, .glass-secondary, .glass-icon):hover {
   filter: brightness(1.04);
   transform: translateY(-1px);
   box-shadow:
@@ -175,8 +181,8 @@ body {
     0 6px 14px rgba(125, 71, 55, 0.26) !important;
 }
 
-.glass-action:disabled,
-.glass-action[aria-disabled='true'] {
+:is(.glass-action, .glass-secondary, .glass-icon):disabled,
+:is(.glass-action, .glass-secondary, .glass-icon)[aria-disabled='true'] {
   border-color: rgba(255, 255, 255, 0.8) !important;
   color: #625d5a !important;
   background:
@@ -188,12 +194,63 @@ body {
     0 2px 5px rgba(59, 43, 35, 0.1) !important;
   filter: saturate(0.25);
   cursor: not-allowed;
+  opacity: 1 !important;
   transform: none;
 }
 
-.glass-action:focus-visible {
+:is(.glass-action, .glass-secondary, .glass-icon):focus-visible {
   outline: 3px solid rgba(205, 102, 81, 0.35);
   outline-offset: 3px;
+}
+
+/* Neutral actions and icon controls share the same bevel and interaction states. */
+.glass-secondary,
+.glass-icon {
+  --button-ink: #292321;
+  --button-top: #fff;
+  --button-base: #f0ece9;
+}
+.dark .glass-secondary,
+.dark .glass-icon {
+  --button-ink: var(--ui-text);
+  --button-top: #49424e;
+  --button-base: #302c35;
+}
+.glass-icon {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+  font-size: 1.25rem !important;
+}
+.glass-secondary[aria-pressed='true'] {
+  --button-ink: #fff;
+  --button-top: #dc806d;
+  --button-base: #cd6651;
+}
+.glass-text {
+  min-height: 44px;
+  font: 600 0.9rem var(--font-sans);
+  color: var(--ui-text);
+  cursor: pointer;
+  text-underline-offset: 4px;
+}
+.glass-text:hover {
+  color: var(--ui-primary);
+}
+.glass-text:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ui-primary) 45%, transparent);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.glass-action, .glass-secondary, .glass-icon) {
+    transition: none !important;
+  }
+  :is(.glass-action, .glass-secondary, .glass-icon):hover {
+    transform: none;
+  }
 }
 
 /* In the base layer so the type scale classes below can override it. */
@@ -279,4 +336,10 @@ body {
   .dark .eyebrow {
     color: var(--color-brand-300);
   }
+}
+
+.glass-icon.glass-action {
+  --button-ink: #fff;
+  --button-top: #dc806d;
+  --button-base: #cd6651;
 }

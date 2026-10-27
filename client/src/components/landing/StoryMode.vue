@@ -101,7 +101,7 @@ const fill = (position) => {
 </script>
 
 <template>
-  <button type="button" class="story-open" @click="start">
+  <button type="button" class="story-open glass-secondary" @click="start">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
     See how it works
   </button>
@@ -123,13 +123,13 @@ const fill = (position) => {
           <span v-for="(_, position) in SLIDES" :key="position"><i :style="{ width: fill(position) }" /></span>
         </div>
         <div class="story-tools">
-          <button type="button" :aria-label="paused ? 'Play' : 'Pause'" @click="paused = !paused">
+          <button type="button" class="glass-icon" :aria-label="paused ? 'Play' : 'Pause'" @click="paused = !paused">
             <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
             <svg v-else viewBox="0 0 16 16" aria-hidden="true">
               <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
             </svg>
           </button>
-          <button type="button" aria-label="Close" @click="close">
+          <button type="button" class="glass-icon" aria-label="Close" @click="close">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9m0-9l-9 9" /></svg>
           </button>
         </div>
@@ -142,8 +142,8 @@ const fill = (position) => {
             <h2>{{ slide.title }}</h2>
             <p class="story-text">{{ slide.text }}</p>
             <div v-if="slide.last" class="story-actions">
-              <RouterLink class="story-cta" to="/login" @click="close">Get started</RouterLink>
-              <button type="button" class="story-again" @click="start">Watch again</button>
+              <RouterLink class="story-cta glass-action" to="/login" @click="close">Get started</RouterLink>
+              <button type="button" class="story-again glass-secondary" @click="start">Watch again</button>
             </div>
           </div>
         </Transition>
@@ -311,16 +311,7 @@ const fill = (position) => {
   font-weight: 700;
   text-decoration: none;
 }
-.story-again {
-  border: 0;
-  color: #fff;
-  background: transparent;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
-}
+
 .story-hint {
   position: absolute;
   bottom: 20px;
@@ -363,4 +354,5 @@ const fill = (position) => {
     transition: none;
   }
 }
+
 </style>

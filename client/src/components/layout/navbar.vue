@@ -160,8 +160,8 @@ watch(
         <!-- Log out lives on the profile page. -->
         <RouterLink
           v-if="!auth.user"
-          class="header-cta"
-          :class="isListeningPage ? 'dashboard-signin' : 'glass-action'"
+          class="header-cta glass-action"
+          :class="{ 'dashboard-signin': isListeningPage }"
           to="/login"
           >Sign in</RouterLink
         >
@@ -170,7 +170,7 @@ watch(
       <button
         v-if="isCollapsed"
         type="button"
-        class="menu-button"
+        class="menu-button glass-icon"
         :class="{ 'is-open': menuOpen }"
         :aria-expanded="menuOpen"
         aria-controls="site-menu"
@@ -185,7 +185,7 @@ watch(
         <a
           ref="profile"
           :href="href"
-          class="profile-button"
+          class="profile-button glass-icon"
           :class="{ 'is-active': isActive }"
           :aria-current="isActive ? 'page' : undefined"
           :aria-label="auth.user ? `Your profile, logged in as ${auth.user.displayName}` : 'Your profile'"
@@ -517,21 +517,9 @@ watch(
     transition: none;
   }
 }
-.dashboard-signin {
-  color: #fff;
-  background: #a54b3b;
-  border-radius: 999px;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-}
-.dashboard-signin:hover {
-  background: #873c2f;
-}
-.dashboard-signin:focus-visible {
-  outline: 2px solid #a54b3b;
-  outline-offset: 4px;
-}
+
+
+
 
 /* Dark mode: the bar matches the app's navy page and turns into dark glass on scroll. */
 .dark .site-header {
@@ -621,7 +609,8 @@ watch(
   .theme-thumb { width: 22px; height: 22px; }
   .theme-toggle.is-dark .theme-thumb { transform: translateX(24px); }
   .theme-icon { width: 14px; height: 14px; }
-  /* The landing bar holds the brand, toggle, Get started and profile on one row. */
+  /* The landing CTA leads into the app; omit the duplicate profile shortcut on phones. */
+  .site-header-landing .profile-button { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
   .site-header-landing .brand-group { gap: 6px; }
   .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }

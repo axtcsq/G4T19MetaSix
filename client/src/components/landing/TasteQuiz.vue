@@ -85,7 +85,7 @@ const result = computed(() => {
           <p class="taste-tagline">{{ result.tagline }}</p>
           <div class="taste-actions">
             <RouterLink class="taste-cta" to="/quiz">Take the full quizzes →</RouterLink>
-            <button type="button" class="taste-again" @click="picks = []">Try again</button>
+            <button type="button" class="taste-again glass-secondary" @click="picks = []">Try again</button>
           </div>
         </div>
       </Transition>
@@ -227,15 +227,6 @@ const result = computed(() => {
   font-weight: 700;
   text-decoration: none;
 }
-.taste-again {
-  border: 0;
-  color: var(--ui-primary);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-}
 
 .swap-enter-active,
 .swap-leave-active {
@@ -276,4 +267,5 @@ const result = computed(() => {
     animation: none;
   }
 }
+
 </style>
