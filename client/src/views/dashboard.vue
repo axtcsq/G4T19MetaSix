@@ -31,7 +31,7 @@ onMounted(() => {
     <div class="dashboard-inner">
       <div class="dashboard-top">
         <div>
-          <h1 class="page-title">Your Listening Portrait</h1>
+          <h1 class="page-title">Your Music at a Glance</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
             ><span>{{ historyLabel }}</span>
@@ -50,15 +50,10 @@ onMounted(() => {
               {{ option === 'weekly' ? 'Last 7 days' : 'This month' }}
             </button>
           </div>
-          <div v-if="connected" class="history-actions">
-            <button class="art-pause glass-secondary" :disabled="historyLoading" @click="spotify.refreshHistory">
-              Refresh history
-            </button>
-          </div>
         </div>
       </div>
       <p v-if="!connected">
-        Connect Spotify to see your listening portrait.
+        Connect Spotify to see your music at a glance.
         <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
@@ -72,7 +67,7 @@ onMounted(() => {
           No recent plays in this period.
           <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"
             >Listen on Spotify</a
-          >, then refresh your history.
+          >, then return to this page to see your history.
         </p>
         <section class="portrait-layout" aria-labelledby="garden-heading">
           <div class="portrait-art">
@@ -275,20 +270,11 @@ onMounted(() => {
   font: 20px/1.5 var(--font-serif);
   max-width: 48ch;
 }
-.history-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-}
 .dashboard-toolbar {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-}
-.history-actions .art-pause:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 @media (max-width: 768px) {
   .restored-charts {
@@ -807,9 +793,6 @@ onMounted(() => {
   }
   .dashboard-toolbar {
     align-items: flex-start;
-  }
-  .history-actions {
-    justify-content: flex-start;
   }
 }
 </style>
