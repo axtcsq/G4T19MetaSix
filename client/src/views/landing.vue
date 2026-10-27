@@ -1,5 +1,5 @@
 <script setup>
-import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
 import MusicJournal from '@/components/landing/MusicJournal.vue'
@@ -61,6 +61,18 @@ function resetPointer(event) {
   card.style.setProperty('--rx', '0deg')
   card.style.setProperty('--ry', '0deg')
 }
+// Picking a mood in the hero tints the page, recolours the margin notes and
+// says what MetaFor would play. Picking it again clears it.
+const HERO_MOODS = {
+  Happy: { colour: '#f2c335', line: 'Bright and upbeat. MetaFor would keep the good mood going.' },
+  Sad: { colour: '#4389d1', line: 'Gentle and slow. Songs to sit with you, then lift you up.' },
+  Relaxed: { colour: '#998ba1', line: 'Soft and easy. Acoustic and lo-fi to keep things calm.' },
+  Anxious: { colour: '#ed8a35', line: 'Steady and calming. A slow beat to help you breathe.' },
+  Angry: { colour: '#d94a45', line: 'Loud first, calmer after. Let it out, then wind down.' },
+}
+const heroMood = ref(null)
+const moodStyle = computed(() => (heroMood.value ? { '--mood-colour': HERO_MOODS[heroMood.value].colour } : {}))
+
 // One row per part of the app, each with a small made-up preview to try.
 const showcase = [
   {
@@ -99,7 +111,7 @@ const showcase = [
 </script>
 
 <template>
-  <main class="landing-page">
+  <main class="landing-page" :class="{ 'has-mood': heroMood }" :style="moodStyle">
     <NoteMargins />
     <section id="about" class="intro landing-shell" aria-labelledby="intro-title">
       <div class="intro-copy">
@@ -111,6 +123,22 @@ const showcase = [
           Your music can be a window into how you feel. MetaFor brings your Spotify listening and
           daily reflections together, helping you notice the moods and moments behind your playlists.
         </p>
+        <div class="hero-mood" role="group" aria-labelledby="hero-mood-label">
+          <p id="hero-mood-label" class="hero-mood-label">How are you feeling right now?</p>
+          <div class="hero-mood-options">
+            <button
+              v-for="(mood, name) in HERO_MOODS"
+              :key="name"
+              type="button"
+              :style="{ '--chip': mood.colour }"
+              :aria-pressed="heroMood === name"
+              @click="heroMood = heroMood === name ? null : name"
+            >
+              {{ name }}
+            </button>
+          </div>
+          <p class="hero-mood-line" aria-live="polite">{{ heroMood ? HERO_MOODS[heroMood].line : '' }}</p>
+        </div>
       </div>
 
       <div class="cassette-area">
@@ -199,10 +227,87 @@ const showcase = [
   --brand: var(--ui-primary);
   --brown: var(--ui-primary);
   --ink: var(--ui-text);
+  position: relative;
+  isolation: isolate;
   min-height: calc(100vh - 77px);
   overflow: hidden;
   color: var(--ink);
   background: var(--ui-bg);
+}
+
+/* The picked mood's colour glows softly across the top of the page, under
+   everything else, and the margin notes take it on too. */
+.landing-page::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 900px;
+  background: radial-gradient(
+    ellipse 70% 60% at 30% 0%,
+    color-mix(in srgb, var(--mood-colour, transparent) 22%, transparent),
+    transparent 70%
+  );
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+}
+.landing-page.has-mood::before {
+  opacity: 1;
+}
+.landing-page.has-mood {
+  --note-colour: color-mix(in srgb, var(--mood-colour) 85%, var(--ui-text));
+}
+.hero-mood {
+  margin-top: 22px;
+}
+.hero-mood-label {
+  margin: 0 0 10px;
+  color: var(--ui-text);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.hero-mood-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hero-mood-options button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--chip), transparent 50%);
+  border-radius: 999px;
+  color: var(--ui-text);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+.hero-mood-options button:hover {
+  border-color: var(--chip);
+  transform: translateY(-1px);
+}
+.hero-mood-options button[aria-pressed='true'] {
+  border-color: var(--chip);
+  color: #30261d;
+  background: var(--chip);
+}
+.hero-mood-options button:focus-visible {
+  outline: 3px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+.hero-mood-line {
+  min-height: 1.5em;
+  margin: 10px 0 0;
+  color: var(--ui-text-muted);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
 }
 
 .landing-shell {
@@ -621,7 +726,9 @@ const showcase = [
   .typing-cursor {
     animation: none;
   }
-  .get-started {
+  .get-started,
+  .hero-mood-options button,
+  .landing-page::before {
     transition: none;
   }
   /* The light still follows the mouse, but nothing moves. */

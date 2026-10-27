@@ -309,7 +309,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   border: 0 solid var(--ui-text-muted);
-  color: var(--ui-primary);
+  /* The landing page sets --note-colour to the mood picked in the hero. */
+  color: var(--note-colour, var(--ui-primary));
   pointer-events: none;
 }
 </style>
