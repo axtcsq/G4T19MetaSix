@@ -10,6 +10,9 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 // be dragged round, like the cassette above it.
 const props = defineProps({
   object: { type: String, required: true, validator: (value) => ['spotify', 'journal'].includes(value) },
+  // False when the page moves the whole canvas instead, like dragging the
+  // Spotify tile into the journal.
+  rotatable: { type: Boolean, default: true },
 })
 
 const canvas = ref(null)
@@ -209,6 +212,7 @@ onMounted(() => {
   controls.enableDamping = true
   controls.enablePan = false
   controls.enableZoom = false
+  controls.enableRotate = props.rotatable
 
   resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas.value)
@@ -242,18 +246,27 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <canvas ref="canvas" class="landing-object" role="img" :aria-label="LABELS[object]" />
+  <canvas
+    ref="canvas"
+    class="landing-object"
+    :class="{ 'is-rotatable': rotatable }"
+    role="img"
+    :aria-label="rotatable ? LABELS[object] : LABELS[object].replace('Drag to rotate.', 'Drag it into the journal.')"
+  />
 </template>
 
 <style scoped>
 .landing-object {
   display: block;
-  cursor: grab;
   outline: none;
+}
+
+.landing-object.is-rotatable {
+  cursor: grab;
   touch-action: pan-y;
 }
 
-.landing-object:active {
+.landing-object.is-rotatable:active {
   cursor: grabbing;
 }
 </style>
