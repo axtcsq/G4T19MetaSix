@@ -68,30 +68,37 @@ function resetPointer(event) {
   card.style.setProperty('--rx', '0deg')
   card.style.setProperty('--ry', '0deg')
 }
+// A wave that swells and fades, repeating every 1200 units, for the closing.
+const WAVE = Array.from({ length: 241 }, (_, step) => {
+  const x = step * 10
+  const swell = 0.35 + 0.65 * Math.abs(Math.sin((x / 1200) * Math.PI))
+  return `${step ? 'L' : 'M'}${x} ${(60 + Math.sin((x / 150) * Math.PI) * 34 * swell).toFixed(1)}`
+}).join(' ')
+
 // The three Mirror cards, each with an example of what MetaFor might notice.
 const mirrorCards = [
   {
     title: 'Listen to Yourself',
+    drawing: 'repeat',
     text: 'The songs you return to can hold clues about your mood, memories, and what matters to you.',
     example: 'You went back to the same three songs in the week before your exams.',
   },
   {
     title: 'Find the Patterns',
+    drawing: 'pattern',
     text: 'Explore your Spotify playlists and see your listening habits from a fresh perspective.',
     example: 'Your Fridays lean upbeat, and Sunday nights turn quiet and acoustic.',
-    drawing: 'repeat',
   },
   {
     title: 'Make Space to Reflect',
+    drawing: 'journal',
     text: 'Pair music insights with a daily mood log and journal to understand yourself over time.',
     example: 'On days you logged Anxious, you played twice as much lo-fi.',
-    drawing: 'pattern',
   },
 ]
 const openCard = ref(null)
 
 // A short trail of notes follows the mouse across the hero.
-    drawing: 'journal',
 const TRAIL_GLYPHS = ['♪', '♫', '♩', '♬']
 const trail = ref([])
 let trailId = 0
@@ -260,6 +267,7 @@ const showcase = [
           @pointerleave="resetPointer"
         >
           <span class="feature-step" aria-hidden="true">0{{ index + 1 }}</span>
+          <MirrorDrawing :kind="card.drawing" />
           <h3 class="glow-text">{{ card.title }}</h3>
           <p class="glow-text" aria-live="polite">
             <span v-if="openCard === index" class="example-label">For example</span>
@@ -267,7 +275,6 @@ const showcase = [
           </p>
           <button
             type="button"
-          <MirrorDrawing :kind="card.drawing" />
             class="example-toggle"
             :aria-pressed="openCard === index"
             @click="openCard = openCard === index ? null : index"
@@ -294,6 +301,8 @@ const showcase = [
 
     <TasteQuiz />
 
+    <StatementLine />
+
     <section
       class="closing landing-shell follow"
       aria-labelledby="closing-title"
@@ -314,6 +323,16 @@ const showcase = [
         aria-hidden="true"
       />
       <div class="liquid-scrim" aria-hidden="true" />
+      <!-- A faint sound wave drifting sideways behind the text. It's two
+           repeats wide, so sliding it by half loops without a jump. -->
+      <svg
+        class="closing-wave"
+        viewBox="0 0 2400 120"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path :d="WAVE" />
+      </svg>
       <h2 id="closing-title">
         <span class="closing-lead">Ready to discover</span>
         <span class="closing-accent">The Real You?</span>
@@ -814,6 +833,25 @@ const showcase = [
   background: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(40, 24, 42, 0.5), transparent 100%);
   pointer-events: none;
 }
+.closing-wave {
+  position: absolute;
+  z-index: -1;
+  bottom: 18%;
+  left: 0;
+  width: 200%;
+  height: 120px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+  animation: wave-slide 26s linear infinite;
+  pointer-events: none;
+}
+@keyframes wave-slide {
+  to {
+    translate: -50% 0;
+  }
+}
 .closing h2 {
   display: flex;
   flex-direction: column;
@@ -917,6 +955,9 @@ const showcase = [
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .closing-wave {
+    animation: none;
+  }
   .pan-band {
     animation: none;
   }
