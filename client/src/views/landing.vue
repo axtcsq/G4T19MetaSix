@@ -5,6 +5,7 @@ import NoteMargins from '@/components/landing/NoteMargins.vue'
 import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
+import CassetteTune from '@/components/landing/CassetteTune.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -145,6 +146,7 @@ const showcase = [
       <div class="cassette-area">
         <CassetteViewer />
         <p class="rotate-hint">Drag the cassette to rotate</p>
+        <CassetteTune />
       </div>
     </section>
 
