@@ -3,6 +3,7 @@ import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
 import LandingObject3D from '@/components/landing/LandingObject3D.vue'
+import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -60,7 +61,7 @@ function resetPointer(event) {
   card.style.setProperty('--rx', '0deg')
   card.style.setProperty('--ry', '0deg')
 }
-// One row per part of the app, each with a small made-up preview of the page.
+// One row per part of the app, each with a small made-up preview to try.
 const showcase = [
   {
     id: 'mood',
@@ -94,14 +95,6 @@ const showcase = [
     to: '/quiz',
     link: 'Take a quiz',
   },
-]
-const previewMoods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
-// A few days of the made-up month have a check-in.
-const previewDays = { 2: '😊', 3: '😌', 6: '😟', 9: '😊', 10: '😊', 13: '😰', 16: '😌', 17: '😊', 20: '😠', 23: '😌' }
-const previewTraits = [
-  { left: 'Amped', right: 'Mellow', value: 34 },
-  { left: 'Explorer', right: 'Loyalist', value: 72 },
-  { left: 'Wordsmith', right: 'Soundscaper', value: 58 },
 ]
 </script>
 
@@ -169,57 +162,7 @@ const previewTraits = [
           <RouterLink class="showcase-link" :to="feature.to">{{ feature.link }} →</RouterLink>
         </div>
 
-        <!-- Pictures of each page, not the real thing, so screen readers skip them. -->
-        <div class="preview" :class="`preview-${feature.id}`" aria-hidden="true">
-          <template v-if="feature.id === 'mood'">
-            <p class="preview-label">How are you feeling today?</p>
-            <div class="preview-moods">
-              <span
-                v-for="mood in previewMoods"
-                :key="mood"
-                :class="[`mood-${mood.toLowerCase()}`, { 'is-picked': mood === 'Happy' }]"
-                >{{ mood }}</span
-              >
-            </div>
-            <p class="preview-note">Finally finished my project. Played my favourite album on the way home.</p>
-          </template>
-
-          <template v-else-if="feature.id === 'calendar'">
-            <p class="preview-label">October</p>
-            <div class="calendar-grid">
-              <span v-for="day in ['S', 'M', 'T', 'W', 'T', 'F', 'S']" :key="day" class="weekday">{{ day }}</span>
-              <span v-for="day in 28" :key="`d${day}`" class="day" :class="{ 'is-today': day === 24 }">
-                <small>{{ day }}</small>{{ previewDays[day] }}
-              </span>
-            </div>
-          </template>
-
-          <template v-else-if="feature.id === 'listen'">
-            <div class="preview-record"><span /></div>
-            <div class="preview-player">
-              <strong>Your top track this week</strong>
-              <small>Played 23 times</small>
-              <div class="preview-bar"><span /></div>
-              <div class="preview-controls">
-                <svg viewBox="0 0 16 16"><path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" /></svg>
-                <svg class="is-main" viewBox="0 0 16 16">
-                  <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
-                </svg>
-                <svg viewBox="0 0 16 16"><path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" /></svg>
-              </div>
-            </div>
-          </template>
-
-          <template v-else>
-            <p class="preview-label">Your MetaFor personality</p>
-            <strong class="preview-type">The Daydreamer</strong>
-            <div v-for="trait in previewTraits" :key="trait.left" class="preview-trait">
-              <span>{{ trait.left }}</span>
-              <div class="preview-bar"><span :style="{ width: `${trait.value}%` }" /></div>
-              <span>{{ trait.right }}</span>
-            </div>
-          </template>
-        </div>
+        <ShowcasePreview :kind="feature.id" :name="feature.eyebrow" />
       </article>
     </section>
 
@@ -573,198 +516,6 @@ const previewTraits = [
   text-decoration-color: currentColor;
 }
 
-/* The preview cards share the feature cards' look. */
-.preview {
-  display: flex;
-  min-height: 240px;
-  flex-direction: column;
-  justify-content: center;
-  gap: 14px;
-  padding: 26px;
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  background: var(--ui-bg-elevated);
-  box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
-  font-family: var(--font-sans);
-  user-select: none;
-}
-.preview-label {
-  margin: 0;
-  color: var(--ui-text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* The same mood colours as the Daily Mood page. */
-.preview-moods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.preview-moods span {
-  --mood: #cd6651;
-  padding: 6px 14px;
-  border: 1px solid color-mix(in srgb, var(--mood), transparent 55%);
-  border-radius: 999px;
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.preview-moods .mood-sad { --mood: #4389d1; }
-.preview-moods .mood-happy { --mood: #f2c335; }
-.preview-moods .mood-relaxed { --mood: #998ba1; }
-.preview-moods .mood-anxious { --mood: #ed8a35; }
-.preview-moods .mood-angry { --mood: #d94a45; }
-.preview-moods .is-picked {
-  border-color: var(--mood);
-  color: #30261d;
-  background: var(--mood);
-}
-.preview-note {
-  margin: 0;
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: var(--ink);
-  background: repeating-linear-gradient(
-    transparent 0 25px,
-    color-mix(in srgb, var(--ui-border), transparent 20%) 25px 26px
-  ),
-    var(--ui-bg);
-  /* Starts under the top padding so each line sits under a row of text. */
-  background-position: 0 10px, 0 0;
-  font-family: var(--font-serif);
-  font-size: 1rem;
-  line-height: 26px;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
-  text-align: center;
-}
-.calendar-grid .weekday {
-  color: var(--ui-text-muted);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-.calendar-grid .day {
-  display: flex;
-  aspect-ratio: 1.6;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background: var(--ui-bg-accented);
-  font-size: clamp(0.85rem, 1.6vw, 1.1rem);
-  line-height: 1;
-}
-.calendar-grid small {
-  color: var(--ui-text-muted);
-  font-size: 0.6rem;
-}
-.calendar-grid .is-today {
-  box-shadow: inset 0 0 0 2px #cd6651;
-}
-
-.preview-listen {
-  flex-direction: row;
-  align-items: center;
-  gap: 24px;
-}
-.preview-record {
-  display: grid;
-  width: clamp(110px, 14vw, 150px);
-  flex-shrink: 0;
-  aspect-ratio: 1;
-  place-items: center;
-  border-radius: 50%;
-  background: repeating-radial-gradient(circle, #1b1517 0 2px, #2c2326 2px 4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  animation: preview-spin 6s linear infinite;
-}
-.preview-record span {
-  width: 36%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, #1b1517 0 8%, transparent 9%),
-    linear-gradient(135deg, var(--color-brand-400), #998ba1);
-}
-.preview-player {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 4px;
-}
-.preview-player strong {
-  color: var(--ink);
-  font-size: 1rem;
-}
-.preview-player small {
-  color: var(--ui-text-muted);
-  font-size: 0.78rem;
-}
-.preview-bar {
-  height: 4px;
-  margin-top: 10px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(127, 127, 127, 0.3);
-}
-.preview-bar span {
-  display: block;
-  width: 40%;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-brand-500);
-}
-.preview-controls {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  margin-top: 10px;
-  color: var(--ink);
-}
-.preview-controls svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-.preview-controls .is-main {
-  width: 22px;
-  height: 22px;
-}
-
-.preview-type {
-  margin-top: -8px;
-  color: var(--ink);
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-.preview-trait {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr 5.5rem;
-  align-items: center;
-  gap: 10px;
-  color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-.preview-trait span:last-child {
-  text-align: right;
-}
-.preview-trait .preview-bar {
-  margin: 0;
-}
-
-@keyframes preview-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .closing {
   display: flex;
   min-height: 460px;
@@ -907,10 +658,6 @@ const previewTraits = [
   .showcase-row:nth-child(odd of .showcase-row) .preview {
     order: 0;
   }
-  .preview {
-    min-height: 0;
-    padding: 20px;
-  }
   .closing {
     min-height: 320px;
     gap: 28px;
@@ -923,9 +670,6 @@ const previewTraits = [
   }
   .get-started {
     transition: none;
-  }
-  .preview-record {
-    animation: none;
   }
   /* The light still follows the mouse, but nothing moves. */
   .follow {
