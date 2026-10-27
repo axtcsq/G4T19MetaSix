@@ -3,12 +3,12 @@ import { computed, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 import ButterflyMark from '@/components/layout/ButterflyMark.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 
 const showHistory = ref(false)
-const showDrawing = ref(false)
 const saveStatus = ref('')
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
@@ -85,10 +85,6 @@ function selectMood(mood) {
   clearSaveFeedback()
 }
 
-function moodBadgeClass(mood) {
-  return `mood-badge--${mood.toLowerCase()}`
-}
-
 async function createJournalIdea() {
   const prompt = ideaPrompt.value.trim()
   if (!prompt || isGeneratingIdea.value) return
@@ -150,7 +146,7 @@ onMounted(loadEntries)
         </div>
         <button
           type="button"
-          class="history-toggle"
+          class="history-toggle glass-secondary"
           :aria-expanded="showHistory"
           aria-controls="past-entries"
           @click="showHistory = !showHistory"
@@ -176,6 +172,7 @@ onMounted(loadEntries)
                   :aria-pressed="selectedMood === mood"
                   @click="selectMood(mood)"
                 >
+                  <MoodFace :mood="mood" class="button-mood-face" />
                   {{ mood }}
                 </button>
               </div>
@@ -220,7 +217,7 @@ onMounted(loadEntries)
                     <h2 id="helper-title">MetaFor helper</h2>
                     <button
                       type="button"
-                      class="helper-close"
+                      class="helper-close glass-icon"
                       aria-label="Close MetaFor helper"
                       @click="helperOpen = false"
                     >
@@ -270,10 +267,6 @@ onMounted(loadEntries)
 
         <section v-show="showHistory" id="past-entries" aria-label="Past entries">
           <div class="journal-history">
-            <p class="history-count text-sm text-muted">
-              {{ logs.length }} {{ logs.length === 1 ? 'entry' : 'entries' }}
-            </p>
-
             <p
               v-if="isLoading"
               role="status"
@@ -303,19 +296,17 @@ onMounted(loadEntries)
 
             <div v-else class="history-list">
               <article v-for="log in logs" :key="log._id" class="journal-entry">
-                <div class="flex items-center justify-between gap-3">
-                  <time :datetime="log.createdAt" class="font-sans text-sm text-muted">
-                    {{ formatDate(log.createdAt) }}
-                  </time>
-                  <UBadge :class="['mood-badge', moodBadgeClass(log.mood)]" variant="soft">
-                    {{ log.mood }}
-                  </UBadge>
-                </div>
-
                 <div
                   class="entry-sheet notebook-page"
                   :class="{ 'has-drawing': log.drawing?.items?.length }"
                 >
+                  <header class="entry-metadata">
+                    <time :datetime="log.createdAt">{{ formatDate(log.createdAt) }}</time>
+                    <span class="entry-emotion">
+                      <MoodFace :mood="log.mood" class="emotion-sketch" />
+                      {{ log.mood }}
+                    </span>
+                  </header>
                   <p>{{ log.journal || 'No written reflection.' }}</p>
                   <JournalDrawingNote
                     v-if="log.drawing?.items?.length"
@@ -330,22 +321,14 @@ onMounted(loadEntries)
       </div>
 
       <div v-show="!showHistory" class="writing-extras">
-        <details
-          class="drawing-disclosure"
-          :open="showDrawing"
-          @toggle="showDrawing = $event.target.open"
-        >
-          <summary>Add a drawing <span>Optional</span></summary>
-          <section class="mt-5" aria-labelledby="journal-canvas-heading">
-            <div class="mb-5">
-              <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
-              <p class="body-text mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
-            </div>
-            <JournalCanvas v-model="drawingData" />
-          </section>
-        </details>
+        <section class="drawing-section" aria-labelledby="journal-canvas-heading">
+          <div class="mb-5">
+            <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
+            <p class="body-text mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
+          </div>
+          <JournalCanvas v-model="drawingData" />
+        </section>
         <div class="save-row">
-          <p class="text-sm text-muted">A few words are enough.</p>
           <UButton
             form="daily-journal-form"
             type="submit"
@@ -398,8 +381,7 @@ onMounted(loadEntries)
 .history-toggle:hover {
   text-decoration: underline;
 }
-.history-toggle:focus-visible,
-summary:focus-visible {
+.history-toggle:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 4px;
 }
@@ -409,24 +391,13 @@ summary:focus-visible {
 .writing-extras {
   margin-top: 24px;
 }
-.drawing-disclosure {
-  margin-top: 24px;
-}
-.drawing-disclosure summary {
-  cursor: pointer;
-  padding-block: 12px;
-  font-weight: 600;
-}
-.drawing-disclosure summary span {
-  margin-left: 12px;
-  font-size: 0.85rem;
-  color: var(--ui-text-muted);
-  font-weight: 400;
+.drawing-section {
+  margin-top: 40px;
 }
 .save-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   margin-top: 28px;
 }
@@ -439,8 +410,12 @@ summary:focus-visible {
 .mood-option {
   --mood-color: #cd6651;
   --mood-text: #fff;
-  min-height: 44px;
-  padding: 0.55rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0.55rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.94);
   border-radius: 9999px;
   color: #292321;
@@ -465,6 +440,157 @@ summary:focus-visible {
     transform 160ms ease;
 }
 
+.button-mood-face {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  transform-origin: center;
+}
+.mood-option:is(:hover, :focus-visible) :deep(.face-rest) {
+  opacity: 0;
+}
+.mood-option:is(:hover, :focus-visible) :deep(.face-expression) {
+  opacity: 1;
+}
+.mood-option--happy:is(:hover, :focus-visible) .button-mood-face {
+  animation: happy-hello 1100ms ease both;
+}
+.mood-option--happy:is(:hover, :focus-visible) :deep(.wink-eye) {
+  animation: happy-wink 1100ms ease both;
+}
+.mood-option--sad:is(:hover, :focus-visible) :deep(.sad-tear) {
+  animation: little-tear 1700ms ease-in both;
+}
+.mood-option--relaxed:is(:hover, :focus-visible) .button-mood-face {
+  animation: calm-sigh 1800ms ease-in-out both;
+}
+.mood-option--relaxed:is(:hover, :focus-visible) :deep(.calm-breath) {
+  animation: exhale 1800ms ease-out both;
+}
+.mood-option--anxious:is(:hover, :focus-visible) :deep(.anxious-pupils) {
+  animation: nervous-glance 1600ms ease-in-out both;
+}
+.mood-option--anxious:is(:hover, :focus-visible) :deep(.anxious-drop) {
+  animation: little-tear 1600ms ease-in both;
+}
+.mood-option--angry:is(:hover, :focus-visible) .button-mood-face {
+  animation: grumpy-shake 1000ms ease both;
+}
+.mood-option--angry:is(:hover, :focus-visible) :deep(.angry-brows) {
+  animation: brow-furrow 1000ms ease both;
+}
+@keyframes happy-hello {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  30% {
+    transform: rotate(-12deg) scale(1.15);
+  }
+  65% {
+    transform: rotate(7deg) scale(1.08);
+  }
+}
+@keyframes happy-wink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35%,
+  55% {
+    opacity: 0.35;
+  }
+}
+@keyframes little-tear {
+  0%,
+  15% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  35% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes calm-sigh {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  45% {
+    transform: rotate(-7deg) scale(1.12);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.02);
+  }
+}
+@keyframes exhale {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translateX(-1px);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(3px);
+  }
+}
+@keyframes nervous-glance {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  35% {
+    transform: translateX(-2px);
+  }
+  55%,
+  70% {
+    transform: translateX(2px);
+  }
+}
+@keyframes grumpy-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  50% {
+    transform: rotate(-9deg);
+  }
+  35%,
+  65% {
+    transform: rotate(9deg);
+  }
+  80% {
+    transform: rotate(-3deg);
+  }
+}
+@keyframes brow-furrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35%,
+  70% {
+    transform: translateY(1.5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mood-option,
+  .mood-option .button-mood-face,
+  .mood-option :deep(*) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 .mood-option--sad {
   --mood-color: #4389d1;
 }
@@ -510,48 +636,12 @@ summary:focus-visible {
   box-shadow: 0 0 0 2px #fff;
 }
 
-.history-count {
-  margin-bottom: 24px;
-}
 .history-list {
   display: grid;
   gap: 32px;
 }
 .journal-entry {
   min-width: 0;
-}
-.journal-entry > div {
-  margin-bottom: 12px;
-}
-.mood-badge {
-  border: 1px solid color-mix(in srgb, var(--mood-color), white 45%);
-  color: var(--mood-text) !important;
-  background: color-mix(in srgb, var(--mood-color), white 80%) !important;
-}
-
-.mood-badge--sad {
-  --mood-color: #4389d1;
-  --mood-text: #17436d;
-}
-
-.mood-badge--happy {
-  --mood-color: #f2c335;
-  --mood-text: #493713;
-}
-
-.mood-badge--relaxed {
-  --mood-color: #998ba1;
-  --mood-text: #4b4052;
-}
-
-.mood-badge--anxious {
-  --mood-color: #ed8a35;
-  --mood-text: #70400d;
-}
-
-.mood-badge--angry {
-  --mood-color: #d94a45;
-  --mood-text: #762722;
 }
 
 .journal-column {
@@ -652,6 +742,44 @@ summary:focus-visible {
 .entry-sheet > p {
   margin: 0;
 }
+.entry-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  margin-bottom: 36px;
+  color: #313c50;
+  font: 400 22px/36px var(--font-journal);
+  white-space: normal;
+}
+.entry-emotion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.emotion-sketch {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-5deg);
+}
+@media (max-width: 600px) {
+  .entry-metadata {
+    font-size: 20px;
+    gap: 4px 12px;
+  }
+  .emotion-sketch {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 .entry-sheet.has-drawing {
   padding-bottom: 288px;
   min-height: 420px;
