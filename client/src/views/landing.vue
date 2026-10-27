@@ -2,6 +2,7 @@
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
+import LandingObject3D from '@/components/landing/LandingObject3D.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -126,13 +127,9 @@ const previewTraits = [
     </section>
 
     <section class="music-journal landing-shell" aria-label="Spotify and journal">
-      <img class="spotify-image" src="@/assets/images/spotify-logo.png" alt="Spotify" />
+      <LandingObject3D class="spotify-image" object="spotify" />
       <span class="plus-sign" aria-hidden="true">+</span>
-      <img
-        class="journal-image"
-        src="@/assets/images/journal.png"
-        alt="Journal, ribbon bookmark, and pencil"
-      />
+      <LandingObject3D class="journal-image" object="journal" />
     </section>
 
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
