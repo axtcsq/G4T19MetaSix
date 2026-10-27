@@ -162,3 +162,32 @@ export function logout(req, res, next) {
 export function getMe(req, res) {
   res.json(publicUser(req.user));
 }
+
+// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean }
+// The privacy toggles on the profile page. Send only the ones that changed.
+export async function updateSettings(req, res) {
+  const { analyseLyrics, savePlays } = req.body ?? {};
+  const changes = {};
+  if (analyseLyrics !== undefined) {
+    if (typeof analyseLyrics !== "boolean") {
+      return res.status(400).json({ error: "analyseLyrics must be true or false" });
+    }
+    changes["preferences.moodLens"] = analyseLyrics ? "lyrics" : "sound";
+  }
+  if (savePlays !== undefined) {
+    if (typeof savePlays !== "boolean") {
+      return res.status(400).json({ error: "savePlays must be true or false" });
+    }
+    changes["preferences.savePlays"] = savePlays;
+  }
+  if (!Object.keys(changes).length) {
+    return res.status(400).json({ error: "Nothing to change" });
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: changes },
+    { returnDocument: "after", runValidators: true },
+  );
+  res.json(publicUser(user));
+}
