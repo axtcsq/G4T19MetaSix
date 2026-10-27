@@ -1,6 +1,7 @@
 <script setup>
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import NoteMargins from '@/components/landing/NoteMargins.vue'
 
 const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
@@ -105,6 +106,7 @@ const previewTraits = [
 
 <template>
   <main class="landing-page">
+    <NoteMargins />
     <section id="about" class="intro landing-shell" aria-labelledby="intro-title">
       <div class="intro-copy">
         <h1 id="intro-title" aria-label="What's MetaFor?">
