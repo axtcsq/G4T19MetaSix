@@ -401,7 +401,7 @@ const showcase = [
   grid-template-columns: 1fr 0.9fr;
   align-items: center;
   gap: 34px;
-  padding-block: 28px 18px;
+  padding-block: 72px 18px;
 }
 
 .intro-copy {
@@ -828,7 +828,7 @@ const showcase = [
   .intro {
     grid-template-columns: 1fr;
     gap: 0;
-    padding-top: 32px;
+    padding-top: 48px;
   }
   .cassette-area {
     min-height: 270px;
