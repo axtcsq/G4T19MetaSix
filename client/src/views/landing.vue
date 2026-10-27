@@ -63,6 +63,68 @@ function resetPointer(event) {
   card.style.setProperty('--rx', '0deg')
   card.style.setProperty('--ry', '0deg')
 }
+// The three Mirror cards, each with an example of what MetaFor might notice.
+const mirrorCards = [
+  {
+    title: 'Listen to Yourself',
+    text: 'The songs you return to can hold clues about your mood, memories, and what matters to you.',
+    example: 'You went back to the same three songs in the week before your exams.',
+  },
+  {
+    title: 'Find the Patterns',
+    text: 'Explore your Spotify playlists and see your listening habits from a fresh perspective.',
+    example: 'Your Fridays lean upbeat, and Sunday nights turn quiet and acoustic.',
+  },
+  {
+    title: 'Make Space to Reflect',
+    text: 'Pair music insights with a daily mood log and journal to understand yourself over time.',
+    example: 'On days you logged Anxious, you played twice as much lo-fi.',
+  },
+]
+const openCard = ref(null)
+
+// A short trail of notes follows the mouse across the hero.
+const TRAIL_GLYPHS = ['♪', '♫', '♩', '♬']
+const trail = ref([])
+let trailId = 0
+let lastTrail = 0
+function leaveTrail(event) {
+  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const now = performance.now()
+  if (now - lastTrail < 70) return
+  lastTrail = now
+  const box = event.currentTarget.getBoundingClientRect()
+  const id = (trailId += 1)
+  trail.value = [
+    ...trail.value.slice(-11),
+    {
+      id,
+      x: event.clientX - box.left,
+      y: event.clientY - box.top,
+      glyph: TRAIL_GLYPHS[id % TRAIL_GLYPHS.length],
+      drift: `${(Math.random() - 0.5) * 40}px`,
+    },
+  ]
+  window.setTimeout(() => (trail.value = trail.value.filter((note) => note.id !== id)), 900)
+}
+
+// The Get Started button leans towards the mouse when it gets close.
+const PULL_RANGE = 140
+function pullButton(event) {
+  followPointer(event)
+  if (event.pointerType !== 'mouse') return
+  const button = event.currentTarget.querySelector('.get-started')
+  const box = button.getBoundingClientRect()
+  const dx = event.clientX - (box.left + box.width / 2)
+  const dy = event.clientY - (box.top + box.height / 2)
+  const near = Math.hypot(dx, dy) < PULL_RANGE
+  button.style.translate = near ? `${dx * 0.25}px ${dy * 0.35}px` : ''
+}
+function releaseButton(event) {
+  resetPointer(event)
+  event.currentTarget.querySelector('.get-started').style.translate = ''
+}
+
 // Picking a mood in the hero tints the page, recolours the margin notes and
 // says what MetaFor would play. Picking it again clears it.
 const HERO_MOODS = {
@@ -115,7 +177,15 @@ const showcase = [
 <template>
   <main class="landing-page" :class="{ 'has-mood': heroMood }" :style="moodStyle">
     <NoteMargins />
-    <section id="about" class="intro landing-shell" aria-labelledby="intro-title">
+    <section id="about" class="intro landing-shell" aria-labelledby="intro-title" @pointermove="leaveTrail">
+      <span
+        v-for="note in trail"
+        :key="note.id"
+        class="trail-note"
+        :style="{ left: `${note.x}px`, top: `${note.y}px`, '--drift': note.drift }"
+        aria-hidden="true"
+        >{{ note.glyph }}</span
+      >
       <div class="intro-copy">
         <h1 id="intro-title" aria-label="What's MetaFor?">
           <span aria-hidden="true">{{ displayedTitle }}</span
@@ -155,26 +225,28 @@ const showcase = [
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
       <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
       <div class="feature-grid">
-        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
-          <span class="feature-step" aria-hidden="true">01</span>
-          <h3 class="glow-text">Listen to Yourself</h3>
-          <p class="glow-text">
-            The songs you return to can hold clues about your mood, memories, and what matters to you.
+        <article
+          v-for="(card, index) in mirrorCards"
+          :key="card.title"
+          class="feature-card follow"
+          :class="{ 'is-example': openCard === index }"
+          @pointermove="followPointer"
+          @pointerleave="resetPointer"
+        >
+          <span class="feature-step" aria-hidden="true">0{{ index + 1 }}</span>
+          <h3 class="glow-text">{{ card.title }}</h3>
+          <p class="glow-text" aria-live="polite">
+            <span v-if="openCard === index" class="example-label">For example</span>
+            {{ openCard === index ? card.example : card.text }}
           </p>
-        </article>
-        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
-          <span class="feature-step" aria-hidden="true">02</span>
-          <h3 class="glow-text">Find the Patterns</h3>
-          <p class="glow-text">
-            Explore your Spotify playlists and see your listening habits from a fresh perspective.
-          </p>
-        </article>
-        <article class="feature-card follow" @pointermove="followPointer" @pointerleave="resetPointer">
-          <span class="feature-step" aria-hidden="true">03</span>
-          <h3 class="glow-text">Make Space to Reflect</h3>
-          <p class="glow-text">
-            Pair music insights with a daily mood log and journal to understand yourself over time.
-          </p>
+          <button
+            type="button"
+            class="example-toggle"
+            :aria-pressed="openCard === index"
+            @click="openCard = openCard === index ? null : index"
+          >
+            {{ openCard === index ? 'Back' : 'See an example' }}
+          </button>
         </article>
       </div>
     </section>
@@ -198,8 +270,8 @@ const showcase = [
     <section
       class="closing landing-shell follow"
       aria-labelledby="closing-title"
-      @pointermove="followPointer"
-      @pointerleave="resetPointer"
+      @pointermove="pullButton"
+      @pointerleave="releaseButton"
     >
       <!-- Mesh Gradient from motion.page/backgrounds (free, no attribution
            needed), recoloured to the sunset palette and shrunk for the web. -->
@@ -321,6 +393,7 @@ const showcase = [
 }
 
 .intro {
+  position: relative;
   display: grid;
   min-height: 365px;
   grid-template-columns: 1fr 0.9fr;
@@ -494,6 +567,38 @@ const showcase = [
    The body text only changes colour. */
 .feature-card.follow:hover h3.glow-text {
   -webkit-text-stroke: 0.45px color-mix(in srgb, var(--lit) 60%, transparent);
+}
+.example-toggle {
+  margin-top: 14px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--brand);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.example-toggle:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.example-toggle:focus-visible {
+  outline: 3px solid var(--color-brand-400);
+}
+.example-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--brand);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.feature-card.is-example {
+  border-color: color-mix(in srgb, var(--brand), transparent 50%);
 }
 .feature-step {
   display: inline-flex;
@@ -680,7 +785,30 @@ const showcase = [
   font-weight: 800;
   filter: drop-shadow(0 2px 10px rgba(60, 24, 30, 0.35));
 }
+/* Notes that float up and fade where the mouse has been. */
+.trail-note {
+  position: absolute;
+  z-index: 3;
+  color: var(--note-colour, var(--ui-primary));
+  font-size: 1.1rem;
+  pointer-events: none;
+  animation: trail 900ms ease-out forwards;
+}
+@keyframes trail {
+  from {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--drift)), -150%) scale(1.15) rotate(12deg);
+  }
+}
+/* Its position is set from pullButton; it eases back when the mouse leaves. */
 .get-started {
+  transition:
+    translate 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 160ms ease;
   display: inline-flex;
   min-height: 44px;
   align-items: center;
