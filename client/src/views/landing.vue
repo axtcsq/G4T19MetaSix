@@ -73,28 +73,21 @@ const WAVE = Array.from({ length: 241 }, (_, step) => {
   return `${step ? 'L' : 'M'}${x} ${(60 + Math.sin((x / 150) * Math.PI) * 34 * swell).toFixed(1)}`
 }).join(' ')
 
-// The three Mirror cards, each with an example of what MetaFor might notice.
+// The three Mirror cards.
 const mirrorCards = [
   {
     title: 'Listen to Yourself',
-    drawing: 'repeat',
     text: 'The songs you return to can hold clues about your mood, memories, and what matters to you.',
-    example: 'You went back to the same three songs in the week before your exams.',
   },
   {
     title: 'Find the Patterns',
-    drawing: 'pattern',
     text: 'Explore your Spotify playlists and see your listening habits from a fresh perspective.',
-    example: 'Your Fridays lean upbeat, and Sunday nights turn quiet and acoustic.',
   },
   {
     title: 'Make Space to Reflect',
-    drawing: 'journal',
     text: 'Pair music insights with a daily mood log and journal to understand yourself over time.',
-    example: 'On days you logged Anxious, you played twice as much lo-fi.',
   },
 ]
-const openCard = ref(null)
 
 // A short trail of notes follows the mouse across the hero.
 const TRAIL_GLYPHS = ['♪', '♫', '♩', '♬']
@@ -260,25 +253,12 @@ const showcase = [
           v-for="(card, index) in mirrorCards"
           :key="card.title"
           class="feature-card follow"
-          :class="{ 'is-example': openCard === index }"
           @pointermove="followPointer"
           @pointerleave="resetPointer"
         >
           <span class="feature-step" aria-hidden="true">0{{ index + 1 }}</span>
-          <MirrorDrawing :kind="card.drawing" />
           <h3 class="glow-text">{{ card.title }}</h3>
-          <p class="glow-text" aria-live="polite">
-            <span v-if="openCard === index" class="example-label">For example</span>
-            {{ openCard === index ? card.example : card.text }}
-          </p>
-          <button
-            type="button"
-            class="example-toggle"
-            :aria-pressed="openCard === index"
-            @click="openCard = openCard === index ? null : index"
-          >
-            {{ openCard === index ? 'Back' : 'See an example' }}
-          </button>
+          <p class="glow-text">{{ card.text }}</p>
         </article>
       </div>
     </section>
@@ -645,38 +625,6 @@ const showcase = [
    The body text only changes colour. */
 .feature-card.follow:hover h3.glow-text {
   -webkit-text-stroke: 0.45px color-mix(in srgb, var(--lit) 60%, transparent);
-}
-.example-toggle {
-  margin-top: 14px;
-  padding: 2px 6px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--brand);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.example-toggle:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.example-toggle:focus-visible {
-  outline: 3px solid var(--color-brand-400);
-}
-.example-label {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--brand);
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.feature-card.is-example {
-  border-color: color-mix(in srgb, var(--brand), transparent 50%);
 }
 .feature-step {
   display: inline-flex;
