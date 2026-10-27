@@ -75,9 +75,9 @@ function pagesTexture() {
   paper.width = 64
   paper.height = 64
   const draw = paper.getContext('2d')
-  draw.fillStyle = '#f4e8c8'
+  draw.fillStyle = '#fbf3dd'
   draw.fillRect(0, 0, 64, 64)
-  draw.fillStyle = '#d9c79d'
+  draw.fillStyle = '#e6d7b2'
   for (let y = 0; y < 64; y += 4) draw.fillRect(0, y, 64, 1)
   const texture = new THREE.CanvasTexture(paper)
   texture.colorSpace = THREE.SRGBColorSpace
@@ -90,19 +90,20 @@ function buildJournal() {
   const group = new THREE.Group()
   const cover = glossy(0x2d4f8f, { roughness: 0.45, clearcoat: 0.4 })
 
-  // Front and back boards, the spine, and the pages between them.
+  // Front and back boards, the spine flush with their left edge, and the
+  // pages between them. Each corner radius stays under half the thickness,
+  // and the pages are a touch thinner than the gap, so no faces overlap.
   for (const z of [0.15, -0.15]) {
-    const board = new THREE.Mesh(new RoundedBoxGeometry(1.8, 2.3, 0.06, 3, 0.03), cover)
+    const board = new THREE.Mesh(new RoundedBoxGeometry(1.8, 2.3, 0.07, 3, 0.02), cover)
     board.position.z = z
     group.add(board)
   }
-  const spine = new THREE.Mesh(new RoundedBoxGeometry(0.12, 2.3, 0.36, 3, 0.05), cover)
-  spine.position.x = -0.88
+  const spine = new THREE.Mesh(new RoundedBoxGeometry(0.1, 2.3, 0.37, 3, 0.04), cover)
+  spine.position.x = -0.85
   group.add(spine)
 
   const pageEdges = matte(0xffffff, { map: pagesTexture() })
-  // A little thinner than the gap between the boards, so the faces don't flicker.
-  const pages = new THREE.Mesh(new THREE.BoxGeometry(1.7, 2.2, 0.23), [
+  const pages = new THREE.Mesh(new THREE.BoxGeometry(1.68, 2.2, 0.22), [
     pageEdges,
     pageEdges,
     pageEdges,
@@ -110,13 +111,8 @@ function buildJournal() {
     matte(0xf4e8c8),
     matte(0xf4e8c8),
   ])
-  pages.position.x = 0.02
+  pages.position.x = 0.03
   group.add(pages)
-
-  // An elastic band wrapped round the boards, sitting just proud of them.
-  const band = new THREE.Mesh(new THREE.BoxGeometry(0.07, 2.34, 0.38), matte(0xc4412f))
-  band.position.x = 0.62
-  group.add(band)
 
   // A ribbon bookmark hanging out of the bottom, with a notched end.
   const ribbonShape = new THREE.Shape()
@@ -152,8 +148,8 @@ function buildJournal() {
   const eraser = new THREE.Mesh(new RoundedBoxGeometry(0.15, 0.16, 0.15, 3, 0.05), matte(0x3a6fd8))
   eraser.position.y = 0.94
   pencil.add(eraser)
-  // Resting on the band across the cover, not hovering or cutting through it.
-  pencil.position.set(0.15, 0.25, 0.266)
+  // Resting on the cover: its top face plus the pencil's radius.
+  pencil.position.set(0.15, 0.25, 0.262)
   pencil.rotation.z = -0.7
   group.add(pencil)
 
