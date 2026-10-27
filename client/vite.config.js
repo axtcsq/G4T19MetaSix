@@ -11,7 +11,7 @@ import appConfig from './app.config.ts'
 const env = loadEnv('development', process.cwd(), '')
 
 export default defineConfig({
-  plugins: [ui({ ui: appConfig.ui }), vue(), vueDevTools()],
+  plugins: [ui({ ui: appConfig.ui, colorMode: false }), vue(), vueDevTools()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
