@@ -8,7 +8,9 @@ import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
 
-const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
+const CassetteViewer = defineAsyncComponent(
+  () => import('@/components/listening/CassetteViewer.vue'),
+)
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 const bannerVideo = ref(null)
@@ -90,7 +92,11 @@ const trail = ref([])
 let trailId = 0
 let lastTrail = 0
 function leaveTrail(event) {
-  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (
+    event.pointerType !== 'mouse' ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+    return
   const now = performance.now()
   if (now - lastTrail < 70) return
   lastTrail = now
@@ -136,7 +142,9 @@ const HERO_MOODS = {
   Angry: { colour: '#d94a45', line: 'Loud first, calmer after. Let it out, then wind down.' },
 }
 const heroMood = ref(null)
-const moodStyle = computed(() => (heroMood.value ? { '--mood-colour': HERO_MOODS[heroMood.value].colour } : {}))
+const moodStyle = computed(() =>
+  heroMood.value ? { '--mood-colour': HERO_MOODS[heroMood.value].colour } : {},
+)
 
 // One row per part of the app, each with a small made-up preview to try.
 const showcase = [
@@ -178,7 +186,12 @@ const showcase = [
 <template>
   <main class="landing-page" :class="{ 'has-mood': heroMood }" :style="moodStyle">
     <NoteMargins />
-    <section id="about" class="intro landing-shell" aria-labelledby="intro-title" @pointermove="leaveTrail">
+    <section
+      id="about"
+      class="intro landing-shell"
+      aria-labelledby="intro-title"
+      @pointermove="leaveTrail"
+    >
       <span
         v-for="note in trail"
         :key="note.id"
@@ -194,7 +207,8 @@ const showcase = [
         </h1>
         <p class="intro-description">
           Your music can be a window into how you feel. MetaFor brings your Spotify listening and
-          daily reflections together, helping you notice the moods and moments behind your playlists.
+          daily reflections together, helping you notice the moods and moments behind your
+          playlists.
         </p>
         <div class="hero-mood" role="group" aria-labelledby="hero-mood-label">
           <p id="hero-mood-label" class="hero-mood-label">How are you feeling right now?</p>
@@ -210,7 +224,9 @@ const showcase = [
               {{ name }}
             </button>
           </div>
-          <p class="hero-mood-line" aria-live="polite">{{ heroMood ? HERO_MOODS[heroMood].line : '' }}</p>
+          <p class="hero-mood-line" aria-live="polite">
+            {{ heroMood ? HERO_MOODS[heroMood].line : '' }}
+          </p>
         </div>
         <StoryMode />
       </div>
@@ -225,6 +241,9 @@ const showcase = [
     <MusicJournal />
 
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
+      <!-- A soft band of colour that slowly pans sideways. The margin lines
+           and notes start inside it, so the top of the page stays clear. -->
+      <div class="pan-band" aria-hidden="true" />
       <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
       <div class="feature-grid">
         <article
@@ -449,7 +468,37 @@ const showcase = [
 }
 
 .mirror-section {
+  position: relative;
   padding-block: 24px 80px;
+}
+/* Full width, behind the page, fading out at its top and bottom. */
+.pan-band {
+  position: absolute;
+  z-index: -1;
+  top: -140px;
+  left: 50%;
+  width: 100vw;
+  height: 420px;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--note-colour, var(--ui-primary)) 16%, transparent),
+    color-mix(in srgb, #998ba1 18%, transparent),
+    color-mix(in srgb, #4389d1 12%, transparent),
+    color-mix(in srgb, var(--note-colour, var(--ui-primary)) 16%, transparent)
+  );
+  background-size: 300% 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 40%, #000 60%, transparent);
+  translate: -50% 0;
+  animation: pan 24s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes pan {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
 }
 .mirror-section h2 {
   width: fit-content;
@@ -508,7 +557,11 @@ const showcase = [
   z-index: -1;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle var(--glow-size) at var(--mx) var(--my), var(--glow), transparent 70%);
+  background: radial-gradient(
+    circle var(--glow-size) at var(--mx) var(--my),
+    var(--glow),
+    transparent 70%
+  );
   content: '';
   opacity: 0;
   pointer-events: none;
@@ -858,6 +911,9 @@ const showcase = [
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .pan-band {
+    animation: none;
+  }
   .typing-cursor {
     animation: none;
   }
