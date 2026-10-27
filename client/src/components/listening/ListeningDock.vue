@@ -16,6 +16,9 @@ const progress = computed(() =>
 // Without Spotify Premium the player never becomes ready, so the dock keeps to
 // the simple version: the song, a link back to the room, and Disconnect.
 const canPlay = computed(() => ready.value)
+// A short version of the room's message when the phone or Spotify app takes
+// over playback, since the dock is the only player on other pages.
+const movedAway = computed(() => room.error.value.includes('another device'))
 // Hidden in the listening room, which has its own player, and on the landing page.
 const HIDDEN_ON = ['/', '/listen']
 const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
@@ -190,16 +193,25 @@ watch([dock, minimised], measure, { flush: 'post' })
       @dblclick="resetPosition"
     >
       <svg viewBox="0 0 10 16" aria-hidden="true">
-        <circle cx="2.5" cy="3" r="1.4" /><circle cx="7.5" cy="3" r="1.4" />
-        <circle cx="2.5" cy="8" r="1.4" /><circle cx="7.5" cy="8" r="1.4" />
-        <circle cx="2.5" cy="13" r="1.4" /><circle cx="7.5" cy="13" r="1.4" />
+        <circle cx="2.5" cy="3" r="1.4" />
+        <circle cx="7.5" cy="3" r="1.4" />
+        <circle cx="2.5" cy="8" r="1.4" />
+        <circle cx="7.5" cy="8" r="1.4" />
+        <circle cx="2.5" cy="13" r="1.4" />
+        <circle cx="7.5" cy="13" r="1.4" />
       </svg>
     </button>
     <img v-if="track.album?.images?.length" :src="track.album.images[0].url" alt="" />
     <template v-if="!minimised">
       <RouterLink to="/listen"
         ><strong>{{ track.name || 'Spotify connected' }}</strong
-        ><span>{{ canPlay ? 'Back to your listening room ↗' : 'Spotify Premium needed to play ↗' }}</span></RouterLink
+        ><span>{{
+          movedAway
+            ? 'Playing on another device. Press play to bring it here.'
+            : canPlay
+              ? 'Back to your listening room ↗'
+              : 'Spotify Premium needed to play ↗'
+        }}</span></RouterLink
       >
       <template v-if="canPlay">
         <button
@@ -210,7 +222,9 @@ watch([dock, minimised], measure, { flush: 'post' })
           :disabled="!ready || busy"
           @click="room.skip(-1)"
         >
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" /></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" />
+          </svg>
         </button>
         <button
           type="button"
@@ -220,9 +234,12 @@ watch([dock, minimised], measure, { flush: 'post' })
           :disabled="!ready || !track.id || busy"
           @click="room.toggle"
         >
-          <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+          <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 2.5v11l9-5.5z" />
+          </svg>
           <svg v-else viewBox="0 0 16 16" aria-hidden="true">
-            <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+            <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+            <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
           </svg>
         </button>
         <button
@@ -233,7 +250,9 @@ watch([dock, minimised], measure, { flush: 'post' })
           :disabled="!ready || busy"
           @click="room.skip(1)"
         >
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" /></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" />
+          </svg>
         </button>
       </template>
       <button
@@ -256,7 +275,8 @@ watch([dock, minimised], measure, { flush: 'post' })
     >
       <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
       <svg v-else viewBox="0 0 16 16" aria-hidden="true">
-        <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+        <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+        <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
       </svg>
     </button>
     <button
