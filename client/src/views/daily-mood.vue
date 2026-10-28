@@ -9,6 +9,7 @@ import ButterflyMark from '@/components/layout/ButterflyMark.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 
 const showHistory = ref(false)
+const showDrawing = ref(false)
 const saveStatus = ref('')
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
@@ -322,13 +323,20 @@ onMounted(loadEntries)
       </div>
 
       <div v-show="!showHistory" class="writing-extras">
-        <section class="drawing-section" aria-labelledby="journal-canvas-heading">
-          <div class="mb-5">
-            <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
-            <p class="body-text mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
-          </div>
-          <JournalCanvas v-model="drawingData" />
-        </section>
+        <!-- The canvas stays folded away until someone wants to draw. -->
+        <details class="drawing-disclosure" :open="showDrawing" @toggle="showDrawing = $event.target.open">
+          <summary>
+            <span class="disclosure-text">
+              <span id="journal-canvas-heading" class="section-title">Add a drawing</span>
+              <span class="body-text text-muted">Can't describe your thoughts? Draw it.</span>
+            </span>
+            <span class="disclosure-optional">Optional</span>
+            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </summary>
+          <section class="drawing-section" aria-labelledby="journal-canvas-heading">
+            <JournalCanvas v-model="drawingData" />
+          </section>
+        </details>
         <div class="save-row">
           <UButton
             form="daily-journal-form"
@@ -396,8 +404,61 @@ onMounted(loadEntries)
 .writing-extras {
   margin-top: 24px;
 }
-.drawing-section {
+.drawing-disclosure {
   margin-top: 40px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-bg-elevated);
+}
+.drawing-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  list-style: none;
+  cursor: pointer;
+}
+.drawing-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+.drawing-disclosure summary:hover {
+  background: color-mix(in srgb, var(--ui-primary) 6%, transparent);
+}
+.drawing-disclosure summary:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+.disclosure-text {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+}
+.disclosure-optional {
+  color: var(--ui-text-muted);
+  font: 400 0.85rem var(--font-sans);
+}
+.disclosure-chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms ease;
+}
+.drawing-disclosure[open] .disclosure-chevron {
+  transform: rotate(180deg);
+}
+.drawing-section {
+  padding: 0 20px 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-chevron {
+    transition: none;
+  }
 }
 .save-row {
   display: flex;
