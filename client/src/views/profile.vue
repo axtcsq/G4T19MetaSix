@@ -9,6 +9,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useLogOut } from '@/composables/useLogOut'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
+// Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
+import { useColorMode } from '#imports'
 defineOptions({ name: 'ProfilePage' })
 
 const auth = useAuthStore()
@@ -97,6 +99,14 @@ async function toggle(setting) {
   } finally {
     saving[setting.key] = false
   }
+}
+
+// Dark mode is kept in this browser, not the account. index.html makes light
+// the default.
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+function toggleDark() {
+  colorMode.preference = isDark.value ? 'light' : 'dark'
 }
 
 const logOut = useLogOut()
@@ -206,6 +216,31 @@ const logOut = useLogOut()
           MetaFor only keeps mood scores worked out from lyrics, never the lyrics themselves.
         </p>
         <p class="muted small" role="status" aria-live="polite">{{ settingsMessage }}</p>
+      </section>
+
+      <section class="card" aria-labelledby="appearance-title">
+        <h2 id="appearance-title" class="card-title">Appearance</h2>
+        <ul class="settings">
+          <li class="setting">
+            <div>
+              <p id="dark-mode-label" class="setting-label">Dark mode</p>
+              <p id="dark-mode-description" class="muted small">
+                Dim the colours for night-time journaling. Saved on this device.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              :aria-checked="isDark"
+              aria-labelledby="dark-mode-label"
+              aria-describedby="dark-mode-description"
+              @click="toggleDark"
+            >
+              <span class="switch-thumb" aria-hidden="true" />
+            </button>
+          </li>
+        </ul>
       </section>
 
       <section class="card coming-soon" aria-labelledby="soon-title">
