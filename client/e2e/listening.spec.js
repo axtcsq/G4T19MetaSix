@@ -3,7 +3,7 @@ import { test, expect } from './helpers.js'
 test('dashboard switches listening periods', async ({ page, app }) => {
   expect(app.user.isDemo).toBe(true)
   await page.goto('/dashboard')
-  await expect(page.getByRole('heading', { name: 'Your Listening Portrait' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Your Music at a Glance' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Last 7 days' })).toHaveAttribute(
     'aria-pressed',
     'true',
