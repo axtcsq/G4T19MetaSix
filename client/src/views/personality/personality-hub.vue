@@ -283,10 +283,8 @@ onMounted(loadPage)
               class="outcome-card"
               :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
             >
-              <p class="outcome-head">
-                <span class="outcome-name">{{ outcome.name }}</span>
-                <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
-              </p>
+              <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
+              <p class="outcome-name">{{ outcome.name }}</p>
               <p v-if="outcome.tag" class="outcome-tag">{{ outcome.tag }}</p>
               <p class="outcome-meaning">{{ outcome.meaning }}</p>
             </li>
@@ -294,12 +292,13 @@ onMounted(loadPage)
           <button
             v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
             type="button"
-            class="peach-button peach-button--quiet show-more"
+            class="show-more glass-secondary"
             :aria-expanded="showAllOutcomes"
             aria-controls="outcomes-panel"
             @click="showAllOutcomes = !showAllOutcomes"
           >
             {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
+            <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
           </button>
         </div>
       </section>
@@ -947,68 +946,133 @@ onMounted(loadPage)
 
 .outcome-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
-.show-more {
-  max-width: 334px;
-  margin: 1.25rem auto 0;
-  font-size: 1.15rem;
-}
-
+/* A soft card with a thin accent line along the top; the user's own result
+   is peach with a badge. */
 .outcome-card {
-  padding: 1.1rem 1.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.5rem 1.5rem 1.35rem;
   border: 1px solid var(--pq-border);
-  border-radius: 10px;
+  border-radius: 14px;
   color: var(--pq-on-surface);
   background: var(--pq-surface);
-  box-shadow: 0 4px 4px var(--pq-shadow);
+  box-shadow: 0 2px 10px var(--pq-shadow);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.outcome-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pq-accent), color-mix(in srgb, var(--pq-accent) 30%, #998ba1));
+  content: '';
+  opacity: 0.55;
+}
+
+.outcome-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--pq-shadow);
 }
 
 .outcome-card.is-mine {
-  border-left: 4px solid var(--pq-accent);
-  background: var(--pq-result);
+  border-color: color-mix(in srgb, var(--pq-accent) 45%, var(--pq-border));
+  background: linear-gradient(160deg, var(--pq-result), var(--pq-surface) 85%);
 }
 
-.outcome-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.25rem 0.75rem;
+.outcome-card.is-mine::before {
+  opacity: 1;
+}
+
+.mine-badge {
+  align-self: flex-start;
+  margin-bottom: 0.6rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--pq-accent);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .outcome-name {
   font-family: var(--font-sans);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.25;
 }
 
-.mine-badge {
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  color: var(--pq-on-peach);
-  background: var(--pq-peach);
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
 .outcome-tag {
-  margin-top: 0.15rem;
-  color: var(--pq-muted);
+  margin-top: 0.2rem;
+  color: var(--pq-accent);
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .outcome-meaning {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pq-line, var(--pq-border));
   font-family: var(--font-serif);
   font-size: 1.05rem;
-  line-height: 1.4;
+  line-height: 1.45;
+}
+
+.show-more.glass-secondary {
+  display: flex;
+  margin: 1.75rem auto 0;
+  border-radius: 12px !important;
+}
+
+.show-more-chevron {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms ease;
+}
+
+.show-more[aria-expanded='true'] .show-more-chevron {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 1000px) {
+  .outcome-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .outcome-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outcome-card,
+  .show-more-chevron {
+    transition: none;
+  }
+}
+
+/* The quiz cards' buttons keep the glossy look but with the softer square
+   corners they used to have, instead of full pills. */
+.quiz-card :is(.glass-action, .glass-secondary, .glass-icon) {
+  border-radius: 12px !important;
 }
 
 /* Patterns while it loads, has no quizzes yet, or fails. */
@@ -1232,8 +1296,9 @@ onMounted(loadPage)
   right: 0;
   height: 42px;
 }
-.share-trigger {
-    top: 0.75rem;
-    width: 42px;
+/* A round icon button, so the label is only for screen readers (it also
+   has an aria-label). */
+.share-label {
+  display: none;
 }
 </style>
