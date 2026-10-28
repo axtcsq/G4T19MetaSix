@@ -2,10 +2,10 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MoodTag from '../components/mood/MoodTag.vue'
-import { getTrackMoods } from '@/api/tracks'
+import { addSoundMoods, getTrackMoods } from '@/api/tracks'
 import { useAuthStore } from '@/stores/auth'
 
-vi.mock('@/api/tracks', () => ({ getTrackMoods: vi.fn() }))
+vi.mock('@/api/tracks', () => ({ addSoundMoods: vi.fn(), getTrackMoods: vi.fn() }))
 
 const tooltip = {
   props: ['text'],
@@ -22,9 +22,9 @@ const MOODS = {
   kicks: {
     sound: { name: 'Euphoric', axis: 'happy' },
     lyrics: { name: 'Deceptively upbeat', axis: 'anxious' },
-    lyricsPending: false,
+    lyricsNote: null,
   },
-  serene: { sound: { name: 'Serene', axis: 'relaxed' }, lyrics: null, lyricsPending: true },
+  serene: { sound: { name: 'Serene', axis: 'relaxed' }, lyrics: null, lyricsNote: 'pending' },
   waiting: { analysing: true },
 }
 
@@ -44,7 +44,9 @@ describe('MoodTag', () => {
     setActivePinia(pinia)
     getTrackMoods.mockImplementation(async (ids) => ({
       moods: Object.fromEntries(ids.filter((id) => MOODS[id]).map((id) => [id, MOODS[id]])),
+      needsSound: ids.filter((id) => id.startsWith('new-')),
     }))
+    addSoundMoods.mockResolvedValue({ moods: {} })
   })
 
   it('shows the sound + lyrics mood in its journal colour, with both readings in the tooltip', async () => {
@@ -65,10 +67,31 @@ describe('MoodTag', () => {
     const wrapper = mountTag('serene')
     await flushPromises()
 
-    expect(wrapper.find('.badge').text()).toContain('Serene')
-    expect(wrapper.find('.tooltip').attributes('data-text')).toContain(
-      'lyrics haven’t been read yet',
+    const [mood, note] = wrapper.findAll('.badge')
+    expect(mood.text()).toContain('Serene')
+    expect(wrapper.find('.tooltip').attributes('data-text')).toBe(
+      'Serene, from how the song sounds. Counts as Relaxed.',
     )
+    expect(note.text()).toBe('Lyrics pending')
+    expect(note.attributes('data-color')).toBe('neutral')
+  })
+
+  it('says when a song has no lyrics, and shows no second tag when the lyrics counted', async () => {
+    logIn({ id: 'user-10', preferences: { moodLens: 'lyrics' } })
+    MOODS.instrumental = {
+      sound: { name: 'Serene', axis: 'relaxed' },
+      lyrics: { name: 'Serene', axis: 'relaxed' },
+      lyricsNote: 'instrumental',
+    }
+    const instrumental = mountTag('instrumental')
+    const kicks = mountTag('kicks')
+    await flushPromises()
+
+    expect(instrumental.findAll('.badge').map((badge) => badge.text())).toEqual([
+      'Song mood: Serene',
+      'Instrumental',
+    ])
+    expect(kicks.findAll('.badge')).toHaveLength(1)
   })
 
   it('shows a grey Analysing tag for songs the job hasn’t reached', async () => {
@@ -80,7 +103,18 @@ describe('MoodTag', () => {
     expect(wrapper.text()).toContain('Analysing…')
   })
 
-  it('shows nothing for songs with no mood', async () => {
+  it('shows a grey No mood data tag for songs that can never get one', async () => {
+    logIn({ id: 'user-11', preferences: { moodLens: 'lyrics' } })
+    MOODS.tooNew = { noMood: 'no-data' }
+    const wrapper = mountTag('tooNew')
+    await flushPromises()
+
+    expect(wrapper.find('.badge').text()).toBe('Song mood: No mood data')
+    expect(wrapper.find('.badge').attributes('data-color')).toBe('neutral')
+    expect(wrapper.find('.tooltip').attributes('data-text')).toContain('common for new releases')
+  })
+
+  it('shows nothing for songs we know nothing about', async () => {
     logIn({ id: 'user-4', preferences: { moodLens: 'lyrics' } })
     const wrapper = mountTag('unknown-song')
     await flushPromises()
@@ -108,6 +142,61 @@ describe('MoodTag', () => {
     useAuthStore(pinia).user = null
     await flushPromises()
     expect(wrapper.find('.badge').exists()).toBe(false)
+  })
+
+  it('works out the sound mood of a song nobody has played, showing Analysing meanwhile', async () => {
+    logIn({ id: 'user-7', preferences: { moodLens: 'lyrics' } })
+    let answer
+    addSoundMoods.mockReturnValue(new Promise((resolve) => (answer = resolve)))
+    const wrapper = mountTag('new-search-result')
+    await flushPromises()
+
+    expect(addSoundMoods).toHaveBeenCalledWith(['new-search-result'])
+    expect(wrapper.text()).toContain('Analysing…')
+
+    answer({
+      moods: {
+        'new-search-result': {
+          sound: { name: 'Serene', axis: 'relaxed' },
+          lyrics: null,
+          lyricsNote: 'pending',
+        },
+      },
+    })
+    await flushPromises()
+    expect(wrapper.find('.badge').text()).toContain('Serene')
+    expect(wrapper.find('.badge').attributes('data-color')).toBe('relaxed')
+  })
+
+  it('shows nothing for a new song the server can’t place', async () => {
+    logIn({ id: 'user-8', preferences: { moodLens: 'lyrics' } })
+    const wrapper = mountTag('new-unknown-to-reccobeats')
+    await flushPromises()
+
+    expect(addSoundMoods).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('.badge').exists()).toBe(false)
+  })
+
+  it('updates an Analysing tag by itself once the job has finished', async () => {
+    vi.useFakeTimers()
+    try {
+      logIn({ id: 'user-9', preferences: { moodLens: 'lyrics' } })
+      const wrapper = mountTag('waiting')
+      await flushPromises()
+      expect(wrapper.text()).toContain('Analysing…')
+
+      MOODS.waiting = {
+        sound: { name: 'Uplifting', axis: 'happy' },
+        lyrics: null,
+        lyricsNote: 'pending',
+      }
+      await vi.advanceTimersByTimeAsync(2 * 60 * 1000)
+      await flushPromises()
+      expect(wrapper.find('.badge').text()).toContain('Uplifting')
+    } finally {
+      MOODS.waiting = { analysing: true }
+      vi.useRealTimers()
+    }
   })
 
   it('asks nothing for logged-out visitors', async () => {
