@@ -62,6 +62,8 @@ export const musicalNeeds = {
   id: "musical-needs",
   title: "Maslow’s Mixtape",
   description: "From survival fuel to self-discovery: where does music sit in your life?",
+  // Every result, for the list on the Personality page.
+  outcomes: ORDER.map((key, index) => ({ name: LEVELS[key].name, tag: `Level ${index + 1} of 5`, meaning: LEVELS[key].meaning })),
   dimensions: ORDER,
   questions: [
     {
