@@ -438,7 +438,7 @@ onMounted(loadData)
 .track-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); background: var(--ui-bg-accented); }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
-.track-copy { display: grid; min-width: 0; gap: 3px; justify-items: start; }
+.track-copy { display: grid; min-width: 0; gap: 3px; }
 .track-card .track-copy { width: 100%; }
 .track-copy strong, .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-copy strong { font-size: .87rem; }
