@@ -16,7 +16,8 @@ const badge = {
   template: '<span class="badge" :data-color="color"><slot /></span>',
 }
 // Nuxt UI's components are imported directly, so stub them by file name too.
-const stubs = { UTooltip: tooltip, Tooltip: tooltip, UBadge: badge, Badge: badge }
+const link = { props: ['to'], template: '<a class="song-link" :href="to"><slot /></a>' }
+const stubs = { UTooltip: tooltip, Tooltip: tooltip, UBadge: badge, Badge: badge, RouterLink: link }
 
 const MOODS = {
   kicks: {
@@ -60,6 +61,8 @@ describe('MoodTag', () => {
     expect(wrapper.find('.tooltip').attributes('data-text')).toBe(
       'Deceptively upbeat from sound and lyrics; Euphoric from sound alone. Counts as Anxious.',
     )
+    // Clicking the mood opens the song's page.
+    expect(wrapper.find('.song-link').attributes('href')).toBe('/song/kicks')
   })
 
   it('falls back to the sound mood while the lyrics are pending', async () => {
@@ -88,7 +91,7 @@ describe('MoodTag', () => {
     await flushPromises()
 
     expect(instrumental.findAll('.badge').map((badge) => badge.text())).toEqual([
-      'Song mood: Serene',
+      'Song mood: Serene, see why',
       'Instrumental',
     ])
     expect(kicks.findAll('.badge')).toHaveLength(1)
@@ -112,6 +115,15 @@ describe('MoodTag', () => {
     expect(wrapper.find('.badge').text()).toBe('Song mood: No mood data')
     expect(wrapper.find('.badge').attributes('data-color')).toBe('neutral')
     expect(wrapper.find('.tooltip').attributes('data-text')).toContain('common for new releases')
+  })
+
+  it('is a plain label when it sits inside another link or button', async () => {
+    logIn({ id: 'user-12', preferences: { moodLens: 'lyrics' } })
+    const wrapper = mount(MoodTag, { props: { trackId: 'kicks', link: false }, global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.find('.badge').text()).toContain('Deceptively upbeat')
+    expect(wrapper.find('.song-link').exists()).toBe(false)
   })
 
   it('shows nothing for songs we know nothing about', async () => {
