@@ -2,12 +2,13 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { typeIcon } from '@/utils/typeIcons'
 
-// "See how it works": a full-screen, tap-through story of a made-up week,
-// like Spotify Wrapped. Each slide moves on by itself after a few seconds;
-// tap or press the arrow keys to go back and forward, space to pause, Esc to
-// close.
+// A full-screen, tap-through story, like Spotify Wrapped. The landing page
+// shows a made-up week ("See how it works"); Home passes its own slides for the
+// user's day, and its own button through the trigger slot. Each slide moves on
+// by itself after a few seconds; tap or press the arrow keys to go back and
+// forward, space to pause, Esc to close.
 const SLIDE_MS = 5000
-const SLIDES = [
+const EXAMPLE_WEEK = [
   { kicker: 'A preview', title: 'This is what MetaFor could show you.', text: 'An example week, made up for this preview.', colour: '#7d4737' },
   { kicker: 'This week', big: '142', title: 'songs played', text: 'That’s about eight hours of music.', colour: '#cd6651' },
   { kicker: 'Your mood', big: '😌', title: 'Mostly Relaxed', text: 'Soft, acoustic and slow: 46% of your week.', colour: '#998ba1' },
@@ -16,12 +17,22 @@ const SLIDES = [
   { kicker: 'You might be', title: 'The Daydreamer', text: 'Soft textures, headphones on, somewhere far away.', colour: '#763e32', type: 'daydreamer', last: true },
 ]
 
+const props = defineProps({
+  // { kicker, big, image, title, text, colour, type, link: { to, text }, last }
+  // Leave out for the landing page's example week.
+  slides: { type: Array, default: null },
+  label: { type: String, default: 'How MetaFor works, an example week' },
+  // The main button on the last slide.
+  finish: { type: Object, default: () => ({ to: '/login', text: 'Get started' }) },
+})
+
+const slides = computed(() => props.slides ?? EXAMPLE_WEEK)
 const open = ref(false)
 const index = ref(0)
 const paused = ref(false)
 const elapsed = ref(0)
 const dialog = ref(null)
-const slide = computed(() => SLIDES[index.value])
+const slide = computed(() => slides.value[index.value])
 let opener
 let frame
 let lastTime
@@ -37,7 +48,7 @@ function tick(time) {
 function go(step) {
   const next = index.value + step
   if (next < 0) return
-  if (next >= SLIDES.length) return close()
+  if (next >= slides.value.length) return close()
   index.value = next
   elapsed.value = 0
 }
@@ -101,10 +112,12 @@ const fill = (position) => {
 </script>
 
 <template>
-  <button type="button" class="story-open" @click="start">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
-    See how it works
-  </button>
+  <slot name="trigger" :open="start">
+    <button type="button" class="story-open" @click="start">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+      See how it works
+    </button>
+  </slot>
 
   <Teleport to="body">
     <Transition name="story">
@@ -115,12 +128,12 @@ const fill = (position) => {
         :style="{ '--slide': slide.colour }"
         role="dialog"
         aria-modal="true"
-        aria-label="How MetaFor works, an example week"
+        :aria-label="label"
         tabindex="-1"
         @click="onTap"
       >
         <div class="story-bars" aria-hidden="true">
-          <span v-for="(_, position) in SLIDES" :key="position"><i :style="{ width: fill(position) }" /></span>
+          <span v-for="(_, position) in slides" :key="position"><i :style="{ width: fill(position) }" /></span>
         </div>
         <div class="story-tools">
           <button type="button" :aria-label="paused ? 'Play' : 'Pause'" @click="paused = !paused">
@@ -137,12 +150,16 @@ const fill = (position) => {
         <Transition name="slide" mode="out-in">
           <div :key="index" class="story-slide" aria-live="polite">
             <img v-if="slide.type" class="story-icon" :src="typeIcon(slide.type)" alt="" width="96" height="96" />
+            <img v-else-if="slide.image" class="story-art" :src="slide.image" alt="" width="160" height="160" />
             <p class="story-kicker">{{ slide.kicker }}</p>
             <p v-if="slide.big" class="story-big">{{ slide.big }}</p>
             <h2>{{ slide.title }}</h2>
             <p class="story-text">{{ slide.text }}</p>
+            <div v-if="slide.link && !slide.last" class="story-actions">
+              <RouterLink class="story-cta" :to="slide.link.to" @click="close">{{ slide.link.text }}</RouterLink>
+            </div>
             <div v-if="slide.last" class="story-actions">
-              <RouterLink class="story-cta" to="/login" @click="close">Get started</RouterLink>
+              <RouterLink class="story-cta" :to="finish.to" @click="close">{{ finish.text }}</RouterLink>
               <button type="button" class="story-again" @click="start">Watch again</button>
             </div>
           </div>
@@ -262,6 +279,13 @@ const fill = (position) => {
   display: block;
   margin: 0 auto 16px;
   filter: invert(1);
+}
+.story-art {
+  display: block;
+  margin: 0 auto 20px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 .story-kicker {
   margin: 0 0 12px;
