@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-// What the mood analysis heard in the user's last two weeks of plays, from
+// Home's Your Music's Moods: what the mood analysis heard in the user's last two weeks of plays, from
 // musicMoods in /api/quiz/mood-music: one bar of how the plays spread over the
 // journal's five moods, the music moods played most, and how often the music
 // matched the mood they logged.
@@ -80,7 +80,7 @@ const source = computed(() =>
           <span class="mood-name">
             <span
               class="legend-dot"
-              :style="{ background: mood.axis ? colour(mood.axis) : 'var(--pq-muted)' }"
+              :style="{ background: mood.axis ? colour(mood.axis) : 'var(--ui-text-muted)' }"
             />
             {{ mood.name }}
           </span>
@@ -113,7 +113,7 @@ const source = computed(() =>
 
 .source-note {
   margin-top: 0.75rem;
-  color: var(--pq-muted);
+  color: var(--ui-text-muted);
   font-family: var(--font-sans);
   font-size: 0.85rem;
 }
@@ -166,12 +166,12 @@ const source = computed(() =>
   align-items: center;
   padding: 0.55rem 0.8rem;
   border-radius: 10px;
-  background: var(--pq-tint);
+  background: var(--ui-bg-accented);
   font-family: var(--font-sans);
 }
 
 .rank {
-  color: var(--pq-muted);
+  color: var(--ui-text-muted);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -181,7 +181,7 @@ const source = computed(() =>
 }
 
 .mood-share {
-  color: var(--pq-muted);
+  color: var(--ui-text-muted);
   font-size: 0.9rem;
 }
 

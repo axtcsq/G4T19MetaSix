@@ -60,6 +60,7 @@ export const test = base.extend({
         }
         if (path === '/api/listens') return reply({ items: [] })
         if (path === '/api/quiz/personality') return reply(null)
+        if (path === '/api/quiz/mood-music') return reply({ days: [], byMood: [], musicMoods: null })
         state.unexpected.push(method + ' ' + path)
         return reply({ error: 'Unexpected test request' }, 501)
       },
