@@ -43,12 +43,12 @@ onMounted(loadResult)
         <p class="body-text">{{ loadError }}</p>
         <div class="mt-4 flex flex-wrap gap-4">
           <RouterLink
-            class="peach-button glass-action"
+            class="peach-button"
             :to="{ name: 'personality-quiz', params: { quizId: route.params.quizId } }"
           >
             Take the quiz
           </RouterLink>
-          <button type="button" class="peach-button peach-button--quiet glass-secondary" @click="loadResult">
+          <button type="button" class="peach-button peach-button--quiet" @click="loadResult">
             Try again
           </button>
         </div>
@@ -109,11 +109,11 @@ onMounted(loadResult)
           </div>
 
           <div class="mt-10 grid gap-4 sm:grid-cols-2">
-            <RouterLink class="peach-button glass-action" :to="{ name: 'personality', hash: '#patterns' }">
+            <RouterLink class="peach-button" :to="{ name: 'personality', hash: '#patterns' }">
               See your patterns
             </RouterLink>
             <RouterLink
-              class="peach-button peach-button--quiet glass-secondary"
+              class="peach-button peach-button--quiet"
               :to="{ name: 'personality-quiz', params: { quizId: result.quizId } }"
             >
               Retake quiz
@@ -244,6 +244,41 @@ onMounted(loadResult)
   font-weight: 700;
 }
 
+.peach-button {
+  display: flex;
+  min-height: 55px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1.5rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 10px;
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.peach-button:hover {
+  background: var(--pq-peach-hover);
+  transform: translateY(-1px);
+}
+
+.peach-button:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.peach-button--quiet {
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
+}
+
 @media (max-width: 600px) {
   .result-page {
     min-height: calc(100vh - 66px);
@@ -263,5 +298,4 @@ onMounted(loadResult)
     font-size: 1.1rem;
   }
 }
-
 </style>

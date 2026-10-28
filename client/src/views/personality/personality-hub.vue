@@ -166,7 +166,7 @@ onMounted(loadPage)
 
         <div v-else-if="loadError" role="alert" class="mt-10">
           <p class="text-sm text-error">{{ loadError }}</p>
-          <button type="button" class="peach-button mt-4 max-w-[334px] glass-action" @click="loadPage">
+          <button type="button" class="peach-button mt-4 max-w-[334px]" @click="loadPage">
             Try again
           </button>
         </div>
@@ -191,26 +191,26 @@ onMounted(loadPage)
                 </p>
                 <div class="card-actions">
                   <RouterLink
-                    class="peach-button glass-action"
+                    class="peach-button"
                     :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
                   >
                     Retake
                   </RouterLink>
-                  <button type="button" class="peach-button peach-button--quiet glass-secondary" @click="confirmingRetake = null">
+                  <button type="button" class="peach-button peach-button--quiet" @click="confirmingRetake = null">
                     Cancel
                   </button>
                 </div>
               </div>
               <div v-else class="card-actions card-actions--retry">
                 <RouterLink
-                  class="peach-button glass-action"
+                  class="peach-button"
                   :to="{ name: 'personality-result', params: { quizId: quiz.id } }"
                 >
                   View result
                 </RouterLink>
                 <button
                   type="button"
-                  class="peach-button peach-button--quiet retry-button glass-icon"
+                  class="peach-button peach-button--quiet retry-button"
                   :aria-label="`Retake ${quiz.title}`"
                   title="Retake"
                   @click="confirmingRetake = quiz.id"
@@ -234,7 +234,7 @@ onMounted(loadPage)
             </template>
             <RouterLink
               v-else
-              class="peach-button glass-action"
+              class="peach-button"
               :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
             >
               Get Started
@@ -292,7 +292,7 @@ onMounted(loadPage)
           <button
             v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
             type="button"
-            class="show-more glass-secondary"
+            class="peach-button peach-button--quiet show-more"
             :aria-expanded="showAllOutcomes"
             aria-controls="outcomes-panel"
             @click="showAllOutcomes = !showAllOutcomes"
@@ -310,7 +310,7 @@ onMounted(loadPage)
           <button
             v-if="personality"
             type="button"
-            class="share-trigger glass-icon"
+            class="share-trigger"
             aria-label="Share my personality card"
             @click="shareDialog.open()"
           >
@@ -348,7 +348,7 @@ onMounted(loadPage)
 
           <div v-else-if="patternsError" class="pattern-card patterns-empty mt-8" role="alert">
             <p class="body-text">Your patterns couldn't load: {{ patternsError }}</p>
-            <button type="button" class="peach-button empty-button glass-action" @click="loadPatterns">Try again</button>
+            <button type="button" class="peach-button empty-button" @click="loadPatterns">Try again</button>
           </div>
 
           <div v-else-if="!personality" class="pattern-card patterns-empty mt-8">
@@ -375,7 +375,7 @@ onMounted(loadPage)
             </p>
             <RouterLink
               v-if="firstQuiz"
-              class="peach-button empty-button glass-action"
+              class="peach-button empty-button"
               :to="{ name: 'personality-quiz', params: { quizId: firstQuiz.id } }"
             >
               Start with {{ firstQuiz.title }}
@@ -471,14 +471,14 @@ onMounted(loadPage)
               <p class="insight-text">{{ personality.song.reason }}</p>
               <div class="song-actions">
                 <a
-                  class="peach-button glass-action"
+                  class="peach-button"
                   :href="`https://open.spotify.com/track/${personality.song.id}`"
                   target="_blank"
                   rel="noopener"
                 >
                   Open in Spotify
                 </a>
-                <RouterLink class="peach-button peach-button--quiet glass-secondary" to="/listen">
+                <RouterLink class="peach-button peach-button--quiet" to="/listen">
                   Listening Room
                 </RouterLink>
               </div>
@@ -525,6 +525,7 @@ onMounted(loadPage)
 .hub-intro {
   padding-top: var(--page-top);
 }
+
 
 .body-text {
   font-family: var(--font-serif);
@@ -575,6 +576,42 @@ onMounted(loadPage)
 .quiz-description {
   flex: 1;
   margin-top: 0.25rem;
+}
+
+.peach-button {
+  display: flex;
+  width: 100%;
+  min-height: 55px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 10px;
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.peach-button:hover {
+  background: var(--pq-peach-hover);
+  transform: translateY(-1px);
+}
+
+.peach-button:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.peach-button--quiet {
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
 }
 
 .latest-result {
@@ -640,6 +677,38 @@ onMounted(loadPage)
    change the section's height. */
 /* In the card's top corner, above the heading, so it stays clear of the
    title and intro text at every width. */
+.share-trigger {
+  position: absolute;
+  top: 1rem;
+  right: 0;
+  display: flex;
+  height: 42px;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.share-trigger:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+
+.share-trigger:focus-visible {
+  outline: 3px solid rgba(255, 205, 166, 0.8);
+  outline-offset: 3px;
+}
 
 .patterns-title {
   color: #fff;
@@ -1029,10 +1098,11 @@ onMounted(loadPage)
   line-height: 1.45;
 }
 
-.show-more.glass-secondary {
-  display: flex;
+.show-more {
+  gap: 0.5rem;
+  max-width: 334px;
   margin: 1.75rem auto 0;
-  border-radius: 12px !important;
+  font-size: 1.15rem;
 }
 
 .show-more-chevron {
@@ -1067,12 +1137,6 @@ onMounted(loadPage)
   .show-more-chevron {
     transition: none;
   }
-}
-
-/* The quiz cards' buttons keep the glossy look but with the softer square
-   corners they used to have, instead of full pills. */
-.quiz-card :is(.glass-action, .glass-secondary, .glass-icon) {
-  border-radius: 12px !important;
 }
 
 /* Patterns while it loads, has no quizzes yet, or fails. */
@@ -1281,24 +1345,15 @@ onMounted(loadPage)
   }
 
   /* Icon only on phones, so it takes less room. */
+  .share-trigger {
+    top: 0.75rem;
+    width: 42px;
+    justify-content: center;
+    padding: 0;
+  }
 
   .share-label {
     display: none;
   }
-}
-.peach-button {
-  width: 100%;
-  margin-top: 0.75rem;
-}
-.share-trigger {
-  position: absolute;
-  top: 1rem;
-  right: 0;
-  height: 42px;
-}
-/* A round icon button, so the label is only for screen readers (it also
-   has an aria-label). */
-.share-label {
-  display: none;
 }
 </style>
