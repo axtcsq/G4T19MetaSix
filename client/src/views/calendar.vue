@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodTag from '@/components/mood/MoodTag.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
@@ -263,7 +264,7 @@ onMounted(loadData)
             <a v-for="track in recommendations" :key="track.id" class="recommendation-card" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer">
               <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
               <span v-else class="track-art">♫</span>
-              <span class="track-copy"><strong>{{ track.name }}</strong><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small></span>
+              <span class="track-copy"><strong>{{ track.name }}</strong><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" /></span>
               <span class="recommendation-open" aria-hidden="true">↗</span>
             </a>
           </div>
@@ -336,6 +337,7 @@ onMounted(loadData)
                   <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
                   <span v-else class="track-art">♫</span>
                   <span class="track-copy"><strong>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
+                  <MoodTag :track-id="item.track?.id" size="sm" />
                   <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
                 </a>
               </div>
@@ -436,7 +438,7 @@ onMounted(loadData)
 .track-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); background: var(--ui-bg-accented); }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
-.track-copy { display: grid; min-width: 0; gap: 3px; }
+.track-copy { display: grid; min-width: 0; gap: 3px; justify-items: start; }
 .track-card .track-copy { width: 100%; }
 .track-copy strong, .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-copy strong { font-size: .87rem; }

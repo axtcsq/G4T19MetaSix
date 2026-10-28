@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodTag from '@/components/mood/MoodTag.vue'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
@@ -204,6 +205,7 @@ onMounted(() => {
                     <a :href="song.url" target="_blank" rel="noopener noreferrer"
                       >{{ song.title }}<span class="sr-only"> on Spotify (opens new tab)</span></a
                     ><span>{{ song.artist }}</span>
+                    <div class="song-mood"><MoodTag :track-id="song.id" size="sm" /></div>
                   </div>
                   <strong>{{ song[period] }}</strong>
                 </li>
@@ -593,6 +595,13 @@ onMounted(() => {
   display: block;
   font-size: 13px;
   color: var(--dash-muted);
+}
+.song-mood {
+  display: flex;
+  margin-top: 4px;
+}
+.song-mood:empty {
+  display: none;
 }
 .artwork-credit {
   font-size: 13px;

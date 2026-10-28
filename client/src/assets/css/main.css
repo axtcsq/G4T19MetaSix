@@ -33,6 +33,65 @@
   --color-peach: #ffd3ac;
   --color-lavender: #998ba1;
   --color-brown: #7d4737;
+
+  /* The five journal moods, as Nuxt UI colours (vite.config.js) for the song
+     mood tags. 500 is the Daily Mood picker's colour; the rest mix it with
+     white or black. */
+  --color-mood-sad-50: #f0f6fb;
+  --color-mood-sad-100: #e1ecf8;
+  --color-mood-sad-200: #c3d9f0;
+  --color-mood-sad-300: #9dc2e7;
+  --color-mood-sad-400: #70a5dc;
+  --color-mood-sad-500: #4389d1;
+  --color-mood-sad-600: #3a76b4;
+  --color-mood-sad-700: #2f6092;
+  --color-mood-sad-800: #244a71;
+  --color-mood-sad-900: #1b3754;
+  --color-mood-sad-950: #112436;
+  --color-mood-happy-50: #fefaef;
+  --color-mood-happy-100: #fdf5df;
+  --color-mood-happy-200: #fbecbe;
+  --color-mood-happy-300: #f8e096;
+  --color-mood-happy-400: #f5d165;
+  --color-mood-happy-500: #f2c335;
+  --color-mood-happy-600: #d0a82e;
+  --color-mood-happy-700: #a98825;
+  --color-mood-happy-800: #83691d;
+  --color-mood-happy-900: #614e15;
+  --color-mood-happy-950: #3f330e;
+  --color-mood-relaxed-50: #f7f6f7;
+  --color-mood-relaxed-100: #efecf0;
+  --color-mood-relaxed-200: #dedae1;
+  --color-mood-relaxed-300: #cac3ce;
+  --color-mood-relaxed-400: #b1a7b8;
+  --color-mood-relaxed-500: #998ba1;
+  --color-mood-relaxed-600: #84788a;
+  --color-mood-relaxed-700: #6b6171;
+  --color-mood-relaxed-800: #534b57;
+  --color-mood-relaxed-900: #3d3840;
+  --color-mood-relaxed-950: #28242a;
+  --color-mood-anxious-50: #fef6ef;
+  --color-mood-anxious-100: #fcecdf;
+  --color-mood-anxious-200: #f9dabe;
+  --color-mood-anxious-300: #f6c296;
+  --color-mood-anxious-400: #f1a665;
+  --color-mood-anxious-500: #ed8a35;
+  --color-mood-anxious-600: #cc772e;
+  --color-mood-anxious-700: #a66125;
+  --color-mood-anxious-800: #804b1d;
+  --color-mood-anxious-900: #5f3715;
+  --color-mood-anxious-950: #3e240e;
+  --color-mood-angry-50: #fcf1f0;
+  --color-mood-angry-100: #f9e2e1;
+  --color-mood-angry-200: #f3c5c3;
+  --color-mood-angry-300: #eba19e;
+  --color-mood-angry-400: #e27572;
+  --color-mood-angry-500: #d94a45;
+  --color-mood-angry-600: #bb403b;
+  --color-mood-angry-700: #983430;
+  --color-mood-angry-800: #752825;
+  --color-mood-angry-900: #571e1c;
+  --color-mood-angry-950: #381312;
 }
 
 /* Type scale sizes, for page styles that set sizes themselves. The classes
