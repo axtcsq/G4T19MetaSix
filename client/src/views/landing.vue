@@ -430,7 +430,7 @@ const showcase = [
 }
 
 .landing-shell {
-  width: var(--page-width);
+  width: var(--landing-width);
   margin-inline: auto;
 }
 

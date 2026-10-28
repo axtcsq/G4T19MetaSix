@@ -108,10 +108,19 @@
      gutter is the space between the screen edge and the content. */
   --page-gutter: 32px;
   --page-width: min(1180px, calc(100% - 2 * var(--page-gutter)));
+  /* The landing page's width. On wide screens it leaves wider sides for the
+     margin notes and strings, so they don't crowd the content. */
+  --landing-width: var(--page-width);
   /* The space between the nav and each page's title, and between the end of
      a page and the footer. */
   --page-top: clamp(32px, 4vw, 48px);
   --page-bottom: clamp(48px, 6vw, 64px);
+}
+
+@media (min-width: 1100px) {
+  :root {
+    --landing-width: min(1180px, calc(100% - 2 * min(9vw, 140px)));
+  }
 }
 
 @media (max-width: 768px) {
