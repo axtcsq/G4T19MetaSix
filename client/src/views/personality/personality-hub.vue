@@ -55,7 +55,7 @@ const outcomesQuiz = computed(
 )
 // The list starts short, so the page isn't a wall of text; Show all opens the
 // rest. Picking another quiz closes it again.
-const OUTCOMES_SHOWN = 6
+const OUTCOMES_SHOWN = 3
 const showAllOutcomes = ref(false)
 // The user's own result comes first, so it's never hidden.
 const shownOutcomes = computed(() => {
