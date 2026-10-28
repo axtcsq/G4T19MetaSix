@@ -1,0 +1,145 @@
+.mood-reaction:is(:hover, :focus-visible) .face-rest {
+  opacity: 0;
+}
+.mood-reaction:is(:hover, :focus-visible) .face-expression {
+  opacity: 1;
+}
+.mood-reaction--happy:is(:hover, :focus-visible) .button-mood-face {
+  animation: happy-hello 1100ms ease both;
+}
+.mood-reaction--happy:is(:hover, :focus-visible) .wink-eye {
+  animation: happy-wink 1100ms ease both;
+}
+.mood-reaction--sad:is(:hover, :focus-visible) .sad-tear {
+  animation: little-tear 1700ms ease-in both;
+}
+.mood-reaction--relaxed:is(:hover, :focus-visible) .button-mood-face {
+  animation: calm-sigh 1800ms ease-in-out both;
+}
+.mood-reaction--relaxed:is(:hover, :focus-visible) .calm-breath {
+  animation: exhale 1800ms ease-out both;
+}
+.mood-reaction--anxious:is(:hover, :focus-visible) .anxious-pupils {
+  animation: nervous-glance 1600ms ease-in-out both;
+}
+.mood-reaction--anxious:is(:hover, :focus-visible) .anxious-drop {
+  animation: little-tear 1600ms ease-in both;
+}
+.mood-reaction--angry:is(:hover, :focus-visible) .button-mood-face {
+  animation: grumpy-shake 1000ms ease both;
+}
+.mood-reaction--angry:is(:hover, :focus-visible) .angry-brows {
+  animation: brow-furrow 1000ms ease both;
+}
+@keyframes happy-hello {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  30% {
+    transform: rotate(-12deg) scale(1.15);
+  }
+  65% {
+    transform: rotate(7deg) scale(1.08);
+  }
+}
+@keyframes happy-wink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35%,
+  55% {
+    opacity: 0.35;
+  }
+}
+@keyframes little-tear {
+  0%,
+  15% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  35% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes calm-sigh {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  45% {
+    transform: rotate(-7deg) scale(1.12);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.02);
+  }
+}
+@keyframes exhale {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translateX(-1px);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(3px);
+  }
+}
+@keyframes nervous-glance {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  35% {
+    transform: translateX(-2px);
+  }
+  55%,
+  70% {
+    transform: translateX(2px);
+  }
+}
+@keyframes grumpy-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  50% {
+    transform: rotate(-9deg);
+  }
+  35%,
+  65% {
+    transform: rotate(9deg);
+  }
+  80% {
+    transform: rotate(-3deg);
+  }
+}
+@keyframes brow-furrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35%,
+  70% {
+    transform: translateY(1.5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mood-reaction,
+  .mood-reaction .button-mood-face,
+  .mood-reaction * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

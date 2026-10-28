@@ -79,7 +79,7 @@ onBeforeUnmount(clearImage)
     <div class="share-panel">
       <div class="share-header">
         <h2 id="share-dialog-title" class="share-title">Your Personality Card</h2>
-        <button type="button" class="close-button" aria-label="Close" @click="close">×</button>
+        <button type="button" class="close-button glass-icon" aria-label="Close" @click="close">×</button>
       </div>
 
       <div class="share-preview">
@@ -95,7 +95,7 @@ onBeforeUnmount(clearImage)
 
       <div class="share-actions">
         <a
-          class="share-button"
+          class="share-button glass-action"
           :class="{ 'is-disabled': !imageUrl }"
           :href="imageUrl || undefined"
           :download="fileName()"
@@ -106,7 +106,7 @@ onBeforeUnmount(clearImage)
         <button
           v-if="canShareFiles()"
           type="button"
-          class="share-button share-button--quiet"
+          class="share-button share-button--quiet glass-secondary"
           @click="share"
         >
           Share
@@ -153,19 +153,6 @@ onBeforeUnmount(clearImage)
   font-weight: 600;
 }
 
-.close-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 1.8rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.close-button:hover {
-  background: var(--pq-tint);
-}
-
 /* Keeps the 9:16 shape while the card is being drawn. */
 .share-preview {
   display: grid;
@@ -197,46 +184,19 @@ onBeforeUnmount(clearImage)
   gap: 0.75rem;
 }
 
-.share-button {
-  display: flex;
-  flex: 1;
-  min-height: 48px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--pq-border);
-  border-radius: 10px;
-  color: var(--pq-on-peach);
-  background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.share-button:hover {
-  background: var(--pq-peach-hover);
-}
-
-.share-button--quiet {
-  color: var(--pq-on-surface);
-  background: var(--pq-quiet);
-}
-
 .share-button.is-disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 
-.share-button:focus-visible,
-.close-button:focus-visible {
-  outline: 3px solid var(--pq-focus);
-  outline-offset: 2px;
-}
+
 
 .share-note {
   color: var(--pq-error);
   font-family: var(--font-sans);
   font-size: 0.9rem;
+}
+.share-button {
+  flex: 1;
 }
 </style>

@@ -88,7 +88,9 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
       >
         <LandingObject3D class="spotify-image" object="spotify" :rotatable="false" />
       </div>
-      <span class="plus-sign" aria-hidden="true">+</span>
+      <svg class="plus-sign" viewBox="0 0 40 40" aria-hidden="true">
+        <path d="M20 6v28M6 20h28" fill="none" stroke="currentColor" stroke-width="6" />
+      </svg>
       <LandingObject3D ref="journal" class="journal-image" :class="{ 'is-catching': merging }" object="journal" />
     </div>
 
@@ -116,10 +118,13 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
   padding-block: 24px 56px;
 }
 .pair {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  width: 100%;
+  max-width: 720px;
   user-select: none;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   gap: clamp(24px, 5vw, 64px);
 }
 .tile {
@@ -147,13 +152,12 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
 }
 .plus-sign {
   color: var(--ui-text);
-  font-family: var(--font-sans);
-  font-size: clamp(2.8rem, 6vw, 4.3rem);
-  font-weight: 500;
-  line-height: 1;
+  width: clamp(28px, 4vw, 44px);
+  height: auto;
 }
 .journal-image {
   width: clamp(190px, 28vw, 300px);
+  max-width: 100%;
   height: clamp(170px, 22vw, 230px);
 }
 /* A little squash as the tile lands in it. */
@@ -256,7 +260,7 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
     height: min(27vw, 150px);
   }
   .plus-sign {
-    font-size: 2.7rem;
+    width: 28px;
   }
   .journal-image {
     width: min(46vw, 235px);
