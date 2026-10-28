@@ -578,6 +578,24 @@ const showcase = [
 :global(.dark .landing-page .feature-card.follow) {
   --glow: rgba(255, 135, 60, 0.42);
 }
+/* With a mood picked in the hero, the cards' glow, the light on their words
+   and their hover edge all take the mood's colour. */
+.landing-page.has-mood .feature-card.follow {
+  --glow: color-mix(in srgb, var(--mood-colour) 45%, transparent);
+}
+.landing-page.has-mood .feature-card .glow-text {
+  --lit: color-mix(in srgb, var(--mood-colour) 50%, #2a140e);
+}
+.landing-page.has-mood .feature-card:hover {
+  border-color: color-mix(in srgb, var(--mood-colour) 50%, var(--ui-border));
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--mood-colour) 28%, transparent);
+}
+:global(.dark .landing-page.has-mood .feature-card.follow) {
+  --glow: color-mix(in srgb, var(--mood-colour) 60%, transparent);
+}
+:global(.dark .landing-page.has-mood .feature-card .glow-text) {
+  --lit: color-mix(in srgb, var(--mood-colour) 65%, #fff);
+}
 .closing.follow {
   --glow-size: 360px;
   --tilt-scale: 0.4;
