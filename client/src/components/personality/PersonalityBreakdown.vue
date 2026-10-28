@@ -71,7 +71,7 @@ const rows = computed(() =>
       <span ref="info" class="info" @pointerenter="onPointerEnter" @pointerleave="onPointerLeave">
         <button
           type="button"
-          class="info-button glass-icon"
+          class="info-button"
           aria-label="How your personality is worked out"
           aria-describedby="breakdown-info"
           :aria-expanded="showInfo"
