@@ -283,8 +283,8 @@ body {
 .dark .glass-secondary,
 .dark .glass-icon {
   --button-ink: var(--ui-text);
-  --button-top: #49424e;
-  --button-base: #302c35;
+  --button-top: #3d322d;
+  --button-base: #2c2420;
 }
 .glass-icon {
   width: 44px !important;
@@ -412,4 +412,37 @@ body {
   --button-ink: #fff;
   --button-top: #dc806d;
   --button-base: #cd6651;
+}
+
+/* Flat buttons. The glossy bevel above stays only on the mood chips
+   (.mood-reaction), whose colours are the moods themselves; every other
+   button is a plain fill in the same colours with a soft drop shadow, and no
+   shine or inner bevel. */
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction) {
+  border: 1px solid transparent !important;
+  background: var(--button-base, #cd6651) !important;
+  box-shadow: 0 4px 10px rgba(125, 71, 55, 0.2) !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):hover {
+  filter: none;
+  box-shadow: 0 6px 14px rgba(125, 71, 55, 0.26) !important;
+}
+.dark :is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):hover {
+  background: var(--button-top, #dc806d) !important;
+}
+/* Neutral buttons get a hairline so they still read on cards. */
+:is(.glass-secondary, .glass-icon):not(.mood-reaction, .glass-action, [aria-pressed='true']) {
+  border-color: var(--ui-border) !important;
+}
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):is(:disabled, [aria-disabled='true']) {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--ui-text-muted) !important;
+  background: color-mix(in srgb, var(--ui-text) 10%, var(--ui-bg)) !important;
+  filter: none;
 }
