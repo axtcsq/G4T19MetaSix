@@ -47,6 +47,18 @@ const progressNudge = computed(() => {
   if (left) return `${left} more for a sharper match.`
   return 'Your match is as sharp as it gets.'
 })
+// The quiz whose results are open in What You Could Get.
+const outcomesQuizId = ref('')
+const outcomesQuiz = computed(
+  () => quizzes.value.find((quiz) => quiz.id === outcomesQuizId.value) ?? quizzes.value[0],
+)
+// The user's own result in the list. Horoscope titles put words in front of
+// the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
+function isMine(quiz, outcome) {
+  const title = quiz.latestResult?.title
+  return Boolean(title) && (title === outcome.name || title.endsWith(` ${outcome.name}`))
+}
+
 // Where the empty Patterns card sends a new user.
 const firstQuiz = computed(() => quizzes.value.find((quiz) => !quiz.latestResult) ?? quizzes.value[0])
 
@@ -213,6 +225,57 @@ onMounted(loadPage)
             </RouterLink>
           </li>
         </ul>
+      </section>
+
+      <!-- Every result each quiz can give, one quiz at a time. -->
+      <section
+        v-if="!isLoading && quizzes.length"
+        class="page-width outcomes pb-16"
+        aria-labelledby="outcomes-heading"
+      >
+        <h2 id="outcomes-heading" class="outcomes-title">What You Could Get</h2>
+        <p class="body-text text-(--pq-muted)">Every result each quiz can give, and what it means.</p>
+
+        <div class="outcome-tabs" role="tablist" aria-label="Quizzes">
+          <button
+            v-for="quiz in quizzes"
+            :id="`outcomes-tab-${quiz.id}`"
+            :key="quiz.id"
+            type="button"
+            role="tab"
+            class="outcome-tab"
+            :aria-selected="quiz.id === outcomesQuiz.id"
+            :aria-controls="`outcomes-panel`"
+            @click="outcomesQuizId = quiz.id"
+          >
+            {{ quiz.title }}
+            <span class="tab-count">{{ quiz.outcomes.length }}</span>
+          </button>
+        </div>
+
+        <div
+          id="outcomes-panel"
+          role="tabpanel"
+          :aria-labelledby="`outcomes-tab-${outcomesQuiz.id}`"
+          class="outcome-panel"
+        >
+          <p v-if="outcomesQuiz.outcomeNote" class="outcome-note">{{ outcomesQuiz.outcomeNote }}</p>
+          <ul class="outcome-grid">
+            <li
+              v-for="outcome in outcomesQuiz.outcomes"
+              :key="outcome.name"
+              class="outcome-card"
+              :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
+            >
+              <p class="outcome-head">
+                <span class="outcome-name">{{ outcome.name }}</span>
+                <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
+              </p>
+              <p v-if="outcome.tag" class="outcome-tag">{{ outcome.tag }}</p>
+              <p class="outcome-meaning">{{ outcome.meaning }}</p>
+            </li>
+          </ul>
+        </div>
       </section>
       <!-- Patterns -->
       <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
@@ -857,6 +920,128 @@ onMounted(loadPage)
 .retake-question {
   font-family: var(--font-serif);
   font-size: 1.05rem;
+}
+
+/* What You Could Get: quiz tabs, then a card per result. */
+.outcomes-title {
+  color: var(--ui-text);
+  font-size: var(--text-header);
+  font-weight: 700;
+}
+
+.outcome-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.outcome-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 999px;
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.outcome-tab:hover {
+  background: var(--pq-peach-hover);
+}
+
+.outcome-tab[aria-selected='true'] {
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: 0 4px 4px var(--pq-shadow);
+}
+
+.outcome-tab:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.tab-count {
+  color: var(--pq-muted);
+  font-size: 0.8rem;
+}
+
+.outcome-panel {
+  margin-top: 1.5rem;
+}
+
+.outcome-note {
+  margin-bottom: 1rem;
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.outcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1rem;
+}
+
+.outcome-card {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 10px;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+  box-shadow: 0 4px 4px var(--pq-shadow);
+}
+
+.outcome-card.is-mine {
+  border-left: 4px solid var(--pq-accent);
+  background: var(--pq-result);
+}
+
+.outcome-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+}
+
+.outcome-name {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mine-badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.outcome-tag {
+  margin-top: 0.15rem;
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.outcome-meaning {
+  margin-top: 0.6rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.4;
 }
 
 /* Patterns while it loads, has no quizzes yet, or fails. */
