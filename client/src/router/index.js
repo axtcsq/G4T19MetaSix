@@ -17,7 +17,7 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
-    meta: { title: 'Your Listening Portrait' },
+    meta: { title: 'Your Music at a Glance' },
   },
   {
     path: '/listen',
@@ -71,6 +71,13 @@ const routes = [
     meta: { title: 'Sign In' },
   },
   {
+    path: '/song/:id',
+    name: 'song',
+    component: () => import('../views/song.vue'),
+    // The page sets the song's name as the title once it has loaded.
+    meta: { requiresAuth: true, title: 'Song Mood' },
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: Profile,
@@ -105,7 +112,9 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { next: to.fullPath } }
   }
   if (to.name === 'login' && auth.user) {
-    return typeof to.query.next === 'string' && to.query.next.startsWith('/') && !to.query.next.startsWith('//')
+    return typeof to.query.next === 'string' &&
+      to.query.next.startsWith('/') &&
+      !to.query.next.startsWith('//')
       ? to.query.next
       : '/dashboard'
   }

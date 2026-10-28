@@ -40,6 +40,16 @@ afterEach(() => {
 })
 
 describe('Listening player lifecycle', () => {
+  it('offers playback troubleshooting without treating a track failure as a Premium failure', async () => {
+    const room = useListeningRoom()
+    await room.initialize()
+    players[0].listeners.playback_error({ message: 'Failed to load track.' })
+    expect(room.error.value).toContain('Failed to load track.')
+    expect(room.error.value).toContain('protected content')
+    expect(room.error.value).not.toContain('Premium')
+    expect(room.connected.value).toBe(true)
+  })
+
   it('ignores errors and state events from a player replaced by reconnect', async () => {
     const room = useListeningRoom()
     await room.initialize()

@@ -18,6 +18,7 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 - `services/dailyMoods.js` rebuilds a user's daily mood summaries from their listens.
 - `services/sync.js` saves a user's newest Spotify plays into `listens` and new songs into `tracks`. `jobs/sync.js` (`npm run sync`) runs it for every active user, and GitHub Actions runs that every 15 minutes.
 - `jobs/analyse.js` (`npm run analyse`) runs after each sync. It analyses up to 100 songs that are new, `partial` (lyrics failed for now) or `failed`, retrying each up to 3 times, then rebuilds the days they were played. The emotion model (~83 MB) downloads into `server/.models/` on first use; GitHub Actions caches it.
+- `services/mood/sound.js` is the sound-only half of the analysis, which needs no emotion model. `POST /api/tracks/moods/sound` uses it for songs nobody has played yet (search results, recommendations): it saves them with their sound mood in a second or two, and the analysis job adds the lyrics mood on its next run. `GET /api/tracks/moods` gives the mood tags for songs already stored. Both are behind login, and a user can add at most 100 new songs every 10 minutes.
 - `jobs/recompute.js` (`npm run mood:recompute`) recomputes every song's moods from stored scores, with no API calls, and rebuilds every day. Run it after changing `mood.js` or `axes.js`.
 
 ## Configuration

@@ -78,12 +78,6 @@ function onKey(event) {
   event.preventDefault()
   move(...directions[event.key])
 }
-const directions = [
-  { label: 'Move drawing left', dx: -24, dy: 0, path: 'm14 6-6 6 6 6' },
-  { label: 'Move drawing up', dx: 0, dy: -24, path: 'm6 14 6-6 6 6' },
-  { label: 'Move drawing down', dx: 0, dy: 24, path: 'm6 10 6 6 6-6' },
-  { label: 'Move drawing right', dx: 24, dy: 0, path: 'm10 6 6 6-6 6' },
-]
 onMounted(() => {
   observer = new ResizeObserver(layout)
   observer.observe(stage.value)
@@ -125,18 +119,6 @@ onBeforeUnmount(() => observer?.disconnect())
         </svg>
       </button>
       <canvas ref="canvas" role="img" :aria-label="label" />
-      <div class="note-moves" aria-label="Move drawing">
-        <button
-          v-for="direction in directions"
-          :key="direction.label"
-          type="button"
-          :aria-label="direction.label"
-          :title="direction.label"
-          @click="move(direction.dx, direction.dy)"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="direction.path" /></svg>
-        </button>
-      </div>
     </aside>
   </div>
 </template>
@@ -153,7 +135,7 @@ onBeforeUnmount(() => observer?.disconnect())
   top: 0;
   left: 0;
   width: min(240px, calc(100% - 32px));
-  padding: 12px 14px 4px;
+  padding: 12px 14px 16px;
   background: #f8e6aa;
   color: #51432d;
   box-shadow: 2px 7px 12px #3a2b2426;
@@ -202,29 +184,6 @@ canvas {
   display: block;
   width: 100%;
   height: 146px;
-}
-.note-moves {
-  display: flex;
-  justify-content: flex-end;
-}
-.note-moves button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.note-moves button:hover {
-  background: #e7cc82;
-}
-.note-moves svg {
-  width: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 button:focus-visible {
   outline: 2px solid #7d4737;

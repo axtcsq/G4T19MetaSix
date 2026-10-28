@@ -4,6 +4,7 @@ import { MAX_ATTEMPTS, trackMoods } from "./index.js";
 import { findLyrics } from "./lyrics.js";
 import { getAudioFeatures, idsForIsrc } from "./reccobeats.js";
 import { sameRecordingIds } from "./spotify.js";
+import { fetchFeatures } from "./sound.js";
 import { isEnglish, translateToEnglish } from "./translate.js";
 
 // Lyric statuses worth another try on a later run.
@@ -22,24 +23,6 @@ const defaultDeps = {
   scoreLyrics,
   toChunks,
 };
-
-async function fetchFeatures(track, deps) {
-  try {
-    const { id: _id, ...features } = await deps.getAudioFeatures(track._id, {
-      fallbacks: [
-        () => deps.sameRecordingIds({ id: track._id, isrc: track.isrc }),
-        () => deps.idsForIsrc(track.name, track.isrc),
-      ],
-    });
-    return features;
-  } catch (error) {
-    // ReccoBeats doesn't have the song under any of its IDs.
-    if (error.status === 404) {
-      return null;
-    }
-    throw error;
-  }
-}
 
 // Only the scores are kept, never the lyrics text. Highlights are capped at two
 // short excerpts each way, in the original language.

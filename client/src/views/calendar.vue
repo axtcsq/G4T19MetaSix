@@ -6,6 +6,8 @@ import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
+defineOptions({ name: "MoodCalendar" })
+
 const moodEmoji = { Happy: '😊', Relaxed: '😌', Sad: '😟', Anxious: '😰', Angry: '😠' }
 const moodTags = {
   Happy: ['Joyful', 'Hopeful'], Relaxed: ['Calm', 'Peace'], Sad: ['Low-Fi', 'Reflective'],
@@ -261,12 +263,15 @@ onMounted(loadData)
           <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
           <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
           <div v-else-if="recommendations.length" class="recommendation-list">
-            <a v-for="track in recommendations" :key="track.id" class="recommendation-card" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer">
-              <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
-              <span v-else class="track-art">♫</span>
-              <span class="track-copy"><strong>{{ track.name }}</strong><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" /></span>
-              <span class="recommendation-open" aria-hidden="true">↗</span>
-            </a>
+            <!-- The title opens the song's mood page; the artwork and arrow open Spotify. -->
+            <article v-for="track in recommendations" :key="track.id" class="recommendation-card">
+              <a class="art-link" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                <span v-else class="track-art">♫</span>
+              </a>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" :link="false" /></span>
+              <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
+            </article>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
           <p v-else-if="!hasSpotifySession()" class="recommendation-status">Connect Spotify to explore matching tracks.</p>
@@ -274,12 +279,12 @@ onMounted(loadData)
         </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">
-          <button class="month-arrow previous" type="button" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
+          <button class="month-arrow previous glass-icon" type="button" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
           <div class="calendar-center">
             <div class="month-heading">
-              <button type="button" class="month-step" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
+              <button type="button" class="month-step glass-icon" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
               <h2>{{ monthLabel }}</h2>
-              <button type="button" class="month-step" aria-label="Next month" @click="moveMonth(1)">›</button>
+              <button type="button" class="month-step glass-icon" aria-label="Next month" @click="moveMonth(1)">›</button>
             </div>
             <div class="calendar-grid">
               <div v-for="weekday in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="weekday" class="weekday">{{ weekday }}</div>
@@ -303,13 +308,13 @@ onMounted(loadData)
             </div>
             <p class="calendar-hint">Select a day to see its mood log and songs</p>
           </div>
-          <button class="month-arrow next" type="button" aria-label="Next month" @click="moveMonth(1)">›</button>
+          <button class="month-arrow next glass-icon" type="button" aria-label="Next month" @click="moveMonth(1)">›</button>
         </section>
 
         <section v-if="selectedDate" class="day-detail" aria-live="polite">
           <div class="detail-header">
             <div><p class="eyebrow">On this day</p><h3>{{ selectedDate.toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'long' }) }}</h3></div>
-            <button class="close-detail" type="button" aria-label="Close day details" @click="selectedDate = null">×</button>
+            <button class="close-detail glass-icon" type="button" aria-label="Close day details" @click="selectedDate = null">×</button>
           </div>
           <div class="day-detail-grid">
             <section class="day-detail-column journal-column" aria-labelledby="journal-history-title">
@@ -333,13 +338,16 @@ onMounted(loadData)
               </div>
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
               <div v-if="selectedListens.length" class="track-list">
-                <a v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify`">
-                  <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
-                  <span v-else class="track-art">♫</span>
-                  <span class="track-copy"><strong>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
+                <!-- The Spotify link and the mood tag (which opens the song's page) sit side by side, since a link can't hold another link. -->
+                <article v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card">
+                  <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
+                    <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                    <span v-else class="track-art">♫</span>
+                  </a>
+                  <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="`/song/${item.track.id}`"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
                   <MoodTag :track-id="item.track?.id" size="sm" />
                   <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
-                </a>
+                </article>
               </div>
               <p v-else class="empty-note">No recent Spotify plays found for this day.</p>
             </section>
@@ -366,7 +374,7 @@ onMounted(loadData)
 .inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .84rem; }
 .spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }
 .spotify-connect-note p { margin: 0; font-size: .9rem; }
-.connect-spotify { min-height: 40px !important; padding: .5rem 1rem !important; font-size: .82rem !important; }
+
 .recommendation-panel { width: min(790px, 100%); margin: 24px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
@@ -436,9 +444,18 @@ onMounted(loadData)
 .track-list h4 { grid-column: 1 / -1; }
 .track-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 13px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
 .track-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); background: var(--ui-bg-accented); }
+.track-link { display: flex; width: 100%; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; border-radius: 9px; color: inherit; text-decoration: none; }
+.track-link:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+/* Song titles open the song's mood page. */
+.title-link { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
+.title-link strong { display: block; }
+.title-link:hover strong { text-decoration: underline; text-underline-offset: 3px; }
+.title-link:focus-visible, .art-link:focus-visible, .recommendation-open:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+.art-link { display: block; flex: 0 0 auto; line-height: 0; }
+.recommendation-open { text-decoration: none; }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
-.track-copy { display: grid; min-width: 0; gap: 3px; justify-items: start; }
+.track-copy { display: grid; min-width: 0; gap: 3px; }
 .track-card .track-copy { width: 100%; }
 .track-copy strong, .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-copy strong { font-size: .87rem; }

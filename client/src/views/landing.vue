@@ -1,16 +1,16 @@
 <script setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodFace from '@/components/journal/MoodFace.vue'
 import NoteMargins from '@/components/landing/NoteMargins.vue'
 import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
-import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
 
-const CassetteViewer = defineAsyncComponent(
-  () => import('@/components/listening/CassetteViewer.vue'),
-)
+defineOptions({ name: "LandingPage" })
+
+const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 const bannerVideo = ref(null)
@@ -220,10 +220,13 @@ const showcase = [
               v-for="(mood, name) in HERO_MOODS"
               :key="name"
               type="button"
+              class="glass-secondary mood-reaction"
+              :class="`mood-reaction--${name.toLowerCase()}`"
               :style="{ '--chip': mood.colour }"
               :aria-pressed="heroMood === name"
               @click="heroMood = heroMood === name ? null : name"
             >
+              <MoodFace :mood="name" class="button-mood-face" />
               {{ name }}
             </button>
           </div>
@@ -231,15 +234,16 @@ const showcase = [
             {{ heroMood ? HERO_MOODS[heroMood].line : '' }}
           </p>
         </div>
-        <StoryMode />
       </div>
 
       <div class="cassette-area">
         <CassetteViewer />
-        <p class="rotate-hint">Drag the cassette to rotate</p>
-        <CassetteTune />
       </div>
     </section>
+
+    <div class="story-launch landing-shell">
+      <StoryMode />
+    </div>
 
     <MusicJournal />
 
@@ -374,6 +378,11 @@ const showcase = [
   flex-wrap: wrap;
   gap: 8px;
 }
+.story-launch {
+  display: flex;
+  justify-content: center;
+  padding-block: 8px 36px;
+}
 .hero-mood-options button {
   min-height: 36px;
   padding: 0 14px;
@@ -394,7 +403,16 @@ const showcase = [
   border-color: var(--chip);
   transform: translateY(-1px);
 }
-.hero-mood-options button[aria-pressed='true'] {
+.hero-mood-options .button-mood-face {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  transform-origin: center;
+}
+.hero-mood-options button:is(:hover, :focus-visible, [aria-pressed='true']) {
+  --button-top: color-mix(in srgb, var(--chip), white 48%);
+  --button-base: var(--chip);
+  --button-ink: #30261d;
   border-color: var(--chip);
   color: #30261d;
   background: var(--chip);
@@ -462,12 +480,6 @@ const showcase = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-.rotate-hint {
-  margin: -4px 0 0;
-  color: var(--brown);
-  font-family: var(--font-sans);
-  font-size: 0.74rem;
 }
 
 .mirror-section {
