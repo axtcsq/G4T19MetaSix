@@ -1,0 +1,521 @@
+[
+ {
+  "label": "sad",
+  "query": [
+   "Spring Day",
+   "BTS"
+  ],
+  "id": "2j1fFjWHCI9KJSwcuYAOyF",
+  "name": "Spring Day",
+  "artist": "BTS",
+  "features": {
+   "id": "2j1fFjWHCI9KJSwcuYAOyF",
+   "acousticness": 0.00631,
+   "danceability": 0.539,
+   "energy": 0.846,
+   "instrumentalness": 0.00000171,
+   "key": 8,
+   "liveness": 0.13,
+   "loudness": -3.192,
+   "mode": 1,
+   "speechiness": 0.0354,
+   "tempo": 106.994,
+   "valence": 0.462
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.27283156097858446,
+   "emotionalShare": 0.4835511589050293,
+   "totalLines": 50,
+   "emotions": {
+    "joy": 0.06387496367096901,
+    "surprise": 0.04068209066987038,
+    "neutral": 0.5164488410949707,
+    "sadness": 0.13228602677583695,
+    "fear": 0.17876274406909942,
+    "anger": 0.0481644956767559,
+    "disgust": 0.019780837520956992
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "그래, 밉다 니가 넌 떠났지만 / 단 하루도 너를 잊은 적이 없었지 난",
+     "보고 싶다, 이렇게 말하니까 더 보고 싶다 / 너희 사진을 보고 있어도 보고 싶다"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "sad",
+  "query": [
+   "Lemon",
+   "Kenshi Yonezu"
+  ],
+  "id": "04TshWXkhV1qkqHzf31Hn6",
+  "name": "Lemon",
+  "artist": "Kenshi Yonezu",
+  "features": {
+   "id": "04TshWXkhV1qkqHzf31Hn6",
+   "acousticness": 0.304,
+   "danceability": 0.525,
+   "energy": 0.646,
+   "instrumentalness": 0,
+   "key": 11,
+   "liveness": 0.297,
+   "loudness": -4.963,
+   "mode": 1,
+   "speechiness": 0.0268,
+   "tempo": 86.957,
+   "valence": 0.373
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.30700775556572163,
+   "emotionalShare": 0.5743902453354427,
+   "totalLines": 56,
+   "emotions": {
+    "joy": 0.06123188776629312,
+    "surprise": 0.12569718595061982,
+    "neutral": 0.4256097546645573,
+    "sadness": 0.03499914226787431,
+    "fear": 0.08015076390334538,
+    "anger": 0.221001141837665,
+    "disgust": 0.051310120948723385
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "どこかであなたが今 / わたしと同じ樣な",
+     "暗闇であなたの背をなぞった / その輪郭を鮮明に覺えている"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "sad",
+  "query": [
+   "Hijo de la Luna",
+   "Mecano"
+  ],
+  "id": "7g3g2sqevicvurLTZ75JTA",
+  "name": "Hijo de la Luna",
+  "artist": "Mecano",
+  "features": {
+   "id": "7g3g2sqevicvurLTZ75JTA",
+   "acousticness": 0.695,
+   "danceability": 0.45,
+   "energy": 0.527,
+   "instrumentalness": 0.00000831,
+   "key": 1,
+   "liveness": 0.0685,
+   "loudness": -7.212,
+   "mode": 0,
+   "speechiness": 0.0341,
+   "tempo": 179.474,
+   "valence": 0.569
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.22936840514461304,
+   "emotionalShare": 0.5760501056909562,
+   "totalLines": 55,
+   "emotions": {
+    "joy": 0.031854036408053205,
+    "surprise": 0.07148487994616681,
+    "neutral": 0.4239498943090439,
+    "sadness": 0.05396078869023106,
+    "fear": 0.23408625068312341,
+    "anger": 0.09439378316429528,
+    "disgust": 0.09027036682448604
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "Tonto el que no entienda / Cuenta una leyenda",
+     "Y no encuentras querer que te haga mujer / Dime, luna de plata"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "sad",
+  "query": [
+   "Je te laisserai des mots",
+   "Patrick Watson"
+  ],
+  "id": "44A0o4jA8F2ZF03Zacwlwx",
+  "name": "Je te laisserai des mots",
+  "artist": "Patrick Watson",
+  "features": {
+   "id": "44A0o4jA8F2ZF03Zacwlwx",
+   "acousticness": 0.989,
+   "danceability": 0.303,
+   "energy": 0.187,
+   "instrumentalness": 0.499,
+   "key": 2,
+   "liveness": 0.102,
+   "loudness": -16.757,
+   "mode": 1,
+   "speechiness": 0.0356,
+   "tempo": 132.679,
+   "valence": 0.212
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.3585959941426873,
+   "emotionalShare": 0.3577105402946472,
+   "totalLines": 12,
+   "emotions": {
+    "joy": 0.0717830266803503,
+    "surprise": 0.057531798258423805,
+    "neutral": 0.6422894597053528,
+    "sadness": 0.043958487610022225,
+    "fear": 0.054420798706511654,
+    "anger": 0.07686017143229644,
+    "disgust": 0.05315626800681154
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "Je te laisserai des mots / En-dessous de ta porte"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "sad",
+  "query": [
+   "Eyes, Nose, Lips",
+   "TAEYANG"
+  ],
+  "id": "0lYtIvI7bO51PZSeK22Mbz",
+  "name": "눈,코,입 (Eyes, Nose, Lips)",
+  "artist": "TAEYANG",
+  "features": {
+   "id": "0lYtIvI7bO51PZSeK22Mbz",
+   "acousticness": 0.736,
+   "danceability": 0.63,
+   "energy": 0.516,
+   "instrumentalness": 0,
+   "key": 0,
+   "liveness": 0.264,
+   "loudness": -5.759,
+   "mode": 1,
+   "speechiness": 0.0379,
+   "tempo": 143.786,
+   "valence": 0.254
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.45679426203555895,
+   "emotionalShare": 0.40652764972412225,
+   "totalLines": 66,
+   "emotions": {
+    "joy": 0.09207103875550357,
+    "surprise": 0.12979287134878564,
+    "neutral": 0.5934723502758777,
+    "sadness": 0.09127078414189094,
+    "fear": 0.037798290232648,
+    "anger": 0.03362048465307012,
+    "disgust": 0.021974177113875296
+   },
+   "highlights": {
+    "positive": [],
+    "negative": []
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "happy",
+  "query": [
+   "Despacito",
+   "Luis Fonsi"
+  ],
+  "id": "6habFhsOp2NvshLv26DqMb",
+  "name": "Despacito",
+  "artist": "Luis Fonsi",
+  "features": {
+   "id": "6habFhsOp2NvshLv26DqMb",
+   "acousticness": 0.198,
+   "danceability": 0.655,
+   "energy": 0.797,
+   "instrumentalness": 0,
+   "key": 2,
+   "liveness": 0.067,
+   "loudness": -4.787,
+   "mode": 1,
+   "speechiness": 0.153,
+   "tempo": 177.928,
+   "valence": 0.839
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.3436291720037835,
+   "emotionalShare": 0.658364224453251,
+   "totalLines": 77,
+   "emotions": {
+    "joy": 0.12106155137253272,
+    "surprise": 0.08857682352135708,
+    "neutral": 0.3416357755467489,
+    "sadness": 0.040610510759152375,
+    "fear": 0.26412000915930645,
+    "anger": 0.0874099297715085,
+    "disgust": 0.0565853998210136
+   },
+   "highlights": {
+    "positive": [
+     "Que le enseñes a mi boca (Woah, woah) / Tus lugares favoritos (Favorito, favorito, baby)"
+    ],
+    "negative": [
+     "Quiero respirar tu cuello despacito / Deja que te diga cosas al oído",
+     "Ay, ¡Fonsi! ¡D.Y. / Ohhh, oh, no, oh, no, oh"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "happy",
+  "query": [
+   "Gangnam Style (강남스타일)",
+   "PSY"
+  ],
+  "id": "03UrZgTINDqvnUMbbIMhql",
+  "name": "Gangnam Style (강남스타일)",
+  "artist": "PSY",
+  "features": {
+   "id": "03UrZgTINDqvnUMbbIMhql",
+   "acousticness": 0.00417,
+   "danceability": 0.727,
+   "energy": 0.937,
+   "instrumentalness": 0,
+   "key": 11,
+   "liveness": 0.091,
+   "loudness": -2.871,
+   "mode": 0,
+   "speechiness": 0.286,
+   "tempo": 132.067,
+   "valence": 0.749
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.46699837663355415,
+   "emotionalShare": 0.4919610356880446,
+   "totalLines": 59,
+   "emotions": {
+    "joy": 0.18728549671122582,
+    "surprise": 0.031697406007324236,
+    "neutral": 0.5080389643119554,
+    "sadness": 0.09551214710888216,
+    "fear": 0.11015053825863337,
+    "anger": 0.03724752906394207,
+    "disgust": 0.030067911971423587
+   },
+   "highlights": {
+    "positive": [
+     "Eh, sexy lady / 오, 오, 오, 오, 오빤 강남스타일"
+    ],
+    "negative": [
+     "낮에는 따사로운 인간적인 여자 / 커피 한잔의 여유를 아는 품격 있는 여자",
+     "강남스타일 / 오, 오, 오, 오, 오빤 강남스타일"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "happy",
+  "query": [
+   "Danza Kuduro",
+   "Don Omar"
+  ],
+  "id": "2a1o6ZejUi8U3wzzOtCOYw",
+  "name": "Danza Kuduro",
+  "artist": "Don Omar",
+  "features": {
+   "id": "2a1o6ZejUi8U3wzzOtCOYw",
+   "acousticness": 0.083,
+   "danceability": 0.4,
+   "energy": 0.915,
+   "instrumentalness": 0,
+   "key": 0,
+   "liveness": 0.0503,
+   "loudness": -4.89,
+   "mode": 1,
+   "speechiness": 0.279,
+   "tempo": 89.006,
+   "valence": 0.871
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.34856438363722686,
+   "emotionalShare": 0.5167434351599735,
+   "totalLines": 92,
+   "emotions": {
+    "joy": 0.09841839082377113,
+    "surprise": 0.07622680505332739,
+    "neutral": 0.48325656484002655,
+    "sadness": 0.08440149810327136,
+    "fear": 0.1334995867471899,
+    "anger": 0.07919746652528968,
+    "disgust": 0.04499968185605805
+   },
+   "highlights": {
+    "positive": [
+     "Vem para quebrar kuduro, vamos dançar kuduro / Oi, oi, oi, oi-oi, oi, oi"
+    ],
+    "negative": [
+     "No te canse' ahora / Que esto solo empieza",
+     "No te quite' ahora / Que esto solo empieza"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "happy",
+  "query": [
+   "Waka Waka (Esto es África)",
+   "Shakira"
+  ],
+  "id": "0W8nDs4H2cqxxAgszNMYO3",
+  "name": "Waka Waka (Esto es Africa) (feat. Freshlyground)",
+  "artist": "Shakira",
+  "features": {
+   "id": "0W8nDs4H2cqxxAgszNMYO3",
+   "acousticness": 0.00569,
+   "danceability": 0.427,
+   "energy": 0.867,
+   "instrumentalness": 0.000016,
+   "key": 11,
+   "liveness": 0.207,
+   "loudness": -5.162,
+   "mode": 0,
+   "speechiness": 0.209,
+   "tempo": 190.732,
+   "valence": 0.753
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.22995475365760193,
+   "emotionalShare": 0.5900124105769144,
+   "totalLines": 71,
+   "emotions": {
+    "joy": 0.05864033752291555,
+    "surprise": 0.03566352838099423,
+    "neutral": 0.4099875894230856,
+    "sadness": 0.045588092196365476,
+    "fear": 0.17997731925578606,
+    "anger": 0.12470629723401556,
+    "disgust": 0.14543684022369938
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "Tsamina mina ¡Eh, eh! / Waka waka ¡Eh, eh!",
+     "Porque esto es África / Porque esto es África"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "calm",
+  "query": [
+   "La Vie en rose",
+   "Édith Piaf"
+  ],
+  "id": "3lAun9V0YdTlCSIEXPvfsY",
+  "name": "La Vie en rose",
+  "artist": "Édith Piaf",
+  "features": {
+   "id": "3lAun9V0YdTlCSIEXPvfsY",
+   "acousticness": 0.981,
+   "danceability": 0.371,
+   "energy": 0.278,
+   "instrumentalness": 0,
+   "key": 7,
+   "liveness": 0.272,
+   "loudness": -8.596,
+   "mode": 0,
+   "speechiness": 0.0303,
+   "tempo": 82.331,
+   "valence": 0.338
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.21504874337220936,
+   "emotionalShare": 0.8756111160589334,
+   "totalLines": 39,
+   "emotions": {
+    "joy": 0.09834910026536538,
+    "surprise": 0.01646701657237151,
+    "neutral": 0.12438888394106658,
+    "sadness": 0.09859586879611015,
+    "fear": 0.1781543041460025,
+    "anger": 0.2611737218804849,
+    "disgust": 0.22287110306131533
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "Dont je connais la cause",
+     "C'est toi pour moi, moi pour toi, dans la vie / Tu me l'a dit, m'a juré pour la vie"
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "angry",
+  "query": [
+   "Bella ciao",
+   "Goran Bregović"
+  ],
+  "id": "24BluVKR33hn4o8AS5rdjl",
+  "name": "Bella Ciao",
+  "artist": "Goran Bregović",
+  "features": {
+   "id": "24BluVKR33hn4o8AS5rdjl",
+   "acousticness": 0.527,
+   "danceability": 0.351,
+   "energy": 0.83,
+   "instrumentalness": 0,
+   "key": 10,
+   "liveness": 0.771,
+   "loudness": -4.609,
+   "mode": 0,
+   "speechiness": 0.23,
+   "tempo": 162.901,
+   "valence": 0.508
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.341064411978286,
+   "emotionalShare": 0.4261811375617981,
+   "totalLines": 26,
+   "emotions": {
+    "joy": 0.07365929851165184,
+    "surprise": 0.07153381521885212,
+    "neutral": 0.5738188624382019,
+    "sadness": 0.09138257514971954,
+    "fear": 0.08719588472292973,
+    "anger": 0.0632737294699137,
+    "disgust": 0.03913583190968403
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     "Una mattina mi sono svegliato / O bella ciao, bella ciao, bella ciao ciao ciao",
+     "E se io muoio da partigiano / O bella ciao, bella ciao, bella ciao ciao ciao"
+    ]
+   },
+   "darkThemes": []
+  }
+ }
+]

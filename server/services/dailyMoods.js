@@ -97,3 +97,23 @@ export async function rebuildDailyMoods(userId, dates) {
   await DailyMood.bulkWrite(writes, { ordered: false });
   return days.size;
 }
+
+// Rebuilds every (user, day) that has a play of one of these tracks, after
+// their moods change. Returns how many days were rebuilt.
+export async function rebuildDaysWithTracks(trackIds) {
+  if (!trackIds.length) {
+    return 0;
+  }
+
+  const pairs = await Listen.aggregate([
+    { $match: { trackId: { $in: trackIds } } },
+    { $group: { _id: "$userId", dates: { $addToSet: "$localDate" } } },
+  ]);
+
+  let rebuilt = 0;
+  for (const { _id: userId, dates } of pairs) {
+    await rebuildDailyMoods(userId, dates);
+    rebuilt += dates.length;
+  }
+  return rebuilt;
+}
