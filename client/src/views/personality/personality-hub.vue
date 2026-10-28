@@ -53,6 +53,21 @@ const outcomesQuizId = ref('')
 const outcomesQuiz = computed(
   () => quizzes.value.find((quiz) => quiz.id === outcomesQuizId.value) ?? quizzes.value[0],
 )
+// The list starts short, so the page isn't a wall of text; Show all opens the
+// rest. Picking another quiz closes it again.
+const OUTCOMES_SHOWN = 6
+const showAllOutcomes = ref(false)
+// The user's own result comes first, so it's never hidden.
+const shownOutcomes = computed(() => {
+  const quiz = outcomesQuiz.value
+  const outcomes = [...(quiz?.outcomes ?? [])].sort((a, b) => isMine(quiz, b) - isMine(quiz, a))
+  return showAllOutcomes.value ? outcomes : outcomes.slice(0, OUTCOMES_SHOWN)
+})
+function pickOutcomesQuiz(id) {
+  outcomesQuizId.value = id
+  showAllOutcomes.value = false
+}
+
 // The user's own result in the list. Horoscope titles put words in front of
 // the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
 function isMine(quiz, outcome) {
@@ -247,7 +262,7 @@ onMounted(loadPage)
             class="outcome-tab"
             :aria-selected="quiz.id === outcomesQuiz.id"
             :aria-controls="`outcomes-panel`"
-            @click="outcomesQuizId = quiz.id"
+            @click="pickOutcomesQuiz(quiz.id)"
           >
             {{ quiz.title }}
             <span class="tab-count">{{ quiz.outcomes.length }}</span>
@@ -263,7 +278,7 @@ onMounted(loadPage)
           <p v-if="outcomesQuiz.outcomeNote" class="outcome-note">{{ outcomesQuiz.outcomeNote }}</p>
           <ul class="outcome-grid">
             <li
-              v-for="outcome in outcomesQuiz.outcomes"
+              v-for="outcome in shownOutcomes"
               :key="outcome.name"
               class="outcome-card"
               :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
@@ -276,6 +291,16 @@ onMounted(loadPage)
               <p class="outcome-meaning">{{ outcome.meaning }}</p>
             </li>
           </ul>
+          <button
+            v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
+            type="button"
+            class="peach-button peach-button--quiet show-more"
+            :aria-expanded="showAllOutcomes"
+            aria-controls="outcomes-panel"
+            @click="showAllOutcomes = !showAllOutcomes"
+          >
+            {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
+          </button>
         </div>
       </section>
       <!-- Patterns -->
@@ -993,6 +1018,12 @@ onMounted(loadPage)
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1rem;
+}
+
+.show-more {
+  max-width: 334px;
+  margin: 1.25rem auto 0;
+  font-size: 1.15rem;
 }
 
 .outcome-card {
