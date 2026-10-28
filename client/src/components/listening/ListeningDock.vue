@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useListeningRoom } from '@/composables/useListeningRoom'
+import MoodTag from '@/components/mood/MoodTag.vue'
 const route = useRoute()
 const room = useListeningRoom()
 const { connected, ready, track, paused, busy, duration } = room
@@ -199,7 +200,8 @@ watch([dock, minimised], measure, { flush: 'post' })
     <template v-if="!minimised">
       <RouterLink to="/listen"
         ><strong>{{ track.name || 'Spotify connected' }}</strong
-        ><span>{{ canPlay ? 'Back to your listening room ↗' : 'Spotify Premium needed to play ↗' }}</span></RouterLink
+        ><span>{{ canPlay ? 'Back to your listening room ↗' : 'Spotify Premium needed to play ↗' }}</span
+        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" /></span></RouterLink
       >
       <template v-if="canPlay">
         <button
@@ -362,6 +364,12 @@ span {
 span {
   margin-top: 4px;
   font-size: 11px;
+}
+.dock-mood {
+  overflow: visible;
+}
+.dock-mood:empty {
+  display: none;
 }
 button {
   min-height: 44px;

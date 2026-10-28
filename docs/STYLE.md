@@ -47,6 +47,17 @@ Rules:
 - A feature can define its own semantic tokens on its root class (like `.dashboard` or `.listening-room`), but point them at the shared tokens above so they follow the palette and dark mode.
 - Mood colours, album colours and the garden are data, not theme, so they may use their own colours.
 
+Mood colours: the five journal moods have full scales in `main.css`
+(`--color-mood-sad-50` to `--color-mood-sad-950`, and the same for `happy`,
+`relaxed`, `anxious` and `angry`; 500 is the Daily Mood picker's colour). They're
+registered as Nuxt UI colours in `client/vite.config.js`, so
+`<UBadge color="sad">` works. For a song's mood, use
+`<MoodTag :track-id="track.id" />` (`components/mood/MoodTag.vue`) wherever a
+song is shown: it fetches the mood, batches every tag on the page into one
+request, and colours it by the journal mood it counts towards. For mood text
+on a light background use the 800 shade (200 in dark mode); the 500 shades of
+Happy and Relaxed don't pass contrast.
+
 ## Typography
 
 Two families, each with a clear job:

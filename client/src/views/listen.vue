@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: 'ListeningRoom' })
@@ -131,6 +132,7 @@ onBeforeUnmount(() => {
             <p>{{ artist }}</p>
             <span>{{ track.album?.name }}</span>
           </div>
+          <div class="now-mood"><MoodTag :track-id="track.id" /></div>
           <a
             v-if="track.external_urls?.spotify"
             class="spotify-link"
@@ -287,7 +289,8 @@ onBeforeUnmount(() => {
               alt=""
             /><span
               ><strong>{{ item.name }}</strong
-              ><span>{{ item.artists.map((a) => a.name).join(', ') }}</span></span
+              ><span class="result-artist">{{ item.artists.map((a) => a.name).join(', ') }}</span
+              ><span class="result-mood"><MoodTag :track-id="item.id" size="sm" /></span></span
             ><span>{{
               item.is_playable === false ? 'Unavailable' : formatTime(item.duration_ms)
             }}</span
@@ -322,6 +325,7 @@ onBeforeUnmount(() => {
                 />
               </div>
               <strong>{{ item.name }}</strong
+              ><span class="shelf-mood"><MoodTag :track-id="item.id" size="sm" /></span
               ><span class="sr-only">{{
                 item.artists?.map((artist) => artist.name).join(', ')
               }}</span>
@@ -757,10 +761,22 @@ input:disabled {
   display: block;
   overflow-wrap: anywhere;
 }
-.result-row span span {
+.result-row .result-artist {
   display: block;
   font: 18px var(--font-serif);
   margin-top: 4px;
+}
+.result-mood,
+.shelf-mood {
+  display: flex;
+  margin-top: 6px;
+}
+.now-mood {
+  display: flex;
+  margin-top: 12px;
+}
+:is(.result-mood, .shelf-mood, .now-mood):empty {
+  display: none;
 }
 .result-row > span {
   font-size: 13px;
