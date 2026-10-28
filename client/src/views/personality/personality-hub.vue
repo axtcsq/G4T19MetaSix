@@ -742,6 +742,18 @@ onMounted(loadPage)
   border: 1px solid rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+/* The result cards lift towards the reader on hover, or while something in
+   them has keyboard focus. Loading and empty states stay put. */
+.patterns .pattern-card:not(.patterns-loading, .patterns-empty):is(:hover, :focus-within) {
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 32px rgba(58, 31, 25, 0.28);
+  transform: translateY(-6px);
 }
 
 .dark .pattern-card {
@@ -1140,8 +1152,13 @@ onMounted(loadPage)
 
 @media (prefers-reduced-motion: reduce) {
   .outcome-card,
-  .show-more-chevron {
+  .show-more-chevron,
+  .patterns .pattern-card {
     transition: none;
+  }
+
+  .patterns .pattern-card:is(:hover, :focus-within) {
+    transform: none !important;
   }
 }
 
