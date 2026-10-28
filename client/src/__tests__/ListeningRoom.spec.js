@@ -1,11 +1,42 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ListeningRoom from '../views/listen.vue'
 import { useListeningRoom } from '../composables/useListeningRoom'
+import AmbientWave from '../components/listening/AmbientWave.vue'
 
 describe('Spotify listening room', () => {
-  beforeEach(() => setActivePinia(createPinia()))
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback) {
+          this.callback = callback
+        }
+        observe() {
+          this.callback([{ isIntersecting: true }])
+        }
+        disconnect() {}
+      },
+    )
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('animates the decorative wave only during visible playback and cleans up', async () => {
+    const remove = vi.spyOn(document, 'removeEventListener')
+    const wrapper = mount(AmbientWave, { props: { playing: false } })
+    expect(wrapper.attributes('aria-hidden')).toBe('true')
+    expect(wrapper.findAll('i')).toHaveLength(64)
+    expect(wrapper.classes()).not.toContain('is-playing')
+    await wrapper.setProps({ playing: true })
+    expect(wrapper.classes()).toContain('is-playing')
+    await wrapper.setProps({ playing: false })
+    expect(wrapper.classes()).not.toContain('is-playing')
+    wrapper.unmount()
+    expect(remove).toHaveBeenCalledWith('visibilitychange', expect.any(Function))
+    remove.mockRestore()
+  })
 
   it('requires connection and never displays or plays fixture records', async () => {
     const room = useListeningRoom()

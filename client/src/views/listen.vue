@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
+import AmbientWave from '@/components/listening/AmbientWave.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
@@ -28,6 +29,9 @@ const {
 } = room
 const searchInput = ref(null)
 const cover = computed(() => track.value.album?.images?.[0]?.url)
+const progress = computed(
+  () => `${duration.value ? Math.min(100, (position.value / duration.value) * 100) : 0}%`,
+)
 const artist = computed(() => track.value.artists?.map((item) => item.name).join(', '))
 const formatTime = (ms) =>
   `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`
@@ -70,41 +74,55 @@ onBeforeUnmount(() => {
       <header class="room-heading">
         <div>
           <h1 class="page-title">Listening Room</h1>
-          <p>Put a record on. Let the rest wait.</p>
+          <p>Put a record on</p>
         </div>
-        <div class="connection">
-          <template v-if="connected">
-            <span class="connection-state"
-              ><i :class="{ live: ready }" />{{
-                ready ? 'Spotify connected' : 'Player offline'
-              }}</span
+        <div class="connection" :class="{ 'is-connected': connected }">
+          <div class="connection-state" role="status">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="11" fill="currentColor" />
+              <path
+                d="M6 9c4-1.3 8-1 12 1M7 12c3.5-1 6.7-.7 10 1M8 15c2.6-.7 5-.4 7.5.7"
+                fill="none"
+                stroke="var(--spotify-mark-ink, var(--room-paper))"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span
+              ><strong>Spotify</strong
+              ><span>{{
+                connected ? (ready ? 'Connected' : 'Player offline') : 'Not connected'
+              }}</span></span
             >
-            <button v-if="!ready" class="text-button" :disabled="busy" @click="room.reconnect">
+          </div>
+          <template v-if="connected">
+            <button
+              v-if="!ready || error"
+              class="connection-action"
+              :disabled="busy"
+              @click="room.reconnect"
+            >
               {{ busy ? 'Connecting…' : 'Reconnect player' }}
             </button>
-            <button class="text-button" :disabled="busy" @click="room.disconnect">
+            <button
+              class="connection-action disconnect-button"
+              :disabled="busy"
+              @click="room.disconnect"
+            >
               Disconnect
             </button>
           </template>
-          <template v-else
-            ><button class="connect-button" :disabled="busy" @click="connect">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="11" fill="currentColor" />
-                <path
-                  d="M6 9c4-1.3 8-1 12 1M7 12c3.5-1 6.7-.7 10 1M8 15c2.6-.7 5-.4 7.5.7"
-                  fill="none"
-                  stroke="var(--room-dark)"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                /></svg
-              >{{ busy ? 'Connecting…' : 'Connect Spotify' }}</button
-            ><span>Spotify Premium required</span></template
-          >
+          <template v-else>
+            <button class="connection-action" :disabled="busy" @click="connect">
+              {{ busy ? 'Connecting…' : 'Connect Spotify' }}
+            </button>
+            <span class="connection-note">Spotify Premium required</span>
+          </template>
         </div>
       </header>
 
       <p v-if="error" class="room-error" role="alert">
-        {{ error }} <button class="text-button" @click="error = ''">Dismiss</button>
+        {{ error }} <button class="text-button glass-text" @click="error = ''">Dismiss</button>
       </p>
 
       <section class="record-room" aria-label="Record player">
@@ -155,7 +173,7 @@ onBeforeUnmount(() => {
       <section class="transport" aria-label="Playback controls">
         <div class="transport-buttons">
           <button
-            class="icon-button"
+            class="icon-button glass-icon"
             aria-label="Previous track"
             :disabled="!connected || !ready || busy"
             @click="room.skip(-1)"
@@ -165,7 +183,7 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">Previous</span>
           </button>
           <button
-            class="play-button"
+            class="play-button glass-icon"
             :aria-label="paused ? 'Play' : 'Pause'"
             :disabled="!connected || !ready || !track.id || busy"
             @click="room.toggle"
@@ -176,7 +194,7 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">{{ spinning ? 'Pause' : 'Play' }}</span>
           </button>
           <button
-            class="icon-button"
+            class="icon-button glass-icon"
             aria-label="Next track"
             :disabled="!connected || !ready || busy"
             @click="room.skip(1)"
@@ -186,20 +204,24 @@ onBeforeUnmount(() => {
             ><span aria-hidden="true">Next</span>
           </button>
         </div>
-        <div class="seek-control">
-          <span>{{ formatTime(position) }}</span
-          ><label class="sr-only" for="playback-position">Playback position</label
-          ><input
-            id="playback-position"
-            type="range"
-            min="0"
-            :max="duration || 1"
-            step="1000"
-            :value="position"
-            :aria-valuetext="formatTime(position)"
-            :disabled="!connected || !ready || busy"
-            @change="room.seek($event.target.value)"
-          /><span>{{ formatTime(duration) }}</span>
+        <div class="timeline">
+          <AmbientWave :playing="spinning" />
+          <div class="seek-control">
+            <span>{{ formatTime(position) }}</span
+            ><label class="sr-only" for="playback-position">Playback position</label
+            ><input
+              id="playback-position"
+              type="range"
+              min="0"
+              :max="duration || 1"
+              step="1000"
+              :value="position"
+              :style="{ '--fill': progress }"
+              :aria-valuetext="formatTime(position)"
+              :disabled="!connected || !ready || busy"
+              @change="room.seek($event.target.value)"
+            /><span>{{ formatTime(duration) }}</span>
+          </div>
         </div>
         <div class="volume-control">
           <label for="playback-volume"
@@ -218,6 +240,7 @@ onBeforeUnmount(() => {
             min="0"
             max="100"
             :value="volume"
+            :style="{ '--fill': `${volume}%` }"
             :disabled="!connected || !ready || busy"
             @change="room.changeVolume($event.target.value)"
           /><span>{{ volume }}%</span>
@@ -257,15 +280,20 @@ onBeforeUnmount(() => {
             @compositionend="finishComposition"
           />
           <button
-            v-if="query"
             type="button"
-            class="text-button"
+            class="search-clear text-button glass-text"
+            :class="{ 'is-empty': !query }"
+            :disabled="!query"
             aria-label="Clear song search"
             @click="clearSearch"
           >
             Clear</button
-          ><button class="search-button" :disabled="!connected || searching || !query.trim()">
-            {{ searching ? 'Searching…' : 'Search' }}
+          ><button
+            class="search-button glass-action"
+            :disabled="!connected || searching || !query.trim()"
+            :aria-busy="searching"
+          >
+            Search
           </button>
         </form>
         <div
@@ -302,7 +330,9 @@ onBeforeUnmount(() => {
           <p v-else-if="historyLoading" role="status">Loading your recent songs…</p>
           <p v-else-if="historyError" role="alert">
             {{ historyError }}
-            <button class="text-button" @click="room.refreshHistory">Retry history</button>
+            <button class="text-button glass-text" @click="room.refreshHistory">
+              Retry history
+            </button>
           </p>
           <p v-else-if="!records.length">
             No recent songs yet. Search Spotify to choose your first record.
@@ -382,9 +412,10 @@ h1 {
 }
 .connection {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
   font: 12px/1.5 var(--font-sans);
   color: var(--room-muted);
 }
@@ -408,26 +439,7 @@ button:disabled {
   outline: 2px solid var(--room-focus);
   outline-offset: 5px;
 }
-.connect-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--room-white);
-  background: var(--room-dark);
-  border: 0;
-  border-radius: 999px;
-  padding: 12px 20px;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.connect-button svg {
-  width: 20px;
-  height: 20px;
-}
-.connect-button:hover:not(:disabled) {
-  background: var(--room-ink);
-}
+
 .text-button {
   background: none;
   border: 0;
@@ -440,16 +452,54 @@ button:disabled {
 .connection-state {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.connection-state i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--room-muted);
+.connection-note {
+  flex-basis: 100%;
+  text-align: right;
 }
-.connection-state i.live {
-  background: var(--room-dark);
+.connection.is-connected .connection-state {
+  --spotify-mark-ink: #191414;
+}
+.connection.is-connected .connection-state svg {
+  color: #1ed760;
+}
+.connection-state svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--room-muted);
+}
+.connection-state strong,
+.connection-state span span {
+  display: block;
+}
+.connection-state strong {
+  color: var(--room-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.connection-action {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, var(--room-ink) 24%, transparent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--room-ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.connection-action:hover:not(:disabled) {
+  background: var(--room-ground);
+  border-color: var(--room-muted);
+}
+.disconnect-button:hover:not(:disabled) {
+  color: var(--room-error-ink);
+  background: var(--room-error);
+  border-color: var(--room-error-ink);
 }
 .record-room {
   display: grid;
@@ -535,7 +585,7 @@ button:disabled {
 }
 .transport {
   display: grid;
-  grid-template-columns: 218px minmax(0, 1fr) 150px;
+  grid-template-columns: 164px minmax(0, 1fr) 150px;
   align-items: center;
   gap: 32px;
   margin-top: 28px;
@@ -543,34 +593,20 @@ button:disabled {
 }
 .transport-buttons {
   display: flex;
-  align-items: stretch;
-  gap: 6px;
-}
-.icon-button,
-.play-button {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 7px;
-  min-width: 64px;
-  height: 66px;
-  background: var(--room-ground);
-  color: var(--room-ink);
-  border: 0;
-  border-radius: 4px;
-  transition:
-    transform 150ms ease,
-    background 150ms ease;
-  font: 11px var(--font-sans);
+  gap: 12px;
 }
-.play-button {
-  min-width: 78px;
-  background: var(--room-dark);
-  color: var(--room-white);
+.transport-buttons .play-button {
+  --button-ink: #fff;
+  --button-top: var(--color-brand-400);
+  --button-base: var(--room-dark);
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
 }
 .transport-buttons button:hover:not(:disabled) {
-  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--room-dark) 12%, var(--room-paper));
+  color: var(--room-dark);
 }
 .transport-buttons button:active:not(:disabled) {
   transform: translateY(1px);
@@ -579,6 +615,12 @@ button:disabled {
   width: 20px;
   height: 20px;
   fill: currentColor;
+}
+.timeline {
+  min-width: 0;
+}
+.transport-buttons span {
+  display: none;
 }
 .seek-control {
   display: flex;
@@ -626,30 +668,39 @@ input[type='range'] {
   margin: 0;
 }
 input[type='range']::-webkit-slider-runnable-track {
-  height: 4px;
-  background: var(--room-ink);
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--room-dark) var(--fill, 0%),
+    color-mix(in srgb, var(--room-ink) 18%, transparent) var(--fill, 0%)
+  );
   border-radius: 2px;
 }
 input[type='range']::-moz-range-track {
-  height: 4px;
-  background: var(--room-ink);
+  height: 3px;
+  background: color-mix(in srgb, var(--room-ink) 18%, transparent);
+  border-radius: 2px;
+}
+input[type='range']::-moz-range-progress {
+  height: 3px;
+  background: var(--room-dark);
   border-radius: 2px;
 }
 input[type='range']::-webkit-slider-thumb {
   appearance: none;
   width: 12px;
-  height: 20px;
-  margin-top: -8px;
+  height: 12px;
+  margin-top: -4.5px;
   background: var(--room-dark);
   border: 2px solid var(--room-paper);
-  border-radius: 3px;
+  border-radius: 50%;
 }
 input[type='range']::-moz-range-thumb {
   width: 8px;
-  height: 16px;
+  height: 8px;
   background: var(--room-dark);
   border: 2px solid var(--room-paper);
-  border-radius: 3px;
+  border-radius: 50%;
 }
 input:disabled {
   cursor: not-allowed;
@@ -704,16 +755,28 @@ input:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
-  background: var(--room-ground);
+  padding: 6px 8px 6px 20px;
+  border: 1px solid color-mix(in srgb, var(--room-ink) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--room-paper) 88%, var(--room-ground));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent);
   margin-bottom: 28px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.search-form:focus-within {
+  border-color: var(--room-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room-focus) 12%, transparent);
 }
 .search-form > svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  color: var(--room-muted);
 }
 .search-form input {
+  appearance: none;
   min-width: 0;
   width: 100%;
   min-height: 44px;
@@ -721,18 +784,42 @@ input:disabled {
   border: 0;
   font-size: 16px;
   color: var(--room-ink);
+  outline: none;
+  box-shadow: none;
+}
+.search-form input:focus-visible {
+  outline: none;
+}
+.search-form input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.search-clear {
+  flex-shrink: 0;
+  transition:
+    opacity 160ms ease,
+    color 160ms ease;
+}
+.search-clear.is-empty {
+  visibility: hidden;
+  opacity: 0;
+}
+.search-button {
+  flex-shrink: 0;
+  min-width: 88px;
+}
+.search-form .search-button:disabled {
+  --button-ink: var(--room-muted);
+  background: var(--room-ground) !important;
+  color: var(--room-muted) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none;
 }
 .search-form input::placeholder {
   color: var(--room-muted);
   opacity: 1;
 }
-.search-button {
-  min-height: 44px;
-  padding: 8px 16px;
-  background: var(--room-dark);
-  color: var(--room-white);
-  font-size: 13px;
-}
+
 .search-results {
   min-height: 120px;
 }
@@ -803,7 +890,7 @@ input:disabled {
     padding-right: 0;
   }
   .transport {
-    grid-template-columns: 218px minmax(0, 1fr);
+    grid-template-columns: 164px minmax(0, 1fr);
     gap: 12px 24px;
   }
   .volume-control {
@@ -819,7 +906,10 @@ input:disabled {
     gap: 20px;
   }
   .connection {
-    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .connection-note {
+    text-align: left;
   }
   .record-room {
     grid-template-columns: 1fr;
@@ -844,10 +934,6 @@ input:disabled {
     inset: -8px;
     filter: blur(18px);
   }
-  .spotify-link {
-    font-size: 12px;
-    margin-top: 0;
-  }
   .transport {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -857,8 +943,8 @@ input:disabled {
   .transport-buttons {
     justify-content: center;
   }
-  .seek-control {
-    grid-row: 2;
+  .timeline {
+    grid-row: 1;
   }
   .volume-control {
     grid-column: 1;
@@ -876,14 +962,11 @@ input:disabled {
     font-size: 21px;
   }
   .search-form {
-    gap: 8px;
-    padding-inline: 8px;
+    gap: 6px;
+    padding-inline: 12px 6px;
   }
   .search-form input {
     font-size: 14px;
-  }
-  .search-button {
-    padding-inline: 10px;
   }
 }
 @media (forced-colors: active) {
@@ -905,5 +988,12 @@ input:disabled {
     transition: none !important;
     animation: none !important;
   }
+}
+.transport-buttons .icon-button,
+.transport-buttons .play-button {
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  flex-shrink: 0;
 }
 </style>

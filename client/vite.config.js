@@ -1,9 +1,11 @@
 import { fileURLToPath, URL } from 'node:url'
+import process from 'node:process'
 
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import ui from '@nuxt/ui/vite'
+import appConfig from './app.config.ts'
 
 // https://vite.dev/config/
 const env = loadEnv('development', process.cwd(), '')
@@ -11,6 +13,7 @@ const env = loadEnv('development', process.cwd(), '')
 export default defineConfig({
   plugins: [
     ui({
+      colorMode: false,
       // Nuxt UI's own colours, plus the five journal moods for the song mood
       // tags (<UBadge color="sad">). Their shades are in assets/css/main.css.
       theme: {
@@ -29,7 +32,9 @@ export default defineConfig({
         ],
       },
       ui: {
+        ...appConfig.ui,
         colors: {
+          ...appConfig.ui.colors,
           sad: 'mood-sad',
           happy: 'mood-happy',
           relaxed: 'mood-relaxed',
@@ -38,7 +43,7 @@ export default defineConfig({
         },
       },
     }),
-    vue(),
+    vue({ template: { transformAssetUrls: { includeAbsolute: false } } }),
     vueDevTools(),
   ],
   resolve: {

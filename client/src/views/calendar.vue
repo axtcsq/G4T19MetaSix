@@ -6,6 +6,8 @@ import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
+defineOptions({ name: "MoodCalendar" })
+
 const moodEmoji = { Happy: '😊', Relaxed: '😌', Sad: '😟', Anxious: '😰', Angry: '😠' }
 const moodTags = {
   Happy: ['Joyful', 'Hopeful'], Relaxed: ['Calm', 'Peace'], Sad: ['Low-Fi', 'Reflective'],
@@ -274,12 +276,12 @@ onMounted(loadData)
         </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">
-          <button class="month-arrow previous" type="button" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
+          <button class="month-arrow previous glass-icon" type="button" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
           <div class="calendar-center">
             <div class="month-heading">
-              <button type="button" class="month-step" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
+              <button type="button" class="month-step glass-icon" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
               <h2>{{ monthLabel }}</h2>
-              <button type="button" class="month-step" aria-label="Next month" @click="moveMonth(1)">›</button>
+              <button type="button" class="month-step glass-icon" aria-label="Next month" @click="moveMonth(1)">›</button>
             </div>
             <div class="calendar-grid">
               <div v-for="weekday in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="weekday" class="weekday">{{ weekday }}</div>
@@ -303,13 +305,13 @@ onMounted(loadData)
             </div>
             <p class="calendar-hint">Select a day to see its mood log and songs</p>
           </div>
-          <button class="month-arrow next" type="button" aria-label="Next month" @click="moveMonth(1)">›</button>
+          <button class="month-arrow next glass-icon" type="button" aria-label="Next month" @click="moveMonth(1)">›</button>
         </section>
 
         <section v-if="selectedDate" class="day-detail" aria-live="polite">
           <div class="detail-header">
             <div><p class="eyebrow">On this day</p><h3>{{ selectedDate.toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'long' }) }}</h3></div>
-            <button class="close-detail" type="button" aria-label="Close day details" @click="selectedDate = null">×</button>
+            <button class="close-detail glass-icon" type="button" aria-label="Close day details" @click="selectedDate = null">×</button>
           </div>
           <div class="day-detail-grid">
             <section class="day-detail-column journal-column" aria-labelledby="journal-history-title">
@@ -366,7 +368,7 @@ onMounted(loadData)
 .inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .84rem; }
 .spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }
 .spotify-connect-note p { margin: 0; font-size: .9rem; }
-.connect-spotify { min-height: 40px !important; padding: .5rem 1rem !important; font-size: .82rem !important; }
+
 .recommendation-panel { width: min(790px, 100%); margin: 24px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
