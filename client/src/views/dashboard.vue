@@ -198,7 +198,10 @@ onMounted(() => {
                     /><span aria-hidden="true">↗</span></a
                   >
                   <div class="song-detail">
-                    <a :href="song.url" target="_blank" rel="noopener noreferrer"
+                    <!-- Logged in, the title opens the song's mood page; the artwork opens Spotify. -->
+                    <RouterLink v-if="auth.user" :to="`/song/${song.id}`"
+                      >{{ song.title }}<span class="sr-only">, see its mood</span></RouterLink
+                    ><a v-else :href="song.url" target="_blank" rel="noopener noreferrer"
                       >{{ song.title }}<span class="sr-only"> on Spotify (opens new tab)</span></a
                     ><span>{{ song.artist }}</span>
                     <div class="song-mood"><MoodTag :track-id="song.id" size="sm" /></div>

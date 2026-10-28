@@ -5,9 +5,11 @@ import AmbientWave from '@/components/listening/AmbientWave.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
+import { useAuthStore } from '@/stores/auth'
 
 defineOptions({ name: 'ListeningRoom' })
 const room = useListeningRoom()
+const auth = useAuthStore()
 const {
   track,
   connected,
@@ -146,7 +148,12 @@ onBeforeUnmount(() => {
             />
           </div>
           <div class="track-copy" aria-live="polite">
-            <h2>{{ track.name }}</h2>
+            <h2>
+              <!-- Logged in, the title opens the song's mood page. -->
+              <RouterLink v-if="auth.user && track.id" class="title-link" :to="`/song/${track.id}`"
+                >{{ track.name }}<span class="sr-only">, see its mood</span></RouterLink
+              ><template v-else>{{ track.name }}</template>
+            </h2>
             <p>{{ artist }}</p>
             <span>{{ track.album?.name }}</span>
           </div>
@@ -318,7 +325,7 @@ onBeforeUnmount(() => {
             /><span
               ><strong>{{ item.name }}</strong
               ><span class="result-artist">{{ item.artists.map((a) => a.name).join(', ') }}</span
-              ><span class="result-mood"><MoodTag :track-id="item.id" size="sm" /></span></span
+              ><span class="result-mood"><MoodTag :track-id="item.id" size="sm" :link="false" /></span></span
             ><span>{{
               item.is_playable === false ? 'Unavailable' : formatTime(item.duration_ms)
             }}</span
@@ -355,7 +362,7 @@ onBeforeUnmount(() => {
                 />
               </div>
               <strong>{{ item.name }}</strong
-              ><span class="shelf-mood"><MoodTag :track-id="item.id" size="sm" /></span
+              ><span class="shelf-mood"><MoodTag :track-id="item.id" size="sm" :link="false" /></span
               ><span class="sr-only">{{
                 item.artists?.map((artist) => artist.name).join(', ')
               }}</span>
@@ -561,6 +568,15 @@ button:disabled {
   letter-spacing: -0.025em;
   margin: 0 0 8px;
   overflow-wrap: anywhere;
+}
+/* The song title opens the song's mood page. */
+.title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.title-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 .track-copy p {
   font-size: var(--text-body);

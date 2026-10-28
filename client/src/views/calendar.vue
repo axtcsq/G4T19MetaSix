@@ -263,12 +263,15 @@ onMounted(loadData)
           <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
           <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
           <div v-else-if="recommendations.length" class="recommendation-list">
-            <a v-for="track in recommendations" :key="track.id" class="recommendation-card" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer">
-              <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
-              <span v-else class="track-art">♫</span>
-              <span class="track-copy"><strong>{{ track.name }}</strong><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" /></span>
-              <span class="recommendation-open" aria-hidden="true">↗</span>
-            </a>
+            <!-- The title opens the song's mood page; the artwork and arrow open Spotify. -->
+            <article v-for="track in recommendations" :key="track.id" class="recommendation-card">
+              <a class="art-link" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                <span v-else class="track-art">♫</span>
+              </a>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" :link="false" /></span>
+              <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
+            </article>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
           <p v-else-if="!hasSpotifySession()" class="recommendation-status">Connect Spotify to explore matching tracks.</p>
@@ -335,13 +338,16 @@ onMounted(loadData)
               </div>
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
               <div v-if="selectedListens.length" class="track-list">
-                <a v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify`">
-                  <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
-                  <span v-else class="track-art">♫</span>
-                  <span class="track-copy"><strong>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
+                <!-- The Spotify link and the mood tag (which opens the song's page) sit side by side, since a link can't hold another link. -->
+                <article v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card">
+                  <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
+                    <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                    <span v-else class="track-art">♫</span>
+                  </a>
+                  <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="`/song/${item.track.id}`"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
                   <MoodTag :track-id="item.track?.id" size="sm" />
                   <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
-                </a>
+                </article>
               </div>
               <p v-else class="empty-note">No recent Spotify plays found for this day.</p>
             </section>
@@ -438,6 +444,15 @@ onMounted(loadData)
 .track-list h4 { grid-column: 1 / -1; }
 .track-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 13px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
 .track-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); background: var(--ui-bg-accented); }
+.track-link { display: flex; width: 100%; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; border-radius: 9px; color: inherit; text-decoration: none; }
+.track-link:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+/* Song titles open the song's mood page. */
+.title-link { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
+.title-link strong { display: block; }
+.title-link:hover strong { text-decoration: underline; text-underline-offset: 3px; }
+.title-link:focus-visible, .art-link:focus-visible, .recommendation-open:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+.art-link { display: block; flex: 0 0 auto; line-height: 0; }
+.recommendation-open { text-decoration: none; }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
 .track-copy { display: grid; min-width: 0; gap: 3px; }
