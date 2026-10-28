@@ -1,9 +1,10 @@
 import { Router } from "express";
 
-import { getTrackMoods } from "../controller/trackController.js";
+import { addSoundMoods, getTrackMoods } from "../controller/trackController.js";
 
 const router = Router();
 
 router.get("/moods", getTrackMoods);
+router.post("/moods/sound", addSoundMoods);
 
 export default router;

@@ -54,7 +54,7 @@ registered as Nuxt UI colours in `client/vite.config.js`, so
 `<UBadge color="sad">` works. For a song's mood, use
 `<MoodTag :track-id="track.id" />` (`components/mood/MoodTag.vue`) wherever a
 song is shown: it fetches the mood, batches every tag on the page into one
-request, and colours it by the journal mood it counts towards. For mood text
+request, and colours it by the journal mood it counts towards. Songs nobody has played yet (search results) get their sound mood worked out on the spot, showing "Analysing…" for a second or two. For mood text
 on a light background use the 800 shade (200 in dark mode); the 500 shades of
 Happy and Relaxed don't pass contrast.
 
