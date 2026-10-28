@@ -1,10 +1,13 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import TodayStory from '@/components/dashboard/TodayStory.vue'
+import MoodMusicChart from '@/components/dashboard/MoodMusicChart.vue'
+import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
+import { getMoodMusic } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
@@ -23,9 +26,27 @@ const historyLabel = computed(() =>
 )
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
+// The last two weeks of logged moods and music moods, for the mood insights.
+const moodMusic = ref(null)
+const moodMusicError = ref(false)
 onMounted(() => {
   spotify.initialize()
 })
+// Loaded once the signed-in user is known, which can be after the page mounts.
+watch(
+  () => auth.user?.id,
+  async (id) => {
+    moodMusic.value = null
+    moodMusicError.value = false
+    if (!id) return
+    try {
+      moodMusic.value = await getMoodMusic()
+    } catch {
+      moodMusicError.value = true
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -109,27 +130,22 @@ onMounted(() => {
             </p>
           </aside>
         </section>
-        <section class="restored-charts" aria-label="Mood insights">
-          <article class="chart-panel">
-            <div class="panel-heading">
-              <h3>Mood Over Time</h3>
-              <span>Unavailable</span>
-            </div>
-            <p class="unavailable-note">
-              Your Spotify history does not include music-mood measurements. There is no mood
-              timeline to plot yet.
-            </p>
-          </article>
-          <article class="chart-panel">
-            <div class="panel-heading">
-              <h3>Emotion Profile</h3>
-              <span>Unavailable</span>
-            </div>
-            <p class="unavailable-note">
-              Emotion scores cannot be calculated from track names and play counts. Your mood
-              journal remains your own reflection.
-            </p>
-          </article>
+        <!-- Two wide rows: how the music sounded next to the logged moods, then
+             the moods the analysis heard. Always the last 14 days. -->
+        <section class="restored-charts mood-insights" aria-label="Mood insights">
+          <p v-if="moodMusicError" class="unavailable-note">Your mood insights couldn’t load right now.</p>
+          <template v-else-if="moodMusic">
+            <article class="chart-panel">
+              <MoodMusicChart :data="moodMusic" />
+            </article>
+            <article class="chart-panel">
+              <MusicMoodsCard v-if="moodMusic.musicMoods" :data="moodMusic.musicMoods" />
+              <p v-else class="unavailable-note">
+                Your songs’ moods show here once MetaFor has listened to them, usually within a
+                few minutes of a sync.
+              </p>
+            </article>
+          </template>
         </section>
         <section class="music-section" aria-labelledby="music-heading">
           <div class="section-intro">
@@ -271,6 +287,10 @@ onMounted(() => {
   border-top: 1px solid var(--dash-rule);
   padding-top: 32px;
   margin-top: 40px;
+}
+.mood-insights {
+  grid-template-columns: 1fr;
+  gap: 40px;
 }
 .unavailable-note {
   color: var(--dash-muted);

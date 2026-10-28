@@ -1,13 +1,11 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { getMoodMusic, getPersonality, getQuizzes } from '@/api/quiz'
+import { getPersonality, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/layout/footer.vue'
 import PersonalityBreakdown from '@/components/personality/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/personality/ShareCardDialog.vue'
-import MoodMusicChart from '@/components/personality/MoodMusicChart.vue'
-import MusicMoodsCard from '@/components/personality/MusicMoodsCard.vue'
 import TraitBar from '@/components/personality/TraitBar.vue'
 import WaveBackground from '@/components/personality/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
@@ -30,7 +28,6 @@ const quizImages = {
 
 const quizzes = ref([])
 const personality = ref(null)
-const moodMusic = ref(null)
 const isLoading = ref(true)
 const loadError = ref('')
 // Patterns loads on its own, since its AI write-up can take a few seconds and
@@ -98,9 +95,7 @@ async function loadPatterns() {
   patternsError.value = ''
 
   try {
-    const [profile, mood] = await Promise.all([getPersonality(), getMoodMusic()])
-    personality.value = profile
-    moodMusic.value = mood
+    personality.value = await getPersonality()
   } catch (error) {
     patternsError.value = error.message
   } finally {
@@ -484,13 +479,6 @@ onMounted(loadPage)
               </div>
             </div>
 
-            <div v-if="moodMusic" class="pattern-card mood-card mt-8">
-              <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
-            </div>
-
-            <div v-if="moodMusic?.musicMoods" class="pattern-card mood-card mt-8">
-              <MusicMoodsCard :data="moodMusic.musicMoods" />
-            </div>
 
             <ShareCardDialog
               ref="shareDialog"
@@ -1192,16 +1180,12 @@ onMounted(loadPage)
   }
 }
 
-/* A song for your type, and the mood chart under it: both full-width rows. */
+/* A song for your type: a full-width row. */
 .song-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) 300px;
   align-items: center;
   gap: 2rem;
-  padding: 1.5rem 1.75rem;
-}
-
-.mood-card {
   padding: 1.5rem 1.75rem;
 }
 
