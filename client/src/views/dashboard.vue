@@ -4,6 +4,7 @@ import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
+import TodayStory from '@/components/dashboard/TodayStory.vue'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
@@ -57,6 +58,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <TodayStory v-if="auth.user" />
       <p v-if="!connected">
         Connect Spotify to see your listening portrait.
         <button class="art-pause" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
