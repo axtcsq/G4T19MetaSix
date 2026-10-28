@@ -76,7 +76,7 @@ describe('Spotify listening portrait', () => {
     const wrapper = mount(Dashboard, {
       global: { plugins: [createPinia()], stubs: ['RouterLink', 'ListeningArtwork'] },
     })
-    expect(wrapper.text()).toContain('Connect Spotify to see your listening portrait')
+    expect(wrapper.text()).toContain('Connect Spotify to see your music at a glance')
     expect(wrapper.find('.artist-list').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('Sample data')
     wrapper.unmount()

@@ -174,3 +174,6 @@ The Anxious and Hope in the dark rows are still being agreed.
 | [docs/PersonalityQuiz.md](docs/PersonalityQuiz.md) | The personality quizzes and Patterns |
 | [docs/SPOTIFY.md](docs/SPOTIFY.md) | Spotify auth and playback |
 | [docs/WEATHER.md](docs/WEATHER.md) | Live weather in the listening garden |
+
+# 8. Browser tests
+See [the Playwright guide](client/e2e/README.md) for setup, coverage, and debugging. Run `pnpm test:e2e` from `client/`; the suite starts its own server and uses isolated API fixtures.
