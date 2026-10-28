@@ -333,8 +333,8 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
       >
         <textarea ref="textInput" v-model="textDraft" placeholder="Write something..." rows="3" />
         <div class="text-editor-actions">
-          <button type="button" @click="cancelText">Cancel</button>
-          <button type="submit">Add text</button>
+          <button type="button" class="glass-secondary" @click="cancelText">Cancel</button>
+          <button type="submit" class="glass-action">Add text</button>
         </div>
       </form>
     </div>

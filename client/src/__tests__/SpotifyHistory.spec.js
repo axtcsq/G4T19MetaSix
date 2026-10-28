@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import { useAuthStore } from '../stores/auth'
 import { useSpotifyHistory } from '../composables/useSpotifyHistory'
 import { hasSpotifySession, recentSpotify } from '../api/spotify'
 
@@ -13,6 +14,7 @@ vi.mock('../api/spotify', () => ({
 
 beforeEach(() => {
   setActivePinia(createPinia())
+  useAuthStore().checked = true
   vi.resetAllMocks()
   hasSpotifySession.mockReturnValue(true)
 })

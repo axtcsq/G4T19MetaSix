@@ -33,7 +33,7 @@ onMounted(() => {
     <div class="dashboard-inner">
       <div class="dashboard-top">
         <div>
-          <h1 class="page-title">Your Listening Portrait</h1>
+          <h1 class="page-title">Your Music at a Glance</h1>
           <p class="dashboard-meta">
             <span class="period-date">{{ data.date }}</span
             ><span>{{ historyLabel }}</span>
@@ -45,36 +45,32 @@ onMounted(() => {
               v-for="option in ['weekly', 'monthly']"
               :key="option"
               type="button"
+              class="glass-secondary"
               :aria-pressed="period === option"
               @click="period = option"
             >
               {{ option === 'weekly' ? 'Last 7 days' : 'This month' }}
             </button>
           </div>
-          <div v-if="connected" class="history-actions">
-            <button class="art-pause" :disabled="historyLoading" @click="spotify.refreshHistory">
-              Refresh history
-            </button>
-          </div>
         </div>
       </div>
       <TodayStory v-if="auth.user" />
       <p v-if="!connected">
-        Connect Spotify to see your listening portrait.
-        <button class="art-pause" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
+        Connect Spotify to see your music at a glance.
+        <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
       <p v-if="historyLoading" role="status">Loading your listening history…</p>
       <p v-else-if="historyError" role="alert">
         {{ historyError }}
-        <button class="art-pause" @click="spotify.refreshHistory">Retry history</button>
+        <button class="art-pause glass-secondary" @click="spotify.refreshHistory">Retry history</button>
       </p>
       <template v-if="connected && !historyLoading && !historyError">
         <p v-if="!data.plays">
           No recent plays in this period.
           <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"
             >Listen on Spotify</a
-          >, then refresh your history.
+          >, then return to this page to see your history.
         </p>
         <section class="portrait-layout" aria-labelledby="garden-heading">
           <div class="portrait-art">
@@ -82,7 +78,7 @@ onMounted(() => {
               <h2 id="garden-heading">Your Listening Garden</h2>
               <button
                 type="button"
-                class="art-pause"
+                class="art-pause glass-secondary"
                 :aria-pressed="motionPaused"
                 @click="motionPaused = !motionPaused"
               >
@@ -204,7 +200,10 @@ onMounted(() => {
                     /><span aria-hidden="true">↗</span></a
                   >
                   <div class="song-detail">
-                    <a :href="song.url" target="_blank" rel="noopener noreferrer"
+                    <!-- Logged in, the title opens the song's mood page; the artwork opens Spotify. -->
+                    <RouterLink v-if="auth.user" :to="`/song/${song.id}`"
+                      >{{ song.title }}<span class="sr-only">, see its mood</span></RouterLink
+                    ><a v-else :href="song.url" target="_blank" rel="noopener noreferrer"
                       >{{ song.title }}<span class="sr-only"> on Spotify (opens new tab)</span></a
                     ><span>{{ song.artist }}</span>
                     <div class="song-mood"><MoodTag :track-id="song.id" size="sm" /></div>
@@ -278,20 +277,11 @@ onMounted(() => {
   font: 20px/1.5 var(--font-serif);
   max-width: 48ch;
 }
-.history-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-}
 .dashboard-toolbar {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-}
-.history-actions .art-pause:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 @media (max-width: 768px) {
   .restored-charts {
@@ -817,9 +807,6 @@ onMounted(() => {
   }
   .dashboard-toolbar {
     align-items: flex-start;
-  }
-  .history-actions {
-    justify-content: flex-start;
   }
 }
 </style>

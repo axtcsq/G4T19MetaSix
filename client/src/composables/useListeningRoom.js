@@ -129,7 +129,11 @@ async function connectPlayer() {
     player.addListener(event, ({ message }) => {
       if (version !== connectVersion) return
       error.value =
-        event === 'account_error' ? 'Spotify Premium is required to listen here.' : message
+        event === 'account_error'
+          ? 'Spotify Premium is required to listen here.'
+          : event === 'playback_error'
+            ? `${message || 'Spotify could not play this track.'} If songs skip or stop after a few seconds, try the same song in Spotify Web Player and check your browser allows protected content. Try disabling privacy or ad-blocking extensions for this site, then reconnect the player.`
+            : message
     })
   }
   player.addListener('autoplay_failed', () => {

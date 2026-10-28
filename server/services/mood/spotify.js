@@ -1,6 +1,6 @@
 /* ------------------------------------------------------------------ */
-/*  Spotify search for the ISRC fallback. App-only login (client       */
-/*  credentials), so it needs no user and works in the GitHub job.     */
+/*  Track details and search for the ISRC fallback. App-only login     */
+/*  (client credentials), so it needs no user.                         */
 /* ------------------------------------------------------------------ */
 import { HttpError } from './errors.js'
 
@@ -52,6 +52,9 @@ async function searchTracks(q, { limit = 10, market = 'US' } = {}) {
   const body = await get('/v1/search', { q, type: 'track', limit, market })
   return body?.tracks?.items ?? []
 }
+
+/** One track's details. Development-mode apps can't fetch several at once. */
+export const getTrack = (id) => get(`/v1/tracks/${encodeURIComponent(id)}`)
 
 /** Other Spotify IDs for the same recording (same ISRC), e.g. the single or a compilation. */
 export async function sameRecordingIds({ id, isrc }) {

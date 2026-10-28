@@ -76,7 +76,7 @@ function backToTop() {
             ></template
           >
         </p>
-        <button type="button" class="top-button" @click="backToTop">Back to top ↑</button>
+        <button type="button" class="top-button glass-text" @click="backToTop">Back to top ↑</button>
       </div>
     </div>
   </footer>
