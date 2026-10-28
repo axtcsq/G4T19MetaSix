@@ -1,6 +1,8 @@
+import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
 import { strongestAxis } from "../services/mood/axes.js";
 import { MAX_ATTEMPTS } from "../services/mood/index.js";
+import { FEATURES, contrastLabel, readMoods, strength } from "../services/mood/mood.js";
 import { addSoundMood } from "../services/mood/sound.js";
 
 const MAX_IDS = 100;
@@ -139,3 +141,88 @@ export async function addSoundMoods(req, res) {
   const { moods } = await tagsFor(ids, req.user);
   res.json({ moods });
 }
+
+// One reading for the song page: its name, description and journal mood.
+function describe(mood) {
+  return { name: mood.name, blurb: mood.blurb, axis: strongestAxis(mood.name) };
+}
+
+const MAX_EMOTIONS = 3;
+const MIN_EMOTION = 0.05;
+
+// The song page's explanation of a mood, all worked out from the stored
+// features and lyric scores, so it needs no model or outside API. Users who
+// turned lyrics analysis off get the sound reading only.
+export function explainTrack(track, useLyrics) {
+  const tag = toMoods(track, useLyrics);
+  const explained = { tag, lyricsOff: !useLyrics };
+  const features = track.features;
+  if (features?.valence == null) {
+    return explained;
+  }
+
+  const lyrics = useLyrics ? track.lyrics : null;
+  const { sound, lyrics: withLyrics, blend } = readMoods(features, lyrics);
+  // Lyrics not read yet (or failed every retry): there is no lyrics reading.
+  const lyricsRead = Boolean(lyrics) && !["pending", "unavailable"].includes(tag?.lyricsNote);
+
+  explained.sound = describe(sound);
+  explained.withLyrics = lyricsRead && withLyrics ? describe(withLyrics) : null;
+  explained.features = FEATURES.map((feature) => ({
+    ...feature,
+    value: features[feature.key],
+    strength: strength(features[feature.key]),
+  }));
+  explained.energy = features.energy;
+  explained.blend = lyricsRead
+    ? { ...blend, contrastLabel: contrastLabel(blend.contrast) }
+    : { valence: blend.audio, audio: blend.audio, lyrics: null, weight: 0, contrast: null, contrastLabel: null };
+
+  if (lyricsRead) {
+    explained.lyrics = {
+      status: lyrics.status,
+      translatedFrom: lyrics.translatedFrom ?? null,
+      emotionalShare: lyrics.emotionalShare ?? null,
+      // The strongest feelings in the words, e.g. [["anger", 0.41], ["fear", 0.18]].
+      emotions: Object.entries(lyrics.emotions ?? {})
+        .filter(([emotion, share]) => emotion !== "neutral" && share >= MIN_EMOTION)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, MAX_EMOTIONS),
+      darkThemes: lyrics.darkThemes ?? [],
+      highlights: { positive: lyrics.highlights?.positive ?? [], negative: lyrics.highlights?.negative ?? [] },
+    };
+  }
+  return explained;
+}
+
+// GET /api/tracks/:id
+// Everything the song page shows: the song, how often this user played it, and
+// its mood explained. 404 for a song we have never stored.
+export async function getTrackDetail(req, res) {
+  const { id } = req.params;
+  if (!SPOTIFY_ID.test(id)) {
+    return res.status(400).json({ error: "That isn't a Spotify track ID" });
+  }
+  const track = await Track.findById(id).lean();
+  if (!track) {
+    return res.status(404).json({ error: "We haven't seen this song yet" });
+  }
+
+  const [plays, lastPlay] = await Promise.all([
+    Listen.countDocuments({ userId: req.user._id, trackId: id }),
+    Listen.findOne({ userId: req.user._id, trackId: id }, { playedAt: 1 }).sort({ playedAt: -1 }).lean(),
+  ]);
+  const useLyrics = req.user.preferences?.moodLens !== "sound";
+
+  res.json({
+    id,
+    name: track.name,
+    artists: (track.artists ?? []).map((artist) => artist.name),
+    album: { name: track.album?.name ?? null, imageUrl: track.album?.imageUrl ?? null },
+    spotifyUrl: `https://open.spotify.com/track/${id}`,
+    plays,
+    lastPlayedAt: lastPlay?.playedAt ?? null,
+    ...explainTrack(track, useLyrics),
+  });
+}
+
