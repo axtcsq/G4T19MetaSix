@@ -8,7 +8,9 @@ import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import CassetteTune from '@/components/landing/CassetteTune.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
 
-const CassetteViewer = defineAsyncComponent(() => import('@/components/listening/CassetteViewer.vue'))
+const CassetteViewer = defineAsyncComponent(
+  () => import('@/components/listening/CassetteViewer.vue'),
+)
 const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 const bannerVideo = ref(null)
@@ -64,25 +66,28 @@ function resetPointer(event) {
   card.style.setProperty('--rx', '0deg')
   card.style.setProperty('--ry', '0deg')
 }
-// The three Mirror cards, each with an example of what MetaFor might notice.
+// A wave that swells and fades, repeating every 1200 units, for the closing.
+const WAVE = Array.from({ length: 241 }, (_, step) => {
+  const x = step * 10
+  const swell = 0.35 + 0.65 * Math.abs(Math.sin((x / 1200) * Math.PI))
+  return `${step ? 'L' : 'M'}${x} ${(60 + Math.sin((x / 150) * Math.PI) * 34 * swell).toFixed(1)}`
+}).join(' ')
+
+// The three Mirror cards.
 const mirrorCards = [
   {
     title: 'Listen to Yourself',
     text: 'The songs you return to can hold clues about your mood, memories, and what matters to you.',
-    example: 'You went back to the same three songs in the week before your exams.',
   },
   {
     title: 'Find the Patterns',
     text: 'Explore your Spotify playlists and see your listening habits from a fresh perspective.',
-    example: 'Your Fridays lean upbeat, and Sunday nights turn quiet and acoustic.',
   },
   {
     title: 'Make Space to Reflect',
     text: 'Pair music insights with a daily mood log and journal to understand yourself over time.',
-    example: 'On days you logged Anxious, you played twice as much lo-fi.',
   },
 ]
-const openCard = ref(null)
 
 // A short trail of notes follows the mouse across the hero.
 const TRAIL_GLYPHS = ['♪', '♫', '♩', '♬']
@@ -90,7 +95,11 @@ const trail = ref([])
 let trailId = 0
 let lastTrail = 0
 function leaveTrail(event) {
-  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (
+    event.pointerType !== 'mouse' ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+    return
   const now = performance.now()
   if (now - lastTrail < 70) return
   lastTrail = now
@@ -136,7 +145,9 @@ const HERO_MOODS = {
   Angry: { colour: '#d94a45', line: 'Loud first, calmer after. Let it out, then wind down.' },
 }
 const heroMood = ref(null)
-const moodStyle = computed(() => (heroMood.value ? { '--mood-colour': HERO_MOODS[heroMood.value].colour } : {}))
+const moodStyle = computed(() =>
+  heroMood.value ? { '--mood-colour': HERO_MOODS[heroMood.value].colour } : {},
+)
 
 // One row per part of the app, each with a small made-up preview to try.
 const showcase = [
@@ -178,7 +189,12 @@ const showcase = [
 <template>
   <main class="landing-page" :class="{ 'has-mood': heroMood }" :style="moodStyle">
     <NoteMargins />
-    <section id="about" class="intro landing-shell" aria-labelledby="intro-title" @pointermove="leaveTrail">
+    <section
+      id="about"
+      class="intro landing-shell"
+      aria-labelledby="intro-title"
+      @pointermove="leaveTrail"
+    >
       <span
         v-for="note in trail"
         :key="note.id"
@@ -194,7 +210,8 @@ const showcase = [
         </h1>
         <p class="intro-description">
           Your music can be a window into how you feel. MetaFor brings your Spotify listening and
-          daily reflections together, helping you notice the moods and moments behind your playlists.
+          daily reflections together, helping you notice the moods and moments behind your
+          playlists.
         </p>
         <div class="hero-mood" role="group" aria-labelledby="hero-mood-label">
           <p id="hero-mood-label" class="hero-mood-label">How are you feeling right now?</p>
@@ -210,7 +227,9 @@ const showcase = [
               {{ name }}
             </button>
           </div>
-          <p class="hero-mood-line" aria-live="polite">{{ heroMood ? HERO_MOODS[heroMood].line : '' }}</p>
+          <p class="hero-mood-line" aria-live="polite">
+            {{ heroMood ? HERO_MOODS[heroMood].line : '' }}
+          </p>
         </div>
         <StoryMode />
       </div>
@@ -225,30 +244,21 @@ const showcase = [
     <MusicJournal />
 
     <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
+      <!-- A soft band of colour that slowly pans sideways. The margin lines
+           and notes start inside it, so the top of the page stays clear. -->
+      <div class="pan-band" aria-hidden="true" />
       <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
       <div class="feature-grid">
         <article
           v-for="(card, index) in mirrorCards"
           :key="card.title"
           class="feature-card follow"
-          :class="{ 'is-example': openCard === index }"
           @pointermove="followPointer"
           @pointerleave="resetPointer"
         >
           <span class="feature-step" aria-hidden="true">0{{ index + 1 }}</span>
           <h3 class="glow-text">{{ card.title }}</h3>
-          <p class="glow-text" aria-live="polite">
-            <span v-if="openCard === index" class="example-label">For example</span>
-            {{ openCard === index ? card.example : card.text }}
-          </p>
-          <button
-            type="button"
-            class="example-toggle"
-            :aria-pressed="openCard === index"
-            @click="openCard = openCard === index ? null : index"
-          >
-            {{ openCard === index ? 'Back' : 'See an example' }}
-          </button>
+          <p class="glow-text">{{ card.text }}</p>
         </article>
       </div>
     </section>
@@ -268,6 +278,8 @@ const showcase = [
     </section>
 
     <TasteQuiz />
+
+    <StatementLine />
 
     <section
       class="closing landing-shell follow"
@@ -289,6 +301,16 @@ const showcase = [
         aria-hidden="true"
       />
       <div class="liquid-scrim" aria-hidden="true" />
+      <!-- A faint sound wave drifting sideways behind the text. It's two
+           repeats wide, so sliding it by half loops without a jump. -->
+      <svg
+        class="closing-wave"
+        viewBox="0 0 2400 120"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path :d="WAVE" />
+      </svg>
       <h2 id="closing-title">
         <span class="closing-lead">Ready to discover</span>
         <span class="closing-accent">The Real You?</span>
@@ -401,7 +423,7 @@ const showcase = [
   grid-template-columns: 1fr 0.9fr;
   align-items: center;
   gap: 34px;
-  padding-block: 28px 18px;
+  padding-block: 72px 18px;
 }
 
 .intro-copy {
@@ -449,7 +471,37 @@ const showcase = [
 }
 
 .mirror-section {
+  position: relative;
   padding-block: 24px 80px;
+}
+/* Full width, behind the page, fading out at its top and bottom. */
+.pan-band {
+  position: absolute;
+  z-index: -1;
+  top: -140px;
+  left: 50%;
+  width: 100vw;
+  height: 420px;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--note-colour, var(--ui-primary)) 16%, transparent),
+    color-mix(in srgb, #998ba1 18%, transparent),
+    color-mix(in srgb, #4389d1 12%, transparent),
+    color-mix(in srgb, var(--note-colour, var(--ui-primary)) 16%, transparent)
+  );
+  background-size: 300% 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 40%, #000 60%, transparent);
+  translate: -50% 0;
+  animation: pan 24s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes pan {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
 }
 .mirror-section h2 {
   width: fit-content;
@@ -508,7 +560,11 @@ const showcase = [
   z-index: -1;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle var(--glow-size) at var(--mx) var(--my), var(--glow), transparent 70%);
+  background: radial-gradient(
+    circle var(--glow-size) at var(--mx) var(--my),
+    var(--glow),
+    transparent 70%
+  );
   content: '';
   opacity: 0;
   pointer-events: none;
@@ -569,38 +625,6 @@ const showcase = [
    The body text only changes colour. */
 .feature-card.follow:hover h3.glow-text {
   -webkit-text-stroke: 0.45px color-mix(in srgb, var(--lit) 60%, transparent);
-}
-.example-toggle {
-  margin-top: 14px;
-  padding: 2px 6px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--brand);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.example-toggle:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.example-toggle:focus-visible {
-  outline: 3px solid var(--color-brand-400);
-}
-.example-label {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--brand);
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.feature-card.is-example {
-  border-color: color-mix(in srgb, var(--brand), transparent 50%);
 }
 .feature-step {
   display: inline-flex;
@@ -755,6 +779,25 @@ const showcase = [
   background: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(40, 24, 42, 0.5), transparent 100%);
   pointer-events: none;
 }
+.closing-wave {
+  position: absolute;
+  z-index: -1;
+  bottom: 18%;
+  left: 0;
+  width: 200%;
+  height: 120px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+  animation: wave-slide 26s linear infinite;
+  pointer-events: none;
+}
+@keyframes wave-slide {
+  to {
+    translate: -50% 0;
+  }
+}
 .closing h2 {
   display: flex;
   flex-direction: column;
@@ -828,7 +871,7 @@ const showcase = [
   .intro {
     grid-template-columns: 1fr;
     gap: 0;
-    padding-top: 32px;
+    padding-top: 48px;
   }
   .cassette-area {
     min-height: 270px;
@@ -858,6 +901,12 @@ const showcase = [
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .closing-wave {
+    animation: none;
+  }
+  .pan-band {
+    animation: none;
+  }
   .typing-cursor {
     animation: none;
   }

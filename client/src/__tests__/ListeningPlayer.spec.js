@@ -68,4 +68,27 @@ describe('Listening player lifecycle', () => {
     expect(room.position.value).toBe(0)
     expect(room.error.value).toBe('')
   })
+
+  it('says so when another device takes over playback', async () => {
+    const room = useListeningRoom()
+    await room.initialize()
+    const player = players[0]
+    player.listeners.ready({ device_id: 'this-browser' })
+    player.listeners.player_state_changed({
+      paused: false,
+      position: 10,
+      duration: 100,
+      track_window: { current_track: { id: 'song', name: 'Song', album: { images: [] } } },
+    })
+    player.listeners.player_state_changed(null)
+    expect(room.paused.value).toBe(true)
+    expect(room.error.value).toMatch(/another device/)
+  })
+
+  it('stays quiet when nothing was playing', async () => {
+    const room = useListeningRoom()
+    await room.initialize()
+    players[0].listeners.player_state_changed(null)
+    expect(room.error.value).toBe('')
+  })
 })
