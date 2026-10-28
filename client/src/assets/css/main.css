@@ -179,17 +179,18 @@ html {
 /* Dark theme */
 .dark {
   --ui-primary: var(--color-brand-400);
-  --scroll-thumb: #5a4a52;
-  --scroll-track: #1f1c2a;
+  --scroll-thumb: #5a4840;
+  --scroll-track: #1d1714;
 
-  /* Warm dark cards and peach-tinted borders on the navy background. */
-  --ui-bg: #171b27;
-  --ui-bg-elevated: #25222b;
-  --ui-bg-accented: #3a2a30;
+  /* Espresso: a warm brown-black page with slightly lighter cards, cream text
+     and peach-tinted borders, so the terracotta brand sits naturally on it. */
+  --ui-bg: #161210;
+  --ui-bg-elevated: #211a17;
+  --ui-bg-accented: #33241e;
 
-  --ui-text: #f5f1ee;
-  --ui-text-muted: #b9aec4;
-  --ui-border: rgba(255, 205, 166, 0.18);
+  --ui-text: #f6eee8;
+  --ui-text-muted: #bfaea3;
+  --ui-border: rgba(255, 205, 166, 0.14);
 }
 
 /* Global typography */

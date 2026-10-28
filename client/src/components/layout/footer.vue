@@ -101,7 +101,7 @@ function backToTop() {
 }
 
 :global(.dark .site-footer) {
-  --footer-bg: #11141d;
+  --footer-bg: #110d0c;
   --footer-text: #f4efea;
   --footer-muted: #a89e99;
   --footer-line: rgba(255, 255, 255, 0.1);

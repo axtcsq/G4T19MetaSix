@@ -436,14 +436,14 @@ watch(
 
 
 
-/* Dark mode: the bar matches the app's navy page and turns into dark glass on scroll. */
+/* Dark mode: the bar matches the app's espresso page and turns into dark glass on scroll. */
 .dark .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: #171b27;
+  background: #161210;
 }
 .dark .site-header.is-scrolled {
   border-bottom-color: rgba(255, 255, 255, 0.1);
-  background: rgba(23, 27, 39, 0.72);
+  background: rgba(22, 18, 16, 0.72);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 .dark .brand {
@@ -451,7 +451,7 @@ watch(
 }
 .dark .header-link,
 .dark .menu-link {
-  color: #c9c2cf;
+  color: #cdbfb6;
 }
 .dark .header-link:hover,
 .dark .menu-link:hover {
@@ -464,8 +464,8 @@ watch(
 .dark .profile-button,
 .dark .menu-button {
   border-color: rgba(255, 255, 255, 0.12);
-  color: #c9c2cf;
-  background: #222839;
+  color: #cdbfb6;
+  background: #211a17;
 }
 .dark .profile-button:hover,
 .dark .profile-button.is-active,
@@ -475,7 +475,7 @@ watch(
 }
 .dark .site-menu {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: #171b27;
+  background: #161210;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 .dark .menu-link:hover {
@@ -486,7 +486,7 @@ watch(
 }
 @media (prefers-reduced-transparency: reduce) {
   .dark .site-header.is-scrolled {
-    background: #171b27;
+    background: #161210;
   }
 }
 
