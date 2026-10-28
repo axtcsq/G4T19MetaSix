@@ -218,7 +218,7 @@ watch([dock, minimised], measure, { flush: 'post' })
       <template v-if="canPlay">
         <button
           type="button"
-          class="dock-icon"
+          class="dock-icon glass-icon"
           aria-label="Previous track"
           title="Previous"
           :disabled="!ready || busy"
@@ -230,7 +230,7 @@ watch([dock, minimised], measure, { flush: 'post' })
         </button>
         <button
           type="button"
-          class="dock-icon"
+          class="dock-icon glass-icon"
           :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
           :title="paused ? 'Play' : 'Pause'"
           :disabled="!ready || !track.id || busy"
@@ -246,7 +246,7 @@ watch([dock, minimised], measure, { flush: 'post' })
         </button>
         <button
           type="button"
-          class="dock-icon"
+          class="dock-icon glass-icon"
           aria-label="Next track"
           title="Next"
           :disabled="!ready || busy"
@@ -259,7 +259,7 @@ watch([dock, minimised], measure, { flush: 'post' })
       </template>
       <button
         type="button"
-        class="dock-text"
+        class="dock-text glass-secondary"
         :class="{ 'is-kept': !canPlay }"
         :disabled="busy"
         @click="room.disconnect"
@@ -269,7 +269,7 @@ watch([dock, minimised], measure, { flush: 'post' })
     </template>
     <button
       v-else
-      class="dock-icon"
+      class="dock-icon glass-icon"
       :disabled="!ready || !track.id || busy"
       :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
       :title="paused ? 'Play' : 'Pause'"
@@ -283,7 +283,7 @@ watch([dock, minimised], measure, { flush: 'post' })
     </button>
     <button
       type="button"
-      class="dock-icon"
+      class="dock-icon glass-icon"
       :aria-label="minimised ? 'Expand player' : 'Minimise player'"
       :aria-expanded="!minimised"
       :title="minimised ? 'Expand' : 'Minimise'"

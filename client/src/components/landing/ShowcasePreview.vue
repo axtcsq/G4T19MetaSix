@@ -196,16 +196,16 @@ onBeforeUnmount(() => {
           <span>{{ clock(elapsed) }}</span><span>{{ clock(track.length) }}</span>
         </div>
         <div class="preview-controls">
-          <button type="button" aria-label="Previous track" @click="skip(-1)">
+          <button type="button" class="glass-icon" aria-label="Previous track" @click="skip(-1)">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" /></svg>
           </button>
-          <button type="button" class="is-main" :aria-label="playing ? 'Pause' : 'Play'" @click="playing = !playing">
+          <button type="button" class="is-main glass-icon glass-action" :aria-label="playing ? 'Pause' : 'Play'" @click="playing = !playing">
             <svg v-if="playing" viewBox="0 0 16 16" aria-hidden="true">
               <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
             </svg>
             <svg v-else viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
           </button>
-          <button type="button" aria-label="Next track" @click="skip(1)">
+          <button type="button" class="glass-icon" aria-label="Next track" @click="skip(1)">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" /></svg>
           </button>
         </div>
@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
         <div class="preview-bar" aria-hidden="true"><span :style="{ width: shown ? `${result.traits[index]}%` : '0%' }" /></div>
         <span>{{ right }}</span>
       </div>
-      <button type="button" class="preview-again" @click="resultIndex = (resultIndex + 1) % RESULTS.length">
+      <button type="button" class="preview-again glass-secondary" @click="resultIndex = (resultIndex + 1) % RESULTS.length">
         See another result ↻
       </button>
     </template>
@@ -501,19 +501,6 @@ onBeforeUnmount(() => {
 .preview-trait .preview-bar span {
   transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.preview-again {
-  align-self: flex-start;
-  padding: 4px 0;
-  border: 0;
-  color: var(--color-brand-500);
-  background: transparent;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-.preview-again:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 
 @keyframes spin {
   to {
@@ -552,4 +539,6 @@ onBeforeUnmount(() => {
     transform: none;
   }
 }
+
+.preview-again { align-self: flex-start; }
 </style>

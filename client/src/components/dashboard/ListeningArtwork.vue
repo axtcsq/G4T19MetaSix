@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
       <p v-if="!ready && !error" class="artwork-status" role="status">Growing your garden…</p>
       <div v-if="error" class="artwork-status" role="alert">
         <p>{{ error }}</p>
-        <button type="button" @click="initialise">Try again</button>
+        <button type="button" class="glass-secondary" @click="initialise">Try again</button>
       </div>
     </div>
     <div class="garden-caption">

@@ -101,7 +101,7 @@ const fill = (position) => {
 </script>
 
 <template>
-  <button type="button" class="story-open" @click="start">
+  <button type="button" class="story-open glass-secondary" @click="start">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
     See how it works
   </button>
@@ -123,13 +123,13 @@ const fill = (position) => {
           <span v-for="(_, position) in SLIDES" :key="position"><i :style="{ width: fill(position) }" /></span>
         </div>
         <div class="story-tools">
-          <button type="button" :aria-label="paused ? 'Play' : 'Pause'" @click="paused = !paused">
+          <button type="button" class="glass-icon" :aria-label="paused ? 'Play' : 'Pause'" @click="paused = !paused">
             <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
             <svg v-else viewBox="0 0 16 16" aria-hidden="true">
               <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
             </svg>
           </button>
-          <button type="button" aria-label="Close" @click="close">
+          <button type="button" class="glass-icon" aria-label="Close" @click="close">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9m0-9l-9 9" /></svg>
           </button>
         </div>
@@ -142,8 +142,8 @@ const fill = (position) => {
             <h2>{{ slide.title }}</h2>
             <p class="story-text">{{ slide.text }}</p>
             <div v-if="slide.last" class="story-actions">
-              <RouterLink class="story-cta" to="/login" @click="close">Get started</RouterLink>
-              <button type="button" class="story-again" @click="start">Watch again</button>
+              <RouterLink class="story-cta glass-action" to="/login" @click="close">Get started</RouterLink>
+              <button type="button" class="story-again glass-secondary" @click="start">Watch again</button>
             </div>
           </div>
         </Transition>
@@ -155,34 +155,46 @@ const fill = (position) => {
 </template>
 
 <style scoped>
-.story-open {
+.story-open.glass-secondary {
+  --button-top: color-mix(in srgb, var(--color-peach) 55%, white);
+  --button-base: var(--color-peach);
+  --button-ink: var(--color-brand-950);
   display: inline-flex;
-  min-height: 40px;
+  min-height: 54px !important;
   align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  padding: 0 18px;
+  gap: 12px;
+  margin: 0;
+  padding: 0.85rem 1.75rem !important;
   border: 0;
   border-radius: 999px;
   color: #fff;
   background: var(--ui-primary);
   box-shadow: 0 6px 16px rgba(118, 62, 50, 0.22);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 1rem !important;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease;
 }
 .story-open:hover {
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+}
+.story-open:is(:hover, :focus-visible) svg {
+  animation: play-hop 650ms ease-out both;
+}
+@keyframes play-hop {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  30% { transform: translateY(-5px) rotate(-12deg); }
+  60% { transform: translateY(1px) rotate(8deg); }
+  80% { transform: translateY(-2px) rotate(-4deg); }
 }
 .story-open:focus-visible {
   outline: 3px solid var(--color-brand-400);
   outline-offset: 3px;
 }
 .story-open svg {
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   fill: currentColor;
 }
 
@@ -311,16 +323,7 @@ const fill = (position) => {
   font-weight: 700;
   text-decoration: none;
 }
-.story-again {
-  border: 0;
-  color: #fff;
-  background: transparent;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
-}
+
 .story-hint {
   position: absolute;
   bottom: 20px;
@@ -354,6 +357,9 @@ const fill = (position) => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .story-open:is(:hover, :focus-visible) svg {
+    animation: none;
+  }
   .story,
   .story-open,
   .story-enter-active,
@@ -363,4 +369,5 @@ const fill = (position) => {
     transition: none;
   }
 }
+
 </style>

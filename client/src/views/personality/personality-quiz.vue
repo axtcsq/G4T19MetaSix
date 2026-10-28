@@ -98,7 +98,7 @@ onMounted(loadQuiz)
 
       <div v-else-if="loadError" role="alert" class="mt-8">
         <p class="text-sm text-error">{{ loadError }}</p>
-        <button type="button" class="peach-button mt-4 max-w-[334px]" @click="loadQuiz">
+        <button type="button" class="peach-button mt-4 max-w-[334px] glass-action" @click="loadQuiz">
           Try again
         </button>
       </div>
@@ -165,7 +165,7 @@ onMounted(loadQuiz)
           <div class="mt-8 flex items-center justify-between gap-4">
             <button
               type="button"
-              class="back-button"
+              class="back-button glass-secondary"
               :disabled="currentIndex === 0 || isSubmitting"
               @click="goBack"
             >
@@ -173,7 +173,7 @@ onMounted(loadQuiz)
             </button>
             <button
               type="submit"
-              class="peach-button next-button"
+              class="peach-button next-button glass-action"
               :disabled="!hasAnsweredCurrent || isSubmitting"
             >
               {{ isSubmitting ? 'Working out your result...' : isLastStep ? 'See my result' : 'Next' }}
@@ -193,7 +193,6 @@ onMounted(loadQuiz)
   flex-direction: column;
   background: var(--ui-bg);
 }
-
 
 .sub-header {
   color: var(--pq-on-surface);
@@ -267,47 +266,11 @@ onMounted(loadQuiz)
 }
 
 .quiz-option:focus-visible,
-.peach-button:focus-visible,
-.back-button:focus-visible {
-  outline: 3px solid var(--pq-focus);
-  outline-offset: 3px;
-}
+
 
 .quiz-option.is-selected {
   border-color: var(--pq-accent);
   background: var(--pq-peach);
-}
-
-.peach-button {
-  display: flex;
-  min-height: 55px;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 1.5rem;
-  border: 1px solid var(--pq-border);
-  border-radius: 10px;
-  color: var(--pq-on-peach);
-  background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: 1.375rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    transform 160ms ease;
-}
-
-.peach-button:hover:not(:disabled) {
-  background: var(--pq-peach-hover);
-  transform: translateY(-1px);
-}
-
-.peach-button:disabled {
-  color: var(--pq-muted);
-  background: var(--pq-disabled);
-  box-shadow: none;
-  cursor: not-allowed;
 }
 
 .next-button {
@@ -337,22 +300,6 @@ onMounted(loadQuiz)
   outline-offset: 3px;
 }
 
-.back-button {
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
-  color: var(--pq-brown);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.back-button:disabled {
-  color: var(--pq-muted);
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 @media (max-width: 600px) {
   .quiz-page {
     min-height: calc(100vh - 66px);
@@ -361,7 +308,6 @@ onMounted(loadQuiz)
   .quiz-panel {
     padding: 1.25rem;
   }
-
 
   .sub-header {
     font-size: 1.25rem;
@@ -372,4 +318,5 @@ onMounted(loadQuiz)
     flex: 1;
   }
 }
+
 </style>

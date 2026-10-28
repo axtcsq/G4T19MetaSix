@@ -17,7 +17,7 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
-    meta: { title: 'Your Listening Portrait' },
+    meta: { title: 'Your Music at a Glance' },
   },
   {
     path: '/listen',
