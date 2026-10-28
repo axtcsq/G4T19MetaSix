@@ -1,0 +1,1075 @@
+[
+ {
+  "label": "dark",
+  "query": [
+   "Pumped Up Kicks",
+   "Foster The People"
+  ],
+  "id": "7w87IxuO7BDcJ3YUqCyMTT",
+  "name": "Pumped Up Kicks",
+  "artist": "Foster The People",
+  "features": {
+   "id": "7w87IxuO7BDcJ3YUqCyMTT",
+   "acousticness": 0.145,
+   "danceability": 0.733,
+   "energy": 0.71,
+   "instrumentalness": 0.115,
+   "key": 5,
+   "liveness": 0.0956,
+   "loudness": -5.849,
+   "mode": 0,
+   "speechiness": 0.0292,
+   "tempo": 127.975,
+   "valence": 0.965
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.2440661125949537,
+   "emotionalShare": 0.6984656229615211,
+   "totalLines": 48,
+   "emotions": {
+    "joy": 0.023057953764994938,
+    "surprise": 0.15462863941987356,
+    "neutral": 0.30153437703847885,
+    "sadness": 0.059164236610134445,
+    "fear": 0.07423297346880038,
+    "anger": 0.3362560036281745,
+    "disgust": 0.05112579604610801
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "All the other kids with the pumped up kicks / You'd better run, better run, outrun my gun"
+     },
+     {
+      "text": "Run, run, run, run, run, run / Run, run, run, run"
+     }
+    ]
+   },
+   "darkThemes": [
+    "bullet",
+    "gun"
+   ]
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Hard Times",
+   "Paramore"
+  ],
+  "id": "0w5Bdu51Ka25Pf3hojsKHh",
+  "name": "Hard Times",
+  "artist": "Paramore",
+  "features": {
+   "id": "0w5Bdu51Ka25Pf3hojsKHh",
+   "acousticness": 0.00647,
+   "danceability": 0.695,
+   "energy": 0.818,
+   "instrumentalness": 0.00000487,
+   "key": 5,
+   "liveness": 0.0219,
+   "loudness": -5.379,
+   "mode": 0,
+   "speechiness": 0.0334,
+   "tempo": 119.965,
+   "valence": 0.916
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.32191370536918334,
+   "emotionalShare": 0.8856798366144083,
+   "totalLines": 69,
+   "emotions": {
+    "joy": 0.031149648210924606,
+    "surprise": 0.3340372702349787,
+    "neutral": 0.11432016338559164,
+    "sadness": 0.37903476625249005,
+    "fear": 0.06097318469614223,
+    "anger": 0.05375443139801855,
+    "disgust": 0.026730525644793026
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "(Hard times) Hard times / (Hard times) Hard times"
+     },
+     {
+      "text": "(Hard times) / Gonna make you wonder why you even try"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Hey Ya!",
+   "Outkast"
+  ],
+  "id": "2PpruBYCo4H7WOBJ7Q2EwM",
+  "name": "Hey Ya!",
+  "artist": "Outkast",
+  "features": {
+   "id": "2PpruBYCo4H7WOBJ7Q2EwM",
+   "acousticness": 0.103,
+   "danceability": 0.727,
+   "energy": 0.974,
+   "instrumentalness": 0.000532,
+   "key": 4,
+   "liveness": 0.174,
+   "loudness": -2.261,
+   "mode": 0,
+   "speechiness": 0.0664,
+   "tempo": 79.526,
+   "valence": 0.965
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.399984725118554,
+   "emotionalShare": 0.8439696594876678,
+   "totalLines": 76,
+   "emotions": {
+    "joy": 0.17536679197923818,
+    "surprise": 0.18970081544064574,
+    "neutral": 0.15603034051233217,
+    "sadness": 0.18033855778508281,
+    "fear": 0.18531650024784826,
+    "anger": 0.08520980976448443,
+    "disgust": 0.02803718821776688
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "Uh thank god for mom and dad / For sticking two together"
+     },
+     {
+      "text": "Hey alright now / Alright now fellas （YEAH ）"
+     }
+    ],
+    "negative": [
+     {
+      "text": "My baby don't mess around / Because she loves me so"
+     },
+     {
+      "text": "Shh you got to shake it shh shake it shake it got to shake it / （Shake it Suga'） shake it like a Poloroid Picture"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "I Don't Like Mondays",
+   "The Boomtown Rats"
+  ],
+  "id": "7JFoeg0arawADjGcz9gBnq",
+  "name": "I Don't Like Mondays",
+  "artist": "The Boomtown Rats",
+  "features": {
+   "id": "7JFoeg0arawADjGcz9gBnq",
+   "acousticness": 0.717,
+   "danceability": 0.464,
+   "energy": 0.46,
+   "instrumentalness": 0,
+   "key": 11,
+   "liveness": 0.151,
+   "loudness": -6.874,
+   "mode": 1,
+   "speechiness": 0.0393,
+   "tempo": 143.603,
+   "valence": 0.476
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.25561382144690126,
+   "emotionalShare": 0.8517461167511475,
+   "totalLines": 68,
+   "emotions": {
+    "joy": 0.016900179346146828,
+    "surprise": 0.23381355081630104,
+    "neutral": 0.14825388324885247,
+    "sadness": 0.3401683360502562,
+    "fear": 0.02543080676182666,
+    "anger": 0.18374059965614886,
+    "disgust": 0.05169264351784745
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "(Tell me why) / I don't like Mondays"
+     },
+     {
+      "text": "I don't like Mondays / (Tell me why)"
+     }
+    ]
+   },
+   "darkThemes": [
+    "die",
+    "shoot"
+   ]
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Maxwell's Silver Hammer",
+   "The Beatles"
+  ],
+  "id": "2S8xyNRJX1XQdo3qnTuovI",
+  "name": "Maxwell's Silver Hammer - Remastered 2009",
+  "artist": "The Beatles",
+  "features": {
+   "id": "2S8xyNRJX1XQdo3qnTuovI",
+   "acousticness": 0.631,
+   "danceability": 0.763,
+   "energy": 0.425,
+   "instrumentalness": 0.00013,
+   "key": 2,
+   "liveness": 0.132,
+   "loudness": -11.045,
+   "mode": 1,
+   "speechiness": 0.0405,
+   "tempo": 131.113,
+   "valence": 0.723
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.27844733012695244,
+   "emotionalShare": 0.887594000576064,
+   "totalLines": 40,
+   "emotions": {
+    "joy": 0.009056926530320197,
+    "surprise": 0.28038808577693997,
+    "neutral": 0.112405999423936,
+    "sadness": 0.1462903121486306,
+    "fear": 0.20992698647314684,
+    "anger": 0.1396666440181434,
+    "disgust": 0.10226504439488053
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "But when she turns her back on the boy / He creeps up from behind"
+     },
+     {
+      "text": "Back in school again Maxwell plays the fool again / Teacher gets annoyed"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Semi-Charmed Life",
+   "Third Eye Blind"
+  ],
+  "id": "42et6fnHCw1HIPSrdPprMl",
+  "name": "Semi-Charmed Life",
+  "artist": "Third Eye Blind",
+  "features": {
+   "id": "42et6fnHCw1HIPSrdPprMl",
+   "acousticness": 0.00832,
+   "danceability": 0.64,
+   "energy": 0.864,
+   "instrumentalness": 0,
+   "key": 7,
+   "liveness": 0.123,
+   "loudness": -6.576,
+   "mode": 1,
+   "speechiness": 0.0314,
+   "tempo": 102.026,
+   "valence": 0.701
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.2515638552360998,
+   "emotionalShare": 0.8646675821418237,
+   "totalLines": 76,
+   "emotions": {
+    "joy": 0.09192433056580883,
+    "surprise": 0.08890509491443242,
+    "neutral": 0.13533241785817632,
+    "sadness": 0.34192714641654964,
+    "fear": 0.1692824818218421,
+    "anger": 0.07971705487120505,
+    "disgust": 0.09291147073044588
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "And I make her smile, like a drug for you / Do ever what you wanna do, comin' over you"
+     },
+     {
+      "text": "I'm packed and I'm holdin' / I'm smilin', she's livin', she's golden"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Those days you were wearing that velvet dress / You're the priestess, I must confess"
+     },
+     {
+      "text": "And I want somethin' else / To get me through this life"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Born in the U.S.A.",
+   "Bruce Springsteen"
+  ],
+  "id": "0dOg1ySSI7NkpAe89Zo0b9",
+  "name": "Born in the U.S.A.",
+  "artist": "Bruce Springsteen",
+  "features": {
+   "id": "0dOg1ySSI7NkpAe89Zo0b9",
+   "acousticness": 0.000373,
+   "danceability": 0.398,
+   "energy": 0.952,
+   "instrumentalness": 0.0000775,
+   "key": 4,
+   "liveness": 0.1,
+   "loudness": -6.042,
+   "mode": 1,
+   "speechiness": 0.061,
+   "tempo": 122.093,
+   "valence": 0.584
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.30797892144266714,
+   "emotionalShare": 0.8782200279623963,
+   "totalLines": 43,
+   "emotions": {
+    "joy": 0.16791530029285093,
+    "surprise": 0.056891074793976405,
+    "neutral": 0.12177997203760368,
+    "sadness": 0.2265631767899491,
+    "fear": 0.2295542196262368,
+    "anger": 0.10954281825269031,
+    "disgust": 0.08775344398414153
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "I'm a cool rocking daddy in the U.S.A. Now"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Born down in a dead man's town / The first kick I took was when I hit the ground"
+     },
+     {
+      "text": "He had a woman in Saigon / I got a picture of him in her arms now"
+     }
+    ]
+   },
+   "darkThemes": [
+    "dead",
+    "kill"
+   ]
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Little Talks",
+   "Of Monsters and Men"
+  ],
+  "id": "2ihCaVdNZmnHZWt0fvAM7B",
+  "name": "Little Talks",
+  "artist": "Of Monsters and Men",
+  "features": {
+   "id": "2ihCaVdNZmnHZWt0fvAM7B",
+   "acousticness": 0.0206,
+   "danceability": 0.457,
+   "energy": 0.757,
+   "instrumentalness": 0,
+   "key": 1,
+   "liveness": 0.146,
+   "loudness": -5.177,
+   "mode": 1,
+   "speechiness": 0.032,
+   "tempo": 102.961,
+   "valence": 0.417
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.38117860255738323,
+   "emotionalShare": 0.794477065606993,
+   "totalLines": 49,
+   "emotions": {
+    "joy": 0.21407374982931177,
+    "surprise": 0.07616828557826122,
+    "neutral": 0.20552293439300692,
+    "sadness": 0.21224712880746444,
+    "fear": 0.0668624022747485,
+    "anger": 0.18740836056709595,
+    "disgust": 0.037717146684928815
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "Ship will carry our bodies safe to shore / Don't listen to a word I say (hey!)"
+     },
+     {
+      "text": "Soon it will be over and buried with our past / We used to play outside when we were young"
+     }
+    ],
+    "negative": [
+     {
+      "text": "It's killing me to see you this way / 'Cause though the truth may vary, this"
+     },
+     {
+      "text": "Now we're torn, torn, torn apart, there's nothing we can do / Just let me go, we'll meet again soon"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Psycho Killer",
+   "Talking Heads"
+  ],
+  "id": "7dSCxR4LqkmxoBrq9MzVSD",
+  "name": "Psycho Killer",
+  "artist": "Talking Heads",
+  "features": {
+   "id": "7dSCxR4LqkmxoBrq9MzVSD",
+   "acousticness": 0.0586,
+   "danceability": 0.721,
+   "energy": 0.401,
+   "instrumentalness": 0.00259,
+   "key": 2,
+   "liveness": 0.122,
+   "loudness": -12.139,
+   "mode": 1,
+   "speechiness": 0.0661,
+   "tempo": 123.384,
+   "valence": 0.944
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.17915729742367312,
+   "emotionalShare": 0.9387351434700013,
+   "totalLines": 42,
+   "emotions": {
+    "joy": 0.03747357309441127,
+    "surprise": 0.03051104868895241,
+    "neutral": 0.061264856529998635,
+    "sadness": 0.04169162438206729,
+    "fear": 0.5439935319258699,
+    "anger": 0.1730718283825332,
+    "disgust": 0.11199352582306824
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "Ay-ya-ya-ya-ya-ya, ooh"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Ce que j'ai fait, ce soir-là / Ce qu'elle a dit, ce soir-là"
+     },
+     {
+      "text": "You start a conversation, you can't even finish it / You're talking a lot, but you're not saying anything"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Dancing In the Dark",
+   "Bruce Springsteen"
+  ],
+  "id": "7FwBtcecmlpc1sLySPXeGE",
+  "name": "Dancing In the Dark",
+  "artist": "Bruce Springsteen",
+  "features": {
+   "id": "7FwBtcecmlpc1sLySPXeGE",
+   "acousticness": 0.0115,
+   "danceability": 0.527,
+   "energy": 0.942,
+   "instrumentalness": 0,
+   "key": 1,
+   "liveness": 0.188,
+   "loudness": -5.64,
+   "mode": 0,
+   "speechiness": 0.0366,
+   "tempo": 148.723,
+   "valence": 0.495
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.17418990970791545,
+   "emotionalShare": 0.8419785496468345,
+   "totalLines": 48,
+   "emotions": {
+    "joy": 0.03493713824233661,
+    "surprise": 0.02545807925829043,
+    "neutral": 0.15802145035316548,
+    "sadness": 0.29819481874195236,
+    "fear": 0.4008140931837261,
+    "anger": 0.051645865120614566,
+    "disgust": 0.030928562899741035
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "You can′t start a fire / Sittin′ 'round cryin′ over a broken heart"
+     },
+     {
+      "text": "I ain′t nothin′ but tired / Man, I'm just tired and bored with myself"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Paper Planes",
+   "M.I.A."
+  ],
+  "id": "1ixbwbeBi5ufN4noUKmW5a",
+  "name": "Paper Planes",
+  "artist": "M.I.A.",
+  "features": {
+   "id": "1ixbwbeBi5ufN4noUKmW5a",
+   "acousticness": 0.033,
+   "danceability": 0.447,
+   "energy": 0.848,
+   "instrumentalness": 0.0000746,
+   "key": 2,
+   "liveness": 0.65,
+   "loudness": -6.175,
+   "mode": 1,
+   "speechiness": 0.222,
+   "tempo": 172.253,
+   "valence": 0.485
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.19307821167827588,
+   "emotionalShare": 0.762146458029747,
+   "totalLines": 76,
+   "emotions": {
+    "joy": 0.04532971296851572,
+    "surprise": 0.05376290571630785,
+    "neutral": 0.237853541970253,
+    "sadness": 0.11231689368325629,
+    "fear": 0.11055043771078713,
+    "anger": 0.3275390804598206,
+    "disgust": 0.11264741332515289
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "M.I.A / Third world democracy"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Pirate skulls and bones / Sticks and stones and weed and bongs"
+     },
+     {
+      "text": "Some, some, some I, some I murder / Some, I some I let go"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Teenagers",
+   "My Chemical Romance"
+  ],
+  "id": "7j31rVgGX9Q2blT92VBEA0",
+  "name": "Teenagers",
+  "artist": "My Chemical Romance",
+  "features": {
+   "id": "7j31rVgGX9Q2blT92VBEA0",
+   "acousticness": 0.0506,
+   "danceability": 0.463,
+   "energy": 0.857,
+   "instrumentalness": 0,
+   "key": 4,
+   "liveness": 0.184,
+   "loudness": -3.063,
+   "mode": 1,
+   "speechiness": 0.0632,
+   "tempo": 111.647,
+   "valence": 0.856
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.14203336753540385,
+   "emotionalShare": 0.8963678607745378,
+   "totalLines": 66,
+   "emotions": {
+    "joy": 0.00723869014517263,
+    "surprise": 0.016449745363471182,
+    "neutral": 0.10363213922546217,
+    "sadness": 0.02875354104308468,
+    "fear": 0.46599202174834453,
+    "anger": 0.29697933207463584,
+    "disgust": 0.08095452386293221
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "As long as someone'll bleed / So darken your clothes"
+     },
+     {
+      "text": "'Cause they got methods of keeping you clean / They're gonna rip up your heads"
+     }
+    ]
+   },
+   "darkThemes": [
+    "gun",
+    "murder"
+   ]
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Electric Avenue",
+   "Eddy Grant"
+  ],
+  "id": "55AMcB2JAUr7wmM3Z9Vgqc",
+  "name": "Electric Avenue",
+  "artist": "Eddy Grant",
+  "features": {
+   "id": "55AMcB2JAUr7wmM3Z9Vgqc",
+   "acousticness": 0.106,
+   "danceability": 0.974,
+   "energy": 0.403,
+   "instrumentalness": 0.00207,
+   "key": 2,
+   "liveness": 0.0786,
+   "loudness": -12.943,
+   "mode": 1,
+   "speechiness": 0.273,
+   "tempo": 121.97,
+   "valence": 0.755
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.3192201339879982,
+   "emotionalShare": 0.7560056715187702,
+   "totalLines": 55,
+   "emotions": {
+    "joy": 0.0505878126333383,
+    "surprise": 0.22749844992702659,
+    "neutral": 0.24399432848122987,
+    "sadness": 0.0676363424144008,
+    "fear": 0.1796559837223454,
+    "anger": 0.14804804059253499,
+    "disgust": 0.08257903940975667
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "Now in the street there is violence / And then a lots of work to be done"
+     },
+     {
+      "text": "Workin' so hard like a soldier / Can't afford a thing on TV"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Mr. Brightside",
+   "The Killers"
+  ],
+  "id": "003vvx7Niy0yvhvHt4a68B",
+  "name": "Mr. Brightside",
+  "artist": "The Killers",
+  "features": {
+   "id": "003vvx7Niy0yvhvHt4a68B",
+   "acousticness": 0.00121,
+   "danceability": 0.352,
+   "energy": 0.911,
+   "instrumentalness": 0,
+   "key": 1,
+   "liveness": 0.0995,
+   "loudness": -5.23,
+   "mode": 1,
+   "speechiness": 0.0747,
+   "tempo": 148.033,
+   "valence": 0.236
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.39754738611372065,
+   "emotionalShare": 0.8653315883534758,
+   "totalLines": 46,
+   "emotions": {
+    "joy": 0.2688176732753282,
+    "surprise": 0.04924411231489933,
+    "neutral": 0.1346684116465242,
+    "sadness": 0.09031022939345111,
+    "fear": 0.08720147002326406,
+    "anger": 0.16582596399213956,
+    "disgust": 0.20393214229008425
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "Jealousy / Turning saints into the sea"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Chest now / He takes off her dress now"
+     },
+     {
+      "text": "Comin' out of my cage and I've been doin' just fine / Gotta, gotta be down because I want it all"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Somebody Told Me",
+   "The Killers"
+  ],
+  "id": "6PwjJ58I4t7Mae9xfZ9l9v",
+  "name": "Somebody Told Me",
+  "artist": "The Killers",
+  "features": {
+   "id": "6PwjJ58I4t7Mae9xfZ9l9v",
+   "acousticness": 0.0000904,
+   "danceability": 0.497,
+   "energy": 0.97,
+   "instrumentalness": 0.000674,
+   "key": 10,
+   "liveness": 0.101,
+   "loudness": -4.851,
+   "mode": 0,
+   "speechiness": 0.0836,
+   "tempo": 138.081,
+   "valence": 0.689
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.35823360445936,
+   "emotionalShare": 0.5171593304309581,
+   "totalLines": 45,
+   "emotions": {
+    "joy": 0.02463208594255977,
+    "surprise": 0.2151987342370881,
+    "neutral": 0.482840669569042,
+    "sadness": 0.11480311196711328,
+    "fear": 0.10022557278474171,
+    "anger": 0.03590292512542671,
+    "disgust": 0.026396892054213417
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "Pace yourself for me (For me) / I said maybe, baby, please"
+     },
+     {
+      "text": "Breaking my back just to know your name / Seventeen tracks, and I've had it with this game"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Kids",
+   "MGMT"
+  ],
+  "id": "1jJci4qxiYcOHhQR247rEU",
+  "name": "Kids",
+  "artist": "MGMT",
+  "features": {
+   "id": "1jJci4qxiYcOHhQR247rEU",
+   "acousticness": 0.00076,
+   "danceability": 0.451,
+   "energy": 0.931,
+   "instrumentalness": 0.0049,
+   "key": 9,
+   "liveness": 0.361,
+   "loudness": -3.871,
+   "mode": 1,
+   "speechiness": 0.0719,
+   "tempo": 122.961,
+   "valence": 0.172
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.16242047410566599,
+   "emotionalShare": 0.965018155425787,
+   "totalLines": 40,
+   "emotions": {
+    "joy": 0.031001580075826495,
+    "surprise": 0.007542040850967169,
+    "neutral": 0.03498184457421303,
+    "sadness": 0.180197065602988,
+    "fear": 0.6022905498743057,
+    "anger": 0.09479606840759516,
+    "disgust": 0.04919084860011935
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "A baby is born / Crying out for attention"
+     },
+     {
+      "text": "Control yourself / Take only what you need from it"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Ex's & Oh's",
+   "Elle King"
+  ],
+  "id": "70eDxAyAraNTiD6lx2ZEnH",
+  "name": "Ex's & Oh's",
+  "artist": "Elle King",
+  "features": {
+   "id": "70eDxAyAraNTiD6lx2ZEnH",
+   "acousticness": 0.0183,
+   "danceability": 0.612,
+   "energy": 0.921,
+   "instrumentalness": 0,
+   "key": 7,
+   "liveness": 0.0576,
+   "loudness": -2.882,
+   "mode": 1,
+   "speechiness": 0.085,
+   "tempo": 139.988,
+   "valence": 0.446
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.23332017806666486,
+   "emotionalShare": 0.9035522365233019,
+   "totalLines": 42,
+   "emotions": {
+    "joy": 0.046445345070900486,
+    "surprise": 0.11420998507223669,
+    "neutral": 0.09644776347669817,
+    "sadness": 0.15964572218113712,
+    "fear": 0.47756417634497794,
+    "anger": 0.06825689964794687,
+    "disgust": 0.037430112227974904
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "My ex's and the oh, oh, oh's they haunt me / Like ghosts they want me to make 'em all"
+     },
+     {
+      "text": "Ex's and the oh, oh, oh's they haunt me / Like ghosts they want me to make 'em all"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Maneater",
+   "Daryl Hall & John Oates"
+  ],
+  "id": "7j74lucZ59vqN67Ipe2ZcY",
+  "name": "Maneater",
+  "artist": "Daryl Hall & John Oates",
+  "features": {
+   "id": "7j74lucZ59vqN67Ipe2ZcY",
+   "acousticness": 0.0405,
+   "danceability": 0.724,
+   "energy": 0.498,
+   "instrumentalness": 0.0000856,
+   "key": 11,
+   "liveness": 0.0761,
+   "loudness": -13.083,
+   "mode": 0,
+   "speechiness": 0.0423,
+   "tempo": 88.825,
+   "valence": 0.823
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.2948842108910315,
+   "emotionalShare": 0.6875899646963393,
+   "totalLines": 49,
+   "emotions": {
+    "joy": 0.019656599632331302,
+    "surprise": 0.22421586650366687,
+    "neutral": 0.3124100353036608,
+    "sadness": 0.028252292348414053,
+    "fear": 0.1036876976794126,
+    "anger": 0.11259614539389708,
+    "disgust": 0.1991813617701433
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "I wouldn't if I were you, I know what she can do / She's deadly man, and she could really rip your world apart"
+     },
+     {
+      "text": "Oh, here she comes / Oh she'll chew you up"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Back on the Chain Gang",
+   "Pretenders"
+  ],
+  "id": "4cMHCRLPNoEbpnl2rz6GS9",
+  "name": "Back on the Chain Gang - 2007 Remaster",
+  "artist": "Pretenders",
+  "features": {
+   "id": "4cMHCRLPNoEbpnl2rz6GS9",
+   "acousticness": 0.116,
+   "danceability": 0.598,
+   "energy": 0.901,
+   "instrumentalness": 0.0401,
+   "key": 2,
+   "liveness": 0.178,
+   "loudness": -6.081,
+   "mode": 1,
+   "speechiness": 0.0359,
+   "tempo": 153.24,
+   "valence": 0.814
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.2106551021959973,
+   "emotionalShare": 0.8221071577416017,
+   "totalLines": 26,
+   "emotions": {
+    "joy": 0.013598889076652436,
+    "surprise": 0.14181388556384122,
+    "neutral": 0.17789284225839835,
+    "sadness": 0.31055853014382034,
+    "fear": 0.170087047207814,
+    "anger": 0.11642557139006945,
+    "disgust": 0.06962324134432353
+   },
+   "highlights": {
+    "positive": [],
+    "negative": [
+     {
+      "text": "Well, I'll die as I stand here today / Knowing that deep in my heart"
+     },
+     {
+      "text": "The powers that be / That force us to live like we do"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ },
+ {
+  "label": "dark",
+  "query": [
+   "Girls & Boys",
+   "Blur"
+  ],
+  "id": "5CeL9C3bsoe4yzYS1Qz8cw",
+  "name": "Girls & Boys",
+  "artist": "Blur",
+  "features": {
+   "id": "5CeL9C3bsoe4yzYS1Qz8cw",
+   "acousticness": 0.00986,
+   "danceability": 0.693,
+   "energy": 0.875,
+   "instrumentalness": 0,
+   "key": 7,
+   "liveness": 0.0601,
+   "loudness": -8.354,
+   "mode": 0,
+   "speechiness": 0.0315,
+   "tempo": 120.048,
+   "valence": 0.899
+  },
+  "lyrics": {
+   "status": "found",
+   "valence": 0.3870700297904671,
+   "emotionalShare": 0.4926929404272845,
+   "totalLines": 38,
+   "emotions": {
+    "joy": 0.10318080849001969,
+    "surprise": 0.09677807027228962,
+    "neutral": 0.5073070595727155,
+    "sadness": 0.025182790858180898,
+    "fear": 0.10689308506583697,
+    "anger": 0.029661860954212516,
+    "disgust": 0.13099632958734506
+   },
+   "highlights": {
+    "positive": [
+     {
+      "text": "Looking for girls who are boys, who like boys to be girls / Who do boys like they're girls"
+     }
+    ],
+    "negative": [
+     {
+      "text": "Avoiding all work 'cause there's none available / Like battery thinkers, count your thoughts"
+     },
+     {
+      "text": "Street's like a jungle so call the police / Following the herd down to Greece on a holiday"
+     }
+    ]
+   },
+   "darkThemes": []
+  }
+ }
+]
