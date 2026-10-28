@@ -375,7 +375,7 @@ onMounted(loadData)
 .spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }
 .spotify-connect-note p { margin: 0; font-size: .9rem; }
 
-.recommendation-panel { width: min(790px, 100%); margin: 24px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
+.recommendation-panel { width: 100%; margin: 24px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: .94rem; }
@@ -390,7 +390,7 @@ onMounted(loadData)
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
 .recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
-.calendar-shell { display: grid; width: min(100%, 938px); grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; margin: 24px auto 0; }
+.calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
 .month-heading h2 { min-width: 230px; margin: 0; text-align: center; font-family: var(--font-sans); font-size: var(--text-header); }
@@ -419,7 +419,7 @@ onMounted(loadData)
 @keyframes skeleton-pulse { 50% { opacity: .45; } }
 @media (prefers-reduced-motion: reduce) { .calendar-skeleton .skeleton-cell, .skeleton-bar { animation: none; } }
 .error-message { color: #a53e36; }
-.day-detail { width: min(1040px, 100%); margin: 28px auto 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
+.day-detail { width: 100%; margin: 28px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .detail-header h3 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: 1.4rem; cursor: pointer; }
