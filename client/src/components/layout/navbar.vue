@@ -225,6 +225,10 @@ watch(
   gap: 24px;
   margin-inline: auto;
 }
+/* On the landing page the bar lines up with its wider margins. */
+.site-header-landing .header-inner {
+  width: var(--landing-width);
+}
 .brand-group {
   display: flex;
   align-items: center;
