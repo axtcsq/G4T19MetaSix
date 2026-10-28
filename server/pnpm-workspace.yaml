@@ -1,3 +1,6 @@
+allowBuilds:
+  onnxruntime-node: false
+  protobufjs: false
 minimumReleaseAgeExclude:
   - kareem@3.4.1
   - mongoose@9.11.2

@@ -17,3 +17,6 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# The emotion model, downloaded by the mood analysis job
+server/.models/

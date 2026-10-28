@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import AmbientWave from '@/components/listening/AmbientWave.vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: 'ListeningRoom' })
@@ -96,7 +97,7 @@ onBeforeUnmount(() => {
           </div>
           <template v-if="connected">
             <button
-              v-if="!ready"
+              v-if="!ready || error"
               class="connection-action"
               :disabled="busy"
               @click="room.reconnect"
@@ -149,6 +150,23 @@ onBeforeUnmount(() => {
             <p>{{ artist }}</p>
             <span>{{ track.album?.name }}</span>
           </div>
+          <div class="now-mood"><MoodTag :track-id="track.id" /></div>
+          <a
+            v-if="track.external_urls?.spotify"
+            class="spotify-link"
+            :href="track.external_urls.spotify"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Listen on Spotify ↗</a
+          >
+          <a
+            v-else-if="track.id"
+            class="spotify-link"
+            :href="`https://open.spotify.com/search/${encodeURIComponent(track.name + ' ' + artist)}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Find on Spotify ↗</a
+          >
         </div>
       </section>
 
@@ -299,7 +317,8 @@ onBeforeUnmount(() => {
               alt=""
             /><span
               ><strong>{{ item.name }}</strong
-              ><span>{{ item.artists.map((a) => a.name).join(', ') }}</span></span
+              ><span class="result-artist">{{ item.artists.map((a) => a.name).join(', ') }}</span
+              ><span class="result-mood"><MoodTag :track-id="item.id" size="sm" /></span></span
             ><span>{{
               item.is_playable === false ? 'Unavailable' : formatTime(item.duration_ms)
             }}</span
@@ -336,6 +355,7 @@ onBeforeUnmount(() => {
                 />
               </div>
               <strong>{{ item.name }}</strong
+              ><span class="shelf-mood"><MoodTag :track-id="item.id" size="sm" /></span
               ><span class="sr-only">{{
                 item.artists?.map((artist) => artist.name).join(', ')
               }}</span>
@@ -550,6 +570,18 @@ button:disabled {
 .track-copy > span {
   font-size: var(--text-body);
   color: var(--room-muted);
+}
+.spotify-link {
+  display: inline-flex;
+  align-items: center;
+  font: 13px var(--font-sans);
+  min-height: 44px;
+  margin-top: 12px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.spotify-link:hover {
+  color: var(--room-focus);
 }
 .transport {
   display: grid;
@@ -816,10 +848,22 @@ input:disabled {
   display: block;
   overflow-wrap: anywhere;
 }
-.result-row span span {
+.result-row .result-artist {
   display: block;
   font: 18px var(--font-serif);
   margin-top: 4px;
+}
+.result-mood,
+.shelf-mood {
+  display: flex;
+  margin-top: 6px;
+}
+.now-mood {
+  display: flex;
+  margin-top: 12px;
+}
+:is(.result-mood, .shelf-mood, .now-mood):empty {
+  display: none;
 }
 .result-row > span {
   font-size: 13px;

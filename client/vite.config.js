@@ -11,7 +11,41 @@ import appConfig from './app.config.ts'
 const env = loadEnv('development', process.cwd(), '')
 
 export default defineConfig({
-  plugins: [ui({ ui: appConfig.ui, colorMode: false }), vue(), vueDevTools()],
+  plugins: [
+    ui({
+      colorMode: false,
+      // Nuxt UI's own colours, plus the five journal moods for the song mood
+      // tags (<UBadge color="sad">). Their shades are in assets/css/main.css.
+      theme: {
+        colors: [
+          'primary',
+          'secondary',
+          'success',
+          'info',
+          'warning',
+          'error',
+          'sad',
+          'happy',
+          'relaxed',
+          'anxious',
+          'angry',
+        ],
+      },
+      ui: {
+        ...appConfig.ui,
+        colors: {
+          ...appConfig.ui.colors,
+          sad: 'mood-sad',
+          happy: 'mood-happy',
+          relaxed: 'mood-relaxed',
+          anxious: 'mood-anxious',
+          angry: 'mood-angry',
+        },
+      },
+    }),
+    vue({ template: { transformAssetUrls: { includeAbsolute: false } } }),
+    vueDevTools(),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

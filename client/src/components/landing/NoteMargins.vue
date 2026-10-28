@@ -32,6 +32,9 @@ const lines = []
 const notes = []
 let audio
 let pointerShown = false
+// Where the lines become clear enough to see, set each frame. The mouse does
+// nothing above it, so hidden notes and lines can't be bumped or played.
+let shownFrom = Infinity
 
 // Browsers only allow sound after a click or tap, so the audio starts on the
 // first one anywhere on the page.
@@ -77,7 +80,14 @@ function pitchFor(line, y) {
 function setUp() {
   for (const side of [0, 1]) {
     LINE_SPOTS.forEach((spot, index) => {
-      const line = { side, spot, phase: Math.random() * Math.PI * 2, pluck: 0, pluckSpeed: 0, pluckY: 0 }
+      const line = {
+        side,
+        spot,
+        phase: Math.random() * Math.PI * 2,
+        pluck: 0,
+        pluckSpeed: 0,
+        pluckY: 0,
+      }
       lines.push(line)
       for (let n = 0; n < NOTES_PER_LINE; n += 1) {
         notes.push({
@@ -118,14 +128,24 @@ function layout() {
   const gutter = shell.getBoundingClientRect().left
   if (gutter < MIN_GUTTER) return null
   const top = Math.max(0, document.querySelector('header')?.getBoundingClientRect().bottom ?? 0)
-  const bottom = Math.min(height, document.querySelector('.site-footer')?.getBoundingClientRect().top ?? height)
+  const bottom = Math.min(
+    height,
+    document.querySelector('.site-footer')?.getBoundingClientRect().top ?? height,
+  )
   if (bottom <= top) return null
-  return { gutter, top, bottom }
+  // The lines start in the colour band under the hero and fade in across it,
+  // so nothing crowds the top of the page.
+  const band = document.querySelector('.pan-band')?.getBoundingClientRect()
+  const fadeFrom = band ? band.top + band.height * 0.3 : -Infinity
+  const fadeTo = band ? band.top + band.height * 0.7 : -Infinity
+  if (fadeFrom >= bottom) return null
+  return { gutter, top, bottom, fadeFrom, fadeTo }
 }
 
 function lineX(line, y, gutter) {
   const base = line.side ? width - gutter + line.spot * gutter : line.spot * gutter
-  const wave = Math.sin(y * 0.008 + clock * 0.6 + line.phase + window.scrollY * 0.002) * gutter * 0.06
+  const wave =
+    Math.sin(y * 0.008 + clock * 0.6 + line.phase + window.scrollY * 0.002) * gutter * 0.06
   const twang = line.pluck * Math.exp(-(((y - line.pluckY) / 90) ** 2))
   return base + wave + twang
 }
@@ -154,8 +174,13 @@ function step(dt) {
 function draw() {
   context.clearRect(0, 0, width, height)
   const area = layout()
-  if (!area) return
-  const { gutter, top, bottom } = area
+  if (!area) {
+    shownFrom = Infinity
+    return
+  }
+  const { gutter, bottom, fadeFrom, fadeTo } = area
+  const top = Math.max(area.top, fadeFrom)
+  shownFrom = Math.max(area.top, fadeFrom + (fadeTo - fadeFrom) * 0.35)
   const styles = getComputedStyle(canvas.value)
 
   context.save()
@@ -181,9 +206,11 @@ function draw() {
   context.textAlign = 'center'
   context.textBaseline = 'middle'
   for (const note of notes) {
-    const y = top + note.y * (bottom - top)
+    // Spaced over the whole screen, so they don't bunch up in the band.
+    const y = area.top + note.y * (bottom - area.top)
     note.x = lineX(note.line, y, gutter) + note.dx
     note.screenY = y + note.dy
+    note.shown = note.screenY >= shownFrom && note.screenY <= bottom
     context.save()
     context.translate(note.x, note.screenY)
     context.rotate(note.angle)
@@ -192,6 +219,16 @@ function draw() {
     context.font = `${note.size}px serif`
     context.fillText(note.glyph, 0, 0)
     context.restore()
+  }
+  // Fade the start of the lines in, over the band.
+  if (fadeTo > top) {
+    const fade = context.createLinearGradient(0, fadeFrom, 0, fadeTo)
+    fade.addColorStop(0, 'rgba(0,0,0,0)')
+    fade.addColorStop(1, 'rgba(0,0,0,1)')
+    context.globalCompositeOperation = 'destination-in'
+    context.globalAlpha = 1
+    context.fillStyle = fade
+    context.fillRect(0, top, width, bottom - top)
   }
   context.restore()
 }
@@ -209,7 +246,7 @@ function tick(time) {
 function onPointerMove(event) {
   const { clientX: px, clientY: py, movementX = 0 } = event
   for (const note of notes) {
-    if (note.x === undefined) continue
+    if (!note.shown) continue
     const ax = note.x - px
     const ay = note.screenY - py
     const distance = Math.hypot(ax, ay)
@@ -223,13 +260,15 @@ function onPointerMove(event) {
     }
   }
   // A pointer cursor over a note, so it's clear it can be clicked.
-  const overNote = notes.some((note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT)
+  const overNote = notes.some(
+    (note) => note.shown && Math.hypot(note.x - px, note.screenY - py) < HIT,
+  )
   if (overNote !== pointerShown) {
     document.documentElement.style.cursor = overNote ? 'pointer' : ''
     pointerShown = overNote
   }
   const area = layout()
-  if (!area || !movementX) return
+  if (!area || !movementX || py < shownFrom) return
   const now = performance.now()
   for (const line of lines) {
     if (Math.abs(lineX(line, py, area.gutter) - px) > 10) continue
@@ -249,15 +288,18 @@ function onPointerDown(event) {
   startAudio()
   const { clientX: px, clientY: py } = event
   const area = layout()
-  if (!area) return
-  const hit = notes.find((note) => note.x !== undefined && Math.hypot(note.x - px, note.screenY - py) < HIT)
+  if (!area || py < shownFrom) return
+  const hit = notes.find((note) => note.shown && Math.hypot(note.x - px, note.screenY - py) < HIT)
   if (hit) {
     hit.vy -= 500
     hit.vx += (Math.random() - 0.5) * 400
     hit.spin += (Math.random() < 0.5 ? -1 : 1) * 16
     hit.bump = 1
     // Waits a moment for the audio to start on the very first click.
-    window.setTimeout(() => playTone(pitchFor(hit.line, hit.screenY)), audio?.state === 'running' ? 0 : 60)
+    window.setTimeout(
+      () => playTone(pitchFor(hit.line, hit.screenY)),
+      audio?.state === 'running' ? 0 : 60,
+    )
     return
   }
   const line = lines.find((each) => Math.abs(lineX(each, py, area.gutter) - px) < 10)

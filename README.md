@@ -61,6 +61,7 @@ cp server/.env.example server/.env
 | `SESSION_SECRET` | From the team, or your own from `openssl rand -hex 32`. Either works. |
 | `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. The test account comes from `npm run db:seed` (section 5.3). |
 | `GROQ_API_KEY` | Your own API key from [Groq Console](https://console.groq.com/keys), for the journal idea helper. |
+| `DEEPL_API_KEY` | Optional. A free [DeepL API](https://www.deepl.com/pro-api) key, so `npm run analyse` can translate non-English lyrics before scoring them. Without it, those songs get a sound-only mood. Only needed if you run the analysis job yourself. |
 
 Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git. Ask for the shared values in a private message, never in a commit or a group chat.
 
