@@ -5,12 +5,16 @@
 // grey tag appears only when the mood didn't use the lyrics, saying why. Songs
 // still being analysed show a grey "Analysing…", and songs that can never get
 // a mood a grey "No mood data". Songs we know nothing about show nothing.
+// The mood opens the song's page, which explains it, unless `link` is false
+// (for tags inside another link or button, where a link isn't allowed).
 import { computed, toRef } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useTrackMood } from '@/composables/useTrackMoods'
 
 const props = defineProps({
   trackId: { type: String, default: '' },
   size: { type: String, default: 'md' },
+  link: { type: Boolean, default: true },
 })
 
 const tag = computed(useTrackMood(toRef(props, 'trackId')))
@@ -87,16 +91,23 @@ const details = computed(() => {
   <span v-if="reading || tag?.analysing || noMood" class="mood-tag-root">
     <template v-if="reading">
       <UTooltip :text="details">
-        <UBadge
-          :color="reading.axis || 'neutral'"
-          variant="subtle"
-          :size="size"
-          class="mood-tag"
-          :class="TEXT[reading.axis]"
+        <component
+          :is="link ? RouterLink : 'span'"
+          v-bind="link ? { to: `/song/${trackId}` } : {}"
+          class="mood-tag-link"
         >
-          <span class="mood-dot" :class="DOT[reading.axis]" aria-hidden="true" />
-          <span class="sr-only">Song mood: </span>{{ reading.name }}
-        </UBadge>
+          <UBadge
+            :color="reading.axis || 'neutral'"
+            variant="subtle"
+            :size="size"
+            class="mood-tag"
+            :class="TEXT[reading.axis]"
+          >
+            <span class="mood-dot" :class="DOT[reading.axis]" aria-hidden="true" />
+            <span class="sr-only">Song mood: </span>{{ reading.name
+            }}<span v-if="link" class="sr-only">, see why</span>
+          </UBadge>
+        </component>
       </UTooltip>
       <UTooltip v-if="lyricsNote" :text="lyricsNote.why">
         <UBadge color="neutral" variant="subtle" :size="size" class="mood-tag text-muted">
@@ -134,6 +145,21 @@ const details = computed(() => {
   flex-shrink: 0;
   max-width: 100%;
   white-space: nowrap;
+}
+.mood-tag-link {
+  display: inline-flex;
+  max-width: 100%;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+a.mood-tag-link:hover .mood-tag {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+a.mood-tag-link:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
 }
 .mood-dot {
   width: 0.5rem;

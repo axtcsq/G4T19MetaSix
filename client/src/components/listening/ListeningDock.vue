@@ -213,7 +213,7 @@ watch([dock, minimised], measure, { flush: 'post' })
               ? 'Back to your listening room ↗'
               : 'Spotify Premium needed to play ↗'
         }}</span
-        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" /></span></RouterLink
+        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" :link="false" /></span></RouterLink
       >
       <template v-if="canPlay">
         <button
