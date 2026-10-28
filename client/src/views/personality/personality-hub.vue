@@ -7,6 +7,7 @@ import SiteFooter from '@/components/layout/footer.vue'
 import PersonalityBreakdown from '@/components/personality/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/personality/ShareCardDialog.vue'
 import MoodMusicChart from '@/components/personality/MoodMusicChart.vue'
+import MusicMoodsCard from '@/components/personality/MusicMoodsCard.vue'
 import TraitBar from '@/components/personality/TraitBar.vue'
 import WaveBackground from '@/components/personality/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
@@ -461,6 +462,10 @@ onMounted(loadPage)
 
             <div v-if="moodMusic" class="pattern-card mood-card mt-8">
               <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
+            </div>
+
+            <div v-if="moodMusic?.musicMoods" class="pattern-card mood-card mt-8">
+              <MusicMoodsCard :data="moodMusic.musicMoods" />
             </div>
 
             <ShareCardDialog

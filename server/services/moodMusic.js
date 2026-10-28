@@ -1,5 +1,6 @@
 import Listen from "../models/Listen.js";
 import { MOODS, retrieveMoodLogs } from "../models/MoodLog.js";
+import { AXES, axesOf, strongestAxis } from "./mood/axes.js";
 
 // Day by day, how the user felt next to how happy their music sounded, for the
 // Mood × music chart on the Personality page.
@@ -37,6 +38,72 @@ async function happinessByDay(userId, dates) {
   return new Map(days.map((day) => [day._id, day]));
 }
 
+// Plays per music mood per day, for songs the mood analysis has read. The
+// lyrics reading is used unless the user turned it off, falling back to the
+// sound reading while a song's lyrics are pending.
+async function musicMoodsByDay(userId, dates, useLyrics) {
+  const reading = useLyrics
+    ? { $ifNull: ["$track.moods.lyrics.name", "$track.moods.sound.name"] }
+    : "$track.moods.sound.name";
+  return Listen.aggregate([
+    { $match: { userId, localDate: { $gte: dates[0], $lte: dates.at(-1) } } },
+    { $lookup: { from: "tracks", localField: "trackId", foreignField: "_id", as: "track" } },
+    { $unwind: "$track" },
+    { $match: { "track.moods.sound.name": { $type: "string" } } },
+    { $group: { _id: { date: "$localDate", mood: reading }, plays: { $sum: 1 } } },
+  ]);
+}
+
+const TOP_MOODS = 3;
+
+// The moods the user's music had over the two weeks: the music moods played
+// most, how the plays spread over the journal's five moods, and on how many
+// logged days the music's main mood matched the one they logged. null when no
+// played song has been analysed yet.
+export function summariseMusicMoods(rows, moods, useLyrics) {
+  const plays = rows.reduce((sum, row) => sum + row.plays, 0);
+  if (!plays) return null;
+
+  const byName = new Map();
+  const axes = Object.fromEntries(AXES.map((axis) => [axis, 0]));
+  const dayAxes = new Map();
+  for (const { _id, plays: count } of rows) {
+    byName.set(_id.mood, (byName.get(_id.mood) ?? 0) + count);
+    const day = dayAxes.get(_id.date) ?? Object.fromEntries(AXES.map((axis) => [axis, 0]));
+    for (const [axis, weight] of Object.entries(axesOf(_id.mood))) {
+      axes[axis] += weight * count;
+      day[axis] += weight * count;
+    }
+    dayAxes.set(_id.date, day);
+  }
+
+  const share = (count) => Math.round((count / plays) * 100);
+  const top = [...byName]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_MOODS)
+    .map(([name, count]) => ({ name, axis: strongestAxis(name), plays: count, share: share(count) }));
+
+  // A day counts when it has both a logged mood and analysed plays.
+  let comparedDays = 0;
+  let matchedDays = 0;
+  for (const [date, day] of dayAxes) {
+    const logged = moods.get(date);
+    if (!logged || !AXES.some((axis) => day[axis] > 0)) continue;
+    comparedDays += 1;
+    const main = AXES.reduce((best, axis) => (day[axis] > day[best] ? axis : best), AXES[0]);
+    if (main === logged.toLowerCase()) matchedDays += 1;
+  }
+
+  return {
+    lens: useLyrics ? "lyrics" : "sound",
+    plays,
+    top,
+    axes: AXES.map((axis) => ({ axis, share: share(axes[axis]) })).filter((entry) => entry.share > 0),
+    comparedDays,
+    matchedDays,
+  };
+}
+
 // The mood logged last on each day, since a later log is how the day ended up.
 async function moodByDay(userId, timezone) {
   const logs = await retrieveMoodLogs(userId);
@@ -53,9 +120,11 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 
 export async function moodMusic(user) {
   const dates = recentDates(user.timezone);
-  const [music, moods] = await Promise.all([
+  const useLyrics = user.preferences?.moodLens !== "sound";
+  const [music, moods, moodRows] = await Promise.all([
     happinessByDay(user._id, dates),
     moodByDay(user._id, user.timezone),
+    musicMoodsByDay(user._id, dates, useLyrics),
   ]);
 
   const days = dates.map((date) => ({
@@ -72,5 +141,5 @@ export async function moodMusic(user) {
     return { mood, days: matching.length, happiness: matching.length ? Math.round(total / matching.length) : null };
   }).filter((entry) => entry.days > 0);
 
-  return { days, byMood };
+  return { days, byMood, musicMoods: summariseMusicMoods(moodRows, moods, useLyrics) };
 }
