@@ -359,8 +359,9 @@ onMounted(loadEntries)
   background: var(--ui-bg);
 }
 
+/* The same width and edges as the other pages, so the title lines up. */
 .daily-mood-content {
-  width: min(820px, var(--page-width));
+  width: var(--page-width);
   margin-inline: auto;
   padding-block: var(--page-top) var(--page-bottom);
 }
