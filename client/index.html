@@ -5,7 +5,14 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
+    <meta name="color-scheme" content="light dark">
+    <script>
+      // Light unless the user turns on dark mode in their profile. Nuxt UI's
+      // colour mode would otherwise follow the system setting.
+      try {
+        if (!localStorage.getItem('vueuse-color-scheme')) localStorage.setItem('vueuse-color-scheme', 'light')
+      } catch {}
+    </script>
     <title>MetaFor</title>
   </head>
   <body>
