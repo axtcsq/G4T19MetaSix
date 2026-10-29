@@ -38,6 +38,9 @@ function toItem(listen, track, useLyrics) {
     moods: {
       sound: track?.moods?.sound ?? null,
       lyrics: useLyrics ? (track?.moods?.lyrics ?? null) : null,
+      lyricsLanguage: useLyrics && track?.lyrics?.status === "found"
+        ? track.lyrics.translatedFrom || "EN"
+        : null,
     },
   };
 }
@@ -74,7 +77,7 @@ export async function getListens(req, res) {
   const trackIds = [...new Set(page.map((listen) => listen.trackId))];
   const tracks = await Track.find(
     { _id: { $in: trackIds } },
-    { name: 1, artists: 1, album: 1, durationMs: 1, "moods.sound": 1, "moods.lyrics": 1 },
+    { name: 1, artists: 1, album: 1, durationMs: 1, "moods.sound": 1, "moods.lyrics": 1, "lyrics.status": 1, "lyrics.translatedFrom": 1 },
   ).lean();
   const tracksById = new Map(tracks.map((track) => [track._id, track]));
   const useLyrics = req.user.preferences?.moodLens !== "sound";
