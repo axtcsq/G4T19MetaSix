@@ -23,6 +23,8 @@ const isConnectingSpotify = ref(false)
 const recommendations = ref([])
 const recommendationsLoading = ref(false)
 const recommendationsError = ref('')
+const recommendationSearchOffset = ref(0)
+const shownRecommendationIds = new Set()
 let recommendationRequest = 0
 // The test account's plays come from our database, one month at a time.
 const storedHistory = usesStoredHistory()
@@ -253,7 +255,9 @@ async function loadRecommendations() {
     const picks = []
     let searchError = ''
     async function addSearchResults(searches) {
-      const results = await Promise.allSettled(searches.map(({ query }) => searchSpotify(query)))
+      const results = await Promise.allSettled(searches.map(({ query }) =>
+        searchSpotify(query, undefined, recommendationSearchOffset.value),
+      ))
       if (request !== recommendationRequest) return
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
@@ -261,7 +265,7 @@ async function loadRecommendations() {
           return
         }
         for (const track of result.value.tracks?.items || []) {
-          if (!track.id || listenedIds.has(track.id) || seenIds.has(track.id)) continue
+          if (!track.id || listenedIds.has(track.id) || seenIds.has(track.id) || shownRecommendationIds.has(track.id)) continue
           seenIds.add(track.id)
           picks.push({ ...track, recommendationSource: searches[index].label })
         }
@@ -273,6 +277,7 @@ async function loadRecommendations() {
     if (picks.length < 4) await addSearchResults(fallbackQueries)
     if (request !== recommendationRequest) return
     recommendations.value = picks.slice(0, 4)
+    recommendations.value.forEach((track) => shownRecommendationIds.add(track.id))
     if (!recommendations.value.length && searchError) recommendationsError.value = searchError
   } catch (error) {
     if (request === recommendationRequest) recommendationsError.value = error.message
@@ -281,7 +286,17 @@ async function loadRecommendations() {
   }
 }
 
-watch([songMoodTrend, recommendationArtists, recommendationLanguage], loadRecommendations)
+function refreshRecommendations() {
+  if (recommendationsLoading.value) return
+  recommendationSearchOffset.value = (recommendationSearchOffset.value + 10) % 1000
+  loadRecommendations()
+}
+
+watch([songMoodTrend, recommendationArtists, recommendationLanguage], () => {
+  recommendationSearchOffset.value = 0
+  shownRecommendationIds.clear()
+  loadRecommendations()
+})
 onMounted(loadData)
 </script>
 
@@ -340,7 +355,18 @@ onMounted(loadData)
               </div>
               <p v-else class="recommendation-personalization">We’ll search across mood-matched styles, including instrumental music, since no frequent artists are available for this month.</p>
             </div>
-            <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
+            <div class="recommendation-actions">
+              <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
+              <button
+                v-if="recommendationTarget && hasSpotifySession()"
+                type="button"
+                class="refresh-recommendations glass-secondary"
+                :disabled="recommendationsLoading"
+                @click="refreshRecommendations"
+              >
+                {{ recommendationsLoading ? 'Refreshing…' : 'Refresh songs' }}
+              </button>
+            </div>
           </div>
           <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
           <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
@@ -477,6 +503,9 @@ onMounted(loadData)
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: .94rem; }
+.recommendation-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.refresh-recommendations { min-height: 34px !important; padding: 5px 11px !important; font-size: .72rem !important; }
+.refresh-recommendations:disabled { opacity: .65; cursor: wait; }
 .recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .74rem; }
 .fallback-explainer { flex-basis: 100%; }
 .artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
@@ -588,7 +617,8 @@ onMounted(loadData)
   .day-detail-column { padding: 13px; }
   .recommendation-panel { padding: 16px; }
   .recommendation-heading { display: block; }
-  .recommendation-mood { display: inline-flex; margin-top: 10px; }
+  .recommendation-actions { margin-top: 10px; }
+  .recommendation-mood { display: inline-flex; }
   .recommendation-list { grid-template-columns: 1fr; }
 }
 </style>
