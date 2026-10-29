@@ -98,7 +98,7 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
       <div class="burst" aria-hidden="true">
         <span v-for="index in 8" :key="index" :style="{ '--angle': `${index * 45}deg` }">{{ index % 2 ? '♪' : '♫' }}</span>
       </div>
-      <ButterflyMark class="merged-mark" :size="120" />
+      <ButterflyMark class="merged-mark" :size="84" />
       <p class="merged-text">Your music + your words = <strong>MetaFor</strong></p>
     </div>
 
@@ -110,22 +110,22 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
 <style scoped>
 .music-journal {
   display: flex;
-  min-height: 245px;
+  min-height: 170px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding-block: 24px 56px;
+  gap: 6px;
+  padding-block: 8px 32px;
 }
 .pair {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   width: 100%;
-  max-width: 720px;
+  max-width: 460px;
   user-select: none;
   align-items: center;
   justify-items: center;
-  gap: clamp(24px, 5vw, 64px);
+  gap: clamp(16px, 3vw, 36px);
 }
 .tile {
   position: relative;
@@ -147,18 +147,18 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
     opacity 400ms ease-in;
 }
 .spotify-image {
-  width: clamp(130px, 18vw, 190px);
-  height: clamp(130px, 18vw, 190px);
+  width: clamp(90px, 11vw, 120px);
+  height: clamp(90px, 11vw, 120px);
 }
 .plus-sign {
   color: var(--ui-text);
-  width: clamp(28px, 4vw, 44px);
+  width: clamp(22px, 2.5vw, 30px);
   height: auto;
 }
 .journal-image {
-  width: clamp(190px, 28vw, 300px);
+  width: clamp(130px, 17vw, 190px);
   max-width: 100%;
-  height: clamp(170px, 22vw, 230px);
+  height: clamp(115px, 14vw, 150px);
 }
 /* A little squash as the tile lands in it. */
 .journal-image.is-catching {
@@ -168,7 +168,7 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
 .merged {
   position: relative;
   display: flex;
-  min-height: clamp(170px, 22vw, 230px);
+  min-height: clamp(115px, 14vw, 150px);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -250,21 +250,21 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
 
 @media (max-width: 768px) {
   .music-journal {
-    min-height: 185px;
+    min-height: 140px;
   }
   .pair {
     gap: 18px;
   }
   .spotify-image {
-    width: min(27vw, 150px);
-    height: min(27vw, 150px);
+    width: min(22vw, 100px);
+    height: min(22vw, 100px);
   }
   .plus-sign {
     width: 28px;
   }
   .journal-image {
-    width: min(46vw, 235px);
-    height: min(38vw, 190px);
+    width: min(36vw, 160px);
+    height: min(30vw, 130px);
   }
 }
 
