@@ -7,7 +7,8 @@ import MoodTag from '@/components/mood/MoodTag.vue'
 import TodayStory from '@/components/dashboard/TodayStory.vue'
 import MoodMusicChart from '@/components/dashboard/MoodMusicChart.vue'
 import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
-import { getMoodMusic } from '@/api/quiz'
+import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
+import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
@@ -28,6 +29,27 @@ const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 // The last two weeks of logged moods and music moods, for the mood insights.
 const moodMusic = ref(null)
+const genreMix = ref(null)
+const genreError = ref(false)
+watch(
+  () => auth.user?.id,
+  async (id, _, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
+    })
+    genreMix.value = null
+    genreError.value = false
+    if (!id) return
+    try {
+      const result = await getGenreMix()
+      if (active) genreMix.value = result
+    } catch {
+      if (active) genreError.value = true
+    }
+  },
+  { immediate: true },
+)
 const moodMusicError = ref(false)
 onMounted(() => {
   spotify.initialize()
@@ -79,13 +101,17 @@ watch(
       <TodayStory v-if="auth.user" />
       <p v-if="!connected">
         Connect Spotify to see your music at a glance.
-        <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">Connect Spotify</button>
+        <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">
+          Connect Spotify
+        </button>
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
       <p v-if="historyLoading" role="status">Loading your listening history…</p>
       <p v-else-if="historyError" role="alert">
         {{ historyError }}
-        <button class="art-pause glass-secondary" @click="spotify.refreshHistory">Retry history</button>
+        <button class="art-pause glass-secondary" @click="spotify.refreshHistory">
+          Retry history
+        </button>
       </p>
       <template v-if="connected && !historyLoading && !historyError">
         <p v-if="!data.plays">
@@ -134,7 +160,9 @@ watch(
         <!-- Two wide rows: how the music sounded next to the logged moods, then
              the moods the analysis heard. Always the last 14 days. -->
         <section class="restored-charts mood-insights" aria-label="Mood insights">
-          <p v-if="moodMusicError" class="unavailable-note">Your mood insights couldn’t load right now.</p>
+          <p v-if="moodMusicError" class="unavailable-note">
+            Your mood insights couldn’t load right now.
+          </p>
           <template v-else-if="moodMusic">
             <article class="chart-panel">
               <MoodMusicChart :data="moodMusic" />
@@ -142,8 +170,8 @@ watch(
             <article class="chart-panel">
               <MusicMoodsCard v-if="moodMusic.musicMoods" :data="moodMusic.musicMoods" />
               <p v-else class="unavailable-note">
-                Your songs’ moods show here once MetaFor has listened to them, usually within a
-                few minutes of a sync.
+                Your songs’ moods show here once MetaFor has listened to them, usually within a few
+                minutes of a sync.
               </p>
             </article>
           </template>
@@ -258,11 +286,13 @@ watch(
           <article class="chart-panel">
             <div class="panel-heading">
               <h3>Genre Mix</h3>
-              <span>Unavailable</span>
+              <span>Last 30 days</span>
             </div>
-            <p class="unavailable-note">
-              Genre labels are not included in your connected listening history, so there are no
-              genre shares to display.
+            <GenreMixChart v-if="genreMix" :data="genreMix" />
+            <p v-else class="unavailable-note" :role="genreError ? 'alert' : 'status'">
+              {{
+                genreError ? 'Genre mix could not load. Reload to try again.' : 'Loading genre mix…'
+              }}
             </p>
           </article>
           <article class="chart-panel">
