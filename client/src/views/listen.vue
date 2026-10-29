@@ -23,6 +23,7 @@ const {
   duration,
   volume,
   accent,
+  buttonAccent,
   results,
   query,
   searching,
@@ -75,7 +76,7 @@ onBeforeUnmount(() => {
 <template>
   <main
     class="listening-room"
-    :style="{ '--record-color': accent }"
+    :style="{ '--record-color': accent, '--button-color': buttonAccent }"
   >
     <div class="room-inner">
       <header class="room-heading">
@@ -552,29 +553,57 @@ button:disabled {
   isolation: isolate;
   margin: 0 0 28px;
 }
-.album-sleeve.is-playing::before {
+.album-sleeve::before,
+.album-sleeve::after {
   content: '';
   position: absolute;
   z-index: -1;
+  opacity: 0;
+  transition:
+    opacity 650ms ease,
+    filter 650ms ease,
+    transform 650ms ease;
+  pointer-events: none;
+}
+.album-sleeve::before {
   inset: -22px;
   background-image: var(--cover-art);
   background-size: cover;
-  filter: blur(42px) saturate(2.1);
-  opacity: 0.82;
+  filter: blur(46px) saturate(1.6);
   transform: translateY(16px) scale(1.04);
   border-radius: 24px;
 }
-.album-sleeve.is-playing::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
+.album-sleeve::after {
   inset: -32px;
   background:
-    radial-gradient(ellipse at 24% 25%, color-mix(in srgb, var(--record-color) 88%, white), transparent 58%),
-    radial-gradient(ellipse at 76% 78%, color-mix(in srgb, var(--record-color) 76%, #6846a5), transparent 62%);
-  filter: blur(30px) saturate(1.6);
-  opacity: 0.9;
+    radial-gradient(ellipse at 24% 25%, color-mix(in srgb, var(--record-color) 72%, white), transparent 58%),
+    radial-gradient(ellipse at 76% 78%, color-mix(in srgb, var(--record-color) 60%, #6846a5), transparent 62%);
+  filter: blur(36px) saturate(1.35);
   border-radius: 32px;
+}
+.album-sleeve.is-playing::before {
+  opacity: 0.72;
+  animation: album-cover-glow 3s ease-in-out infinite alternate;
+}
+.album-sleeve.is-playing::after {
+  opacity: 0.62;
+  animation: album-colour-glow 12s linear infinite;
+}
+@keyframes album-cover-glow {
+  from {
+    transform: translateY(16px) scale(1.02);
+  }
+  to {
+    transform: translateY(12px) scale(1.045);
+  }
+}
+@keyframes album-colour-glow {
+  from {
+    transform: rotate(0deg) scale(1.02);
+  }
+  to {
+    transform: rotate(360deg) scale(1.02);
+  }
 }
 .album-sleeve img {
   width: 100%;
@@ -635,11 +664,17 @@ button:disabled {
 }
 .transport-buttons .play-button {
   --button-ink: #fff;
-  --button-top: var(--color-brand-400);
-  --button-base: var(--room-dark);
   width: 56px !important;
   height: 56px !important;
   min-width: 56px !important;
+}
+.transport-buttons .glass-icon {
+  --button-ink: #fff;
+  --button-top: color-mix(in srgb, var(--button-color) 84%, white);
+  --button-base: var(--button-color);
+  transition:
+    background-color 450ms ease,
+    transform 160ms ease;
 }
 .transport-buttons button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--room-dark) 12%, var(--room-paper));
@@ -824,18 +859,23 @@ input:disabled {
   align-items: center;
   gap: 12px;
   padding: 6px 8px 6px 20px;
-  border: 1px solid color-mix(in srgb, var(--room-ink) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--button-color) 46%, var(--room-paper));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--room-paper) 88%, var(--room-ground));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent);
+  background: color-mix(in srgb, var(--button-color) 14%, var(--room-paper));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent),
+    0 3px 10px color-mix(in srgb, var(--button-color) 12%, transparent);
   margin-bottom: 28px;
   transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+    background-color 450ms ease,
+    border-color 450ms ease,
+    box-shadow 450ms ease;
 }
 .search-form:focus-within {
-  border-color: var(--room-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room-focus) 12%, transparent);
+  border-color: var(--button-color);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--button-color) 20%, transparent),
+    0 3px 10px color-mix(in srgb, var(--button-color) 16%, transparent);
 }
 .search-form > svg {
   width: 20px;
@@ -872,6 +912,9 @@ input:disabled {
   opacity: 0;
 }
 .search-button {
+  --button-ink: #fff;
+  --button-top: color-mix(in srgb, var(--button-color) 84%, white);
+  --button-base: var(--button-color);
   flex-shrink: 0;
   min-width: 88px;
 }
