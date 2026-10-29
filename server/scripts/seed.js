@@ -52,7 +52,7 @@ const MOOD_OF_LABEL = { sad: "Sad", happy: "Happy", calm: "Relaxed", angry: "Ang
 const ANXIOUS_ON_EXAM_DAYS = 0.35;
 // How often the entry's mood ignores the music, as real moods do.
 const OFF_MUSIC_MOOD = 0.15;
-const JOURNAL_MOODS = ["Happy", "Relaxed", "Sad", "Anxious", "Angry"];
+const JOURNAL_MOODS = ["Happy", "Relaxed", "Sad", "Anxious", "Angry", "Excited", "Tired", "Lonely"];
 
 const ENTRIES = {
   Happy: [
@@ -94,6 +94,21 @@ const ENTRIES = {
     "Lost a whole page of notes when my laptop crashed.",
     "Everything that could go wrong today went wrong.",
     "Needed loud music on the way home to blow off steam.",
+  ],
+  Excited: [
+    "Got good news today and spent the whole afternoon grinning.",
+    "The weekend plans are finally set. I can hardly wait.",
+    "Everything clicked in class and I left feeling full of energy.",
+  ],
+  Tired: [
+    "Long day. I made some tea and let myself rest.",
+    "I feel worn out, so tonight is for an early sleep.",
+    "A lot happened today. Taking things slowly now.",
+  ],
+  Lonely: [
+    "I missed my friends today and wished we could have talked.",
+    "The evening felt quiet. Familiar music kept me company.",
+    "I felt a little disconnected, even around other people.",
   ],
 };
 

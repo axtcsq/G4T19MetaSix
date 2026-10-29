@@ -4,18 +4,17 @@ import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
-import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
+import PastEntries from '@/components/journal/PastEntries.vue'
 
 const showHistory = ref(false)
 const showDrawing = ref(false)
 const saveStatus = ref('')
 
-const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
+const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry', 'Excited', 'Tired', 'Lonely']
 const selectedMood = ref(null)
 const journalEntry = ref('')
 const drawingData = ref(null)
-const helperAvailable = ref(false)
 const helperOpen = ref(false)
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
@@ -120,14 +119,6 @@ function insertJournalIdea() {
   ideaStatus.value = 'Added to journal.'
 }
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-SG', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
 onMounted(loadEntries)
 </script>
 
@@ -136,7 +127,7 @@ onMounted(loadEntries)
     <main class="daily-mood-content flex-1">
       <header class="journal-header">
         <div>
-          <h1 class="page-title">{{ showHistory ? 'Past entries' : 'Today’s journal' }}</h1>
+          <h1 class="page-title">{{ showHistory ? 'Past Entries' : 'Today’s Journal' }}</h1>
           <p class="body-text mt-2 text-muted">
             {{
               showHistory
@@ -156,7 +147,7 @@ onMounted(loadEntries)
             <circle cx="12" cy="12" r="9" />
             <path d="M12 6v6l4 2" />
           </svg>
-          {{ showHistory ? 'Back to writing' : 'Past entries' }}
+          {{ showHistory ? 'Back to Writing' : 'Past Entries' }}
         </button>
       </header>
       <div class="journal-layout">
@@ -196,7 +187,6 @@ onMounted(loadEntries)
                 aria-describedby="journal-help"
                 class="notebook-field mt-4 w-full resize-none"
                 :ui="{ base: 'notebook-input w-full resize-none' }"
-                @focus="helperAvailable = true"
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
@@ -204,7 +194,7 @@ onMounted(loadEntries)
               </p>
             </div>
           </form>
-          <div v-if="helperAvailable || journalEntry" class="helper-widget">
+          <div class="helper-widget">
             <UPopover
               v-model:open="helperOpen"
               :content="{ side: 'top', align: 'end', sideOffset: 12 }"
@@ -224,122 +214,84 @@ onMounted(loadEntries)
               </button>
               <template #content>
                 <section class="helper-popover" aria-labelledby="helper-title">
-                  <video
-                    v-if="!reduceMotion"
-                    class="helper-liquid"
-                    src="/videos/banner-sunset.mp4"
-                    poster="/videos/banner-sunset.jpg"
-                    autoplay
-                    muted
-                    loop
-                    playsinline
-                    aria-hidden="true"
-                  />
-                  <header class="helper-header">
-                    <h2 id="helper-title">MetaFor Helper</h2>
-                    <button
-                      type="button"
-                      class="helper-close glass-icon"
-                      aria-label="Close MetaFor Helper"
-                      @click="helperOpen = false"
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="m6 6 12 12M6 18 18 6" />
-                      </svg>
-                    </button>
-                  </header>
-                  <form @submit.prevent="createJournalIdea">
-                    <label class="sr-only" for="journal-idea-prompt"
-                      >What would you like to reflect on?</label
-                    >
-                    <textarea
-                      id="journal-idea-prompt"
-                      v-model="ideaPrompt"
-                      maxlength="800"
-                      rows="3"
-                      class="journal-idea-prompt"
-                      placeholder="What would you like to reflect on?"
-                      :disabled="isGeneratingIdea"
-                      @input="clearJournalIdea"
+                  <div class="helper-backdrop" aria-hidden="true">
+                    <video
+                      v-if="!reduceMotion"
+                      class="helper-liquid"
+                      src="/videos/banner-sunset.mp4"
+                      poster="/videos/banner-sunset.jpg"
+                      autoplay
+                      muted
+                      loop
+                      playsinline
                     />
-                    <UButton
-                      type="submit"
-                      class="glass-action mt-3"
-                      :disabled="!ideaPrompt.trim() || isGeneratingIdea"
-                      :loading="isGeneratingIdea"
-                      >{{ isGeneratingIdea ? 'Thinking…' : 'Find a starting point' }}</UButton
-                    >
-                  </form>
-                  <div v-if="journalIdea" class="helper-result">
-                    <p class="body-text">{{ journalIdea }}</p>
-                    <UButton type="button" variant="outline" class="mt-3" @click="insertJournalIdea"
-                      >Add to my entry</UButton
-                    >
+                    <div class="helper-liquid-scrim"></div>
                   </div>
-                  <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
-                    {{ ideaError }}
-                  </p>
-                  <p v-if="ideaStatus" role="status" class="sr-only">{{ ideaStatus }}</p>
-                  <p class="helper-privacy">Only this prompt is sent to Groq AI when you ask.</p>
+                  <div class="helper-content">
+                    <header class="helper-header">
+                      <h2 id="helper-title">MetaFor Helper</h2>
+                      <button
+                        type="button"
+                        class="helper-close glass-icon"
+                        aria-label="Close MetaFor Helper"
+                        @click="helperOpen = false"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="m6 6 12 12M6 18 18 6" />
+                        </svg>
+                      </button>
+                    </header>
+                    <form @submit.prevent="createJournalIdea">
+                      <label class="sr-only" for="journal-idea-prompt"
+                        >What would you like to reflect on?</label
+                      >
+                      <textarea
+                        id="journal-idea-prompt"
+                        v-model="ideaPrompt"
+                        maxlength="800"
+                        rows="3"
+                        class="journal-idea-prompt"
+                        placeholder="What would you like to reflect on?"
+                        :disabled="isGeneratingIdea"
+                        @input="clearJournalIdea"
+                      />
+                      <UButton
+                        type="submit"
+                        class="glass-action mt-3"
+                        :disabled="!ideaPrompt.trim() || isGeneratingIdea"
+                        :loading="isGeneratingIdea"
+                        >{{ isGeneratingIdea ? 'Thinking…' : 'Find a Starting Point' }}</UButton
+                      >
+                    </form>
+                    <div v-if="journalIdea" class="helper-result">
+                      <p class="body-text">{{ journalIdea }}</p>
+                      <UButton
+                        type="button"
+                        variant="outline"
+                        class="mt-3"
+                        @click="insertJournalIdea"
+                        >Add to My Entry</UButton
+                      >
+                    </div>
+                    <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
+                      {{ ideaError }}
+                    </p>
+                    <p v-if="ideaStatus" role="status" class="sr-only">{{ ideaStatus }}</p>
+                    <p class="helper-privacy">Only this prompt is sent to Groq AI when you ask.</p>
+                  </div>
                 </section>
               </template>
             </UPopover>
           </div>
         </section>
 
-        <section v-show="showHistory" id="past-entries" aria-label="Past entries">
-          <div class="journal-history">
-            <p
-              v-if="isLoading"
-              role="status"
-              aria-live="polite"
-              class="py-10 text-center text-sm text-muted"
-            >
-              Loading your entries...
-            </p>
-
-            <div v-else-if="loadError" role="alert" class="py-8 text-center">
-              <p class="text-sm text-error">{{ loadError }}</p>
-              <UButton
-                type="button"
-                color="primary"
-                class="glass-action mt-4 rounded-full font-sans"
-                @click="loadEntries"
-              >
-                Try again
-              </UButton>
-            </div>
-
-            <div v-else-if="logs.length === 0" class="py-10 text-center">
-              <p class="font-sans text-sm text-muted">
-                No entries yet. Choose “Back to writing” to make your first entry.
-              </p>
-            </div>
-
-            <div v-else class="history-list">
-              <article v-for="log in logs" :key="log._id" class="journal-entry">
-                <div
-                  class="entry-sheet notebook-page"
-                  :class="{ 'has-drawing': log.drawing?.items?.length }"
-                >
-                  <header class="entry-metadata">
-                    <time :datetime="log.createdAt">{{ formatDate(log.createdAt) }}</time>
-                    <span class="entry-emotion">
-                      <MoodFace :mood="log.mood" class="emotion-sketch" />
-                      {{ log.mood }}
-                    </span>
-                  </header>
-                  <p>{{ log.journal || 'No written reflection.' }}</p>
-                  <JournalDrawingNote
-                    v-if="log.drawing?.items?.length"
-                    :drawing="log.drawing"
-                    :label="'Drawing from ' + formatDate(log.createdAt)"
-                  />
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
+        <PastEntries
+          v-show="showHistory"
+          :entries="logs"
+          :is-loading="isLoading"
+          :load-error="loadError"
+          @retry="loadEntries"
+        />
       </div>
 
       <div v-show="!showHistory" class="writing-extras">
@@ -351,7 +303,7 @@ onMounted(loadEntries)
         >
           <summary>
             <span class="disclosure-text">
-              <span id="journal-canvas-heading" class="section-title">Add a drawing</span>
+              <span id="journal-canvas-heading" class="section-title">Add a Drawing</span>
               <span class="body-text text-muted">Can't describe your thoughts? Draw it.</span>
             </span>
             <span class="disclosure-optional">Optional</span>
@@ -372,7 +324,7 @@ onMounted(loadEntries)
             :disabled="!canSave"
             :loading="isSaving"
           >
-            Save entry
+            Save Entry
           </UButton>
         </div>
         <p v-if="saveStatus" role="status" class="mt-4">{{ saveStatus }}</p>
@@ -562,6 +514,15 @@ onMounted(loadEntries)
 .mood-option--angry {
   --mood-color: #d94a45;
 }
+.mood-option--excited {
+  --mood-color: var(--color-mood-excited-500);
+}
+.mood-option--tired {
+  --mood-color: var(--color-mood-tired-500);
+}
+.mood-option--lonely {
+  --mood-color: var(--color-mood-lonely-500);
+}
 
 .mood-option:hover,
 .mood-option:focus-visible,
@@ -591,14 +552,6 @@ onMounted(loadEntries)
   box-shadow: 0 0 0 2px #fff;
 }
 
-.history-list {
-  display: grid;
-  gap: 32px;
-}
-.journal-entry {
-  min-width: 0;
-}
-
 .journal-column {
   position: relative;
 }
@@ -616,12 +569,21 @@ onMounted(loadEntries)
   background: var(--ui-bg-elevated);
   color: #ed8a35;
   border: 1px solid var(--ui-border);
-  box-shadow: none;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--color-peach) 62%, transparent),
+    0 0 16px color-mix(in srgb, var(--color-peach) 68%, transparent),
+    0 3px 10px color-mix(in srgb, var(--color-brand-700) 16%, transparent);
   cursor: pointer;
-  transition: transform 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 .helper-launcher:hover {
   transform: translateY(-2px);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-peach) 74%, transparent),
+    0 0 22px color-mix(in srgb, var(--color-peach) 84%, transparent),
+    0 5px 14px color-mix(in srgb, var(--color-brand-700) 20%, transparent);
 }
 .helper-launcher img {
   width: 100%;
@@ -636,33 +598,37 @@ onMounted(loadEntries)
 }
 .helper-popover {
   position: relative;
-  isolation: isolate;
   overflow: hidden;
   width: min(340px, calc(100vw - 32px));
   padding: 20px;
   color: #fff;
-  background: #654ed8 url('/videos/banner-sunset.jpg') center / cover;
+  background: #654ed8;
   border-radius: 16px;
   font-family: var(--font-sans);
 }
-.helper-liquid,
-.helper-popover::before {
+.helper-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #654ed8 url('/videos/banner-sunset.jpg') center / cover;
+}
+.helper-liquid {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
-  z-index: -2;
-}
-.helper-liquid {
   object-fit: cover;
 }
-.helper-popover::before {
-  content: '';
-  z-index: -1;
+.helper-liquid-scrim {
+  position: absolute;
+  inset: 0;
   background:
     radial-gradient(ellipse 58% 66% at 82% 18%, rgba(189, 135, 255, 0.38), transparent 100%),
     linear-gradient(115deg, rgba(51, 37, 139, 0.7), rgba(90, 52, 164, 0.6));
+}
+.helper-content {
+  position: relative;
+  z-index: 1;
 }
 .helper-header {
   display: flex;
@@ -719,61 +685,12 @@ onMounted(loadEntries)
   font: 12px/1.5 var(--font-sans);
   color: #fff;
 }
-.entry-sheet {
-  position: relative;
-}
-.entry-sheet > p {
-  margin: 0;
-}
-.entry-metadata {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 20px;
-  margin-bottom: 36px;
-  color: #313c50;
-  font: 400 22px/36px var(--font-journal);
-  white-space: normal;
-}
-.entry-emotion {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.emotion-sketch {
-  width: 36px;
-  height: 36px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transform: rotate(-5deg);
-}
-@media (max-width: 600px) {
-  .entry-metadata {
-    font-size: 20px;
-    gap: 4px 12px;
-  }
-  .emotion-sketch {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-.entry-sheet.has-drawing {
-  padding-bottom: 288px;
-  min-height: 420px;
-}
 @media (prefers-reduced-motion: reduce) {
   .helper-launcher {
     transition: none;
   }
 }
-.notebook-field :deep(textarea),
-.notebook-page {
+.notebook-field :deep(textarea) {
   --notebook-line-height: 36px;
   min-height: 300px;
   padding: 18px 24px 18px 48px;
@@ -828,13 +745,6 @@ onMounted(loadEntries)
     cursor: text;
   }
 }
-.notebook-page {
-  min-height: 144px;
-  margin: 0;
-  white-space: pre-wrap;
-  cursor: auto;
-}
-
 @media (max-width: 600px) {
   .daily-mood-page {
     min-height: calc(100vh - 66px);
