@@ -214,27 +214,31 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <div class="timeline">
-          <AmbientWave
-            :key="track.id"
-            :playing="spinning"
-            :cover="cover"
-            :tempo="trackMood?.tempo"
-          />
           <div class="seek-control">
             <span>{{ formatTime(position) }}</span
-            ><label class="sr-only" for="playback-position">Playback position</label
-            ><input
-              id="playback-position"
-              type="range"
-              min="0"
-              :max="duration || 1"
-              step="1000"
-              :value="position"
-              :style="{ '--fill': progress }"
-              :aria-valuetext="formatTime(position)"
-              :disabled="!connected || !ready || busy"
-              @change="room.seek($event.target.value)"
-            /><span>{{ formatTime(duration) }}</span>
+            ><label class="sr-only" for="playback-position">Playback position</label>
+            <div class="seek-slider">
+              <AmbientWave
+                :key="track.id"
+                :playing="spinning"
+                :cover="cover"
+                :tempo="trackMood?.tempo"
+                :progress="duration ? (position / duration) * 100 : 0"
+              />
+              <input
+                id="playback-position"
+                type="range"
+                min="0"
+                :max="duration || 1"
+                step="1000"
+                :value="position"
+                :style="{ '--fill': progress }"
+                :aria-valuetext="formatTime(position)"
+                :disabled="!connected || !ready || busy"
+                @change="room.seek($event.target.value)"
+              />
+            </div>
+            <span>{{ formatTime(duration) }}</span>
           </div>
         </div>
         <div class="volume-control">
@@ -656,6 +660,37 @@ button:disabled {
 }
 .seek-control > span {
   min-width: 32px;
+}
+.seek-slider {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+.seek-slider .ambient-wave {
+  position: absolute;
+  inset: 50% 0 auto;
+  transform: translateY(-50%);
+}
+.seek-slider input {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+.seek-control .seek-slider input::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.seek-control .seek-slider input::-moz-range-track,
+.seek-control .seek-slider input::-moz-range-progress {
+  background: transparent;
+}
+@media (forced-colors: active) {
+  .seek-slider input {
+    appearance: auto;
+  }
+  .seek-slider input::-webkit-slider-runnable-track,
+  .seek-slider input::-moz-range-track {
+    background: CanvasText;
+  }
 }
 .volume-control {
   display: grid;
