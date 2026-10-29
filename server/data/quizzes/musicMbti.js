@@ -71,6 +71,8 @@ export const musicMbti = {
   id: "music-mbti",
   title: "Music MBTI",
   description: "The classic MBTI, answered through how you listen.",
+  // Every result, for the list on the Personality page.
+  outcomes: Object.entries(TYPES).map(([code, type]) => ({ name: code, tag: type.name, meaning: type.meaning })),
   dimensions: ["E", "I", "S", "N", "T", "F", "J", "P"],
   questions: [
     {

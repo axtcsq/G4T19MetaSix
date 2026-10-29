@@ -20,6 +20,8 @@ No client settings are needed. The server needs `SPOTIFY_CLIENT_ID`, `SPOTIFY_CL
 
 ## Data contract
 
+The app's `GET /api/tracks/moods?ids=...` and `POST /api/tracks/moods/sound` responses include optional `moods[id].tempo` in BPM for analyzed tracks with a finite positive stored tempo. It is omitted when unavailable. This reuses the existing stored audio features and mood cache; the visualizer does not request Spotify audio analysis or capture audio. Bell curves use a four-beat swell cycle at the supplied BPM, with a fixed fallback pace when missing. This matches tempo, not beat positions or tempo changes within a recording.
+
 | Operation | Contract |
 | --- | --- |
 | Access token | `GET /api/spotify/token` → `{ accessToken, expiresAt }`; 401 when logged out, 403 when Spotify access must be granted again |

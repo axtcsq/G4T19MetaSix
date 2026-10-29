@@ -4,6 +4,9 @@ import { readMoods } from "./mood.js";
 // stored features and lyrics.
 export const MOOD_VERSION = 1;
 
+// How many times the analysis job tries a song before giving up on it.
+export const MAX_ATTEMPTS = 3;
+
 // The tracks.moods shape for a song: two readings that are never mixed.
 // moods.lyrics is null while the lyrics have failed temporarily.
 export function trackMoods(features, lyrics = null) {

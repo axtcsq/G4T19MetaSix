@@ -71,8 +71,14 @@ function updateArtwork(next) {
   }
   image.src = next.album?.images?.[0]?.url || ''
 }
+// Spotify plays on one device at a time. When the same account starts playing
+// on a phone or in the Spotify app, this browser stops being the active
+// player and its state comes back empty.
+const MOVED_AWAY =
+  'Spotify moved playback to another device, like your phone or the Spotify app. Press play to bring it back here.'
 function applyState(state) {
   if (!state) {
+    if (!paused.value && track.value.id) error.value = MOVED_AWAY
     paused.value = true
     return
   }
@@ -123,7 +129,11 @@ async function connectPlayer() {
     player.addListener(event, ({ message }) => {
       if (version !== connectVersion) return
       error.value =
-        event === 'account_error' ? 'Spotify Premium is required to listen here.' : message
+        event === 'account_error'
+          ? 'Spotify Premium is required to listen here.'
+          : event === 'playback_error'
+            ? `${message || 'Spotify could not play this track.'} If songs skip or stop after a few seconds, try the same song in Spotify Web Player and check your browser allows protected content. Try disabling privacy or ad-blocking extensions for this site, then reconnect the player.`
+            : message
     })
   }
   player.addListener('autoplay_failed', () => {

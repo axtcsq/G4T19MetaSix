@@ -1,13 +1,16 @@
 <script setup>
-// A temporary profile page: who is logged in, their MetaFor personality and a
-// few listening facts. Editing the profile and settings come later.
-import { computed, onMounted, ref } from 'vue'
+// The profile page: who is logged in, their MetaFor personality, a few
+// listening facts and the privacy settings. Editing the profile comes later.
+import { computed, onMounted, reactive, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import { updateSettings } from '@/api/auth'
 import { getPersonality } from '@/api/quiz'
 import { useAuthStore } from '@/stores/auth'
 import { useLogOut } from '@/composables/useLogOut'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
+// Nuxt UI's colour mode, which sets the .dark class on <html> and remembers the choice.
+import { useColorMode } from '#imports'
 defineOptions({ name: 'ProfilePage' })
 
 const auth = useAuthStore()
@@ -31,6 +34,7 @@ onMounted(async () => {
 const spotifyStatus = computed(() => {
   if (user.value?.isDemo) return 'Test account, not connected to Spotify'
   if (!user.value?.spotifyLinked) return 'Log in with Spotify again to reconnect'
+  if (user.value.preferences?.savePlays === false) return 'Connected, not saving new plays'
   return user.value.tracking?.status === 'active' ? 'Connected, saving your plays' : 'Connected'
 })
 
@@ -51,6 +55,59 @@ const listeningFacts = computed(() => {
     ['Repeat listens', stats.repeatListens === null || stats.repeatListens === undefined ? null : `${stats.repeatListens}%`],
   ].filter(([, value]) => value)
 })
+
+// Each toggle saves as soon as it flips, and flips back if saving fails.
+const settings = computed(() => [
+  {
+    key: 'analyseLyrics',
+    label: 'Analyse song lyrics',
+    description:
+      'Let MetaFor read the mood of the lyrics in the songs you play. When this is off, your moods come only from how songs sound.',
+    on: user.value?.preferences?.moodLens !== 'sound',
+  },
+  {
+    key: 'savePlays',
+    label: 'Save my Spotify plays',
+    description: user.value?.isDemo
+      ? 'The test account isn’t connected to Spotify, so there are no new plays to save.'
+      : 'Keep a record of what you play so your calendar and patterns stay up to date. Turning this off keeps the plays already saved.',
+    on: user.value?.preferences?.savePlays !== false,
+    disabled: user.value?.isDemo,
+  },
+])
+const saving = reactive({})
+const settingsMessage = ref('')
+
+async function toggle(setting) {
+  const next = !setting.on
+  const previous = user.value
+  saving[setting.key] = true
+  settingsMessage.value = ''
+  auth.user = {
+    ...previous,
+    preferences: {
+      ...previous.preferences,
+      ...(setting.key === 'analyseLyrics' ? { moodLens: next ? 'lyrics' : 'sound' } : { savePlays: next }),
+    },
+  }
+  try {
+    auth.user = await updateSettings({ [setting.key]: next })
+    settingsMessage.value = 'Saved.'
+  } catch (error) {
+    auth.user = previous
+    settingsMessage.value = `Couldn’t save: ${error.message}`
+  } finally {
+    saving[setting.key] = false
+  }
+}
+
+// Dark mode is kept in this browser, not the account. index.html makes light
+// the default.
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+function toggleDark() {
+  colorMode.preference = isDark.value ? 'light' : 'dark'
+}
 
 const logOut = useLogOut()
 </script>
@@ -133,11 +190,62 @@ const logOut = useLogOut()
         </section>
       </div>
 
+      <section class="card" aria-labelledby="privacy-title">
+        <h2 id="privacy-title" class="card-title">Privacy and Data</h2>
+        <ul class="settings">
+          <li v-for="setting in settings" :key="setting.key" class="setting">
+            <div>
+              <p :id="`${setting.key}-label`" class="setting-label">{{ setting.label }}</p>
+              <p :id="`${setting.key}-description`" class="muted small">{{ setting.description }}</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              :aria-checked="setting.on"
+              :aria-labelledby="`${setting.key}-label`"
+              :aria-describedby="`${setting.key}-description`"
+              :disabled="setting.disabled || saving[setting.key]"
+              @click="toggle(setting)"
+            >
+              <span class="switch-thumb" aria-hidden="true" />
+            </button>
+          </li>
+        </ul>
+        <p class="muted small privacy-note">
+          MetaFor only keeps mood scores worked out from lyrics, never the lyrics themselves.
+        </p>
+        <p class="muted small" role="status" aria-live="polite">{{ settingsMessage }}</p>
+      </section>
+
+      <section class="card" aria-labelledby="appearance-title">
+        <h2 id="appearance-title" class="card-title">Appearance</h2>
+        <ul class="settings">
+          <li class="setting">
+            <div>
+              <p id="dark-mode-label" class="setting-label">Dark mode</p>
+              <p id="dark-mode-description" class="muted small">
+                Dim the colours for night-time journaling. Saved on this device.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              :aria-checked="isDark"
+              aria-labelledby="dark-mode-label"
+              aria-describedby="dark-mode-description"
+              @click="toggleDark"
+            >
+              <span class="switch-thumb" aria-hidden="true" />
+            </button>
+          </li>
+        </ul>
+      </section>
+
       <section class="card coming-soon" aria-labelledby="soon-title">
         <h2 id="soon-title" class="card-title">Coming Soon</h2>
-        <p class="muted">
-          Editing your profile, your birthday for Spotify Horoscope, and privacy settings.
-        </p>
+        <p class="muted">Editing your profile and your birthday for Spotify Horoscope.</p>
       </section>
 
       <button type="button" class="glass-action log-out" @click="logOut">Log out</button>
@@ -155,10 +263,10 @@ const logOut = useLogOut()
 
 .profile-shell {
   display: grid;
-  width: min(900px, calc(100% - 32px));
+  width: min(900px, var(--page-width));
   gap: 20px;
   margin-inline: auto;
-  padding-block: var(--page-top) 56px;
+  padding-block: var(--page-top) var(--page-bottom);
 }
 
 
@@ -312,6 +420,92 @@ dd {
   border-radius: 4px;
   outline: 3px solid var(--pq-focus);
   outline-offset: 3px;
+}
+
+.settings {
+  display: grid;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--pq-border);
+}
+
+.setting:first-child {
+  padding-top: 0.25rem;
+}
+
+.setting-label {
+  margin-bottom: 0.2rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.privacy-note {
+  margin-top: 1rem;
+}
+
+/* An on/off switch: a pill with a thumb that slides right and fills with the
+   accent colour when on. */
+.switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid var(--pq-border);
+  border-radius: 999px;
+  background: var(--pq-tint);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.switch[aria-checked='true'] {
+  border-color: var(--pq-accent);
+  background: var(--pq-accent);
+}
+
+.switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.switch:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 160ms ease;
+}
+
+.switch[aria-checked='true'] .switch-thumb {
+  transform: translateX(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .switch-thumb {
+    transition: none;
+  }
 }
 
 .coming-soon {

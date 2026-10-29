@@ -128,7 +128,10 @@ describe('Spotify HTTP integration against a local stand-in', () => {
     expect(play).toHaveLength(2)
     expect(play[1].authorization).toBe('Bearer refreshed-access')
     expect(play[1].path).toBe('/v1/me/player/play?device_id=device%20id')
-    expect(JSON.parse(play[1].body)).toEqual({ uris: ['spotify:track:song'] })
+    expect(JSON.parse(play[1].body)).toEqual({
+      uris: ['spotify:track:song'],
+      offset: { position: 0 },
+    })
     expect(tokenCalls()).toBe(2)
   })
   it('surfaces Premium/allowlist failures and rate-limit retry guidance', async () => {
