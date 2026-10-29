@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 const props = defineProps({ mood: { type: String, required: true } })
 const faces = {
-  Happy: { eyes: 'M13 18v1m14-1v1', brows: 'M11 15l3-1m11 0 3 1', mouth: 'M12 23q8 10 16-1' },
+  Happy: { eyes: 'M13 17v1m14-1v1', mouth: 'M12 23q8 8 16 0' },
   Sad: { eyes: 'M13 18v1m14-1v1', brows: 'M10 15l5-2m10 0 5 2', mouth: 'M13 27q7-8 14 0' },
   Relaxed: { eyes: 'M10 17q3 3 6 0m8 0q3 3 6 0', mouth: 'M14 24q6 5 12-1' },
   Anxious: {
@@ -29,11 +29,9 @@ const face = computed(() => faces[props.mood] || faces.Relaxed)
 
     <g class="face-expression">
       <g v-if="mood === 'Happy'">
-        <path d="M10 14q3-3 6 0m8-1 5 1" />
-        <path d="M12 18v2" />
-        <path class="wink-eye" d="M25 18q2 3 4 0" />
-        <path d="M11 24q9 14 18-1Z" />
-        <path class="face-cheeks" d="m8 23 2 1m20-2 2-1" />
+        <path d="M11 17q2-3 4 0" />
+        <path class="wink-eye" d="M25 17q2-3 4 0" />
+        <path d="M12 23q8 9 16 0" />
       </g>
       <g v-else-if="mood === 'Sad'">
         <path d="m10 14 6-3m8 0 6 3M10 18q3 4 6 0m8 0q3 4 6 0M13 28q7-9 14 0" />
