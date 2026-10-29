@@ -73,7 +73,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="listening-room" :style="{ '--record-color': accent }">
+  <main
+    class="listening-room"
+    :style="{ '--record-color': accent }"
+  >
     <div class="room-inner">
       <header class="room-heading">
         <div>
@@ -141,7 +144,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="now-playing">
-          <div class="album-sleeve" :style="{ '--cover-art': `url(${cover})` }">
+          <div
+            class="album-sleeve"
+            :class="{ 'is-playing': spinning }"
+            :style="{ '--cover-art': `url(${cover})` }"
+          >
             <img
               v-if="cover"
               :src="cover"
@@ -404,16 +411,17 @@ onBeforeUnmount(() => {
   padding: var(--page-top) 0 var(--page-bottom);
   font: 20px/1.5 var(--font-serif);
 }
+.room-inner {
+  position: relative;
+  width: var(--page-width);
+  margin-inline: auto;
+}
 /* The shared tokens switch for dark mode; the controls and alerts follow. */
 :global(.dark .listening-room) {
   --room-dark: var(--color-brand-600);
   --room-error: #3a2420;
   --room-error-ink: #f09595;
   --room-focus: var(--color-brand-300);
-}
-.room-inner {
-  width: var(--page-width);
-  margin-inline: auto;
 }
 .room-heading {
   display: flex;
@@ -544,36 +552,36 @@ button:disabled {
   isolation: isolate;
   margin: 0 0 28px;
 }
-.album-sleeve::before {
+.album-sleeve.is-playing::before {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: -16px;
+  inset: -22px;
   background-image: var(--cover-art);
   background-size: cover;
-  filter: blur(28px);
-  opacity: 0.5;
-  transform: translateY(12px);
+  filter: blur(42px) saturate(2.1);
+  opacity: 0.82;
+  transform: translateY(16px) scale(1.04);
+  border-radius: 24px;
 }
-.album-sleeve::after {
+.album-sleeve.is-playing::after {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: -24px;
-  /* prettier-ignore */
-  background: linear-gradient( /* taste-skill-ignore: user-requested cover glow. */
-    150deg,
-    color-mix(in srgb, var(--record-color) 35%, transparent),
-    transparent 65%
-  );
-  filter: blur(24px);
+  inset: -32px;
+  background:
+    radial-gradient(ellipse at 24% 25%, color-mix(in srgb, var(--record-color) 88%, white), transparent 58%),
+    radial-gradient(ellipse at 76% 78%, color-mix(in srgb, var(--record-color) 76%, #6846a5), transparent 62%);
+  filter: blur(30px) saturate(1.6);
+  opacity: 0.9;
+  border-radius: 32px;
 }
 .album-sleeve img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   display: block;
-  border-radius: 4px;
+  border-radius: 12px;
   box-shadow: 0 14px 28px #30352f24; /* taste-skill-ignore: user requested glow around the album cover. */
 }
 .track-copy h2 {
@@ -990,10 +998,6 @@ input:disabled {
     grid-row: span 2;
     margin: 0;
   }
-  .album-sleeve::before {
-    inset: -8px;
-    filter: blur(18px);
-  }
   .transport {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -1030,10 +1034,6 @@ input:disabled {
   }
 }
 @media (forced-colors: active) {
-  .album-sleeve::before,
-  .album-sleeve::after {
-    display: none;
-  }
   .transport-buttons button {
     border: 1px solid ButtonText;
   }
