@@ -2,19 +2,15 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
+import MoodFace from '@/components/journal/MoodFace.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
 defineOptions({ name: "MoodCalendar" })
 
-const moodEmoji = { Happy: '😊', Relaxed: '😌', Sad: '😟', Anxious: '😰', Angry: '😠' }
-const moodTags = {
-  Happy: ['Joyful', 'Hopeful'], Relaxed: ['Calm', 'Peace'], Sad: ['Low-Fi', 'Reflective'],
-  Anxious: ['Restless', 'Uncertain'], Angry: ['Intense', 'Frustrated'],
-}
-const musicMoodEmoji = { happy: '😊', calm: '😌', sad: '😟', tense: '😤' }
 const musicMoodLabel = { happy: 'Uplifting', calm: 'Calm', sad: 'Melancholic', tense: 'Intense' }
+const musicMoodType = { happy: 'Happy', calm: 'Relaxed', sad: 'Sad', tense: 'Anxious' }
 const today = new Date()
 const shownMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 const selectedDate = ref(null)
@@ -99,6 +95,21 @@ const monthSongCount = computed(() => listens.value.filter((item) => {
   const d = new Date(item.played_at)
   return d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear()
 }).length)
+const recommendationArtists = computed(() => {
+  const artists = new Map()
+  for (const item of listens.value) {
+    const date = new Date(item.played_at)
+    if (date.getMonth() !== shownMonth.value.getMonth() || date.getFullYear() !== shownMonth.value.getFullYear()) continue
+    for (const artist of item.track?.artists || []) {
+      const key = artist.id || artist.name?.toLocaleLowerCase()
+      if (!key || !artist.name) continue
+      const current = artists.get(key) || { id: artist.id, name: artist.name, plays: 0 }
+      current.plays++
+      artists.set(key, current)
+    }
+  }
+  return [...artists.values()].sort((a, b) => b.plays - a.plays).slice(0, 3)
+})
 const monthMoodCount = computed(() => [...logsByDate.value].reduce((n, [key, entries]) => {
   const d = new Date(`${key}T12:00:00`)
   return n + (d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear() ? entries.length : 0)
@@ -189,6 +200,11 @@ function listeningMoodFor(date) {
   const songMoodName = [...winner.names].sort((a, b) => b[1] - a[1])[0]?.[0]
   return { family: winner.family, count: winner.count, total: readings.length, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
 }
+function moodFaceType(mood) { return musicMoodType[mood] || mood }
+function moodFaceClass(mood) {
+  const type = moodFaceType(mood).toLowerCase()
+  return [`mood-reaction--${type}`, `mood-color--${type}`]
+}
 function trackName(item) { return item.track?.name || 'Unknown track' }
 function trackArtists(item) { return item.track?.artists?.map((artist) => artist.name).join(', ') || 'Spotify track' }
 
@@ -200,14 +216,47 @@ async function loadRecommendations() {
   const target = recommendationTarget.value
   if (!target || !hasSpotifySession()) return
   recommendationsLoading.value = true
-  const query = target === 'happy' ? 'uplifting feel good pop' : 'calm soothing acoustic'
+  const moodTerms = target === 'happy' ? 'uplifting happy feel good' : 'calm calming relaxing'
+  const artists = recommendationArtists.value
+  const queries = artists.length
+    ? artists.map((artist) => ({ query: `artist:"${artist.name.replaceAll('"', '')}" ${moodTerms}`, label: `From ${artist.name}` }))
+    : [{ query: moodTerms, label: 'Mood match' }]
+  const fallbackQueries = target === 'happy'
+    ? [
+        { query: 'instrumental uplifting feel good', label: 'Instrumental search' },
+        { query: 'happy soul indie pop', label: 'Wider style search' },
+      ]
+    : [
+        { query: 'calm ambient instrumental', label: 'Instrumental search' },
+        { query: 'calm acoustic classical', label: 'Wider style search' },
+      ]
   try {
-    const response = await searchSpotify(query)
-    if (request !== recommendationRequest) return
     const listenedIds = new Set(listens.value.map((item) => item.track?.id))
-    recommendations.value = (response.tracks?.items || [])
-      .filter((track) => track.id && !listenedIds.has(track.id))
-      .slice(0, 4)
+    const seenIds = new Set()
+    const picks = []
+    let searchError = ''
+    async function addSearchResults(searches) {
+      const results = await Promise.allSettled(searches.map(({ query }) => searchSpotify(query)))
+      if (request !== recommendationRequest) return
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          searchError ||= result.reason?.message || 'Spotify search failed.'
+          return
+        }
+        for (const track of result.value.tracks?.items || []) {
+          if (!track.id || listenedIds.has(track.id) || seenIds.has(track.id)) continue
+          seenIds.add(track.id)
+          picks.push({ ...track, recommendationSource: searches[index].label })
+        }
+      })
+    }
+
+    await addSearchResults(queries)
+    if (request !== recommendationRequest) return
+    if (picks.length < 4) await addSearchResults(fallbackQueries)
+    if (request !== recommendationRequest) return
+    recommendations.value = picks.slice(0, 4)
+    if (!recommendations.value.length && searchError) recommendationsError.value = searchError
   } catch (error) {
     if (request === recommendationRequest) recommendationsError.value = error.message
   } finally {
@@ -215,7 +264,7 @@ async function loadRecommendations() {
   }
 }
 
-watch(songMoodTrend, loadRecommendations)
+watch([songMoodTrend, recommendationArtists], loadRecommendations)
 onMounted(loadData)
 </script>
 
@@ -266,6 +315,12 @@ onMounted(loadData)
               <p class="eyebrow">A small listening nudge</p>
               <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
               <p class="recommendation-reason">{{ moodTrendSummary }}</p>
+              <div v-if="recommendationArtists.length" class="recommendation-personalization">
+                <span>Matched to artists you played most:</span>
+                <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
+                <span class="fallback-explainer">If there aren’t enough matches, we’ll widen to other styles and instrumentals.</span>
+              </div>
+              <p v-else class="recommendation-personalization">We’ll search across mood-matched styles, including instrumental music, since no frequent artists are available for this month.</p>
             </div>
             <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
           </div>
@@ -278,13 +333,13 @@ onMounted(loadData)
                 <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
                 <span v-else class="track-art">♫</span>
               </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><MoodTag :track-id="track.id" size="sm" :link="false" /></span>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" /></span>
               <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
             </article>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
           <p v-else-if="!hasSpotifySession()" class="recommendation-status">Connect Spotify to explore matching tracks.</p>
-          <p v-else class="recommendation-status">No new matching tracks came up. Try again after more songs are analyzed.</p>
+          <p v-else class="recommendation-status">No new matching tracks came up from your artists, wider styles, or instrumental searches. Try again after more songs are analyzed.</p>
         </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">
@@ -308,8 +363,12 @@ onMounted(loadData)
                 @click="date && selectDay(date)"
               >
                 <span v-if="date" class="day-number">{{ date.getDate() }}</span>
-                <span v-if="date && moodFor(date)" class="mood-face" :title="`Journal mood: ${moodFor(date)}`">{{ moodEmoji[moodFor(date)] || '•' }}</span>
-                <span v-else-if="date && listeningMoodFor(date)" class="mood-face" :title="`Listening mood: ${listeningMoodFor(date).name}`">{{ musicMoodEmoji[listeningMoodFor(date).family] || '♫' }}</span>
+                <span v-if="date && moodFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(moodFor(date))" :title="`Journal mood: ${moodFor(date)}`">
+                  <MoodFace :mood="moodFor(date)" class="button-mood-face calendar-face-svg" />
+                </span>
+                <span v-else-if="date && listeningMoodFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(listeningMoodFor(date).family)" :title="`Listening mood: ${listeningMoodFor(date).name}`">
+                  <MoodFace :mood="moodFaceType(listeningMoodFor(date).family)" class="button-mood-face calendar-face-svg" />
+                </span>
                 <span v-if="date && moodFor(date) && listeningMoodFor(date)" class="listening-mood-dot" :title="`Listening mood: ${listeningMoodFor(date).name}`">♫</span>
                 <span v-if="date && tracksFor(date).length" class="song-count">♫ {{ tracksFor(date).length }}</span>
                 <span v-if="date && !moodFor(date) && !listeningMoodFor(date) && !tracksFor(date).length" class="empty-day" aria-hidden="true" />
@@ -330,18 +389,21 @@ onMounted(loadData)
               <h4 id="journal-history-title" class="column-title">Mood &amp; Journal <span>{{ selectedLogs.length }}</span></h4>
               <div v-if="selectedLogs.length" class="mood-logs">
                 <article v-for="(entry, index) in selectedLogs" :key="entry._id || index" class="mood-entry">
-                  <span class="detail-emoji">{{ moodEmoji[entry.mood] }}</span>
+                  <span class="detail-mood-face mood-reaction" :class="moodFaceClass(entry.mood)">
+                    <MoodFace :mood="entry.mood" class="button-mood-face detail-face-svg" />
+                  </span>
                   <div><strong>{{ entry.mood }}</strong><p v-if="entry.journal">“{{ entry.journal }}”</p><p v-else class="no-journal">No written reflection.</p><time>{{ new Date(entry.createdAt).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</time></div>
                 </article>
               </div>
               <p v-else class="empty-note">No mood log saved on this day.</p>
-              <div v-if="selectedLogs.length" class="mood-tags"><span v-for="tag in moodTags[selectedLogs[0].mood] || []" :key="tag">{{ tag }}</span></div>
             </section>
 
             <section class="day-detail-column listening-column" aria-labelledby="listening-history-title">
               <h4 id="listening-history-title" class="column-title">Songs You Played <span>{{ selectedListens.length }}</span></h4>
               <div v-if="selectedListeningMood" class="listening-mood-summary">
-                <span class="listening-mood-icon">{{ musicMoodEmoji[selectedListeningMood.family] || '♫' }}</span>
+                <span class="listening-mood-icon mood-reaction" :class="moodFaceClass(selectedListeningMood.family)">
+                  <MoodFace :mood="moodFaceType(selectedListeningMood.family)" class="button-mood-face listening-face-svg" />
+                </span>
                 <span class="listening-mood-copy"><small>Most common music mood</small><strong>{{ selectedListeningMood.name }}</strong></span>
                 <span class="analyzed-count">{{ selectedListeningMood.count }} / {{ selectedListeningMood.total }} analyzed</span>
               </div>
@@ -397,6 +459,9 @@ onMounted(loadData)
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: .94rem; }
+.recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .74rem; }
+.fallback-explainer { flex-basis: 100%; }
+.artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
 .recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 800; }
 .recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
 .recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: border-color .16s ease, transform .16s ease; }
@@ -406,6 +471,7 @@ onMounted(loadData)
 .recommendation-card .track-copy strong, .recommendation-card .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recommendation-card .track-copy strong { font-size: .8rem; }
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
+.recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: .65rem; font-weight: 700; }
 .recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
@@ -424,7 +490,15 @@ onMounted(loadData)
 .day-cell.is-selected { z-index: 1; box-shadow: inset 0 0 0 2px #cd6651; }
 .day-cell.is-today .day-number { color: var(--calendar-accent); background: var(--calendar-accent-soft); }
 .day-number { position: absolute; top: 6px; left: 7px; display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; color: var(--ui-text-muted); font-size: .76rem; font-weight: 700; }
-.mood-face { font-size: clamp(1.55rem, 3.8vw, 2.35rem); filter: drop-shadow(0 2px 2px #0002); }
+.calendar-face, .detail-mood-face, .listening-mood-icon { display: grid; flex: none; place-items: center; color: var(--mood-color); }
+.calendar-face-svg { width: clamp(32px, 4vw, 42px); height: clamp(32px, 4vw, 42px); }
+.detail-face-svg { width: 34px; height: 34px; }
+.listening-face-svg { width: 32px; height: 32px; }
+.mood-color--happy { --mood-color: #f2c335; }
+.mood-color--sad { --mood-color: #4389d1; }
+.mood-color--relaxed { --mood-color: #998ba1; }
+.mood-color--anxious { --mood-color: #ed8a35; }
+.mood-color--angry { --mood-color: #d94a45; }
 .listening-mood-dot { position: absolute; top: 8px; right: 8px; color: var(--calendar-accent); font-family: var(--font-sans); font-size: .7rem; font-weight: 800; }
 .song-count { color: var(--calendar-accent); font-size: .68rem; font-weight: 800; }
 .empty-day { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
@@ -446,7 +520,6 @@ onMounted(loadData)
 .column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: var(--text-subheader); font-weight: 600; }
 .column-title span { color: var(--ui-text-muted); font-size: .76rem; }
 .listening-mood-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 11px; background: var(--ui-bg-elevated); }
-.listening-mood-icon { font-size: 1.5rem; }
 .listening-mood-copy { display: grid; gap: 2px; }
 .listening-mood-copy small { color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .68rem; }
 .listening-mood-copy strong { font-family: var(--font-sans); font-size: .86rem; }
@@ -454,7 +527,6 @@ onMounted(loadData)
 .analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .78rem; }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
-.detail-emoji { font-size: 1.6rem; }
 .mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
 .mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
