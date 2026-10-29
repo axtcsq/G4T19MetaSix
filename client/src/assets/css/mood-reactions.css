@@ -37,6 +37,15 @@
 .mood-reaction--angry:is(:hover, :focus-visible) .angry-brows {
   animation: brow-furrow 1000ms ease both;
 }
+.mood-reaction--excited:is(:hover, :focus-visible) .button-mood-face {
+  animation: happy-hello 900ms ease both;
+}
+.mood-reaction--tired:is(:hover, :focus-visible) .button-mood-face {
+  animation: tired-nod 1300ms ease-in-out both;
+}
+.mood-reaction--lonely:is(:hover, :focus-visible) .lonely-tear {
+  animation: little-tear 1700ms ease-in both;
+}
 .day-cell:focus-visible .mood-reaction--happy .button-mood-face { animation: happy-hello 1100ms ease both; }
 .day-cell:focus-visible .mood-reaction--happy .wink-eye { animation: happy-wink 1100ms ease both; }
 .day-cell:focus-visible .mood-reaction--sad .sad-tear { animation: little-tear 1700ms ease-in both; }
@@ -46,6 +55,9 @@
 .day-cell:focus-visible .mood-reaction--anxious .anxious-drop { animation: little-tear 1600ms ease-in both; }
 .day-cell:focus-visible .mood-reaction--angry .button-mood-face { animation: grumpy-shake 1000ms ease both; }
 .day-cell:focus-visible .mood-reaction--angry .angry-brows { animation: brow-furrow 1000ms ease both; }
+.day-cell:focus-visible .mood-reaction--excited .button-mood-face { animation: happy-hello 900ms ease both; }
+.day-cell:focus-visible .mood-reaction--tired .button-mood-face { animation: tired-nod 1300ms ease-in-out both; }
+.day-cell:focus-visible .mood-reaction--lonely .lonely-tear { animation: little-tear 1700ms ease-in both; }
 @keyframes happy-hello {
   0%,
   100% {
@@ -138,6 +150,16 @@
   }
   80% {
     transform: rotate(-3deg);
+  }
+}
+@keyframes tired-nod {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0);
+  }
+  45%,
+  65% {
+    transform: rotate(5deg) translateY(2px);
   }
 }
 @keyframes brow-furrow {

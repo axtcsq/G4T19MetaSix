@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry"];
+const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry", "Excited", "Tired", "Lonely"];
 
 const moodLogSchema = new mongoose.Schema(
   {
