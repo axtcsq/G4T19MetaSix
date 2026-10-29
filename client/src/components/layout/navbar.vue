@@ -2,7 +2,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
-import StoryMode from '@/components/landing/StoryMode.vue'
 import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'SiteNavbar' })
 
@@ -115,11 +114,6 @@ watch(
       </div>
 
       <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
-        <StoryMode>
-          <template #trigger="{ open }">
-            <button type="button" class="header-link header-story" @click="open">See how it works</button>
-          </template>
-        </StoryMode>
         <RouterLink class="header-cta glass-action" :to="auth.user ? '/dashboard' : '/login'">{{
           auth.user ? 'Back to MetaFor' : 'Get started'
         }}</RouterLink>
@@ -307,13 +301,6 @@ watch(
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-.header-story {
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: inherit;
-  cursor: pointer;
 }
 .header-link.router-link-exact-active {
   color: #a54b3b;
@@ -546,8 +533,6 @@ watch(
   .site-menu { padding-inline: 18px; }
   .menu-cta { align-self: stretch; }
   .brand, .header-cta { white-space: nowrap; }
-  /* No room beside the CTA; the hero has its own story button just below. */
-  .site-header-landing .header-story { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
   .site-header-landing .brand-group { gap: 6px; }
   .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }
