@@ -577,7 +577,7 @@ onMounted(loadPage)
   border-radius: 10px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
+  box-shadow: none;
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -977,7 +977,7 @@ onMounted(loadPage)
 .outcome-tab[aria-selected='true'] {
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
+  box-shadow: none;
 }
 
 .outcome-tab:focus-visible {
