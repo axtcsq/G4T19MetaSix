@@ -24,3 +24,7 @@ export function getLatestResult(quizId) {
 export function getMoodMusic() {
   return api.get('/api/quiz/mood-music')
 }
+
+export function getGenreMix() {
+  return api.get('/api/quiz/genre-mix')
+}

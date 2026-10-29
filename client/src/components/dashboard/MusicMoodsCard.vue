@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+const selected = ref(null)
 
 // Home's Your Music's Moods: what the mood analysis heard in the user's last two weeks of plays, from
 // musicMoods in /api/quiz/mood-music: one bar of how the plays spread over the
@@ -54,19 +55,31 @@ const source = computed(() =>
     <div class="moods-visual">
       <div
         class="mood-bar"
-        role="img"
+        role="group"
         :aria-label="
           data.axes.map((entry) => `${JOURNAL_MOOD[entry.axis]} ${entry.share}%`).join(', ')
         "
       >
-        <span
+        <button
           v-for="entry in data.axes"
           :key="entry.axis"
+          type="button"
           class="mood-segment"
+          :aria-label="`${JOURNAL_MOOD[entry.axis]} ${entry.share}%`"
+          @pointerenter="selected = entry"
+          @focus="selected = entry"
+          @click="selected = entry"
           :style="{ flexGrow: entry.share, background: colour(entry.axis) }"
           :title="`${JOURNAL_MOOD[entry.axis]} ${entry.share}%`"
         />
       </div>
+      <p class="segment-readout" aria-live="polite">
+        {{
+          selected
+            ? `${JOURNAL_MOOD[selected.axis]}: ${selected.share}% of analysed plays`
+            : 'Select a mood to explore its share.'
+        }}
+      </p>
       <p class="bar-legend" aria-hidden="true">
         <span v-for="entry in data.axes" :key="entry.axis" class="legend-item">
           <span class="legend-dot" :style="{ background: colour(entry.axis) }" />
@@ -92,6 +105,39 @@ const source = computed(() =>
 </template>
 
 <style scoped>
+.segment-readout {
+  min-height: 24px;
+  margin-top: 8px;
+  font: 13px/1.5 var(--font-sans);
+  color: var(--ui-text-muted);
+}
+.mood-segment {
+  cursor: pointer;
+  padding: 0;
+  transition:
+    flex-grow 400ms,
+    filter 180ms;
+  animation: mix-reveal 500ms ease-out;
+}
+.mood-segment:is(:hover, :focus-visible) {
+  filter: brightness(0.75);
+  outline: 2px solid var(--ui-text);
+  outline-offset: -2px;
+}
+@keyframes mix-reveal {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mood-segment {
+    animation: none;
+    transition: none;
+  }
+}
 .music-moods {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
