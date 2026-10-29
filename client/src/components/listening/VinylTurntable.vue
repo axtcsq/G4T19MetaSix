@@ -8,6 +8,8 @@ const props = defineProps({
   spinning: Boolean,
   artwork: String,
   color: { type: String, default: '#f0c4a8' },
+  // Below 1 zooms the camera out, for smaller spaces like the landing page card.
+  zoom: { type: Number, default: 1 },
 })
 const emit = defineEmits(['toggle'])
 const canvas = ref(null)
@@ -239,6 +241,7 @@ onMounted(() => {
       renderer.setSize(width, height, false)
       camera.aspect = width / Math.max(1, height)
       camera.fov = camera.aspect > 1.5 ? 28 : 35
+      camera.zoom = props.zoom
       camera.updateProjectionMatrix()
     }
     observer = new ResizeObserver(resize)
