@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue'
 import { typeIcon } from '@/utils/typeIcons'
 
-// A three-question taste test on the landing page. Each answer leans towards
+// A three-question taste test on the landing page, beside the song search.
+// The landing page gives the pair its heading. Each answer leans towards
 // one MetaFor personality, and the result is a teaser for the real quizzes.
 const TYPES = {
   'storm-chaser': { name: 'The Storm Chaser', tagline: 'Loud, restless and always hunting the next big sound.' },
@@ -59,70 +60,46 @@ const result = computed(() => {
 </script>
 
 <template>
-  <section class="taste landing-shell" aria-labelledby="taste-title">
-    <h2 id="taste-title">Try a Taste Test.</h2>
-    <p class="taste-intro">Three quick questions for a peek at your MetaFor personality.</p>
-
-    <div class="taste-card" aria-live="polite">
-      <Transition name="swap" mode="out-in">
-        <div v-if="!done" :key="step" class="taste-question">
-          <p class="taste-step">Question {{ step + 1 }} of {{ QUESTIONS.length }}</p>
-          <div class="taste-progress" aria-hidden="true">
-            <span v-for="index in QUESTIONS.length" :key="index" :class="{ 'is-done': index <= step }" />
-          </div>
-          <h3>{{ QUESTIONS[step].text }}</h3>
-          <div class="taste-answers">
-            <button v-for="[label, type] in QUESTIONS[step].answers" :key="label" type="button" @click="picks.push(type)">
-              {{ label }}
-            </button>
-          </div>
+  <div class="taste-card" aria-live="polite">
+    <Transition name="swap" mode="out-in">
+      <div v-if="!done" :key="step" class="taste-question">
+        <p class="taste-step">Question {{ step + 1 }} of {{ QUESTIONS.length }}</p>
+        <div class="taste-progress" aria-hidden="true">
+          <span v-for="index in QUESTIONS.length" :key="index" :class="{ 'is-done': index <= step }" />
         </div>
-
-        <div v-else key="result" class="taste-result">
-          <img class="taste-icon" :src="typeIcon(result.id)" alt="" width="80" height="80" />
-          <p class="taste-step">You might be</p>
-          <h3>{{ result.name }}</h3>
-          <p class="taste-tagline">{{ result.tagline }}</p>
-          <div class="taste-actions">
-            <RouterLink class="taste-cta" to="/quiz">Take the full quizzes →</RouterLink>
-            <button type="button" class="taste-again glass-secondary" @click="picks = []">Try again</button>
-          </div>
+        <h3>{{ QUESTIONS[step].text }}</h3>
+        <div class="taste-answers">
+          <button v-for="[label, type] in QUESTIONS[step].answers" :key="label" type="button" @click="picks.push(type)">
+            {{ label }}
+          </button>
         </div>
-      </Transition>
-    </div>
-  </section>
+      </div>
+
+      <div v-else key="result" class="taste-result">
+        <img class="taste-icon" :src="typeIcon(result.id)" alt="" width="80" height="80" />
+        <p class="taste-step">You might be</p>
+        <h3>{{ result.name }}</h3>
+        <p class="taste-tagline">{{ result.tagline }}</p>
+        <div class="taste-actions">
+          <RouterLink class="taste-cta" to="/quiz">Take the full quizzes →</RouterLink>
+          <button type="button" class="taste-again glass-secondary" @click="picks = []">Try again</button>
+        </div>
+      </div>
+    </Transition>
+  </div>
 </template>
 
 <style scoped>
-.taste {
-  padding-block: 0 80px;
-  text-align: center;
-}
-.taste h2 {
-  margin: 0 0 10px;
-  color: var(--ui-text);
-  font-family: var(--font-sans);
-  font-size: var(--text-title);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-}
-.taste-intro {
-  margin: 0 0 32px;
-  color: var(--ui-text-muted);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-}
 .taste-card {
   display: grid;
-  width: min(640px, 100%);
   min-height: 320px;
-  margin-inline: auto;
   padding: 32px;
   place-items: center;
   border: 1px solid var(--ui-border);
   border-radius: 18px;
   background: var(--ui-bg-elevated);
   box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
+  text-align: center;
 }
 .taste-question,
 .taste-result {
