@@ -8,7 +8,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 const canvas = ref(null)
 
 const GLYPHS = ['♪', '♫', '♩', '♬']
-const LINE_SPOTS = [0.28, 0.5, 0.72] // across each side's empty space
+const LINE_SPOTS = [0.2, 0.4, 0.6] // across each side's empty space, kept clear of the content
 const NOTES_PER_LINE = 3
 const MIN_GUTTER = 70 // narrower than this and the notes would crowd the page
 const REACH = 80 // how close the mouse has to be to bump a note

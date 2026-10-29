@@ -108,10 +108,19 @@
      gutter is the space between the screen edge and the content. */
   --page-gutter: 32px;
   --page-width: min(1180px, calc(100% - 2 * var(--page-gutter)));
+  /* The landing page's width. On wide screens it leaves wider sides for the
+     margin notes and strings, so they don't crowd the content. */
+  --landing-width: var(--page-width);
   /* The space between the nav and each page's title, and between the end of
      a page and the footer. */
   --page-top: clamp(32px, 4vw, 48px);
   --page-bottom: clamp(48px, 6vw, 64px);
+}
+
+@media (min-width: 1100px) {
+  :root {
+    --landing-width: min(1120px, calc(100% - 2 * min(13vw, 220px)));
+  }
 }
 
 @media (max-width: 768px) {
@@ -179,17 +188,18 @@ html {
 /* Dark theme */
 .dark {
   --ui-primary: var(--color-brand-400);
-  --scroll-thumb: #5a4a52;
-  --scroll-track: #1f1c2a;
+  --scroll-thumb: #5a4840;
+  --scroll-track: #1d1714;
 
-  /* Warm dark cards and peach-tinted borders on the navy background. */
-  --ui-bg: #171b27;
-  --ui-bg-elevated: #25222b;
-  --ui-bg-accented: #3a2a30;
+  /* Espresso: a warm brown-black page with slightly lighter cards, cream text
+     and peach-tinted borders, so the terracotta brand sits naturally on it. */
+  --ui-bg: #161210;
+  --ui-bg-elevated: #211a17;
+  --ui-bg-accented: #33241e;
 
-  --ui-text: #f5f1ee;
-  --ui-text-muted: #b9aec4;
-  --ui-border: rgba(255, 205, 166, 0.18);
+  --ui-text: #f6eee8;
+  --ui-text-muted: #bfaea3;
+  --ui-border: rgba(255, 205, 166, 0.14);
 }
 
 /* Global typography */
@@ -389,4 +399,19 @@ body {
   --button-ink: #fff;
   --button-top: #dc806d;
   --button-base: #cd6651;
+}
+
+/* The flat buttons above get a soft drop shadow, so they sit just off the
+   page; the glossy mood chips keep their own. Disabled buttons stay flat. */
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction) {
+  box-shadow: 0 4px 10px rgba(125, 71, 55, 0.2) !important;
+}
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):hover {
+  box-shadow: 0 6px 14px rgba(125, 71, 55, 0.26) !important;
+}
+.dark :is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+:is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):is(:disabled, [aria-disabled='true']) {
+  box-shadow: none !important;
 }
