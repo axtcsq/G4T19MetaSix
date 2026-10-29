@@ -110,7 +110,21 @@ const recommendationArtists = computed(() => {
       artists.set(key, current)
     }
   }
-  return [...artists.values()].sort((a, b) => b.plays - a.plays).slice(0, 3)
+  return [...artists.values()].sort((a, b) => b.plays - a.plays).slice(0, 5)
+})
+const recommendationTypeMix = computed(() => {
+  let known = 0
+  let instrumental = 0
+  for (const item of listens.value) {
+    const date = new Date(item.played_at)
+    if (date.getMonth() !== shownMonth.value.getMonth() || date.getFullYear() !== shownMonth.value.getFullYear()) continue
+    const value = item.moods?.instrumentalness
+    if (!Number.isFinite(value)) continue
+    known++
+    if (value >= 0.5) instrumental++
+  }
+  const instrumentalShare = known ? instrumental / known : 0.5
+  return { instrumental: Math.round(instrumentalShare * 4), vocal: 4 - Math.round(instrumentalShare * 4) }
 })
 const recommendationLanguage = computed(() => {
   const languages = new Map()
@@ -234,21 +248,28 @@ async function loadRecommendations() {
   const target = recommendationTarget.value
   if (!target || !hasSpotifySession()) return
   recommendationsLoading.value = true
-  const moodTerms = target === 'happy' ? 'uplifting happy feel good' : 'calm calming relaxing'
   const languageTerm = recommendationLanguage.value || ''
   const artists = recommendationArtists.value
+  const searchTerms = target === 'happy'
+    ? { vocal: 'uplifting happy soul indie pop vocal', instrumental: 'instrumental uplifting feel good' }
+    : { vocal: 'calm acoustic classical vocal', instrumental: 'calm ambient instrumental' }
   const queries = artists.length
-    ? artists.map((artist) => ({ query: `artist:"${artist.name.replaceAll('"', '')}" ${moodTerms} ${languageTerm}`, label: `From ${artist.name}` }))
-    : [{ query: `${moodTerms} ${languageTerm}`, label: 'Mood match' }]
-  const fallbackQueries = target === 'happy'
-    ? [
-        { query: `instrumental uplifting feel good ${languageTerm}`, label: 'Instrumental search' },
-        { query: `happy soul indie pop ${languageTerm}`, label: 'Wider style search' },
-      ]
+    ? artists.flatMap((artist) => {
+        const artistTerm = `artist:"${artist.name.replaceAll('"', '')}"`
+        const artistKey = artist.id || artist.name.toLocaleLowerCase()
+        return [
+          { query: `${artistTerm} ${searchTerms.vocal} ${languageTerm}`, label: `From ${artist.name}`, type: 'vocal', artistKey, artistPlays: artist.plays },
+          { query: `${artistTerm} ${searchTerms.instrumental} ${languageTerm}`, label: `From ${artist.name} · instrumental`, type: 'instrumental', artistKey, artistPlays: artist.plays },
+        ]
+      })
     : [
-        { query: `calm ambient instrumental ${languageTerm}`, label: 'Instrumental search' },
-        { query: `calm acoustic classical ${languageTerm}`, label: 'Wider style search' },
+        { query: `${searchTerms.vocal} ${languageTerm}`, label: 'Mood match', type: 'vocal', artistKey: 'style', artistPlays: 1 },
+        { query: `${searchTerms.instrumental} ${languageTerm}`, label: 'Instrumental search', type: 'instrumental', artistKey: 'instrumental', artistPlays: 1 },
       ]
+  const widerStyleQueries = [
+    { query: `${searchTerms.vocal} ${languageTerm}`, label: 'Wider style search', type: 'vocal', artistKey: 'style', artistPlays: 1 },
+    { query: `${searchTerms.instrumental} ${languageTerm}`, label: 'Instrumental search', type: 'instrumental', artistKey: 'instrumental', artistPlays: 1 },
+  ]
   try {
     const listenedIds = new Set(listens.value.map((item) => item.track?.id))
     const seenIds = new Set()
@@ -267,16 +288,56 @@ async function loadRecommendations() {
         for (const track of result.value.tracks?.items || []) {
           if (!track.id || listenedIds.has(track.id) || seenIds.has(track.id) || shownRecommendationIds.has(track.id)) continue
           seenIds.add(track.id)
-          picks.push({ ...track, recommendationSource: searches[index].label })
+          picks.push({
+            ...track,
+            recommendationSource: searches[index].label,
+            recommendationType: searches[index].type,
+            recommendationArtist: searches[index].artistKey,
+            artistPlayWeight: searches[index].artistPlays,
+          })
         }
       })
     }
 
     await addSearchResults(queries)
     if (request !== recommendationRequest) return
-    if (picks.length < 4) await addSearchResults(fallbackQueries)
+    await addSearchResults(widerStyleQueries)
     if (request !== recommendationRequest) return
-    recommendations.value = picks.slice(0, 4)
+    function pickProportionally(candidates, count) {
+      const groups = new Map()
+      for (const track of candidates) {
+        const key = track.recommendationArtist || 'other'
+        const group = groups.get(key) || { weight: track.artistPlayWeight || 1, tracks: [], selected: 0 }
+        group.tracks.push(track)
+        groups.set(key, group)
+      }
+      const selected = []
+      while (selected.length < count) {
+        const available = [...groups.values()].filter((group) => group.tracks.length)
+        if (!available.length) break
+        const group = available.sort((a, b) => b.weight / (b.selected + 1) - a.weight / (a.selected + 1))[0]
+        selected.push(group.tracks.shift())
+        group.selected++
+      }
+      return selected
+    }
+    let vocalPicks = pickProportionally(picks.filter((track) => track.recommendationType === 'vocal'), recommendationTypeMix.value.vocal)
+    let instrumentalPicks = pickProportionally(picks.filter((track) => track.recommendationType === 'instrumental'), recommendationTypeMix.value.instrumental)
+    const pickedIds = new Set([...vocalPicks, ...instrumentalPicks].map((track) => track.id))
+    const leftovers = picks.filter((track) => !pickedIds.has(track.id))
+    const missing = 4 - vocalPicks.length - instrumentalPicks.length
+    const extra = pickProportionally(leftovers, missing)
+    for (const track of extra) {
+      if (track.recommendationType === 'instrumental') instrumentalPicks.push(track)
+      else vocalPicks.push(track)
+    }
+    const mixedPicks = []
+    const slots = Math.max(vocalPicks.length, instrumentalPicks.length)
+    for (let index = 0; index < slots; index++) {
+      if (vocalPicks[index]) mixedPicks.push(vocalPicks[index])
+      if (instrumentalPicks[index]) mixedPicks.push(instrumentalPicks[index])
+    }
+    recommendations.value = mixedPicks
     recommendations.value.forEach((track) => shownRecommendationIds.add(track.id))
     if (!recommendations.value.length && searchError) recommendationsError.value = searchError
   } catch (error) {
@@ -292,7 +353,7 @@ function refreshRecommendations() {
   loadRecommendations()
 }
 
-watch([songMoodTrend, recommendationArtists, recommendationLanguage], () => {
+watch([songMoodTrend, recommendationArtists, recommendationLanguage, recommendationTypeMix], () => {
   recommendationSearchOffset.value = 0
   shownRecommendationIds.clear()
   loadRecommendations()
@@ -351,9 +412,9 @@ onMounted(loadData)
                 <span>Matched to artists you played most:</span>
                 <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
                 <span v-if="recommendationLanguage">Searching mainly in {{ recommendationLanguage }}.</span>
-                <span class="fallback-explainer">If there aren’t enough matches, we’ll widen to other styles and instrumentals.</span>
+                <span class="fallback-explainer">Artist and vocal/instrumental picks follow your listening mix.</span>
               </div>
-              <p v-else class="recommendation-personalization">We’ll search across mood-matched styles, including instrumental music, since no frequent artists are available for this month.</p>
+              <p v-else class="recommendation-personalization">Vocal and instrumental picks follow your listening mix; we’ll search mood-matched styles because no frequent artists are available this month.</p>
             </div>
             <div class="recommendation-actions">
               <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
@@ -377,7 +438,7 @@ onMounted(loadData)
                 <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
                 <span v-else class="track-art">♫</span>
               </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.recommendationSource === 'Instrumental search'" /></span>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small v-if="track.recommendationSource !== 'Wider style search'" class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.recommendationType === 'instrumental'" /></span>
               <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
             </article>
           </div>
