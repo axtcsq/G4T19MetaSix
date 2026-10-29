@@ -84,4 +84,17 @@ describe('Spotify listening portrait', () => {
   it('encodes Spotify searches', () => {
     expect(spotifySearch('a / b')).toBe('https://open.spotify.com/search/a%20%2F%20b')
   })
+  it('keeps monthly dates in a compact calendar with accessible counts', async () => {
+    const data = getDashboard(
+      'monthly',
+      [{ track: record('a'), played_at: '2026-10-19T10:00:00' }],
+      now,
+    )
+    const chart = mount(ListeningChart, { props: { type: 'days', data } })
+    expect(chart.findAll('.play-calendar button')).toHaveLength(19)
+    expect(chart.find('.daily-plays').exists()).toBe(false)
+    await chart.findAll('.play-calendar button').at(-1).trigger('click')
+    expect(chart.find('.calendar-readout').text()).toContain('1 recorded plays')
+    expect(chart.findAll('.play-calendar button').at(-1).attributes('aria-pressed')).toBe('true')
+  })
 })
