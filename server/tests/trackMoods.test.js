@@ -18,6 +18,12 @@ const withLyrics = (lyrics) => ({
 });
 
 describe("toMoods", () => {
+  it("includes stored tempo when available and omits invalid or missing tempo", () => {
+    assert.equal(toMoods({ ...analysed, features: { tempo: 174.1 } }, true).tempo, 174.1);
+    for (const tempo of [undefined, null, 0, -10, NaN, Infinity]) {
+      assert.equal(Object.hasOwn(toMoods({ ...analysed, features: { tempo } }, true), "tempo"), false);
+    }
+  });
   it("gives both readings with their journal mood", () => {
     assert.deepEqual(toMoods(analysed, true), {
       sound: { name: "Euphoric", axis: "happy" },

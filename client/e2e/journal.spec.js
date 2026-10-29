@@ -1,5 +1,50 @@
 import { test, expect } from './helpers.js'
 
+test('journal helper uses the sparkle icon and moving background, respecting reduced motion', async ({
+  page,
+  app,
+}) => {
+  expect(app.signedIn).toBe(true)
+  await page.goto('/daily-mood')
+  await page.getByPlaceholder('Write your thoughts here...').focus()
+  const launcher = page.getByRole('button', { name: 'Open MetaFor Helper' })
+  await expect(launcher.locator('img')).toHaveAttribute('src', /journal-helper-sparkle/)
+  await launcher.click()
+  await expect(page.getByRole('heading', { name: 'MetaFor Helper' })).toBeVisible()
+  await expect(page.locator('.helper-liquid')).toHaveJSProperty('paused', false)
+  await page.getByRole('button', { name: 'Close MetaFor Helper' }).click()
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.reload()
+  await page.getByPlaceholder('Write your thoughts here...').focus()
+  await launcher.click()
+  await expect(page.getByRole('heading', { name: 'MetaFor Helper' })).toBeVisible()
+  await expect(page.locator('.helper-liquid')).toHaveCount(0)
+})
+
+test('actions are flat while mood choices and drawing tools retain their raised style', async ({
+  page,
+  app,
+}) => {
+  expect(app.signedIn).toBe(true)
+  await page.goto('/daily-mood')
+  const history = page.getByRole('button', { name: 'Past entries', exact: true })
+  await expect(history).toHaveCSS('box-shadow', 'none')
+  await expect(history).toHaveCSS('background-image', 'none')
+  const happy = page.getByRole('button', { name: 'Happy', exact: true })
+  await expect(happy).not.toHaveCSS('box-shadow', 'none')
+  await page.getByText('Add a drawing', { exact: true }).click()
+  await expect(page.locator('.tool-button').first()).not.toHaveCSS('background-image', 'none')
+  await expect(page.locator('.tool-button').first()).not.toHaveCSS('box-shadow', 'none')
+  await expect(page.locator('.drawing-panel')).toHaveCSS('border-top-width', '0px')
+  await expect(page.locator('.drawing-disclosure')).toHaveCSS('border-top-width', '0px')
+  await page.goto('/')
+  await expect(page.locator('.hero-mood-options .mood-reaction').first()).not.toHaveCSS(
+    'box-shadow',
+    'none',
+  )
+})
+
 test('save requires mood and reflection, then appears in history and calendar', async ({
   page,
   app,

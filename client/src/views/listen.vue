@@ -6,6 +6,7 @@ import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
 import { useAuthStore } from '@/stores/auth'
+import { useTrackMood } from '@/composables/useTrackMoods'
 
 defineOptions({ name: 'ListeningRoom' })
 const room = useListeningRoom()
@@ -31,6 +32,7 @@ const {
 } = room
 const searchInput = ref(null)
 const cover = computed(() => track.value.album?.images?.[0]?.url)
+const trackMood = computed(useTrackMood(computed(() => track.value.id)))
 const progress = computed(
   () => `${duration.value ? Math.min(100, (position.value / duration.value) * 100) : 0}%`,
 )
@@ -212,7 +214,12 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <div class="timeline">
-          <AmbientWave :playing="spinning" />
+          <AmbientWave
+            :key="track.id"
+            :playing="spinning"
+            :cover="cover"
+            :tempo="trackMood?.tempo"
+          />
           <div class="seek-control">
             <span>{{ formatTime(position) }}</span
             ><label class="sr-only" for="playback-position">Playback position</label
@@ -325,7 +332,8 @@ onBeforeUnmount(() => {
             /><span
               ><strong>{{ item.name }}</strong
               ><span class="result-artist">{{ item.artists.map((a) => a.name).join(', ') }}</span
-              ><span class="result-mood"><MoodTag :track-id="item.id" size="sm" :link="false" /></span></span
+              ><span class="result-mood"
+                ><MoodTag :track-id="item.id" size="sm" :link="false" /></span></span
             ><span>{{
               item.is_playable === false ? 'Unavailable' : formatTime(item.duration_ms)
             }}</span
@@ -362,7 +370,8 @@ onBeforeUnmount(() => {
                 />
               </div>
               <strong>{{ item.name }}</strong
-              ><span class="shelf-mood"><MoodTag :track-id="item.id" size="sm" :link="false" /></span
+              ><span class="shelf-mood"
+                ><MoodTag :track-id="item.id" size="sm" :link="false" /></span
               ><span class="sr-only">{{
                 item.artists?.map((artist) => artist.name).join(', ')
               }}</span>

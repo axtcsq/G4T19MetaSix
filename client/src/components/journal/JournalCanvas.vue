@@ -343,11 +343,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 <style scoped>
 .drawing-panel {
-  padding: 20px;
-  border: 1px solid var(--ui-border);
-  border-radius: 18px;
-  background: var(--ui-bg-elevated);
-  box-shadow: 0 8px 24px rgba(59, 43, 35, 0.06);
+  padding: 0;
 }
 
 .drawing-toolbar {
