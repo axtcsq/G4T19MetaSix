@@ -265,6 +265,12 @@ export async function getMoodMusic(req, res) {
   res.json(await moodMusic(req.user));
 }
 
+// GET /api/quiz/genre-mix
+export async function getGenreMix(req, res) {
+  res.set('Cache-Control', 'no-store');
+  res.json((await buildListeningProfile(req.user)).genreMix);
+}
+
 // GET /api/quiz/:quizId
 export function getQuiz(req, res) {
   const quiz = findQuiz(req.params.quizId);
