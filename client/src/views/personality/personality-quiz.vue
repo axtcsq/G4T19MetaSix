@@ -288,7 +288,7 @@ onMounted(loadQuiz)
   border-radius: 10px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: none;
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;

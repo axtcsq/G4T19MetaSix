@@ -403,7 +403,7 @@ onBeforeUnmount(() => {
 /* The shared tokens switch for dark mode; the controls and alerts follow. */
 :global(.dark .listening-room) {
   --room-dark: var(--color-brand-600);
-  --room-error: #3a2a30;
+  --room-error: #3a2420;
   --room-error-ink: #f09595;
   --room-focus: var(--color-brand-300);
 }
