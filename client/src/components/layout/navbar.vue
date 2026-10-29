@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
+import StoryMode from '@/components/landing/StoryMode.vue'
 import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'SiteNavbar' })
 
@@ -114,6 +115,14 @@ watch(
       </div>
 
       <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
+        <StoryMode>
+          <template #trigger="{ open }">
+            <button type="button" class="header-cta header-story glass-secondary" @click="open">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+              See how it works
+            </button>
+          </template>
+        </StoryMode>
         <RouterLink class="header-cta glass-action" :to="auth.user ? '/dashboard' : '/login'">{{
           auth.user ? 'Back to MetaFor' : 'Get started'
         }}</RouterLink>
@@ -288,6 +297,18 @@ watch(
 }
 .header-link:hover {
   color: #cd6651;
+}
+.header-story {
+  gap: 9px;
+  padding-inline: 16px 20px;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+.header-story svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
 }
 .header-back {
   gap: 8px;
@@ -533,6 +554,8 @@ watch(
   .site-menu { padding-inline: 18px; }
   .menu-cta { align-self: stretch; }
   .brand, .header-cta { white-space: nowrap; }
+  /* No room beside the CTA on phones; the hero keeps the story button. */
+  .site-header-landing .header-story { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
   .site-header-landing .brand-group { gap: 6px; }
   .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }
