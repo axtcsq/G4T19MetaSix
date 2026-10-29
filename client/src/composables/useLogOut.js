@@ -11,6 +11,6 @@ export function useLogOut() {
   return async function logOut() {
     useListeningRoom().disconnect()
     await auth.logout()
-    router.push('/')
+    await router.replace('/')
   }
 }
