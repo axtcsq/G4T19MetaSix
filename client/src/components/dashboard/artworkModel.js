@@ -13,7 +13,7 @@ const bloomPositions = [
   [710, 285],
   [450, 420],
   [755, 435],
-]
+] // test
 
 function styleForArtist(name) {
   const styles = Object.values(flowerStyles)
