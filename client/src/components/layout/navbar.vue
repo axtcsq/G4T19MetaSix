@@ -1,12 +1,13 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 import StoryMode from '@/components/landing/StoryMode.vue'
 import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const isLanding = computed(() => route.path === '/')
 // The sign-in page shows just the logo: nothing past it works until you log in.
@@ -53,6 +54,12 @@ function updateCollapsed() {
     brandGroup.value.offsetWidth + nav.value.scrollWidth + profile.value.offsetWidth + gap * 2
   isCollapsed.value = needed > headerInner.value.clientWidth
   if (!isCollapsed.value) menuOpen.value = false
+}
+
+// Back to the page you came from, or the landing page if you opened /login directly.
+function goBack() {
+  if (window.history.state?.back) router.back()
+  else router.push('/')
 }
 
 function closeMenu() {
@@ -125,8 +132,15 @@ watch(
         }}</RouterLink>
       </nav>
 
+      <nav v-else-if="isLogin" class="header-nav" aria-label="Main navigation">
+        <button type="button" class="header-cta header-back glass-secondary" @click="goBack">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
+          Back
+        </button>
+      </nav>
+
       <nav
-        v-else-if="!isLogin"
+        v-else
         ref="nav"
         class="header-nav"
         :class="{ 'is-collapsed': isCollapsed }"
@@ -285,6 +299,19 @@ watch(
 }
 .header-link:hover {
   color: #cd6651;
+}
+.header-back {
+  gap: 8px;
+  padding-inline: 18px 22px;
+}
+.header-back svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .header-story {
   padding: 0;
