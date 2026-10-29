@@ -1337,6 +1337,16 @@ onMounted(loadPage)
     gap: 0.75rem;
   }
 
+  /* Two buttons side by side: smaller text, centred, with tight line spacing so
+     a wrapped label doesn't make the button tall and lopsided. */
+  .song-actions .peach-button {
+    margin-top: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.05rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
   .traits-card {
     padding: 1.25rem;
   }
