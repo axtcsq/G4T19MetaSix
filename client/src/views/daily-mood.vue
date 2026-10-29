@@ -413,6 +413,7 @@ onMounted(loadEntries)
   --button-ink: var(--color-brand-950);
   min-height: 44px;
   color: var(--ui-primary);
+  box-shadow: none !important;
   font: 600 0.9rem var(--font-sans);
   cursor: pointer;
   flex-shrink: 0;
