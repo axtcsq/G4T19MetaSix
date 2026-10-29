@@ -17,8 +17,9 @@ function parseDate(value) {
 }
 
 // The same shape as Spotify's recently-played items, so the client can read
-// either source with the same code. Each item also carries both mood readings.
-function toItem(listen, track) {
+// either source with the same code. Each item also carries both mood readings,
+// leaving out the lyrics one for users who turned lyrics analysis off.
+function toItem(listen, track, useLyrics) {
   const id = listen.trackId;
   return {
     played_at: listen.playedAt.toISOString(),
@@ -36,7 +37,7 @@ function toItem(listen, track) {
     },
     moods: {
       sound: track?.moods?.sound ?? null,
-      lyrics: track?.moods?.lyrics ?? null,
+      lyrics: useLyrics ? (track?.moods?.lyrics ?? null) : null,
     },
   };
 }
@@ -76,9 +77,10 @@ export async function getListens(req, res) {
     { name: 1, artists: 1, album: 1, durationMs: 1, "moods.sound": 1, "moods.lyrics": 1 },
   ).lean();
   const tracksById = new Map(tracks.map((track) => [track._id, track]));
+  const useLyrics = req.user.preferences?.moodLens !== "sound";
 
   res.json({
-    items: page.map((listen) => toItem(listen, tracksById.get(listen.trackId))),
+    items: page.map((listen) => toItem(listen, tracksById.get(listen.trackId), useLyrics)),
     hasMore: listens.length > limit,
   });
 }

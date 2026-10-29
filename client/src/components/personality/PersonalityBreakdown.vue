@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 // A compact summary of what each quiz and the Spotify data said about the
 // four MetaFor traits, and what they add up to.
@@ -11,6 +11,37 @@ const props = defineProps({
 const BALANCED = 0.05
 
 const showInfo = ref(false)
+const info = ref(null)
+
+// A tap fires hover, focus and click together, so only a real mouse opens it
+// on hover, and a tap or click toggles it.
+function onPointerEnter(event) {
+  if (event.pointerType === 'mouse') showInfo.value = true
+}
+function onPointerLeave(event) {
+  if (event.pointerType === 'mouse') showInfo.value = false
+}
+// Keyboard focus opens it; a tap's focus is left to the click.
+function onFocus(event) {
+  if (event.target.matches(':focus-visible')) showInfo.value = true
+}
+
+// A tap anywhere else, or Esc, closes it.
+function closeOnOutside(event) {
+  if (!info.value?.contains(event.target)) showInfo.value = false
+}
+function closeOnEscape(event) {
+  if (event.key === 'Escape') showInfo.value = false
+}
+watch(showInfo, (open) => {
+  const method = open ? 'addEventListener' : 'removeEventListener'
+  document[method]('pointerdown', closeOnOutside)
+  document[method]('keydown', closeOnEscape)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', closeOnOutside)
+  document.removeEventListener('keydown', closeOnEscape)
+})
 const quizPercent = computed(() => Math.round((props.personality.weights?.quizzes ?? 0.7) * 100))
 // Listening counts for less while there's only a little of it.
 const listeningIsNew = computed(() => {
@@ -37,7 +68,7 @@ const rows = computed(() =>
   <div class="breakdown">
     <div class="breakdown-heading">
       <h3 class="breakdown-title">How It Adds Up</h3>
-      <span class="info" @mouseenter="showInfo = true" @mouseleave="showInfo = false">
+      <span ref="info" class="info" @pointerenter="onPointerEnter" @pointerleave="onPointerLeave">
         <button
           type="button"
           class="info-button"
@@ -45,7 +76,7 @@ const rows = computed(() =>
           aria-describedby="breakdown-info"
           :aria-expanded="showInfo"
           @click="showInfo = !showInfo"
-          @focus="showInfo = true"
+          @focus="onFocus"
           @blur="showInfo = false"
         >
           i
@@ -235,6 +266,26 @@ const rows = computed(() =>
 @media (max-width: 600px) {
   .source-row {
     grid-template-columns: 1fr;
+  }
+
+  /* Pinned under the heading instead of centred on the small button, so it
+     stays inside the card. */
+  .breakdown-heading {
+    position: relative;
+  }
+
+  .info {
+    position: static;
+  }
+
+  .info-tip {
+    left: 0;
+    width: 100%;
+    transform: translateY(-4px);
+  }
+
+  .info-tip.is-open {
+    transform: none;
   }
 }
 </style>

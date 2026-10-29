@@ -15,6 +15,11 @@ export function getMe() {
   return api.get('/api/me')
 }
 
+// The privacy toggles on the profile page. Returns the updated user.
+export function updateSettings(changes) {
+  return api.patch('/api/me/settings', changes)
+}
+
 // The seeded test account, for teammates and graders without a Spotify login.
 export function getDemoStatus() {
   return api.get('/api/auth/demo')

@@ -40,6 +40,8 @@ export const soundwoods = {
   id: "soundwoods",
   title: "Soundwoods",
   description: "A walk through a forest made of sound reveals how you really feel.",
+  // Every result, for the list on the Personality page.
+  outcomes: Object.values(SCENES).map((scene) => ({ name: scene.name, meaning: scene.meaning })),
   dimensions: ["valence", "energy", "acousticness", "instrumentalness"],
   questions: [
     {

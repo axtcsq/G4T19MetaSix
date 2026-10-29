@@ -14,9 +14,12 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 - `models/User.js`, `Listen.js`, `Track.js`, `DailyMood.js` and `SyncGap.js` define the listening and mood collections.
 - `scripts/db-init.js` creates every collection and its indexes.
 - `scripts/seed.js` creates the demo user and a year of generated listening history from `scripts/data/demo-songs.json`.
-- `services/mood/` holds the mood rules (`mood.js`) and the music-mood-to-axis table (`axes.js`).
+- `services/mood/` holds the mood rules (`mood.js`), the music-mood-to-axis table (`axes.js`) and the song analysis. `analyse.js` (`analyseTrack`) fetches a song's audio features from ReccoBeats (`reccobeats.js`, falling back to other Spotify IDs for the same recording through `spotify.js`), its lyrics from LRCLIB (`lyrics.js`), translates non-English lyrics with DeepL (`translate.js`), scores them with a local emotion model (`emotion.js`), and saves both mood readings to `tracks`. The lyrics text is never stored, only the scores.
 - `services/dailyMoods.js` rebuilds a user's daily mood summaries from their listens.
 - `services/sync.js` saves a user's newest Spotify plays into `listens` and new songs into `tracks`. `jobs/sync.js` (`npm run sync`) runs it for every active user, and GitHub Actions runs that every 15 minutes.
+- `jobs/analyse.js` (`npm run analyse`) runs after each sync. It analyses up to 100 songs that are new, `partial` (lyrics failed for now) or `failed`, retrying each up to 3 times, then rebuilds the days they were played. The emotion model (~83 MB) downloads into `server/.models/` on first use; GitHub Actions caches it.
+- `services/mood/sound.js` is the sound-only half of the analysis, which needs no emotion model. `POST /api/tracks/moods/sound` uses it for songs nobody has played yet (search results, recommendations): it saves them with their sound mood in a second or two, and the analysis job adds the lyrics mood on its next run. `GET /api/tracks/moods` gives the mood tags for songs already stored. Both are behind login, and a user can add at most 100 new songs every 10 minutes.
+- `jobs/recompute.js` (`npm run mood:recompute`) recomputes every song's moods from stored scores, with no API calls, and rebuilds every day. Run it after changing `mood.js` or `axes.js`.
 
 ## Configuration
 
@@ -74,3 +77,12 @@ This adds the 156 test songs to `tracks` with both mood readings, creates the de
 npm install
 npm run dev
 ```
+
+## Check the mood analysis
+
+```sh
+npm test            # analyseTrack with fake API responses, no network
+npm run mood:eval   # the mood rules on 156 labelled songs: expect 126/156 (sound + lyrics) and 110/156 (sound only)
+```
+
+`testdata/dark.json` and `testdata/foreign.json` are smaller sets for dark lyrics and non-English songs: `node testdata/eval.mjs testdata/dark.json services/mood/mood.js --list`. A change to a threshold in `mood.js` must not lower either reading's score.

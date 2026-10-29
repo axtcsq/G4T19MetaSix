@@ -1,11 +1,48 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ListeningRoom from '../views/listen.vue'
 import { useListeningRoom } from '../composables/useListeningRoom'
+import AmbientWave from '../components/listening/AmbientWave.vue'
 
 describe('Spotify listening room', () => {
-  beforeEach(() => setActivePinia(createPinia()))
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback) {
+          this.callback = callback
+        }
+        observe() {
+          this.callback([{ isIntersecting: true }])
+        }
+        disconnect() {}
+      },
+    )
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('tracks visible playback without audio capture and cleans up', async () => {
+    const remove = vi.spyOn(document, 'removeEventListener')
+    const wrapper = mount(AmbientWave, { props: { playing: false } })
+    expect(wrapper.get('svg').attributes('aria-hidden')).toBe('true')
+    expect(wrapper.findAll('.bell-curve')).toHaveLength(3)
+    expect(wrapper.find('button').exists()).toBe(false)
+    expect(wrapper.find('image').exists()).toBe(false)
+    await wrapper.setProps({ cover: '/album-one.jpg' })
+    expect(wrapper.get('image').attributes('href')).toBe('/album-one.jpg')
+    await wrapper.setProps({ cover: '/album-two.jpg' })
+    expect(wrapper.get('image').attributes('href')).toBe('/album-two.jpg')
+    expect(wrapper.classes()).not.toContain('is-playing')
+    await wrapper.setProps({ playing: true })
+    expect(wrapper.classes()).toContain('is-playing')
+    await wrapper.setProps({ playing: false })
+    expect(wrapper.classes()).not.toContain('is-playing')
+    wrapper.unmount()
+    expect(remove).toHaveBeenCalledWith('visibilitychange', expect.any(Function))
+    remove.mockRestore()
+  })
 
   it('requires connection and never displays or plays fixture records', async () => {
     const room = useListeningRoom()
@@ -28,6 +65,54 @@ describe('Spotify listening room', () => {
     expect(room.spinning.value).toBe(false)
     expect(room.track.value.id).toBe('')
     wrapper.unmount()
+  })
+  it('paces the curves from track tempo and falls back when tempo is unavailable', async () => {
+    const wrapper = mount(AmbientWave, { props: { tempo: 60 } })
+    expect(wrapper.element.style.getPropertyValue('--wave-duration')).toBe('2s')
+    await wrapper.setProps({ tempo: 180 })
+    expect(
+      Number.parseFloat(wrapper.element.style.getPropertyValue('--wave-duration')),
+    ).toBeCloseTo(2 / 3)
+    for (const tempo of [null, 0, -20, NaN, Infinity]) {
+      await wrapper.setProps({ tempo })
+      expect(wrapper.element.style.getPropertyValue('--wave-duration')).toBe('3s')
+    }
+    wrapper.unmount()
+  })
+  it('pauses the curves offscreen and while the browser tab is hidden', async () => {
+    let intersect
+    const disconnect = vi.fn()
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback) {
+          intersect = callback
+        }
+        observe() {
+          intersect([{ isIntersecting: true }])
+        }
+        disconnect = disconnect
+      },
+    )
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(false)
+    const wrapper = mount(AmbientWave, { props: { playing: true } })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.classes()).toContain('is-playing')
+    intersect([{ isIntersecting: false }])
+    await wrapper.vm.$nextTick()
+    expect(wrapper.classes()).not.toContain('is-playing')
+    intersect([{ isIntersecting: true }])
+    hidden.mockReturnValue(true)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.classes()).not.toContain('is-playing')
+    hidden.mockReturnValue(false)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.classes()).toContain('is-playing')
+    wrapper.unmount()
+    expect(disconnect).toHaveBeenCalledOnce()
+    hidden.mockRestore()
   })
   it('clears personal history, search and artwork on disconnect', () => {
     const room = useListeningRoom()

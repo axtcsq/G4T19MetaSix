@@ -41,6 +41,8 @@ export const loveOnRepeat = {
   id: "love-on-repeat",
   title: "Love on Repeat",
   description: "The 5 Love Languages, played through music.",
+  // Every result, for the list on the Personality page.
+  outcomes: ORDER.map((key) => ({ name: LANGUAGES[key].name, meaning: LANGUAGES[key].meaning })),
   dimensions: ORDER,
   questions: [
     {
