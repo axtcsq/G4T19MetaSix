@@ -103,11 +103,45 @@ function wrapLines(ctx, text, maxWidth, maxLines) {
   return lines
 }
 
+// The MetaFor butterfly, with the same wing paths as ButterflyMark.vue: one
+// side drawn, then mirrored for the other.
+const UPPER_WING =
+  'M30.5 27.5C27.5 17 19 5 6 3C1 2.5 -1 7 0 13C1.5 21 8 29 17 31C23 32 28 31.5 30.5 30.5Z'
+const LOWER_WING =
+  'M30.5 33C26 33 18.5 33.5 14.5 37.5C10.5 41.5 11.5 48.5 16.5 50.5C21.5 52.5 27 47 29.5 40.5C30.5 38 30.8 35.5 30.5 33Z'
+const LOGO_HEIGHT = 60
+// The logo's viewBox is 68 wide and 60 tall, starting at x = -2.
+const LOGO_WIDTH = (LOGO_HEIGHT * 68) / 60
+
+function drawButterfly(ctx, x, y) {
+  const scale = LOGO_HEIGHT / 60
+  const wings = [new Path2D(UPPER_WING), new Path2D(LOWER_WING)]
+  ctx.save()
+  ctx.translate(x + 2 * scale, y)
+  ctx.scale(scale, scale)
+  ctx.strokeStyle = '#fff'
+  ctx.lineWidth = 2.6
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  for (const mirrored of [false, true]) {
+    ctx.save()
+    if (mirrored) {
+      ctx.translate(64, 0)
+      ctx.scale(-1, 1)
+    }
+    wings.forEach((wing) => ctx.stroke(wing))
+    ctx.restore()
+  }
+  ctx.restore()
+}
+
 function drawHeader(ctx) {
+  drawButterfly(ctx, PADDING, 100)
+
   ctx.textAlign = 'left'
   ctx.fillStyle = '#fff'
   ctx.font = `700 64px ${SERIF}`
-  ctx.fillText('MetaFor', PADDING, 150)
+  ctx.fillText('MetaFor', PADDING + LOGO_WIDTH + 18, 150)
 
   ctx.textAlign = 'right'
   ctx.font = `600 28px ${SANS}`
