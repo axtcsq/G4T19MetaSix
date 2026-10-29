@@ -14,6 +14,7 @@ const NEW_SONG_WINDOW_MS = 10 * 60 * 1000;
 const NEW_SONG_DEADLINE_MS = 8000;
 const SPOTIFY_ID = /^[0-9A-Za-z]{22}$/;
 const STILL_ANALYSING = ["pending", "failed"];
+const LIKELY_INSTRUMENTAL = 0.5;
 
 // Why a song's mood didn't use its lyrics, for the second tag: "pending" (not
 // read yet, or failed for now), "unavailable" (failed every retry),
@@ -21,11 +22,16 @@ const STILL_ANALYSING = ["pending", "failed"];
 // null when the lyrics counted, or when the user turned lyrics analysis off.
 function lyricsNote(track, useLyrics) {
   if (!useLyrics) return null;
+  // Don't label confirmed or audio-classified instrumental tracks as waiting
+  // for lyrics. ReccoBeats uses the same 0–1 instrumentalness scale as Spotify.
+  if (
+    ["not-found", "instrumental"].includes(track.lyrics?.status) ||
+    track.features?.instrumentalness >= LIKELY_INSTRUMENTAL
+  ) return null;
   if (!track.moods.lyrics) {
     const outOfRetries = track.analysis?.status === "partial" && (track.analysis.attempts ?? 0) >= MAX_ATTEMPTS;
     return outOfRetries ? "unavailable" : "pending";
   }
-  if (track.lyrics?.status === "instrumental") return "instrumental";
   // The same test mood.js uses to blend the lyrics in.
   const used = track.lyrics?.status === "found" && track.lyrics.valence != null;
   return used ? null : "none";
@@ -65,6 +71,7 @@ export function toMoods(track, useLyrics) {
 
 const TAG_FIELDS = {
   "features.tempo": 1,
+  "features.instrumentalness": 1,
   "moods.sound": 1,
   "moods.lyrics": 1,
   "lyrics.status": 1,
@@ -170,6 +177,10 @@ export function explainTrack(track, useLyrics) {
   }
 
   const lyrics = useLyrics ? track.lyrics : null;
+  explained.lyricsStatus = lyrics?.status ?? null;
+  explained.instrumental = Boolean(
+    lyrics?.status === "instrumental" || features.instrumentalness >= LIKELY_INSTRUMENTAL,
+  );
   const { sound, lyrics: withLyrics, blend } = readMoods(features, lyrics);
   // Lyrics not read yet (or failed every retry): there is no lyrics reading.
   const lyricsRead = Boolean(lyrics) && !["pending", "unavailable"].includes(tag?.lyricsNote);
