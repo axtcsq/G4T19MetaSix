@@ -245,7 +245,7 @@ const showcase = [
       <div class="hero-copy">
         <p class="eyebrow-label">Music journalling</p>
         <h1 id="hero-title" class="hero-title" aria-label="What's MetaFor?">
-          <span aria-hidden="true">{{ displayedTitle }}</span
+          <span aria-hidden="true">{{ displayedTitle.slice(0, 7) }}<span class="accent">{{ displayedTitle.slice(7) }}</span></span
           ><span class="typing-cursor" aria-hidden="true"></span>
         </h1>
         <p class="hero-text">
