@@ -351,7 +351,7 @@ onMounted(loadData)
                 <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
                 <span v-else class="track-art">♫</span>
               </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" /></span>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.recommendationSource === 'Instrumental search'" /></span>
               <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
             </article>
           </div>

@@ -62,8 +62,20 @@ describe("toMoods", () => {
   });
 
   it("notes songs whose mood is from the sound alone, and why", () => {
-    assert.equal(toMoods(withLyrics({ status: "instrumental" }), true).lyricsNote, "instrumental");
-    assert.equal(toMoods(withLyrics({ status: "not-found" }), true).lyricsNote, "none");
+    assert.equal(toMoods(withLyrics({ status: "instrumental" }), true).lyricsNote, null);
+    assert.equal(toMoods(withLyrics({ status: "not-found" }), true).lyricsNote, null);
+    const noLyrics = {
+      moods: { sound: { name: "Serene" }, lyrics: null },
+      lyrics: { status: "not-found" },
+      analysis: { status: "done", attempts: 1 },
+    };
+    assert.equal(toMoods(noLyrics, true).lyricsNote, null);
+    const likelyInstrumental = {
+      ...noLyrics,
+      lyrics: { status: "unavailable" },
+      features: { instrumentalness: 0.8 },
+    };
+    assert.equal(toMoods(likelyInstrumental, true).lyricsNote, null);
     assert.equal(toMoods(withLyrics({ status: "untranslatable" }), true).lyricsNote, "none");
     // Lyrics found, but with no emotional lines to score.
     assert.equal(toMoods(withLyrics({ status: "found", valence: null }), true).lyricsNote, "none");
