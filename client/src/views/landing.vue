@@ -956,8 +956,9 @@ const showcase = [
   align-items: center;
   justify-content: center;
   gap: 24px;
+  min-height: 300px;
   margin-bottom: var(--section-space);
-  padding: 56px 24px;
+  padding: 96px 24px;
   overflow: hidden;
   border: 1px solid #763e32;
   border-radius: 20px;
