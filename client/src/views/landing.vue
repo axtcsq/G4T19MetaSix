@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDemoStatus, spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
@@ -9,12 +9,8 @@ import NoteMargins from '@/components/landing/NoteMargins.vue'
 import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
-import StoryMode from '@/components/landing/StoryMode.vue'
 import StatementLine from '@/components/landing/StatementLine.vue'
 import SongSearch from '@/components/landing/SongSearch.vue'
-import daydreamer from '@/assets/images/personality/types/daydreamer.png'
-import poet from '@/assets/images/personality/types/poet.png'
-import spark from '@/assets/images/personality/types/spark.png'
 
 defineOptions({ name: 'LandingPage' })
 
@@ -22,13 +18,12 @@ const CassetteViewer = defineAsyncComponent(
   () => import('@/components/listening/CassetteViewer.vue'),
 )
 
-// The smaller features, in one strip under the showcase.
-const personalityImages = [daydreamer, poet, spark]
-const calendarMoods = ['😊', '😌', '😟', '😰', '😠']
-// Bar heights for the little Listening Portrait chart, in percent.
-const portraitBars = [40, 75, 55, 90, 65]
-
 const bannerVideo = ref(null)
+
+// The hero title types itself out, one letter at a time.
+const fullTitle = "What's MetaFor?"
+const displayedTitle = ref('')
+let typingTimer
 
 // The hero and the closing banner log people in straight from here, the same
 // way as the login page.
@@ -62,6 +57,14 @@ onMounted(async () => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // The banner shows the video's first frame instead of playing it.
     bannerVideo.value?.pause()
+    displayedTitle.value = fullTitle
+  } else {
+    let character = 0
+    typingTimer = window.setInterval(() => {
+      character += 1
+      displayedTitle.value = fullTitle.slice(0, character)
+      if (character >= fullTitle.length) window.clearInterval(typingTimer)
+    }, 95)
   }
 
   try {
@@ -70,6 +73,8 @@ onMounted(async () => {
     demoEnabled.value = false
   }
 })
+
+onBeforeUnmount(() => window.clearInterval(typingTimer))
 
 // The cards and the closing banner light up where the mouse is and tilt a
 // little towards it. Touch doesn't hover, so only the mouse drives it.
@@ -239,8 +244,9 @@ const showcase = [
       >
       <div class="hero-copy">
         <p class="eyebrow-label">Music journalling</p>
-        <h1 id="hero-title" class="hero-title">
-          Your music, <span class="accent">your mood,</span> your journal.
+        <h1 id="hero-title" class="hero-title" aria-label="What's MetaFor?">
+          <span aria-hidden="true">{{ displayedTitle }}</span
+          ><span class="typing-cursor" aria-hidden="true"></span>
         </h1>
         <p class="hero-text">
           Your music can be a window into how you feel. MetaFor brings your Spotify listening and
@@ -248,44 +254,9 @@ const showcase = [
           playlists.
         </p>
 
-        <!-- Already logged in: nothing to log in to, so go straight in. -->
-        <div class="hero-actions">
-          <RouterLink v-if="auth.user" class="get-started glass-action" to="/dashboard">
-            Go to your dashboard
-          </RouterLink>
-          <template v-else>
-            <UButton
-              class="spotify-login justify-center rounded-full font-sans"
-              size="lg"
-              :loading="isRedirecting"
-              @click="continueWithSpotify"
-            >
-              <!-- The Spotify icon, drawn in the button's text colour. -->
-              <svg class="spotify-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"
-                />
-              </svg>
-              Continue with Spotify
-            </UButton>
-            <UButton
-              v-if="demoEnabled"
-              class="test-account justify-center rounded-full font-sans"
-              color="neutral"
-              variant="outline"
-              size="lg"
-              :loading="isDemoLoading"
-              @click="useTestAccount"
-            >
-              Use the test account
-            </UButton>
-          </template>
+        <div v-if="auth.user" class="hero-actions">
+          <RouterLink class="get-started glass-action" to="/dashboard">Go to your dashboard</RouterLink>
         </div>
-        <p v-if="loginError" class="login-error" role="alert">{{ loginError }}</p>
-        <p v-if="!auth.user" class="privacy-note">
-          We only read your recently played songs. We never post or change your playlists.
-        </p>
         <div class="hero-mood" role="group" aria-labelledby="hero-mood-label">
           <p id="hero-mood-label" class="hero-mood-label">How are you feeling right now?</p>
           <div class="hero-mood-options">
@@ -314,10 +285,6 @@ const showcase = [
         <p class="drag-hint">Drag the cassette to rotate</p>
       </div>
     </section>
-
-    <div class="story-launch landing-shell">
-      <StoryMode />
-    </div>
 
     <MusicJournal />
 
@@ -354,41 +321,6 @@ const showcase = [
         <ShowcasePreview :kind="feature.id" :name="feature.eyebrow" />
       </article>
 
-      <!-- The smaller features, in one strip under the rows. -->
-      <h3 class="more-title">And there's more inside</h3>
-      <ul class="more-features">
-        <li>
-          <RouterLink class="more-item" to="/quiz">
-            <span class="more-visual personality-faces" aria-hidden="true">
-              <img v-for="image in personalityImages" :key="image" :src="image" alt="" />
-            </span>
-            <strong>Personality quizzes</strong>
-            <span>Six quizzes that match you to one of six music personalities.</span>
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink class="more-item" to="/calendar">
-            <span class="more-visual calendar-moods" aria-hidden="true">
-              <span v-for="mood in calendarMoods" :key="mood">{{ mood }}</span>
-            </span>
-            <strong>Mood Calendar</strong>
-            <span>Every mood you log, day by day, next to what you listened to.</span>
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink class="more-item" to="/dashboard">
-            <span class="more-visual portrait-bars" aria-hidden="true">
-              <span
-                v-for="(bar, index) in portraitBars"
-                :key="index"
-                :style="{ height: `${bar}%` }"
-              />
-            </span>
-            <strong>Listening Portrait</strong>
-            <span>Your listening history, turned into artwork and charts.</span>
-          </RouterLink>
-        </li>
-      </ul>
     </section>
 
     <!-- Two quick things to try, side by side: the quiz and the song search. -->
@@ -533,10 +465,18 @@ const showcase = [
   padding: 0.3rem 0.65rem 0.3rem 0.35rem !important;
   font-size: 0.8rem !important;
 }
-.story-launch {
-  display: flex;
-  justify-content: center;
-  padding-block: 8px 36px;
+/* The title's blinking caret, like the typewriter-style intro. */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.85em;
+  margin-left: 3px;
+  background: var(--brand);
+  vertical-align: -0.06em;
+  animation: cursor-blink 0.8s steps(2, start) infinite;
+}
+@keyframes cursor-blink {
+  to { visibility: hidden; }
 }
 .hero-mood-options button {
   min-height: 36px;
@@ -595,8 +535,7 @@ const showcase = [
 /* One heading style for the whole page: Raleway, bold, tight spacing. */
 .hero-title,
 .section-title,
-.card-title,
-.more-title {
+.card-title {
   margin: 0;
   color: var(--ink);
   font-family: var(--font-sans);
@@ -747,79 +686,6 @@ const showcase = [
   font-family: var(--font-serif);
   font-size: 1.15rem;
   line-height: 1.5;
-}
-
-/* The smaller features */
-.more-title {
-  margin: 64px 0 24px;
-  font-size: var(--text-subheader);
-  text-align: center;
-}
-.more-features {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.more-item {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 28px 24px;
-  border: 1px solid var(--ui-border);
-  border-radius: 20px;
-  color: var(--ui-text-muted);
-  background: var(--ui-bg-elevated);
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  text-align: center;
-  transition: border-color 180ms ease;
-}
-.more-item:hover {
-  border-color: var(--ui-primary);
-}
-.more-item strong {
-  color: var(--ink);
-  font-size: 1.05rem;
-}
-/* Each item's small picture sits in the same 56px-tall space. */
-.more-visual {
-  display: flex;
-  height: 56px;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-/* The illustrations are dark line art, so they keep a light circle behind them
-   in dark mode too. */
-.personality-faces img {
-  width: 52px;
-  height: 52px;
-  border: 2px solid var(--ui-bg-elevated);
-  border-radius: 50%;
-  background: #fdf3ea;
-  object-fit: cover;
-}
-/* Overlap the faces a little. */
-.personality-faces img + img {
-  margin-left: -14px;
-}
-.calendar-moods {
-  gap: 4px;
-  font-size: 1.5rem;
-}
-.portrait-bars {
-  align-items: flex-end;
-  gap: 6px;
-}
-.portrait-bars span {
-  width: 10px;
-  border-radius: 4px 4px 0 0;
-  background: var(--brand);
 }
 
 /* Full width, behind the page, fading out at its top and bottom. */
@@ -1207,8 +1073,7 @@ const showcase = [
     min-height: 270px;
   }
   .mirror-grid,
-  .taste-grid,
-  .more-features {
+  .taste-grid {
     grid-template-columns: 1fr;
   }
   .mirror-grid {
