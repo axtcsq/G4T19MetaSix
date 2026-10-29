@@ -1,5 +1,3 @@
-# Local Claude Code settings
-.claude/
 
 # Installed packages, wherever pnpm or npm is run
 node_modules/
