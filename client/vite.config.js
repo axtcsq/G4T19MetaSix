@@ -13,8 +13,8 @@ const env = loadEnv('development', process.cwd(), '')
 export default defineConfig({
   plugins: [
     ui({
-      // Nuxt UI's own colours, plus the five journal moods for the song mood
-      // tags (<UBadge color="sad">). Their shades are in assets/css/main.css.
+      // Nuxt UI's own colours plus the five music mood tags
+      // (<UBadge color="sad">). Their shades are in assets/css/main.css.
       theme: {
         colors: [
           'primary',

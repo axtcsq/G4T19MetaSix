@@ -97,7 +97,7 @@ describe('Daily Mood API flow', () => {
     await wrapper.find('.history-toggle').trigger('click')
     expect(wrapper.find('.entry-sheet.has-drawing').exists()).toBe(true)
     expect(wrapper.find('.drawing-note').text()).toBe('Saved drawing')
-    expect(wrapper.find('.history-toggle').text()).toBe('Back to writing')
+    expect(wrapper.find('.history-toggle').text()).toBe('Back to Writing')
     expect(wrapper.find('#journal-entry').element.value).toBe('Today is different')
     expect(wrapper.text()).not.toContain('View drawing')
   })
@@ -119,6 +119,19 @@ describe('Daily Mood API flow', () => {
     expect(wrapper.text()).toContain('Entry saved.')
   })
 
+  it('offers the additional moods and saves them as selected', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+    const excited = wrapper.findAll('button').find((button) => button.text().includes('Excited'))
+    expect(excited).toBeTruthy()
+    await excited.trigger('click')
+    await wrapper.find('#journal-entry').setValue('A bright day')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(createMood).toHaveBeenCalledWith({ mood: 'Excited', journal: 'A bright day', drawing: null })
+  })
+
   it('preserves the draft and offers retry when requests fail', async () => {
     getMoods.mockRejectedValueOnce(new Error('Server unavailable'))
 
@@ -128,7 +141,7 @@ describe('Daily Mood API flow', () => {
     expect(wrapper.text()).toContain('Server unavailable')
     await wrapper
       .findAll('button')
-      .find((button) => button.text() === 'Try again')
+      .find((button) => button.text() === 'Try Again')
       .trigger('click')
     await flushPromises()
     expect(getMoods).toHaveBeenCalledTimes(2)

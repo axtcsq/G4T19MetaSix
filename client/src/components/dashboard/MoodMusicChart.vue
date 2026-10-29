@@ -17,6 +17,9 @@ const MOOD_COLORS = {
   Relaxed: '#998ba1',
   Anxious: '#ed8a35',
   Angry: '#d94a45',
+  Excited: '#d96f9f',
+  Tired: '#7e8ca6',
+  Lonely: '#4f8f95',
 }
 
 const days = computed(() =>

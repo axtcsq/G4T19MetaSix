@@ -607,6 +607,9 @@ onMounted(loadData)
 .mood-color--relaxed { --mood-color: #998ba1; }
 .mood-color--anxious { --mood-color: #ed8a35; }
 .mood-color--angry { --mood-color: #d94a45; }
+.mood-color--excited { --mood-color: #d96f9f; }
+.mood-color--tired { --mood-color: #7e8ca6; }
+.mood-color--lonely { --mood-color: #4f8f95; }
 .listening-mood-dot { position: absolute; top: 8px; right: 8px; color: var(--calendar-accent); font-family: var(--font-sans); font-size: .7rem; font-weight: 800; }
 .song-count { color: var(--calendar-accent); font-size: .68rem; font-weight: 800; }
 .empty-day { width: 5px; height: 5px; border-radius: 50%; background: transparent; }

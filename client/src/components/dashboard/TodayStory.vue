@@ -16,8 +16,20 @@ const MOOD_COLOURS = {
   Relaxed: '#998ba1',
   Anxious: '#ed8a35',
   Angry: '#d94a45',
+  Excited: '#d96f9f',
+  Tired: '#7e8ca6',
+  Lonely: '#4f8f95',
 }
-const MOOD_EMOJI = { Sad: '😢', Happy: '😊', Relaxed: '😌', Anxious: '😟', Angry: '😠' }
+const MOOD_EMOJI = {
+  Sad: '😢',
+  Happy: '😊',
+  Relaxed: '😌',
+  Anxious: '😟',
+  Angry: '😠',
+  Excited: '🤩',
+  Tired: '😴',
+  Lonely: '🥺',
+}
 const AXIS_MOOD = {
   sad: 'Sad',
   happy: 'Happy',
