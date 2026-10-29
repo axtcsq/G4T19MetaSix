@@ -14,7 +14,7 @@ let scene
 let camera
 let material
 let geometry
-let clock
+let timer
 let animationFrame
 let resizeObserver
 let intersectionObserver
@@ -35,9 +35,10 @@ function resize() {
   renderer.render(scene, camera)
 }
 
-function animate() {
+function animate(timestamp) {
   animationFrame = requestAnimationFrame(animate)
-  elapsed += clock.getDelta()
+  timer.update(timestamp)
+  elapsed += timer.getDelta()
   material.uniforms.uTime.value = elapsed * SPEED
   renderer.render(scene, camera)
 }
@@ -47,7 +48,8 @@ function updatePlaying() {
   const shouldPlay = isOnScreen && !document.hidden && !reducedMotion.matches
 
   if (shouldPlay && !animationFrame) {
-    clock.getDelta()
+    // Skip the time spent paused, so the waves carry on where they stopped.
+    timer.reset()
     animate()
   } else if (!shouldPlay && animationFrame) {
     cancelAnimationFrame(animationFrame)
@@ -130,7 +132,7 @@ onMounted(() => {
   resizeObserver.observe(canvas.value)
   resize()
 
-  clock = new THREE.Clock()
+  timer = new THREE.Timer()
   renderer.render(scene, camera)
 
   intersectionObserver = new IntersectionObserver(([entry]) => {

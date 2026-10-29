@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 
-// Two weeks of how the user felt next to how happy their music sounded, from
-// /api/quiz/mood-music. moodLink is Patterns' one-line comparison, used when
-// no day has both a mood and plays yet.
+// Home's Mood × Music: two weeks of how the user felt next to how happy their
+// music sounded, from /api/quiz/mood-music. moodLink is an optional one-line
+// comparison, used when no day has both a mood and plays yet.
 const props = defineProps({
   data: { type: Object, required: true },
   moodLink: { type: Object, default: null },
@@ -114,7 +114,7 @@ function describe(day) {
 }
 
 .mood-dot.is-empty {
-  border: 1px dashed var(--pq-border-strong);
+  border: 1px dashed var(--ui-border-accented);
 }
 
 .bar-track {
@@ -124,23 +124,23 @@ function describe(day) {
   align-items: flex-end;
   overflow: hidden;
   border-radius: 6px;
-  background: var(--pq-rail);
+  background: color-mix(in srgb, var(--ui-primary) 20%, transparent);
 }
 
 /* A day without plays is an outline, so it doesn't read as a full bar. */
 .bar-track.is-empty {
-  border: 1px dashed var(--pq-border-strong);
+  border: 1px dashed var(--ui-border-accented);
   background: transparent;
 }
 
 .bar {
   width: 100%;
   border-radius: 6px;
-  background: var(--pq-accent);
+  background: var(--ui-primary);
 }
 
 .day-number {
-  color: var(--pq-muted);
+  color: var(--ui-text-muted);
   font-family: var(--font-sans);
   font-size: 0.75rem;
 }
@@ -150,7 +150,7 @@ function describe(day) {
   flex-wrap: wrap;
   gap: 6px 16px;
   margin-top: 1rem;
-  color: var(--pq-muted);
+  color: var(--ui-text-muted);
   font-family: var(--font-sans);
   font-size: 0.8rem;
 }
@@ -165,7 +165,7 @@ function describe(day) {
   width: 10px;
   height: 14px;
   border-radius: 3px;
-  background: var(--pq-accent);
+  background: var(--ui-primary);
 }
 
 .legend-dot {

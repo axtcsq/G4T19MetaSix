@@ -10,6 +10,9 @@ export async function syncNow(req, res) {
   if (isDemo) {
     return res.status(409).json({ error: "The test account isn't connected to Spotify." });
   }
+  if (req.user.preferences?.savePlays === false) {
+    return res.json({ added: 0, skipped: true, paused: true });
+  }
   if (tracking.status !== "active") {
     return res.status(403).json({ error: "Log in with Spotify again to resume tracking." });
   }

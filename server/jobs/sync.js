@@ -17,7 +17,7 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 async function run() {
   await connectDB();
   const users = await User.find(
-    { "tracking.status": "active", isDemo: { $ne: true } },
+    { "tracking.status": "active", isDemo: { $ne: true }, "preferences.savePlays": { $ne: false } },
     { displayName: 1 },
   ).lean();
   console.log(`[sync] ${mongoose.connection.name}: ${users.length} active users`);

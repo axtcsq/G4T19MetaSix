@@ -47,6 +47,17 @@ Rules:
 - A feature can define its own semantic tokens on its root class (like `.dashboard` or `.listening-room`), but point them at the shared tokens above so they follow the palette and dark mode.
 - Mood colours, album colours and the garden are data, not theme, so they may use their own colours.
 
+Mood colours: the five journal moods have full scales in `main.css`
+(`--color-mood-sad-50` to `--color-mood-sad-950`, and the same for `happy`,
+`relaxed`, `anxious` and `angry`; 500 is the Daily Mood picker's colour). They're
+registered as Nuxt UI colours in `client/vite.config.js`, so
+`<UBadge color="sad">` works. For a song's mood, use
+`<MoodTag :track-id="track.id" />` (`components/mood/MoodTag.vue`) wherever a
+song is shown: it fetches the mood, batches every tag on the page into one
+request, and colours it by the journal mood it counts towards. Songs nobody has played yet (search results) get their sound mood worked out on the spot, showing "Analysing…" for a second or two. For mood text
+on a light background use the 800 shade (200 in dark mode); the 500 shades of
+Happy and Relaxed don't pass contrast.
+
 ## Typography
 
 Two families, each with a clear job:
@@ -93,7 +104,7 @@ styles can still change their margin or colour.
 
 ## Layout
 
-- **Page width:** content sits in a centred shell, `width: var(--page-width); margin-inline: auto;`. `--page-width` is `min(1180px, calc(100% - 64px))`, the same width as the nav and footer, so every page lines up with them. Form and reading pages (Profile, a quiz result) can use a narrower centred column.
+- **Page width:** content sits in a centred shell, `width: var(--page-width); margin-inline: auto;`. `--page-width` is 1180px at most, with a `--page-gutter` on each side: 32px on desktop, 24px at 768px and below, 16px at 400px and below. The nav and footer use the same width, so every page lines up with them. Don't add your own mobile widths or side padding; the gutter already shrinks. Form and reading pages (Profile, a quiz result) can use a narrower centred column. Space the top of the page with `--page-top` (under the nav) and the bottom with `--page-bottom` (above the footer), not your own padding.
 - **Page padding:** top `clamp(36px, 6vw, 72px)`, bottom `64px`.
 - **Page header:** left-aligned `h1` with `.page-title`, then one or two lines of muted serif intro. No eyebrow above the page title.
 - **Breakpoints:** use only these, as `max-width` queries:
@@ -108,7 +119,7 @@ styles can still change their margin or colour.
 
 ### Main action button: `.glass-action`
 
-The glossy terracotta pill is the main call to action ("Get Started", "Save",
+The flat brand-colored pill is the main call to action ("Get Started", "Save",
 "Connect Spotify"). Use one per view, or one per card at most. It already
 handles hover, disabled and focus. Put it on a `UButton`, `RouterLink`, `<a>`
 or `<button>`:
@@ -118,8 +129,14 @@ or `<button>`:
 <RouterLink class="glass-action" to="/login">Get Started</RouterLink>
 ```
 
-For secondary actions use a plain Nuxt UI `UButton` with `variant="outline"`,
-`"soft"` or `"ghost"`. It picks up the brand colour from `app.config.ts`.
+Use the same shared action family throughout the app:
+
+- `glass-action`: terracotta primary actions.
+- `glass-secondary`: flat neutral pills, with theme-aware surfaces.
+- `glass-icon`: circular 44px controls; every icon-only action needs an accessible label.
+- `glass-text`: quiet inline actions with the same UI font and focus treatment.
+
+Nuxt UI solid buttons map to primary; outline/soft/subtle map to secondary; ghost/link map to text. `app.config.ts` owns these mappings and is passed into the Nuxt UI plugin in `vite.config.js`. Use the same styles on native buttons and action links. Calendar days, quiz answer cards, switches, swatches and drag handles retain their task-specific shapes. Animated mood faces stay exclusive to journal mood choices.
 
 ### Cards
 
@@ -190,6 +207,10 @@ These keep their own colours on purpose, in both modes:
 
 - The journal paper on Daily Mood and the drawing paper on Canvas.
 - Mood colours, the drawing palette, album-cover colours and the dashboard garden. These are data, not theme.
-- The glossy white pills (mood choices, canvas tools), which are a component style like `.glass-action`.
+- The glossy white mood choices and canvas tools, which intentionally retain their sculpted treatment.
 - The garden on Home draws its own sky.
 - The landing page's typed "What's MetaFor?" title (Crimson Text) and the banner's "The Real You?" are larger display headings, from the Figma and by request.
+
+### Flat button update
+
+Application actions use flat solid fills from the existing theme, without bevels, gradients, blur or drop shadows. Primary actions use brand-600 with white text; secondary and icon actions use the accented surface and theme text. Existing peach, listening-room brown and danger-red variants remain. Keep pill geometry, focus rings, hover/pressed feedback and disabled states. The landing and daily journal emotion choices, drawing tools and color swatches retain their original sculpted 3D treatment. The drawing canvas has no outer panel box; only the drawing surface keeps its boundary. The shared Happy face uses a balanced closed smile and gentle smiling eyes on hover. This supersedes earlier glossy-button guidance.

@@ -19,7 +19,11 @@ const userSchema = new mongoose.Schema(
       tokenUpdatedAt: Date,
     },
     preferences: {
+      // "sound" when the user has turned lyrics analysis off on their profile.
       moodLens: { type: String, enum: MOOD_LENSES, default: "lyrics" },
+      // False stops the hourly job and Sync now saving new plays. Plays already
+      // saved are kept.
+      savePlays: { type: Boolean, default: true },
     },
     tracking: {
       status: { type: String, enum: TRACKING_STATUSES, default: "active" },

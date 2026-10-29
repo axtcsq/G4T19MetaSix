@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
 defineOptions({ name: 'SiteFooter' })
 
@@ -22,6 +24,12 @@ const groups = [
 ]
 
 const year = new Date().getFullYear()
+
+// The Personality pages use quiz card photos from Unsplash, credited here.
+const route = useRoute()
+// No route when a page is mounted on its own, as in the tests.
+const onPersonalityPage = computed(() => Boolean(route?.path.startsWith('/quiz')))
+const photographers = 'Egor Litvinov, Sarah Brown, Jupter Moon, Jackson Hendry, Łukasz Szmigiel and Sean Stratton'
 
 function backToTop() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -56,9 +64,19 @@ function backToTop() {
       <div class="footer-bottom">
         <p>
           © {{ year }} MetaFor · Made by MetaSix · Music and artwork from
-          <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
+          <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a
+          ><template v-if="onPersonalityPage">
+            · Quiz photos from
+            <a
+              href="https://unsplash.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              :title="`Photos by ${photographers}`"
+              >Unsplash</a
+            ></template
+          >
         </p>
-        <button type="button" class="top-button" @click="backToTop">Back to top ↑</button>
+        <button type="button" class="top-button glass-text" @click="backToTop">Back to top ↑</button>
       </div>
     </div>
   </footer>
@@ -204,10 +222,6 @@ function backToTop() {
 }
 
 @media (max-width: 768px) {
-  .footer-inner {
-    width: calc(100% - 36px);
-  }
-
   .footer-top {
     flex-direction: column;
     padding-block: 2rem 1.5rem;
