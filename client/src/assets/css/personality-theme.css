@@ -1,7 +1,7 @@
 /* Colours for the Personality pages. Each page root has the
    .personality-theme class, so these only apply there. Dark mode swaps the
    white cards and peach buttons for warm dark ones that sit on the app's
-   navy background. */
+   espresso background. */
 .personality-theme {
   --pq-surface: var(--ui-bg-elevated);
   --pq-on-surface: var(--ui-text);
@@ -31,18 +31,18 @@
   --pq-muted: var(--ui-text-muted);
   --pq-brown: #eaa596;
   --pq-accent: #db806d;
-  --pq-peach: #3a2a30;
-  --pq-peach-hover: #4a333a;
+  --pq-peach: #3a2a22;
+  --pq-peach-hover: #4a352b;
   --pq-on-peach: #ffe6d2;
   --pq-quiet: transparent;
-  --pq-result: #2f2530;
-  --pq-rail: #4a3a3f;
-  --pq-placeholder: #3d3850;
-  --pq-disabled: #2c2838;
+  --pq-result: #2e221d;
+  --pq-rail: #4a382f;
+  --pq-placeholder: #3a2d27;
+  --pq-disabled: #2a211d;
   --pq-border: rgba(255, 205, 166, 0.18);
   --pq-border-strong: rgba(255, 205, 166, 0.32);
   --pq-line: rgba(255, 205, 166, 0.12);
-  --pq-tint: rgba(185, 174, 196, 0.12);
+  --pq-tint: rgba(255, 205, 166, 0.08);
   --pq-shadow: rgba(0, 0, 0, 0.45);
   --pq-focus: rgba(219, 128, 109, 0.6);
   --pq-error: #f09595;

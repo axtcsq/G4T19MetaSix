@@ -641,7 +641,7 @@ watch(
 :global(.dark .dashboard) {
   --dash-accent: var(--color-brand-300);
   --dash-meter: var(--color-brand-400);
-  --dash-meter-soft: #4a3a3f;
+  --dash-meter-soft: #4a382f;
   --dash-strong: var(--color-brand-300);
 }
 .dashboard-inner {
