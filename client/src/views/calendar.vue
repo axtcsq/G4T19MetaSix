@@ -74,7 +74,11 @@ const analyzedMoodsByDate = computed(() => {
 })
 const selectedKey = computed(() => selectedDate.value ? keyForDate(selectedDate.value) : '')
 const selectedLogs = computed(() => logsByDate.value.get(selectedKey.value) || [])
-const selectedListens = computed(() => listensByDate.value.get(selectedKey.value) || [])
+const selectedListens = computed(() =>
+  [...(listensByDate.value.get(selectedKey.value) || [])].sort(
+    (a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime(),
+  ),
+)
 const showAllSelectedListens = ref(false)
 const visibleSelectedListens = computed(() =>
   showAllSelectedListens.value ? selectedListens.value : selectedListens.value.slice(0, 6),
@@ -344,7 +348,7 @@ onMounted(loadData)
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
               <div v-if="selectedListens.length" class="track-list">
                 <!-- The Spotify link and the mood tag (which opens the song's page) sit side by side, since a link can't hold another link. -->
-                <article v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card">
+                <article v-for="(item, index) in visibleSelectedListens" :key="`${item.played_at}-${index}`" class="track-card">
                   <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
                     <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
                     <span v-else class="track-art">♫</span>
