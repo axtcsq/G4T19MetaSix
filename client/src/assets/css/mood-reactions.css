@@ -37,10 +37,10 @@
     transform: rotate(0) scale(1);
   }
   30% {
-    transform: rotate(-12deg) scale(1.15);
+    transform: rotate(-4deg) scale(1.04);
   }
   65% {
-    transform: rotate(7deg) scale(1.08);
+    transform: rotate(3deg) scale(1.02);
   }
 }
 @keyframes happy-wink {

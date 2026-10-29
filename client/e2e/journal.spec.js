@@ -22,6 +22,29 @@ test('journal helper uses the sparkle icon and moving background, respecting red
   await expect(page.locator('.helper-liquid')).toHaveCount(0)
 })
 
+test('actions are flat while mood choices and drawing tools retain their raised style', async ({
+  page,
+  app,
+}) => {
+  expect(app.signedIn).toBe(true)
+  await page.goto('/daily-mood')
+  const history = page.getByRole('button', { name: 'Past entries', exact: true })
+  await expect(history).toHaveCSS('box-shadow', 'none')
+  await expect(history).toHaveCSS('background-image', 'none')
+  const happy = page.getByRole('button', { name: 'Happy', exact: true })
+  await expect(happy).not.toHaveCSS('box-shadow', 'none')
+  await page.getByText('Add a drawing', { exact: true }).click()
+  await expect(page.locator('.tool-button').first()).not.toHaveCSS('background-image', 'none')
+  await expect(page.locator('.tool-button').first()).not.toHaveCSS('box-shadow', 'none')
+  await expect(page.locator('.drawing-panel')).toHaveCSS('border-top-width', '0px')
+  await expect(page.locator('.drawing-disclosure')).toHaveCSS('border-top-width', '0px')
+  await page.goto('/')
+  await expect(page.locator('.hero-mood-options .mood-reaction').first()).not.toHaveCSS(
+    'box-shadow',
+    'none',
+  )
+})
+
 test('save requires mood and reflection, then appears in history and calendar', async ({
   page,
   app,
