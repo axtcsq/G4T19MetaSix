@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { getPersonality, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
@@ -63,6 +63,18 @@ const shownOutcomes = computed(() => {
 function pickOutcomesQuiz(id) {
   outcomesQuizId.value = id
   showAllOutcomes.value = false
+}
+// Show fewer takes the page back up to the first three cards, so it doesn't
+// leave the reader below the shortened list.
+const outcomesSection = ref(null)
+async function toggleOutcomes() {
+  showAllOutcomes.value = !showAllOutcomes.value
+  if (showAllOutcomes.value) return
+  await nextTick()
+  const top = outcomesSection.value?.getBoundingClientRect().top
+  if (top === undefined || top >= 0) return
+  const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  outcomesSection.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
 }
 
 // The user's own result in the list. Horoscope titles put words in front of
@@ -241,6 +253,7 @@ onMounted(loadPage)
       <!-- Every result each quiz can give, one quiz at a time. -->
       <section
         v-if="!isLoading && quizzes.length"
+        ref="outcomesSection"
         class="page-width outcomes pb-16"
         aria-labelledby="outcomes-heading"
       >
@@ -290,7 +303,7 @@ onMounted(loadPage)
             class="peach-button peach-button--quiet show-more"
             :aria-expanded="showAllOutcomes"
             aria-controls="outcomes-panel"
-            @click="showAllOutcomes = !showAllOutcomes"
+            @click="toggleOutcomes"
           >
             {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
             <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
@@ -577,7 +590,7 @@ onMounted(loadPage)
   border-radius: 10px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: none;
+  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -729,6 +742,18 @@ onMounted(loadPage)
   border: 1px solid rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+/* The result cards lift towards the reader on hover, or while something in
+   them has keyboard focus. Loading and empty states stay put. */
+.patterns .pattern-card:not(.patterns-loading, .patterns-empty):is(:hover, :focus-within) {
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 32px rgba(58, 31, 25, 0.28);
+  transform: translateY(-6px);
 }
 
 .dark .pattern-card {
@@ -940,6 +965,11 @@ onMounted(loadPage)
 }
 
 /* What You Could Get: quiz tabs, then a card per result. */
+.outcomes {
+  /* Room for the sticky header when Show fewer scrolls back here. */
+  scroll-margin-top: 96px;
+}
+
 .outcomes-title {
   color: var(--ui-text);
   font-size: var(--text-header);
@@ -977,7 +1007,7 @@ onMounted(loadPage)
 .outcome-tab[aria-selected='true'] {
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: none;
+  box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
 .outcome-tab:focus-visible {
@@ -1122,8 +1152,13 @@ onMounted(loadPage)
 
 @media (prefers-reduced-motion: reduce) {
   .outcome-card,
-  .show-more-chevron {
+  .show-more-chevron,
+  .patterns .pattern-card {
     transition: none;
+  }
+
+  .patterns .pattern-card:is(:hover, :focus-within) {
+    transform: none !important;
   }
 }
 

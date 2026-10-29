@@ -192,7 +192,7 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
-/* Softer waves in dark mode, so the band sits calmly on the navy page. */
+/* Softer waves in dark mode, so the band sits calmly on the espresso page. */
 .dark .wave-canvas {
   filter: brightness(0.8) saturate(0.9);
 }

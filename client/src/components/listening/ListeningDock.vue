@@ -348,7 +348,7 @@ html.has-dock body:not(:has(.site-footer)) {
 }
 :global(.dark .listening-dock) {
   border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(23, 27, 39, 0.6);
+  background: rgba(22, 18, 16, 0.6);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 @media (prefers-reduced-transparency: reduce) {
@@ -356,7 +356,7 @@ html.has-dock body:not(:has(.site-footer)) {
     background: #faf8f6;
   }
   :global(.dark .listening-dock) {
-    background: #171b27;
+    background: #161210;
   }
 }
 img {

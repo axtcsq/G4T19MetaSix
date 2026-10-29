@@ -25,6 +25,13 @@ const moodLogSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: null,
     },
+    // "seed" for the demo user's generated entries, so re-seeding replaces
+    // only those. Absent on entries people write.
+    source: {
+      type: String,
+      enum: ["seed"],
+      select: false,
+    },
   },
   {
     timestamps: true,

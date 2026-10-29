@@ -563,7 +563,15 @@ const showcase = [
 .hero-mood-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+}
+/* Compact chips, so all five fit on one row; the shared glossy button style
+   is roomier, hence the !important. */
+.hero-mood-options .mood-reaction.glass-secondary {
+  gap: 5px;
+  min-height: 36px !important;
+  padding: 0.3rem 0.8rem 0.3rem 0.4rem !important;
+  font-size: 0.8rem !important;
 }
 .story-launch {
   display: flex;
@@ -591,8 +599,8 @@ const showcase = [
   transform: translateY(-1px);
 }
 .hero-mood-options .button-mood-face {
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   flex: none;
   transform-origin: center;
 }
@@ -617,7 +625,7 @@ const showcase = [
 }
 
 .landing-shell {
-  width: var(--page-width);
+  width: var(--landing-width);
   margin-inline: auto;
 }
 
