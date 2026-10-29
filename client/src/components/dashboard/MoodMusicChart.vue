@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+const selected = ref(null)
 
 // Home's Mood × Music: two weeks of how the user felt next to how happy their
 // music sounded, from /api/quiz/mood-music. moodLink is an optional one-line
@@ -29,7 +30,9 @@ const days = computed(() =>
   }),
 )
 
-const loggedMoods = computed(() => Object.keys(MOOD_COLORS).filter((mood) => days.value.some((day) => day.mood === mood)))
+const loggedMoods = computed(() =>
+  Object.keys(MOOD_COLORS).filter((mood) => days.value.some((day) => day.mood === mood)),
+)
 
 const summary = computed(() => {
   const matches = [...props.data.byMood].sort((a, b) => b.days - a.days).slice(0, 2)
@@ -38,7 +41,10 @@ const summary = computed(() => {
     const lead = `On ${first.mood} days your music averaged ${first.happiness}% happiness`
     return second ? `${lead}, and on ${second.mood} days ${second.happiness}%.` : `${lead}.`
   }
-  return props.moodLink?.text ?? "Log your mood on days you listen, and you'll see how the two line up here."
+  return (
+    props.moodLink?.text ??
+    "Log your mood on days you listen, and you'll see how the two line up here."
+  )
 })
 
 function describe(day) {
@@ -62,7 +68,16 @@ function describe(day) {
     </div>
 
     <ol class="chart" aria-label="The last two weeks, day by day">
-      <li v-for="day in days" :key="day.date" class="chart-day">
+      <li
+        v-for="day in days"
+        :key="day.date"
+        class="chart-day"
+        tabindex="0"
+        :aria-label="describe(day)"
+        @pointerenter="selected = day"
+        @focus="selected = day"
+        @click="selected = day"
+      >
         <span class="sr-only">{{ describe(day) }}</span>
         <span
           class="mood-dot"
@@ -82,10 +97,49 @@ function describe(day) {
         <span class="day-number" aria-hidden="true">{{ day.dayNumber }}</span>
       </li>
     </ol>
+    <p class="day-readout" aria-live="polite">
+      {{ selected ? describe(selected) : 'Select a day to compare your mood and music.' }}
+    </p>
   </div>
 </template>
 
 <style scoped>
+.day-readout {
+  grid-column: 1/-1;
+  min-height: 24px;
+  font: 13px/1.5 var(--font-sans);
+  color: var(--ui-text-muted);
+}
+.chart-day {
+  cursor: pointer;
+  border-radius: 6px;
+}
+.chart-day:is(:hover, :focus-visible) {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
+}
+.bar {
+  transform-origin: bottom;
+  animation: mood-grow 550ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: filter 180ms;
+}
+.chart-day:is(:hover, :focus-visible) .bar {
+  filter: brightness(0.8);
+}
+@keyframes mood-grow {
+  from {
+    transform: scaleY(0.1);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+    transition: none;
+  }
+}
 /* A wide, short card: the words on the left and the chart on the right. */
 .mood-music {
   display: grid;
