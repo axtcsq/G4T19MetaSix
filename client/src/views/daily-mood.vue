@@ -15,10 +15,10 @@ const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
 const selectedMood = ref(null)
 const journalEntry = ref('')
 const drawingData = ref(null)
+const helperAvailable = ref(false)
 const helperOpen = ref(false)
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
-const historyQuery = ref('')
 const isLoading = ref(true)
 const isSaving = ref(false)
 const loadError = ref('')
@@ -36,25 +36,6 @@ const canSave = computed(
     !isLoading.value &&
     !isSaving.value,
 )
-
-const filteredLogs = computed(() => {
-  const query = historyQuery.value.trim().toLocaleLowerCase()
-  if (!query) return logs.value
-
-  return logs.value.filter((log) => {
-    const searchableText = [
-      log.journal,
-      log.mood,
-      formatDate(log.createdAt),
-      log.createdAt,
-      log.drawing?.items?.length ? 'drawing' : '',
-    ]
-      .join(' ')
-      .toLocaleLowerCase()
-
-    return searchableText.includes(query)
-  })
-})
 
 async function loadEntries() {
   isLoading.value = true
@@ -155,7 +136,7 @@ onMounted(loadEntries)
     <main class="daily-mood-content flex-1">
       <header class="journal-header">
         <div>
-          <h1 class="page-title">{{ showHistory ? 'Past Entries' : 'Today’s Journal' }}</h1>
+          <h1 class="page-title">{{ showHistory ? 'Past entries' : 'Today’s journal' }}</h1>
           <p class="body-text mt-2 text-muted">
             {{
               showHistory
@@ -175,7 +156,7 @@ onMounted(loadEntries)
             <circle cx="12" cy="12" r="9" />
             <path d="M12 6v6l4 2" />
           </svg>
-          {{ showHistory ? 'Back to Writing' : 'Past Entries' }}
+          {{ showHistory ? 'Back to writing' : 'Past entries' }}
         </button>
       </header>
       <div class="journal-layout">
@@ -215,6 +196,7 @@ onMounted(loadEntries)
                 aria-describedby="journal-help"
                 class="notebook-field mt-4 w-full resize-none"
                 :ui="{ base: 'notebook-input w-full resize-none' }"
+                @focus="helperAvailable = true"
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
@@ -222,7 +204,7 @@ onMounted(loadEntries)
               </p>
             </div>
           </form>
-          <div class="helper-widget">
+          <div v-if="helperAvailable || journalEntry" class="helper-widget">
             <UPopover
               v-model:open="helperOpen"
               :content="{ side: 'top', align: 'end', sideOffset: 12 }"
@@ -242,92 +224,71 @@ onMounted(loadEntries)
               </button>
               <template #content>
                 <section class="helper-popover" aria-labelledby="helper-title">
-                  <div class="helper-backdrop" aria-hidden="true">
-                    <video
-                      v-if="!reduceMotion"
-                      class="helper-liquid"
-                      src="/videos/banner-sunset.mp4"
-                      poster="/videos/banner-sunset.jpg"
-                      autoplay
-                      muted
-                      loop
-                      playsinline
+                  <video
+                    v-if="!reduceMotion"
+                    class="helper-liquid"
+                    src="/videos/banner-sunset.mp4"
+                    poster="/videos/banner-sunset.jpg"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    aria-hidden="true"
+                  />
+                  <header class="helper-header">
+                    <h2 id="helper-title">MetaFor Helper</h2>
+                    <button
+                      type="button"
+                      class="helper-close glass-icon"
+                      aria-label="Close MetaFor Helper"
+                      @click="helperOpen = false"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m6 6 12 12M6 18 18 6" />
+                      </svg>
+                    </button>
+                  </header>
+                  <form @submit.prevent="createJournalIdea">
+                    <label class="sr-only" for="journal-idea-prompt"
+                      >What would you like to reflect on?</label
+                    >
+                    <textarea
+                      id="journal-idea-prompt"
+                      v-model="ideaPrompt"
+                      maxlength="800"
+                      rows="3"
+                      class="journal-idea-prompt"
+                      placeholder="What would you like to reflect on?"
+                      :disabled="isGeneratingIdea"
+                      @input="clearJournalIdea"
                     />
-                    <div class="helper-liquid-scrim" />
+                    <UButton
+                      type="submit"
+                      class="glass-action mt-3"
+                      :disabled="!ideaPrompt.trim() || isGeneratingIdea"
+                      :loading="isGeneratingIdea"
+                      >{{ isGeneratingIdea ? 'Thinking…' : 'Find a starting point' }}</UButton
+                    >
+                  </form>
+                  <div v-if="journalIdea" class="helper-result">
+                    <p class="body-text">{{ journalIdea }}</p>
+                    <UButton type="button" variant="outline" class="mt-3" @click="insertJournalIdea"
+                      >Add to my entry</UButton
+                    >
                   </div>
-                  <div class="helper-content">
-                    <header class="helper-header">
-                      <h2 id="helper-title">MetaFor Helper</h2>
-                      <button
-                        type="button"
-                        class="helper-close glass-icon"
-                        aria-label="Close MetaFor Helper"
-                        @click="helperOpen = false"
-                      >
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="m6 6 12 12M6 18 18 6" />
-                        </svg>
-                      </button>
-                    </header>
-                    <form @submit.prevent="createJournalIdea">
-                      <label class="sr-only" for="journal-idea-prompt"
-                        >What would you like to reflect on?</label
-                      >
-                      <textarea
-                        id="journal-idea-prompt"
-                        v-model="ideaPrompt"
-                        maxlength="800"
-                        rows="3"
-                        class="journal-idea-prompt"
-                        placeholder="What would you like to reflect on?"
-                        :disabled="isGeneratingIdea"
-                        @input="clearJournalIdea"
-                      />
-                      <UButton
-                        type="submit"
-                        class="glass-action mt-3"
-                        :disabled="!ideaPrompt.trim() || isGeneratingIdea"
-                        :loading="isGeneratingIdea"
-                        >{{ isGeneratingIdea ? 'Thinking…' : 'Find a Starting Point' }}</UButton
-                      >
-                    </form>
-                    <div v-if="journalIdea" class="helper-result">
-                      <p class="body-text">{{ journalIdea }}</p>
-                      <UButton
-                        type="button"
-                        variant="outline"
-                        class="mt-3"
-                        @click="insertJournalIdea"
-                        >Add to My Entry</UButton
-                      >
-                    </div>
-                    <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
-                      {{ ideaError }}
-                    </p>
-                    <p v-if="ideaStatus" role="status" class="sr-only">{{ ideaStatus }}</p>
-                    <p class="helper-privacy">Only this prompt is sent to Groq AI when you ask.</p>
-                  </div>
+                  <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
+                    {{ ideaError }}
+                  </p>
+                  <p v-if="ideaStatus" role="status" class="sr-only">{{ ideaStatus }}</p>
+                  <p class="helper-privacy">Only this prompt is sent to Groq AI when you ask.</p>
                 </section>
               </template>
             </UPopover>
           </div>
         </section>
 
-        <section v-show="showHistory" id="past-entries" aria-label="Past Entries">
+        <section v-show="showHistory" id="past-entries" aria-label="Past entries">
           <div class="journal-history">
-            <label class="history-search">
-              <span class="sr-only">Search past entries</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="10.8" cy="10.8" r="6.3" />
-                <path d="m15.5 15.5 4.2 4.2" />
-              </svg>
-              <input
-                v-model="historyQuery"
-                type="search"
-                placeholder="Search your past entries…"
-                autocomplete="off"
-              />
-            </label>
             <p
               v-if="isLoading"
               role="status"
@@ -345,24 +306,18 @@ onMounted(loadEntries)
                 class="glass-action mt-4 rounded-full font-sans"
                 @click="loadEntries"
               >
-                Try Again
+                Try again
               </UButton>
             </div>
 
             <div v-else-if="logs.length === 0" class="py-10 text-center">
               <p class="font-sans text-sm text-muted">
-                No entries yet. Choose “Back to Writing” to make your first entry.
-              </p>
-            </div>
-
-            <div v-else-if="filteredLogs.length === 0" class="py-10 text-center">
-              <p class="font-sans text-sm text-muted">
-                No entries match “{{ historyQuery.trim() }}”.
+                No entries yet. Choose “Back to writing” to make your first entry.
               </p>
             </div>
 
             <div v-else class="history-list">
-              <article v-for="log in filteredLogs" :key="log._id" class="journal-entry">
+              <article v-for="log in logs" :key="log._id" class="journal-entry">
                 <div
                   class="entry-sheet notebook-page"
                   :class="{ 'has-drawing': log.drawing?.items?.length }"
@@ -396,7 +351,7 @@ onMounted(loadEntries)
         >
           <summary>
             <span class="disclosure-text">
-              <span id="journal-canvas-heading" class="section-title">Add a Drawing</span>
+              <span id="journal-canvas-heading" class="section-title">Add a drawing</span>
               <span class="body-text text-muted">Can't describe your thoughts? Draw it.</span>
             </span>
             <span class="disclosure-optional">Optional</span>
@@ -417,7 +372,7 @@ onMounted(loadEntries)
             :disabled="!canSave"
             :loading="isSaving"
           >
-            Save Entry
+            Save entry
           </UButton>
         </div>
         <p v-if="saveStatus" role="status" class="mt-4">{{ saveStatus }}</p>
@@ -640,50 +595,6 @@ onMounted(loadEntries)
   display: grid;
   gap: 32px;
 }
-.history-search {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 48px;
-  margin-bottom: 24px;
-  padding: 0 18px;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  color: var(--ui-text-muted);
-  background: var(--ui-bg-elevated);
-  box-shadow: inset 0 1px 2px rgba(42, 35, 31, 0.06);
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-.history-search:focus-within {
-  border-color: var(--ui-primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary) 18%, transparent);
-}
-.history-search svg {
-  width: 20px;
-  height: 20px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 1.8;
-}
-.history-search input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  color: var(--ui-text);
-  background: transparent;
-  font: 0.95rem var(--font-sans);
-}
-.history-search input::placeholder {
-  color: var(--ui-text-muted);
-  opacity: 1;
-}
-.history-search input::-webkit-search-cancel-button {
-  cursor: pointer;
-}
 .journal-entry {
   min-width: 0;
 }
@@ -730,37 +641,28 @@ onMounted(loadEntries)
   width: min(340px, calc(100vw - 32px));
   padding: 20px;
   color: #fff;
-  background: #654ed8;
+  background: #654ed8 url('/videos/banner-sunset.jpg') center / cover;
   border-radius: 16px;
   font-family: var(--font-sans);
 }
-.helper-backdrop {
+.helper-liquid,
+.helper-popover::before {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 0;
-  background: url('/videos/banner-sunset.jpg') center / cover;
+  z-index: -2;
 }
 .helper-liquid {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
 }
-.helper-liquid-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.helper-popover::before {
+  content: '';
+  z-index: -1;
   background:
     radial-gradient(ellipse 58% 66% at 82% 18%, rgba(189, 135, 255, 0.38), transparent 100%),
     linear-gradient(115deg, rgba(51, 37, 139, 0.7), rgba(90, 52, 164, 0.6));
-}
-.helper-content {
-  position: relative;
-  z-index: 2;
 }
 .helper-header {
   display: flex;

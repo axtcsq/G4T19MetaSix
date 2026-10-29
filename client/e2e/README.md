@@ -25,8 +25,7 @@ pnpm test:e2e e2e/journal.spec.js
 
 Coverage:
 - Landing page to login, protected-route redirects, demo login and logout.
-- Journal validation, save, searchable history, calendar display, and retry after failed saves.
-- Helper availability on page load, animated backdrop, and reduced-motion behavior.
+- Journal validation, save, history, calendar display, and retry after failed saves.
 - Quiz answer validation, Back navigation, submission, and result display.
 - Profile privacy settings, reload, and rollback after a failed update.
 - Dashboard period selection and Listening Room connection/disabled playback state.
