@@ -345,14 +345,18 @@ html.has-dock body:not(:has(.site-footer)) {
   align-items: center;
   padding: 6px 10px 4px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 16px;
+  border-radius: 10px;
   isolation: isolate;
   overflow: hidden;
-  /* Frosted glass, like the sticky navbar. */
-  background: rgba(250, 248, 246, 0.42);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
-  backdrop-filter: blur(18px) saturate(1.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  /* Frosted glass: mostly see-through, so the page shows blurred behind it,
+     with a bright edge and a soft warm tint from the song's colours. */
+  background: rgba(255, 252, 249, 0.12);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow:
+    0 12px 32px rgba(58, 31, 25, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
   color: var(--ui-text);
   font-size: 13px;
 }
@@ -374,14 +378,14 @@ html.has-dock body:not(:has(.site-footer)) {
   background-repeat: no-repeat;
   background-size: 70% 88%, 78% 86%, 72% 90%;
   background-position: 0% 30%, 100% 0%, 48% 100%;
-  filter: blur(32px) saturate(1.55);
-  opacity: 0.86;
+  filter: blur(32px) saturate(1.4);
+  opacity: 0.32;
   transform: scale(1.35);
 }
 .listening-dock::after {
   background:
-    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 18%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(250, 248, 246, 0.62), rgba(250, 248, 246, 0.7));
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 14%, transparent), transparent 68%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 236, 224, 0.06) 60%, rgba(255, 255, 255, 0.12));
 }
 .listening-dock.is-playing::before {
   animation: dock-glow-drift 11s ease-in-out infinite alternate;
@@ -397,14 +401,17 @@ html.has-dock body:not(:has(.site-footer)) {
   }
 }
 :global(.dark .listening-dock) {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(22, 18, 16, 0.5);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 205, 166, 0.18);
+  background: rgba(36, 28, 24, 0.18);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 }
 :global(.dark .listening-dock)::after {
   background:
-    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(22, 18, 16, 0.62), rgba(22, 18, 16, 0.72));
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 20%, transparent), transparent 68%),
+    linear-gradient(135deg, rgba(255, 205, 166, 0.07), rgba(22, 18, 16, 0.1) 60%, rgba(255, 255, 255, 0.03));
 }
 @media (prefers-reduced-transparency: reduce) {
   .listening-dock {
@@ -422,7 +429,7 @@ img {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 7px;
   object-fit: cover;
 }
 a {
@@ -462,7 +469,7 @@ button {
 }
 .dock-text {
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   color: inherit;
   background: transparent;
   font-size: 12px;
@@ -573,7 +580,7 @@ button {
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   color: inherit;
   background: transparent;
 }
@@ -585,44 +592,39 @@ button {
   height: 16px;
   fill: currentColor;
 }
+/* A flat outline in the song's colour, not a raised button. */
 .dock-play-button {
   width: 44px;
   min-height: 44px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--dock-accent) 72%, white);
+  border: 2px solid var(--dock-accent);
   border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--dock-accent) 82%, white),
-    var(--dock-accent) 62%,
-    color-mix(in srgb, var(--dock-accent) 82%, black)
-  );
-  box-shadow:
-    0 3px 9px color-mix(in srgb, var(--dock-accent) 38%, transparent),
-    inset 0 1px 1px rgba(255, 255, 255, 0.48);
-  transition: transform 160ms ease, box-shadow 180ms ease, filter 180ms ease;
+  color: var(--dock-accent);
+  background: transparent;
+  box-shadow: none;
+  transition: transform 160ms ease, background-color 180ms ease, color 180ms ease;
 }
 .dock-play-button:hover:not(:disabled) {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--dock-accent) 76%, white),
-    var(--dock-accent) 62%,
-    color-mix(in srgb, var(--dock-accent) 82%, black)
-  );
-  box-shadow:
-    0 4px 13px color-mix(in srgb, var(--dock-accent) 48%, transparent),
-    inset 0 1px 1px rgba(255, 255, 255, 0.55);
-  filter: saturate(1.12);
+  color: #fff;
+  background: var(--dock-accent);
   transform: scale(1.05);
+}
+/* A lighter tint of the song's colour, so the outline shows on the dark glass. */
+:global(.dark .dock-play-button:not(:disabled)) {
+  border-color: color-mix(in srgb, var(--dock-accent) 55%, white);
+  color: color-mix(in srgb, var(--dock-accent) 55%, white);
+}
+:global(.dark .dock-play-button:hover:not(:disabled)) {
+  border-color: var(--dock-accent);
+  color: #fff;
 }
 .dock-play-button:active:not(:disabled) {
   transform: scale(0.96);
 }
 .dock-play-button:disabled {
-  color: rgba(255, 255, 255, 0.8);
-  background: #8b8582;
-  border-color: rgba(255, 255, 255, 0.58);
+  border-color: rgba(127, 127, 127, 0.5);
+  color: rgba(127, 127, 127, 0.7);
+  background: transparent;
   box-shadow: none;
 }
 .dock-icon .chevron {
@@ -640,7 +642,7 @@ button {
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   color: inherit;
   background: transparent;
   opacity: 0.55;
