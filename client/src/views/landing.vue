@@ -21,14 +21,8 @@ defineOptions({ name: 'LandingPage' })
 const CassetteViewer = defineAsyncComponent(
   () => import('@/components/listening/CassetteViewer.vue'),
 )
-const VinylTurntable = defineAsyncComponent(
-  () => import('@/components/listening/VinylTurntable.vue'),
-)
-// The record player in the Listen card spins when its play button is clicked.
-// It plays no music here; that needs Spotify in the Listening Room.
-const recordSpinning = ref(false)
 
-// The smaller features, in one strip under the cards.
+// The smaller features, in one strip under the showcase.
 const personalityImages = [daydreamer, poet, spark]
 const calendarMoods = ['😊', '😌', '😟', '😰', '😠']
 // Bar heights for the little Listening Portrait chart, in percent.
@@ -327,11 +321,15 @@ const showcase = [
 
     <MusicJournal />
 
-    <section id="how-it-works" class="mirror-section landing-shell" aria-labelledby="mirror-title">
+    <section
+      id="how-it-works"
+      class="showcase landing-shell"
+      aria-labelledby="showcase-title"
+    >
       <!-- A soft band of colour that slowly pans sideways. The margin lines
            and notes start inside it, so the top of the page stays clear. -->
       <div class="pan-band" aria-hidden="true" />
-      <h2 id="mirror-title">Your Playlist Is a Mirror.</h2>
+      <h2 id="showcase-title">Everything in One Place.</h2>
       <div class="mirror-grid">
         <article
           v-for="(card, index) in mirrorCards"
@@ -345,60 +343,18 @@ const showcase = [
           <p class="glow-text">{{ card.text }}</p>
         </article>
       </div>
-    </section>
+      <article v-for="feature in showcase" :key="feature.id" class="showcase-row">
+        <div class="showcase-copy">
+          <p class="showcase-eyebrow">{{ feature.eyebrow }}</p>
+          <h3>{{ feature.title }}</h3>
+          <p class="showcase-text">{{ feature.text }}</p>
+          <RouterLink class="showcase-link" :to="feature.to">{{ feature.link }} →</RouterLink>
+        </div>
 
-    <!-- The three main features, then the smaller ones. -->
-    <section class="features landing-shell" aria-labelledby="features-title">
-      <header class="section-header">
-        <p class="eyebrow-label">Features</p>
-        <h2 id="features-title" class="section-title">Start journalling now!</h2>
-        <p class="section-text">Write, listen and reflect, all in one place.</p>
-      </header>
+        <ShowcasePreview :kind="feature.id" :name="feature.eyebrow" />
+      </article>
 
-      <div class="feature-grid">
-        <article class="feature-card" aria-labelledby="mood-card-title">
-          <p class="card-label">Journal</p>
-          <h3 id="mood-card-title" class="card-title">Log your daily mood</h3>
-          <p class="card-text">
-            Pick a mood, then draw it, write it, or both. Every entry is saved to your mood
-            calendar.
-          </p>
-          <div class="card-visual">
-            <img
-              class="mood-preview"
-              src="@/assets/images/daily-mood-preview.png"
-              alt="The Daily Mood Log, with mood buttons, a journal page, past entries and the Helper"
-            />
-          </div>
-        </article>
-
-        <article class="feature-card" aria-labelledby="listen-card-title">
-          <p class="card-label">Listen</p>
-          <h3 id="listen-card-title" class="card-title">Listen while you write</h3>
-          <p class="card-text">
-            Play songs in the background while you journal, on a record player in the Listening
-            Room.
-          </p>
-          <div class="card-visual">
-            <VinylTurntable
-              :spinning="recordSpinning"
-              :zoom="0.75"
-              @toggle="recordSpinning = !recordSpinning"
-            />
-            <p class="drag-hint visual-hint">Drag to rotate · Click play to spin the record</p>
-          </div>
-        </article>
-
-        <article class="feature-card song-card" aria-labelledby="song-card-title">
-          <p class="card-label">Analyse</p>
-          <h3 id="song-card-title" class="card-title">Search a song, see how it feels</h3>
-          <p class="card-text">
-            MetaFor reads a song's sound and lyrics and turns them into a mood. Try it here.
-          </p>
-          <SongSearch />
-        </article>
-      </div>
-
+      <!-- The smaller features, in one strip under the rows. -->
       <h3 class="more-title">And there's more inside</h3>
       <ul class="more-features">
         <li>
@@ -435,21 +391,25 @@ const showcase = [
       </ul>
     </section>
 
-    <section class="showcase landing-shell" aria-labelledby="showcase-title">
-      <h2 id="showcase-title">Everything in One Place.</h2>
-      <article v-for="feature in showcase" :key="feature.id" class="showcase-row">
-        <div class="showcase-copy">
-          <p class="showcase-eyebrow">{{ feature.eyebrow }}</p>
-          <h3>{{ feature.title }}</h3>
-          <p class="showcase-text">{{ feature.text }}</p>
-          <RouterLink class="showcase-link" :to="feature.to">{{ feature.link }} →</RouterLink>
-        </div>
-
-        <ShowcasePreview :kind="feature.id" :name="feature.eyebrow" />
-      </article>
+    <!-- Two quick things to try, side by side: the quiz and the song search. -->
+    <section class="taste landing-shell" aria-labelledby="taste-title">
+      <h2 id="taste-title">Try a Taste Test.</h2>
+      <p class="taste-intro">
+        Answer three quick questions for a peek at your personality, or search a song to see its
+        mood.
+      </p>
+      <div class="taste-grid">
+        <TasteQuiz />
+        <article class="feature-card" aria-labelledby="song-card-title">
+          <p class="card-label">Analyse</p>
+          <h3 id="song-card-title" class="card-title">Search a song, see how it feels</h3>
+          <p class="card-text">
+            MetaFor reads a song's sound and lyrics and turns them into a mood. Try it here.
+          </p>
+          <SongSearch />
+        </article>
+      </div>
     </section>
-
-    <TasteQuiz />
 
     <StatementLine />
 
@@ -740,31 +700,32 @@ const showcase = [
   padding: 0 24px;
 }
 
-/* Features */
-.features {
-  padding-bottom: var(--section-space);
+/* Taste test: the quiz and the song search side by side */
+.taste {
+  padding-bottom: 80px;
 }
-.section-header {
-  max-width: 620px;
-  margin: 0 auto 48px;
+.taste h2 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  font-weight: 800;
+  letter-spacing: -0.035em;
   text-align: center;
 }
-.section-title {
-  font-size: var(--text-header);
-  line-height: 1.15;
-}
-.section-text {
-  margin: 12px 0 0;
+.taste-intro {
+  margin: 0 0 32px;
   color: var(--ui-text-muted);
   font-family: var(--font-serif);
   font-size: var(--text-body);
+  text-align: center;
 }
-.feature-grid {
+.taste-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 24px;
 }
-/* Every card has the same frame. */
 .feature-card {
   display: flex;
   flex-direction: column;
@@ -772,10 +733,6 @@ const showcase = [
   border: 1px solid var(--ui-border);
   border-radius: 20px;
   background: var(--ui-bg-elevated);
-}
-/* The song search gets the whole row under the first two cards. */
-.song-card {
-  grid-column: 1 / -1;
 }
 .card-title {
   font-size: 1.5rem;
@@ -787,30 +744,6 @@ const showcase = [
   font-family: var(--font-serif);
   font-size: 1.15rem;
   line-height: 1.5;
-}
-/* The picture area of the first two cards: same height, same soft background,
-   so the two cards line up. */
-.card-visual {
-  position: relative;
-  height: 300px;
-  margin-top: auto;
-  overflow: hidden;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--ui-primary) 8%, var(--ui-bg));
-}
-.mood-preview {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top left;
-}
-.visual-hint {
-  position: absolute;
-  right: 0;
-  bottom: 12px;
-  left: 0;
-  pointer-events: none;
 }
 
 /* The smaller features */
@@ -886,10 +819,6 @@ const showcase = [
   background: var(--brand);
 }
 
-.mirror-section {
-  position: relative;
-  padding-block: 24px 80px;
-}
 /* Full width, behind the page, fading out at its top and bottom. */
 .pan-band {
   position: absolute;
@@ -919,21 +848,12 @@ const showcase = [
     background-position: 100% 50%;
   }
 }
-.mirror-section h2 {
-  width: fit-content;
-  margin: 0 auto 40px;
-  padding: 7px 0;
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--text-title);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  text-align: center;
-}
+/* The Mirror cards open the showcase, before its rows. */
 .mirror-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 28px;
+  margin-bottom: 72px;
 }
 /* Warm cream cards in the same palette as the hero above. */
 .mirror-card {
@@ -1095,7 +1015,8 @@ const showcase = [
 /* Each row is the words on one side and the preview on the other, swapping
    sides every row. */
 .showcase {
-  padding-block: 0 80px;
+  position: relative;
+  padding-block: 24px 80px;
 }
 .showcase h2 {
   margin: 0 0 48px;
@@ -1283,7 +1204,7 @@ const showcase = [
     min-height: 270px;
   }
   .mirror-grid,
-  .feature-grid,
+  .taste-grid,
   .more-features {
     grid-template-columns: 1fr;
   }
@@ -1296,9 +1217,6 @@ const showcase = [
   }
   .feature-card {
     padding: 24px 20px;
-  }
-  .card-visual {
-    height: 240px;
   }
   .showcase-row {
     grid-template-columns: 1fr;
