@@ -488,6 +488,8 @@ async function analyse() {
 .mood-map {
   position: relative;
   aspect-ratio: 1;
+  /* Room for the corner labels above and below the map. */
+  margin-block: 22px;
   border-radius: 10px;
   background:
     linear-gradient(to right, rgba(206, 91, 75, 0.15) 50%, rgba(255, 210, 120, 0.2) 50%) top / 100%
@@ -497,27 +499,34 @@ async function analyse() {
   font-size: 0.8rem;
   font-weight: 700;
 }
+/* The labels sit just outside the map, so the song's points never cover
+   them, and each keeps to its own half. */
 .corner {
   position: absolute;
+  max-width: calc(50% - 6px);
+  overflow: hidden;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .top-left {
-  top: 10px;
-  left: 12px;
+  bottom: calc(100% + 4px);
+  left: 0;
   color: #c45a4b;
 }
 .top-right {
-  top: 10px;
-  right: 12px;
+  right: 0;
+  bottom: calc(100% + 4px);
   color: #b8862b;
 }
 .bottom-left {
-  bottom: 10px;
-  left: 12px;
+  top: calc(100% + 4px);
+  left: 0;
   color: #5d72c4;
 }
 .bottom-right {
-  right: 12px;
-  bottom: 10px;
+  top: calc(100% + 4px);
+  right: 0;
   color: #3f9a62;
 }
 /* Sound is a dashed ring, lyrics a square, combined a filled dot. */
@@ -546,6 +555,7 @@ async function analyse() {
 .score-ends {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   margin: 8px 0 0;
   color: var(--ui-text-muted);
   font-size: 0.85rem;

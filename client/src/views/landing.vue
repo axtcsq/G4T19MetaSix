@@ -391,7 +391,7 @@ const showcase = [
       </ul>
     </section>
 
-    <!-- Two quick things to try, side by side: the quiz and the song search. -->
+    <!-- Two quick things to try, the quiz above the song search. -->
     <section class="taste landing-shell" aria-labelledby="taste-title">
       <h2 id="taste-title">Try a Taste Test.</h2>
       <p class="taste-intro">
@@ -700,7 +700,7 @@ const showcase = [
   padding: 0 24px;
 }
 
-/* Taste test: the quiz and the song search side by side */
+/* Taste test: the quiz stacked above the song search, at the same width */
 .taste {
   padding-bottom: 80px;
 }
@@ -722,8 +722,7 @@ const showcase = [
 }
 .taste-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
 }
 .feature-card {
@@ -1065,19 +1064,21 @@ const showcase = [
   font-size: var(--text-body);
   line-height: 1.55;
 }
+/* The links glow in the theme colour on hover instead of underlining. */
 .showcase-link {
   color: var(--brand);
   font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 160ms ease;
+  text-decoration: none;
+  transition: text-shadow 200ms ease;
 }
 .showcase-link:hover,
 .showcase-link:focus-visible {
-  text-decoration-color: currentColor;
+  text-shadow:
+    0 0 4px color-mix(in srgb, var(--brand) 90%, transparent),
+    0 0 12px color-mix(in srgb, var(--brand) 70%, transparent),
+    0 0 26px color-mix(in srgb, var(--brand) 50%, transparent);
 }
 
 /* Closing banner */
@@ -1204,7 +1205,6 @@ const showcase = [
     min-height: 270px;
   }
   .mirror-grid,
-  .taste-grid,
   .more-features {
     grid-template-columns: 1fr;
   }

@@ -211,10 +211,14 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
   font-family: var(--font-sans);
   font-size: 0.74rem;
   cursor: pointer;
+  transition: text-shadow 200ms ease;
 }
+/* Glows like the other landing page links instead of underlining. */
 .hint:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-shadow:
+    0 0 4px color-mix(in srgb, var(--ui-primary) 90%, transparent),
+    0 0 12px color-mix(in srgb, var(--ui-primary) 70%, transparent),
+    0 0 26px color-mix(in srgb, var(--ui-primary) 50%, transparent);
 }
 .hint:focus-visible {
   outline: 3px solid var(--color-brand-400);
