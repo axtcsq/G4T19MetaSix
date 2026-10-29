@@ -46,7 +46,15 @@ const QUESTIONS = [
 
 const picks = ref([])
 const step = computed(() => picks.value.length)
-const done = computed(() => step.value === QUESTIONS.length)
+const done = computed(() => step.value >= QUESTIONS.length)
+
+// The old question stays clickable while it slides out, so a quick
+// double-click could otherwise answer the next question too. Only answers
+// from the question on screen count.
+function pick(label, type) {
+  if (done.value) return
+  if (QUESTIONS[step.value].answers.some(([answer]) => answer === label)) picks.value.push(type)
+}
 
 // The type picked most; a tie goes to the earliest answer.
 const result = computed(() => {
@@ -65,11 +73,11 @@ const result = computed(() => {
       <div v-if="!done" :key="step" class="taste-question">
         <p class="taste-step">Question {{ step + 1 }} of {{ QUESTIONS.length }}</p>
         <div class="taste-progress" aria-hidden="true">
-          <span v-for="index in QUESTIONS.length" :key="index" :class="{ 'is-done': index <= step }" />
+          <span v-for="index in QUESTIONS.length" :key="index" :class="{ 'is-done': index <= step + 1 }" />
         </div>
         <h3>{{ QUESTIONS[step].text }}</h3>
         <div class="taste-answers">
-          <button v-for="[label, type] in QUESTIONS[step].answers" :key="label" type="button" @click="picks.push(type)">
+          <button v-for="[label, type] in QUESTIONS[step].answers" :key="label" type="button" @click="pick(label, type)">
             {{ label }}
           </button>
         </div>
