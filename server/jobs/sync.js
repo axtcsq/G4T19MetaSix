@@ -1,4 +1,5 @@
-// Saves every active user's newest Spotify plays. GitHub Actions runs it every
+// Saves every active user's newest Spotify plays, then gives songs still
+// waiting for a mood their sound analysis. GitHub Actions runs it every
 // 15 minutes (.github/workflows/sync.yml); run it by hand from the server folder with
 //   node jobs/sync.js
 // The paused demo user and users who revoked access are skipped. Exits with an
@@ -8,6 +9,7 @@ import dns from "node:dns/promises";
 import mongoose from "mongoose";
 import { connectDB } from "../config/db.js";
 import User from "../models/User.js";
+import { analysePendingTracks } from "../services/analysis.js";
 import { recordSyncFailure, syncUser } from "../services/sync.js";
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -36,6 +38,14 @@ async function run() {
       console.error(`[sync] ${user._id}: failed: ${error.message}`);
       await recordSyncFailure(user._id, error);
     }
+  }
+
+  // Songs left pending by earlier runs, a few hundred at a time.
+  try {
+    const analysed = await analysePendingTracks();
+    console.log(`[sync] ${analysed} songs analysed`);
+  } catch (error) {
+    console.error(`[sync] Mood analysis failed: ${error.message}`);
   }
 
   console.log(`[sync] Done: ${users.length - failed} synced, ${failed} failed`);
