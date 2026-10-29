@@ -87,10 +87,11 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
   return response.status === 204 ? null : response.json()
 }
 
-export const searchSpotify = (query, signal) =>
-  spotifyRequest(`/search?${new URLSearchParams({ q: query, type: 'track', limit: '10' })}`, {
-    signal,
-  })
+export const searchSpotify = (query, signal, offset = 0) => {
+  const params = new URLSearchParams({ q: query, type: 'track', limit: '10' })
+  if (offset > 0) params.set('offset', String(offset))
+  return spotifyRequest(`/search?${params}`, { signal })
+}
 export const recentSpotify = (signal) =>
   spotifyRequest('/me/player/recently-played?limit=50', { signal })
 // Starts at the first song. Shuffle is a setting on the whole Spotify account,
