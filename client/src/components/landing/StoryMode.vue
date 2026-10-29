@@ -114,7 +114,7 @@ const fill = (position) => {
 <template>
   <slot name="trigger" :open="start">
     <button type="button" class="story-open glass-secondary" @click="start">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+      <span class="story-play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg></span>
       See how it works
     </button>
   </slot>
@@ -172,26 +172,53 @@ const fill = (position) => {
 </template>
 
 <style scoped>
+/* The brand colour and a slow pulse, so it reads as the thing to press. */
 .story-open.glass-secondary {
-  --button-top: color-mix(in srgb, var(--color-peach) 55%, white);
-  --button-base: var(--color-peach);
-  --button-ink: var(--color-brand-950);
+  --button-top: #c0624c;
+  --button-base: #a9533f;
+  --button-ink: #fff;
+  position: relative;
   display: inline-flex;
-  min-height: 54px !important;
+  min-height: 60px !important;
   align-items: center;
   gap: 12px;
   margin: 0;
-  padding: 0.85rem 1.75rem !important;
+  padding: 0.85rem 2rem 0.85rem 0.85rem !important;
   border: 0;
   border-radius: 999px;
   color: #fff;
   background: var(--ui-primary);
   box-shadow: 0 6px 16px rgba(118, 62, 50, 0.22);
   font-family: var(--font-sans);
-  font-size: 1rem !important;
+  font-size: 1.1rem !important;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease;
+}
+.story-open.glass-secondary::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(192, 98, 76, 0.45);
+  animation: story-pulse 2.4s ease-out infinite;
+  content: '';
+  pointer-events: none;
+}
+@keyframes story-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(192, 98, 76, 0.45); }
+  70%, 100% { box-shadow: 0 0 0 14px rgba(192, 98, 76, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-open.glass-secondary::after { animation: none; }
+}
+.story-play {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  color: #a9533f;
+  background: #fff;
 }
 .story-open:hover {
   transform: translateY(-3px);
@@ -213,6 +240,7 @@ const fill = (position) => {
   width: 18px;
   height: 18px;
   fill: currentColor;
+  margin-left: 2px;
 }
 
 /* Full screen, in each slide's colour fading to near black. */
