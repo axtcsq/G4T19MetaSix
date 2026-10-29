@@ -17,13 +17,13 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
-    meta: { title: 'Home' },
+    meta: { requiresAuth: true, title: 'Home' },
   },
   {
     path: '/listen',
     name: 'listen',
     component: () => import('../views/listen.vue'),
-    meta: { title: 'Listening Room' },
+    meta: { requiresAuth: true, title: 'Listening Room' },
   },
   {
     path: '/',
@@ -93,6 +93,8 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  // Start each page at the top, including browser back/forward navigation.
+  scrollBehavior: () => ({ left: 0, top: 0 }),
 })
 
 // Pages that read or write the user's own data need a login first.
