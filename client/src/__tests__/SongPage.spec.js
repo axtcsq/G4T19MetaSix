@@ -11,7 +11,7 @@ vi.mock('vue-router', () => ({
 
 const stubs = {
   SiteFooter: { template: '<footer />' },
-  MoodTag: { props: ['trackId'], template: '<span class="mood-tag-stub" />' },
+  MoodTag: { props: ['trackId', 'hidePendingLyrics'], template: '<span class="mood-tag-stub" />' },
 }
 
 const FEATURES = [
@@ -137,6 +137,30 @@ describe('Song page', () => {
     })
 
     expect(wrapper.text()).toContain('The lyrics haven’t been read yet')
+  })
+
+  it('says instrumental songs contain no lyrics', async () => {
+    const wrapper = await mountPage({
+      ...kicks,
+      instrumental: true,
+      lyricsStatus: 'instrumental',
+      tag: { lyricsNote: null },
+      withLyrics: null,
+      lyrics: { status: 'instrumental' },
+      blend: {
+        valence: 0.96,
+        audio: 0.96,
+        lyrics: null,
+        weight: 0,
+        contrast: null,
+        contrastLabel: null,
+      },
+    })
+
+    expect(wrapper.findAll('.reading')[1].text()).toContain(
+      'This song is instrumental and contains no lyrics.',
+    )
+    expect(wrapper.find('.mood-tag-stub').props('hidePendingLyrics')).toBe(true)
   })
 
   it('explains a song with no audio data', async () => {
