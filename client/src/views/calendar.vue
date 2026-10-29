@@ -75,6 +75,11 @@ const analyzedMoodsByDate = computed(() => {
 const selectedKey = computed(() => selectedDate.value ? keyForDate(selectedDate.value) : '')
 const selectedLogs = computed(() => logsByDate.value.get(selectedKey.value) || [])
 const selectedListens = computed(() => listensByDate.value.get(selectedKey.value) || [])
+const showAllSelectedListens = ref(false)
+const visibleSelectedListens = computed(() =>
+  showAllSelectedListens.value ? selectedListens.value : selectedListens.value.slice(0, 6),
+)
+watch(selectedKey, () => { showAllSelectedListens.value = false })
 const selectedListeningMood = computed(() => listeningMoodFor(selectedDate.value))
 const monthMoods = computed(() => {
   const counts = new Map()
@@ -349,7 +354,16 @@ onMounted(loadData)
                   <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
                 </article>
               </div>
-              <p v-else class="empty-note">No recent Spotify plays found for this day.</p>
+              <button
+                v-if="selectedListens.length > 6"
+                class="history-toggle"
+                type="button"
+                :aria-expanded="showAllSelectedListens"
+                @click="showAllSelectedListens = !showAllSelectedListens"
+              >
+                {{ showAllSelectedListens ? 'Show less' : 'View all' }}
+              </button>
+              <p v-if="!selectedListens.length" class="empty-note">No recent Spotify plays found for this day.</p>
             </section>
           </div>
         </section>
@@ -442,6 +456,7 @@ onMounted(loadData)
 .mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
 .track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
 .track-list h4 { grid-column: 1 / -1; }
+.history-toggle { margin-top: 14px; padding: 7px 13px; border: 1px solid var(--ui-border); border-radius: 999px; background: transparent; color: var(--calendar-accent); font-weight: 700; cursor: pointer; }
 .track-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 13px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
 .track-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); background: var(--ui-bg-accented); }
 .track-link { display: flex; width: 100%; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; border-radius: 9px; color: inherit; text-decoration: none; }
