@@ -1,5 +1,27 @@
 import { test, expect } from './helpers.js'
 
+test('journal helper uses the sparkle icon and moving background, respecting reduced motion', async ({
+  page,
+  app,
+}) => {
+  expect(app.signedIn).toBe(true)
+  await page.goto('/daily-mood')
+  await page.getByPlaceholder('Write your thoughts here...').focus()
+  const launcher = page.getByRole('button', { name: 'Open MetaFor Helper' })
+  await expect(launcher.locator('img')).toHaveAttribute('src', /journal-helper-sparkle/)
+  await launcher.click()
+  await expect(page.getByRole('heading', { name: 'MetaFor Helper' })).toBeVisible()
+  await expect(page.locator('.helper-liquid')).toHaveJSProperty('paused', false)
+  await page.getByRole('button', { name: 'Close MetaFor Helper' }).click()
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.reload()
+  await page.getByPlaceholder('Write your thoughts here...').focus()
+  await launcher.click()
+  await expect(page.getByRole('heading', { name: 'MetaFor Helper' })).toBeVisible()
+  await expect(page.locator('.helper-liquid')).toHaveCount(0)
+})
+
 test('save requires mood and reflection, then appears in history and calendar', async ({
   page,
   app,
