@@ -383,7 +383,7 @@ const showcase = [
 .hero-mood-options .mood-reaction.glass-secondary {
   gap: 5px;
   min-height: 36px !important;
-  padding: 0.3rem 0.8rem 0.3rem 0.4rem !important;
+  padding: 0.3rem 0.65rem 0.3rem 0.35rem !important;
   font-size: 0.8rem !important;
 }
 .story-launch {
@@ -411,9 +411,12 @@ const showcase = [
   border-color: var(--chip);
   transform: translateY(-1px);
 }
+/* The faces are drawn for bigger buttons, so their lines are thickened here
+   to stay clear at chip size. */
 .hero-mood-options .button-mood-face {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.6;
   flex: none;
   transform-origin: center;
 }
