@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import MoodFace from '@/components/journal/MoodFace.vue'
 
 // A small, made-up preview of one part of the app for the landing page. It
 // plays a short demo when it scrolls into view, then visitors can try it:
@@ -41,24 +42,25 @@ watch(pickedMood, (mood) => {
   }, 28)
 })
 
-// Mood Calendar: the faces pop in, and each day says what was played.
+// Mood Calendar: the faces pop in, and each day says what was played. The
+// faces are the same drawn ones as the Mood Calendar page.
 const DAYS = {
-  2: ['😊', 'Happy', 'Sunlit Window'],
-  3: ['😌', 'Relaxed', 'Slow Tide'],
-  6: ['😟', 'Sad', 'Rainy Platform'],
-  9: ['😊', 'Happy', 'Paper Planes'],
-  10: ['😊', 'Happy', 'Golden Streets'],
-  13: ['😰', 'Anxious', 'Static Hearts'],
-  16: ['😌', 'Relaxed', 'Low Light'],
-  17: ['😊', 'Happy', 'Summer Static'],
-  20: ['😠', 'Angry', 'Brake Lights'],
-  23: ['😌', 'Relaxed', 'Quiet Hours'],
+  2: ['Happy', 'Sunlit Window'],
+  3: ['Relaxed', 'Slow Tide'],
+  6: ['Sad', 'Rainy Platform'],
+  9: ['Happy', 'Paper Planes'],
+  10: ['Happy', 'Golden Streets'],
+  13: ['Anxious', 'Static Hearts'],
+  16: ['Relaxed', 'Low Light'],
+  17: ['Happy', 'Summer Static'],
+  20: ['Angry', 'Brake Lights'],
+  23: ['Relaxed', 'Quiet Hours'],
 }
 const dayOrder = Object.keys(DAYS).map(Number)
 const selectedDay = ref(null)
 const dayDetail = computed(() => {
   const day = DAYS[selectedDay.value]
-  return day ? `Oct ${selectedDay.value} · ${day[1]} · Most played: ${day[2]}` : 'Hover or tap a day to see what you played.'
+  return day ? `Oct ${selectedDay.value} · ${day[0]} · Most played: ${day[1]}` : 'Hover or tap a day to see what you played.'
 })
 
 // Listening Room: a player that really counts along.
@@ -170,15 +172,16 @@ onBeforeUnmount(() => {
           <button
             v-if="DAYS[day]"
             type="button"
-            class="day has-mood"
-            :class="{ 'is-selected': selectedDay === day }"
+            class="day has-mood mood-reaction"
+            :class="[`mood-reaction--${DAYS[day][0].toLowerCase()}`, { 'is-selected': selectedDay === day }]"
             :style="{ '--i': dayOrder.indexOf(day) }"
-            :aria-label="`October ${day}, ${DAYS[day][1]}`"
+            :aria-label="`October ${day}, ${DAYS[day][0]}`"
             @mouseenter="selectedDay = day"
             @focus="selectedDay = day"
             @click="selectedDay = day"
           >
-            <small>{{ day }}</small><span class="face" aria-hidden="true">{{ DAYS[day][0] }}</span>
+            <small>{{ day }}</small
+            ><span class="face" aria-hidden="true"><MoodFace :mood="DAYS[day][0]" class="button-mood-face" /></span>
           </button>
           <span v-else class="day" :class="{ 'is-today': day === 24 }" aria-hidden="true"><small>{{ day }}</small></span>
         </template>
@@ -364,11 +367,22 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--color-brand-400), transparent 70%);
   transform: scale(1.08);
 }
-/* Each face pops in a moment after the one before. */
+/* Each face pops in a moment after the one before, in its mood's colour. */
 .face {
   display: inline-block;
+  color: var(--mood);
   transform: scale(0);
 }
+.face .button-mood-face {
+  display: block;
+  width: clamp(20px, 2.6vw, 28px);
+  height: clamp(20px, 2.6vw, 28px);
+}
+.mood-reaction--happy { --mood: #f2c335; }
+.mood-reaction--sad { --mood: #4389d1; }
+.mood-reaction--relaxed { --mood: #998ba1; }
+.mood-reaction--anxious { --mood: #ed8a35; }
+.mood-reaction--angry { --mood: #d94a45; }
 .is-shown .face {
   animation: pop 360ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i) * 90ms) forwards;
 }
