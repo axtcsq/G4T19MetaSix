@@ -29,7 +29,7 @@ For multiple allowed client origins, separate them with commas. Keep `.env` priv
 
 ## Mood API
 
-All endpoints use the `/api/moods` prefix and are scoped to the signed-in user. A mood must be `Sad`, `Happy`, `Relaxed`, `Anxious`, or `Angry`. The journal is optional and limited to 5,000 characters. Entries may also include an optional version 1 vector drawing (`width`, `height`, and `items`); the API limits drawings to 900 KB, 500 items, and 20,000 points.
+All endpoints use the `/api/moods` prefix and are scoped to the signed-in user. A mood must be `Sad`, `Happy`, `Relaxed`, `Anxious`, `Angry`, `Excited`, `Tired`, or `Lonely`. The journal is optional and limited to 5,000 characters. Entries may also include an optional version 1 vector drawing (`width`, `height`, and `items`); the API limits drawings to 900 KB, 500 items, and 20,000 points.
 
 | Method   | Path             | Purpose                                                              |
 | -------- | ---------------- | -------------------------------------------------------------------- |

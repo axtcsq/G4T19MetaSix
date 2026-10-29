@@ -23,6 +23,9 @@ const MOODS = {
   Relaxed: 'Lazy Sunday with tea and an acoustic playlist.',
   Anxious: 'Exams tomorrow. Lo-fi on loop to keep me focused.',
   Angry: 'Missed the bus twice. Loud music all the way home.',
+  Excited: 'Got great news today. I can’t stop smiling.',
+  Tired: 'Long day. I’m taking it slow tonight.',
+  Lonely: 'Missing my friends, so I put on a song we love.',
 }
 const pickedMood = ref(null)
 const typedNote = ref('')
@@ -297,6 +300,9 @@ onBeforeUnmount(() => {
 .preview-moods .mood-relaxed { --mood: #998ba1; }
 .preview-moods .mood-anxious { --mood: #ed8a35; }
 .preview-moods .mood-angry { --mood: #d94a45; }
+.preview-moods .mood-excited { --mood: #d96f9f; }
+.preview-moods .mood-tired { --mood: #7e8ca6; }
+.preview-moods .mood-lonely { --mood: #4f8f95; }
 .preview-moods .is-picked {
   border-color: var(--mood);
   color: #30261d;
@@ -383,6 +389,9 @@ onBeforeUnmount(() => {
 .mood-reaction--relaxed { --mood: #998ba1; }
 .mood-reaction--anxious { --mood: #ed8a35; }
 .mood-reaction--angry { --mood: #d94a45; }
+.mood-reaction--excited { --mood: #d96f9f; }
+.mood-reaction--tired { --mood: #7e8ca6; }
+.mood-reaction--lonely { --mood: #4f8f95; }
 .is-shown .face {
   animation: pop 360ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i) * 90ms) forwards;
 }
