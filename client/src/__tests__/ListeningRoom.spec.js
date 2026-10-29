@@ -27,7 +27,7 @@ describe('Spotify listening room', () => {
     const remove = vi.spyOn(document, 'removeEventListener')
     const wrapper = mount(AmbientWave, { props: { playing: false } })
     expect(wrapper.get('svg').attributes('aria-hidden')).toBe('true')
-    expect(wrapper.findAll('.bell-curve')).toHaveLength(3)
+    expect(wrapper.findAll('.wave-line')).toHaveLength(1)
     expect(wrapper.find('button').exists()).toBe(false)
     expect(wrapper.find('image').exists()).toBe(false)
     await wrapper.setProps({ cover: '/album-one.jpg' })
@@ -66,7 +66,7 @@ describe('Spotify listening room', () => {
     expect(room.track.value.id).toBe('')
     wrapper.unmount()
   })
-  it('paces the curves from track tempo and falls back when tempo is unavailable', async () => {
+  it('paces the seek wave from track tempo and falls back when tempo is unavailable', async () => {
     const wrapper = mount(AmbientWave, { props: { tempo: 60 } })
     expect(wrapper.element.style.getPropertyValue('--wave-duration')).toBe('2s')
     await wrapper.setProps({ tempo: 180 })
@@ -79,7 +79,20 @@ describe('Spotify listening room', () => {
     }
     wrapper.unmount()
   })
-  it('pauses the curves offscreen and while the browser tab is hidden', async () => {
+  it('clips the wave at the seek position and bounds invalid progress', async () => {
+    const wrapper = mount(AmbientWave, { props: { progress: 40 } })
+    expect(wrapper.element.style.getPropertyValue('--played')).toBe('40%')
+    for (const [progress, expected] of [
+      [-10, '0%'],
+      [120, '100%'],
+      [NaN, '0%'],
+    ]) {
+      await wrapper.setProps({ progress })
+      expect(wrapper.element.style.getPropertyValue('--played')).toBe(expected)
+    }
+    wrapper.unmount()
+  })
+  it('pauses the seek wave offscreen and while the browser tab is hidden', async () => {
     let intersect
     const disconnect = vi.fn()
     vi.stubGlobal(

@@ -5,8 +5,12 @@ const props = defineProps({
   playing: Boolean,
   cover: { type: String, default: '' },
   tempo: { type: Number, default: null },
+  progress: { type: Number, default: 0 },
 })
-// A full swell spans four beats; each alternating half spans two beats.
+const played = computed(
+  () => `${Number.isFinite(props.progress) ? Math.max(0, Math.min(100, props.progress)) : 0}%`,
+)
+// One wavelength travels over two beats at the song's stored tempo.
 const duration = computed(() =>
   Number.isFinite(props.tempo) && props.tempo > 0 ? `${120 / props.tempo}s` : '3s',
 )
@@ -29,19 +33,11 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   document.removeEventListener('visibilitychange', visibility)
 })
-// Gentle decorative movement follows playback, not the song's audio samples.
-const curves = [
-  { center: 340, spread: 145, height: 34 },
-  { center: 520, spread: 165, height: 44 },
-  { center: 660, spread: 125, height: 30 },
-].map(({ center, spread, height }) => {
-  const points = Array.from({ length: 101 }, (_, i) => {
-    const x = i * 10
-    const y = 94 - height * Math.exp(-0.5 * ((x - center) / spread) ** 2)
-    return x + ',' + y.toFixed(2)
-  })
-  return 'M0,94 L' + points.join(' L') + ' L1000,94Z'
-})
+// One UI-style travelling line; tempo-paced decoration, not audio analysis.
+const wave = Array.from({ length: 241 }, (_, i) => {
+  const x = i * 5
+  return `${i ? 'L' : 'M'}${x},${(50 + 18 * Math.sin((x * Math.PI) / 50)).toFixed(2)}`
+}).join(' ')
 </script>
 
 <template>
@@ -49,80 +45,105 @@ const curves = [
     ref="element"
     class="ambient-wave"
     :class="{ 'is-playing': playing && visible && active }"
-    :style="{ '--wave-duration': duration }"
+    :style="{ '--wave-duration': duration, '--played': played }"
+    aria-hidden="true"
   >
-    <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <filter :id="`${id}-blur`" x="-20%" y="-100%" width="140%" height="300%">
-          <feGaussianBlur stdDeviation="22" />
-          <feColorMatrix type="saturate" values="1.6" />
-        </filter>
-        <linearGradient :id="`${id}-fallback`">
-          <stop stop-color="var(--record-color)" />
-          <stop offset="0.5" stop-color="var(--room-dark)" />
-          <stop offset="1" stop-color="var(--record-color)" />
-        </linearGradient>
-        <pattern
-          :id="`${id}-colors`"
-          width="1"
-          height="1"
-          viewBox="0 0 1000 100"
-          preserveAspectRatio="none"
-        >
-          <rect width="1000" height="100" :fill="`url(#${id}-fallback)`" />
-          <image
-            v-if="cover"
-            :href="cover"
-            width="1000"
-            height="100"
+    <div class="played-wave">
+      <svg viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter :id="`${id}-blur`" x="-20%" y="-100%" width="140%" height="300%">
+            <feGaussianBlur stdDeviation="22" />
+            <feColorMatrix type="saturate" values="1.6" />
+          </filter>
+          <linearGradient :id="`${id}-fallback`">
+            <stop stop-color="var(--record-color)" />
+            <stop offset="0.5" stop-color="var(--room-dark)" />
+            <stop offset="1" stop-color="var(--record-color)" />
+          </linearGradient>
+          <pattern
+            :id="`${id}-colors`"
+            width="1"
+            height="1"
+            viewBox="0 0 1000 100"
             preserveAspectRatio="none"
-            :filter="`url(#${id}-blur)`"
-          />
-        </pattern>
-      </defs>
-      <g :fill="`url(#${id}-colors)`">
-        <path v-for="(curve, i) in curves" :key="i" class="bell-curve" :d="curve" />
-      </g>
-    </svg>
+          >
+            <rect width="1000" height="100" :fill="`url(#${id}-fallback)`" />
+            <image
+              v-if="cover"
+              :href="cover"
+              width="1000"
+              height="100"
+              preserveAspectRatio="none"
+              :filter="`url(#${id}-blur)`"
+            />
+          </pattern>
+        </defs>
+        <path class="wave-line" :d="wave" :stroke="`url(#${id}-colors)`" />
+      </svg>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .ambient-wave {
   min-width: 0;
+  position: relative;
+  height: 28px;
+  pointer-events: none;
+}
+.ambient-wave::before {
+  content: '';
+  position: absolute;
+  inset: calc(50% - 1.5px) 0 auto var(--played);
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--room-ink) 18%, transparent);
+}
+.played-wave {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--played)) 0 0);
 }
 svg {
-  width: 100%;
-  height: 56px;
+  width: 120%;
+  height: 100%;
   display: block;
+  animation: travel var(--wave-duration) linear infinite paused;
 }
-.bell-curve {
-  opacity: 0.65;
-  transform-origin: 50% 94%;
-  animation: drift var(--wave-duration) ease-in-out infinite alternate paused;
+.wave-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  transform-origin: center;
+  transform: scaleY(0.08);
+  transition: transform 220ms ease;
 }
-.bell-curve:first-child {
-  opacity: 0.4;
-  animation-delay: calc(var(--wave-duration) * -0.65);
-}
-.bell-curve:last-child {
-  opacity: 0.8;
-  animation-delay: calc(var(--wave-duration) * -0.3);
-}
-.is-playing .bell-curve {
+.is-playing svg {
   animation-play-state: running;
 }
-@keyframes drift {
-  from {
-    transform: translateX(-12px) scaleY(0.7);
-  }
+.is-playing .wave-line {
+  transform: scaleY(1);
+}
+@keyframes travel {
   to {
-    transform: translateX(12px) scaleY(1.1);
+    transform: translateX(-8.333333%);
+  }
+}
+@media (forced-colors: active) {
+  .ambient-wave {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bell-curve {
+  svg {
     animation: none;
+  }
+  .wave-line {
+    transition: none;
+  }
+  .is-playing .wave-line {
+    transform: scaleY(0.4);
   }
 }
 </style>
