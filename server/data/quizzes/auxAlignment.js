@@ -31,6 +31,8 @@ export const auxAlignment = {
   id: "aux-alignment",
   title: "Aux Alignment",
   description: "Lawful, chaotic, good or evil: how safe are you with the aux cord?",
+  // Every result, for the list on the Personality page.
+  outcomes: Object.values(ARCHETYPES).map((a) => ({ name: a.name, tag: a.alignment, meaning: a.meaning })),
   dimensions: ["L", "C", "G", "E"],
   questions: [
     {

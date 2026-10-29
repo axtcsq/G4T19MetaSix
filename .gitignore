@@ -1,6 +1,7 @@
 
 # Installed packages, wherever pnpm or npm is run
 node_modules/
+/.impeccable/
 
 # Local design screenshots and scratch files
 /.taste-skill/
@@ -14,3 +15,6 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# The emotion model, downloaded by the mood analysis job
+server/.models/

@@ -89,7 +89,7 @@ onMounted(loadQuiz)
 
 <template>
   <div class="quiz-page personality-theme">
-    <main class="mx-auto w-full max-w-3xl flex-1 px-6 pt-(--page-top) pb-12">
+    <main class="mx-auto w-[min(48rem,var(--page-width))] flex-1 pt-(--page-top) pb-(--page-bottom)">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
       <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-8 text-muted">
@@ -288,7 +288,7 @@ onMounted(loadQuiz)
   border-radius: 10px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
+  box-shadow: none;
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;

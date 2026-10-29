@@ -2,9 +2,24 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useListeningRoom } from '@/composables/useListeningRoom'
+import MoodTag from '@/components/mood/MoodTag.vue'
 const route = useRoute()
 const room = useListeningRoom()
-const { connected, ready, track, paused, busy } = room
+const { connected, ready, track, paused, busy, duration } = room
+// Where the song is up to (the dock's own `position` is where it sits on screen).
+const playPosition = room.position
+const formatTime = (ms) =>
+  `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`
+// How far through the song, for the slider's filled part.
+const progress = computed(() =>
+  duration.value ? `${Math.min(100, (playPosition.value / duration.value) * 100)}%` : '0%',
+)
+// Without Spotify Premium the player never becomes ready, so the dock keeps to
+// the simple version: the song, a link back to the room, and Disconnect.
+const canPlay = computed(() => ready.value)
+// A short version of the room's message when the phone or Spotify app takes
+// over playback, since the dock is the only player on other pages.
+const movedAway = computed(() => room.error.value.includes('another device'))
 // Hidden in the listening room, which has its own player, and on the landing page.
 const HIDDEN_ON = ['/', '/listen']
 const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
@@ -179,21 +194,78 @@ watch([dock, minimised], measure, { flush: 'post' })
       @dblclick="resetPosition"
     >
       <svg viewBox="0 0 10 16" aria-hidden="true">
-        <circle cx="2.5" cy="3" r="1.4" /><circle cx="7.5" cy="3" r="1.4" />
-        <circle cx="2.5" cy="8" r="1.4" /><circle cx="7.5" cy="8" r="1.4" />
-        <circle cx="2.5" cy="13" r="1.4" /><circle cx="7.5" cy="13" r="1.4" />
+        <circle cx="2.5" cy="3" r="1.4" />
+        <circle cx="7.5" cy="3" r="1.4" />
+        <circle cx="2.5" cy="8" r="1.4" />
+        <circle cx="7.5" cy="8" r="1.4" />
+        <circle cx="2.5" cy="13" r="1.4" />
+        <circle cx="7.5" cy="13" r="1.4" />
       </svg>
     </button>
     <img v-if="track.album?.images?.length" :src="track.album.images[0].url" alt="" />
     <template v-if="!minimised">
       <RouterLink to="/listen"
-        ><strong>{{ track.name }}</strong
-        ><span>Back to your listening room ↗</span></RouterLink
+        ><strong>{{ track.name || 'Spotify connected' }}</strong
+        ><span>{{
+          movedAway
+            ? 'Playing on another device. Press play to bring it here.'
+            : canPlay
+              ? 'Back to your listening room ↗'
+              : 'Spotify Premium needed to play ↗'
+        }}</span
+        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" :link="false" /></span></RouterLink
       >
-      <button :disabled="!ready || !track.id || busy" @click="room.toggle">
-        {{ paused ? 'Play' : 'Pause' }}
+      <template v-if="canPlay">
+        <button
+          type="button"
+          class="dock-icon"
+          aria-label="Previous track"
+          title="Previous"
+          :disabled="!ready || busy"
+          @click="room.skip(-1)"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 2.5h2v11H3zM13.5 2.5v11L6 8z" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="dock-icon"
+          :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
+          :title="paused ? 'Play' : 'Pause'"
+          :disabled="!ready || !track.id || busy"
+          @click="room.toggle"
+        >
+          <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 2.5v11l9-5.5z" />
+          </svg>
+          <svg v-else viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+            <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="dock-icon"
+          aria-label="Next track"
+          title="Next"
+          :disabled="!ready || busy"
+          @click="room.skip(1)"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M11 2.5h2v11h-2zM2.5 2.5v11L10 8z" />
+          </svg>
+        </button>
+      </template>
+      <button
+        type="button"
+        class="dock-text"
+        :class="{ 'is-kept': !canPlay }"
+        :disabled="busy"
+        @click="room.disconnect"
+      >
+        Disconnect
       </button>
-      <button :disabled="busy" @click="room.disconnect">Disconnect</button>
     </template>
     <button
       v-else
@@ -205,7 +277,8 @@ watch([dock, minimised], measure, { flush: 'post' })
     >
       <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
       <svg v-else viewBox="0 0 16 16" aria-hidden="true">
-        <rect x="3.5" y="2.5" width="3" height="11" rx="1" /><rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+        <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+        <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
       </svg>
     </button>
     <button
@@ -221,6 +294,23 @@ watch([dock, minimised], measure, { flush: 'post' })
         <path v-else d="M3 6l5 5 5-5" />
       </svg>
     </button>
+    <!-- Its own row under the controls, the full width of the dock. -->
+    <div v-if="!minimised && canPlay" class="dock-seek">
+      <span aria-hidden="true">{{ formatTime(playPosition) }}</span>
+      <input
+        type="range"
+        min="0"
+        :max="duration || 1"
+        step="1000"
+        :value="playPosition"
+        :style="{ '--progress': progress }"
+        aria-label="Playback position"
+        :aria-valuetext="formatTime(playPosition)"
+        :disabled="!ready || !track.id || busy"
+        @change="room.seek($event.target.value)"
+      />
+      <span aria-hidden="true">{{ formatTime(duration) }}</span>
+    </div>
   </aside>
 </template>
 <style>
@@ -242,9 +332,10 @@ html.has-dock body:not(:has(.site-footer)) {
   z-index: 15;
   display: flex;
   width: min(440px, calc(100% - 32px));
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 2px 8px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 6px 10px 4px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   /* Frosted glass, like the sticky navbar. */
@@ -294,6 +385,12 @@ span {
   margin-top: 4px;
   font-size: 11px;
 }
+.dock-mood {
+  overflow: visible;
+}
+.dock-mood:empty {
+  display: none;
+}
 button {
   min-height: 44px;
   flex-shrink: 0;
@@ -302,6 +399,109 @@ button {
 }
 .listening-dock.is-minimised {
   width: auto;
+  padding-bottom: 6px;
+}
+.dock-text {
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  background: transparent;
+  font-size: 12px;
+}
+.dock-text:hover:not(:disabled) {
+  background: rgba(127, 127, 127, 0.16);
+}
+/* On phones the song title needs the room; Disconnect stays in the
+   Listening Room, which the title links to. */
+@media (max-width: 600px) {
+  .dock-text:not(.is-kept) {
+    display: none;
+  }
+}
+.dock-seek {
+  display: flex;
+  flex-basis: 100%;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.dock-seek span {
+  margin: 0;
+  opacity: 0.75;
+}
+/* A thin rounded track, filled in terracotta up to where the song is, with a
+   small white thumb that grows while you hover or drag. */
+.dock-seek input {
+  --track: rgba(127, 127, 127, 0.3);
+  --fill: var(--color-brand-500);
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dock-seek input:disabled {
+  cursor: not-allowed;
+}
+.dock-seek input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--fill) var(--progress), var(--track) var(--progress));
+}
+.dock-seek input::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--track);
+}
+.dock-seek input::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--fill);
+}
+.dock-seek input::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 140ms ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dock-seek input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 140ms ease;
+}
+.dock-seek input:hover:not(:disabled)::-webkit-slider-thumb,
+.dock-seek input:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+.dock-seek input:hover:not(:disabled)::-moz-range-thumb,
+.dock-seek input:active::-moz-range-thumb {
+  transform: scale(1.25);
+}
+.dock-seek input:focus-visible {
+  outline-offset: 2px;
+}
+/* Each browser drops a rule naming the other's thumb, so they stay apart. */
+@media (prefers-reduced-motion: reduce) {
+  .dock-seek input::-webkit-slider-thumb {
+    transition: none;
+  }
+  .dock-seek input::-moz-range-thumb {
+    transition: none;
+  }
 }
 .dock-icon {
   display: inline-flex;
@@ -361,7 +561,8 @@ button:disabled {
   cursor: not-allowed;
 }
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible {
   outline: 3px solid var(--color-brand-700);
   outline-offset: 3px;
 }

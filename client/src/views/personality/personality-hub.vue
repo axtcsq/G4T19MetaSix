@@ -1,12 +1,11 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { getMoodMusic, getPersonality, getQuizzes } from '@/api/quiz'
+import { getPersonality, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/layout/footer.vue'
 import PersonalityBreakdown from '@/components/personality/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/personality/ShareCardDialog.vue'
-import MoodMusicChart from '@/components/personality/MoodMusicChart.vue'
 import TraitBar from '@/components/personality/TraitBar.vue'
 import WaveBackground from '@/components/personality/WaveBackground.vue'
 import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
@@ -29,7 +28,6 @@ const quizImages = {
 
 const quizzes = ref([])
 const personality = ref(null)
-const moodMusic = ref(null)
 const isLoading = ref(true)
 const loadError = ref('')
 // Patterns loads on its own, since its AI write-up can take a few seconds and
@@ -47,6 +45,33 @@ const progressNudge = computed(() => {
   if (left) return `${left} more for a sharper match.`
   return 'Your match is as sharp as it gets.'
 })
+// The quiz whose results are open in What You Could Get.
+const outcomesQuizId = ref('')
+const outcomesQuiz = computed(
+  () => quizzes.value.find((quiz) => quiz.id === outcomesQuizId.value) ?? quizzes.value[0],
+)
+// The list starts short, so the page isn't a wall of text; Show all opens the
+// rest. Picking another quiz closes it again.
+const OUTCOMES_SHOWN = 3
+const showAllOutcomes = ref(false)
+// The user's own result comes first, so it's never hidden.
+const shownOutcomes = computed(() => {
+  const quiz = outcomesQuiz.value
+  const outcomes = [...(quiz?.outcomes ?? [])].sort((a, b) => isMine(quiz, b) - isMine(quiz, a))
+  return showAllOutcomes.value ? outcomes : outcomes.slice(0, OUTCOMES_SHOWN)
+})
+function pickOutcomesQuiz(id) {
+  outcomesQuizId.value = id
+  showAllOutcomes.value = false
+}
+
+// The user's own result in the list. Horoscope titles put words in front of
+// the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
+function isMine(quiz, outcome) {
+  const title = quiz.latestResult?.title
+  return Boolean(title) && (title === outcome.name || title.endsWith(` ${outcome.name}`))
+}
+
 // Where the empty Patterns card sends a new user.
 const firstQuiz = computed(() => quizzes.value.find((quiz) => !quiz.latestResult) ?? quizzes.value[0])
 
@@ -70,9 +95,7 @@ async function loadPatterns() {
   patternsError.value = ''
 
   try {
-    const [profile, mood] = await Promise.all([getPersonality(), getMoodMusic()])
-    personality.value = profile
-    moodMusic.value = mood
+    personality.value = await getPersonality()
   } catch (error) {
     patternsError.value = error.message
   } finally {
@@ -213,6 +236,66 @@ onMounted(loadPage)
             </RouterLink>
           </li>
         </ul>
+      </section>
+
+      <!-- Every result each quiz can give, one quiz at a time. -->
+      <section
+        v-if="!isLoading && quizzes.length"
+        class="page-width outcomes pb-16"
+        aria-labelledby="outcomes-heading"
+      >
+        <h2 id="outcomes-heading" class="outcomes-title">What You Could Get</h2>
+        <p class="body-text text-(--pq-muted)">Every result each quiz can give, and what it means.</p>
+
+        <div class="outcome-tabs" role="tablist" aria-label="Quizzes">
+          <button
+            v-for="quiz in quizzes"
+            :id="`outcomes-tab-${quiz.id}`"
+            :key="quiz.id"
+            type="button"
+            role="tab"
+            class="outcome-tab"
+            :aria-selected="quiz.id === outcomesQuiz.id"
+            :aria-controls="`outcomes-panel`"
+            @click="pickOutcomesQuiz(quiz.id)"
+          >
+            {{ quiz.title }}
+            <span class="tab-count">{{ quiz.outcomes.length }}</span>
+          </button>
+        </div>
+
+        <div
+          id="outcomes-panel"
+          role="tabpanel"
+          :aria-labelledby="`outcomes-tab-${outcomesQuiz.id}`"
+          class="outcome-panel"
+        >
+          <p v-if="outcomesQuiz.outcomeNote" class="outcome-note">{{ outcomesQuiz.outcomeNote }}</p>
+          <ul class="outcome-grid">
+            <li
+              v-for="outcome in shownOutcomes"
+              :key="outcome.name"
+              class="outcome-card"
+              :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
+            >
+              <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
+              <p class="outcome-name">{{ outcome.name }}</p>
+              <p v-if="outcome.tag" class="outcome-tag">{{ outcome.tag }}</p>
+              <p class="outcome-meaning">{{ outcome.meaning }}</p>
+            </li>
+          </ul>
+          <button
+            v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
+            type="button"
+            class="peach-button peach-button--quiet show-more"
+            :aria-expanded="showAllOutcomes"
+            aria-controls="outcomes-panel"
+            @click="showAllOutcomes = !showAllOutcomes"
+          >
+            {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
+            <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+        </div>
       </section>
       <!-- Patterns -->
       <section id="patterns" class="patterns" aria-labelledby="patterns-heading">
@@ -396,9 +479,6 @@ onMounted(loadPage)
               </div>
             </div>
 
-            <div v-if="moodMusic" class="pattern-card mood-card mt-8">
-              <MoodMusicChart :data="moodMusic" :mood-link="personality.moodLink" />
-            </div>
 
             <ShareCardDialog
               ref="shareDialog"
@@ -497,7 +577,7 @@ onMounted(loadPage)
   border-radius: 10px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
+  box-shadow: none;
   font-family: var(--font-serif);
   font-size: 1.375rem;
   text-decoration: none;
@@ -859,6 +939,194 @@ onMounted(loadPage)
   font-size: 1.05rem;
 }
 
+/* What You Could Get: quiz tabs, then a card per result. */
+.outcomes-title {
+  color: var(--ui-text);
+  font-size: var(--text-header);
+  font-weight: 700;
+}
+
+.outcome-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.outcome-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 999px;
+  color: var(--pq-on-surface);
+  background: var(--pq-quiet);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.outcome-tab:hover {
+  background: var(--pq-peach-hover);
+}
+
+.outcome-tab[aria-selected='true'] {
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  box-shadow: none;
+}
+
+.outcome-tab:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 3px;
+}
+
+.tab-count {
+  color: var(--pq-muted);
+  font-size: 0.8rem;
+}
+
+.outcome-panel {
+  margin-top: 1.5rem;
+}
+
+.outcome-note {
+  margin-bottom: 1rem;
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.outcome-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+/* A soft card with a thin accent line along the top; the user's own result
+   is peach with a badge. */
+.outcome-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.5rem 1.5rem 1.35rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 14px;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+  box-shadow: 0 2px 10px var(--pq-shadow);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.outcome-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pq-accent), color-mix(in srgb, var(--pq-accent) 30%, #998ba1));
+  content: '';
+  opacity: 0.55;
+}
+
+.outcome-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--pq-shadow);
+}
+
+.outcome-card.is-mine {
+  border-color: color-mix(in srgb, var(--pq-accent) 45%, var(--pq-border));
+  background: linear-gradient(160deg, var(--pq-result), var(--pq-surface) 85%);
+}
+
+.outcome-card.is-mine::before {
+  opacity: 1;
+}
+
+.mine-badge {
+  align-self: flex-start;
+  margin-bottom: 0.6rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--pq-accent);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.outcome-name {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.outcome-tag {
+  margin-top: 0.2rem;
+  color: var(--pq-accent);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.outcome-meaning {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pq-line, var(--pq-border));
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.show-more {
+  gap: 0.5rem;
+  max-width: 334px;
+  margin: 1.75rem auto 0;
+  font-size: 1.15rem;
+}
+
+.show-more-chevron {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms ease;
+}
+
+.show-more[aria-expanded='true'] .show-more-chevron {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 1000px) {
+  .outcome-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .outcome-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outcome-card,
+  .show-more-chevron {
+    transition: none;
+  }
+}
+
 /* Patterns while it loads, has no quizzes yet, or fails. */
 .patterns-loading,
 .patterns-empty {
@@ -912,16 +1180,12 @@ onMounted(loadPage)
   }
 }
 
-/* A song for your type, and the mood chart under it: both full-width rows. */
+/* A song for your type: a full-width row. */
 .song-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) 300px;
   align-items: center;
   gap: 2rem;
-  padding: 1.5rem 1.75rem;
-}
-
-.mood-card {
   padding: 1.5rem 1.75rem;
 }
 
@@ -1010,7 +1274,7 @@ onMounted(loadPage)
 
 .summary-text {
   max-width: 1135px;
-  padding-block: 3.5rem 4rem;
+  padding-block: 3.5rem var(--page-bottom);
   color: var(--ui-text);
   text-align: center;
 }
@@ -1046,10 +1310,6 @@ onMounted(loadPage)
 @media (max-width: 600px) {
   .personality-page {
     min-height: calc(100vh - 66px);
-  }
-
-  .page-width {
-    width: calc(100% - 32px);
   }
 
   .insights-card,

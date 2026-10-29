@@ -1,15 +1,23 @@
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
+import MoodFace from '@/components/journal/MoodFace.vue'
+import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
+
+const showHistory = ref(false)
+const showDrawing = ref(false)
+const saveStatus = ref('')
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry']
 const selectedMood = ref(null)
 const journalEntry = ref('')
 const drawingData = ref(null)
-const drawingSource = ref('')
+const helperAvailable = ref(false)
+const helperOpen = ref(false)
+const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
 const isLoading = ref(true)
 const isSaving = ref(false)
@@ -56,10 +64,11 @@ async function saveEntry() {
     })
 
     logs.value = [savedEntry, ...logs.value]
+    saveStatus.value = 'Entry saved.'
     selectedMood.value = null
     journalEntry.value = ''
     drawingData.value = null
-    drawingSource.value = ''
+    helperOpen.value = false
   } catch (error) {
     saveError.value = error.message
   } finally {
@@ -69,15 +78,12 @@ async function saveEntry() {
 
 function clearSaveFeedback() {
   saveError.value = ''
+  saveStatus.value = ''
 }
 
 function selectMood(mood) {
   selectedMood.value = mood
   clearSaveFeedback()
-}
-
-function moodBadgeClass(mood) {
-  return `mood-badge--${mood.toLowerCase()}`
 }
 
 async function createJournalIdea() {
@@ -122,59 +128,64 @@ function formatDate(date) {
   })
 }
 
-async function viewDrawing(log) {
-  if (!log.drawing?.items?.length) return
-
-  drawingData.value = JSON.parse(JSON.stringify(log.drawing))
-  drawingSource.value = `Showing drawing saved on ${formatDate(log.createdAt)}. Saving it again creates a new journal entry.`
-  await nextTick()
-  document.getElementById('journal-canvas-heading')?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  })
-}
-
 onMounted(loadEntries)
 </script>
 
 <template>
   <div class="daily-mood-page">
-    <main class="daily-mood-content flex-1 pb-12">
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-12">
-        <section class="journal-column lg:col-span-2 xl:col-span-6">
-          <h1 class="page-title">Daily Mood Log</h1>
-          <p class="body-text mt-2 text-muted">How are you feeling today?</p>
-
-          <form
-            id="daily-journal-form"
-            class="journal-form mt-10"
-            novalidate
-            @submit.prevent="saveEntry"
-          >
+    <main class="daily-mood-content flex-1">
+      <header class="journal-header">
+        <div>
+          <h1 class="page-title">{{ showHistory ? 'Past entries' : 'Today’s journal' }}</h1>
+          <p class="body-text mt-2 text-muted">
+            {{
+              showHistory
+                ? 'Your days, in your own words.'
+                : 'A little space to check in with yourself.'
+            }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="history-toggle glass-secondary"
+          :aria-expanded="showHistory"
+          aria-controls="past-entries"
+          @click="showHistory = !showHistory"
+        >
+          <svg v-if="!showHistory" class="history-clock" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+          {{ showHistory ? 'Back to writing' : 'Past entries' }}
+        </button>
+      </header>
+      <div class="journal-layout">
+        <section v-show="!showHistory" class="journal-column">
+          <form id="daily-journal-form" class="journal-form" novalidate @submit.prevent="saveEntry">
             <fieldset>
-              <legend class="sub-header">Choose your emotions</legend>
+              <legend class="sub-header">How are you feeling?</legend>
               <div class="mt-4 flex flex-wrap gap-3" role="group" aria-label="Choose a mood">
                 <button
                   v-for="mood in moods"
                   :key="mood"
                   type="button"
-                  class="mood-option"
+                  class="mood-option mood-reaction"
                   :class="[
                     `mood-option--${mood.toLowerCase()}`,
+                    `mood-reaction--${mood.toLowerCase()}`,
                     { 'is-selected': selectedMood === mood },
                   ]"
                   :aria-pressed="selectedMood === mood"
                   @click="selectMood(mood)"
                 >
+                  <MoodFace :mood="mood" class="button-mood-face" />
                   {{ mood }}
                 </button>
               </div>
             </fieldset>
 
             <div class="journal-field-group mt-10">
-              <label for="journal-entry" class="sub-header"
-                >Tell us about your day</label
-              >
+              <label for="journal-entry" class="sub-header">What’s on your mind?</label>
               <UTextarea
                 id="journal-entry"
                 v-model="journalEntry"
@@ -185,35 +196,99 @@ onMounted(loadEntries)
                 aria-describedby="journal-help"
                 class="notebook-field mt-4 w-full resize-none"
                 :ui="{ base: 'notebook-input w-full resize-none' }"
+                @focus="helperAvailable = true"
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
-                {{ journalEntry.length }} / 5000 characters. Your reflection is optional.
+                {{ journalEntry.length }} / 5000 characters. Write a reflection or add a drawing.
               </p>
             </div>
           </form>
+          <div v-if="helperAvailable || journalEntry" class="helper-widget">
+            <UPopover
+              v-model:open="helperOpen"
+              :content="{ side: 'top', align: 'end', sideOffset: 12 }"
+            >
+              <button
+                type="button"
+                class="helper-launcher"
+                aria-label="Open MetaFor Helper"
+                title="MetaFor Helper"
+              >
+                <img
+                  src="@/assets/images/journal-helper-sparkle.png"
+                  alt=""
+                  width="46"
+                  height="46"
+                />
+              </button>
+              <template #content>
+                <section class="helper-popover" aria-labelledby="helper-title">
+                  <video
+                    v-if="!reduceMotion"
+                    class="helper-liquid"
+                    src="/videos/banner-sunset.mp4"
+                    poster="/videos/banner-sunset.jpg"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    aria-hidden="true"
+                  />
+                  <header class="helper-header">
+                    <h2 id="helper-title">MetaFor Helper</h2>
+                    <button
+                      type="button"
+                      class="helper-close glass-icon"
+                      aria-label="Close MetaFor Helper"
+                      @click="helperOpen = false"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m6 6 12 12M6 18 18 6" />
+                      </svg>
+                    </button>
+                  </header>
+                  <form @submit.prevent="createJournalIdea">
+                    <label class="sr-only" for="journal-idea-prompt"
+                      >What would you like to reflect on?</label
+                    >
+                    <textarea
+                      id="journal-idea-prompt"
+                      v-model="ideaPrompt"
+                      maxlength="800"
+                      rows="3"
+                      class="journal-idea-prompt"
+                      placeholder="What would you like to reflect on?"
+                      :disabled="isGeneratingIdea"
+                      @input="clearJournalIdea"
+                    />
+                    <UButton
+                      type="submit"
+                      class="glass-action mt-3"
+                      :disabled="!ideaPrompt.trim() || isGeneratingIdea"
+                      :loading="isGeneratingIdea"
+                      >{{ isGeneratingIdea ? 'Thinking…' : 'Find a starting point' }}</UButton
+                    >
+                  </form>
+                  <div v-if="journalIdea" class="helper-result">
+                    <p class="body-text">{{ journalIdea }}</p>
+                    <UButton type="button" variant="outline" class="mt-3" @click="insertJournalIdea"
+                      >Add to my entry</UButton
+                    >
+                  </div>
+                  <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
+                    {{ ideaError }}
+                  </p>
+                  <p v-if="ideaStatus" role="status" class="sr-only">{{ ideaStatus }}</p>
+                  <p class="helper-privacy">Only this prompt is sent to Groq AI when you ask.</p>
+                </section>
+              </template>
+            </UPopover>
+          </div>
         </section>
 
-        <aside class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:col-span-2 xl:contents">
-          <div class="journal-history rounded-xl border border-default bg-white p-5 xl:col-span-3">
-            <div class="mb-5 flex items-center justify-between gap-3">
-              <h2 class="journal-history-title sub-header">
-                <svg
-                  aria-hidden="true"
-                  class="journal-history-clock"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3.5 2" />
-                </svg>
-                Journal History
-              </h2>
-              <UBadge color="primary" variant="subtle">
-                {{ logs.length }} {{ logs.length === 1 ? 'entry' : 'entries' }}
-              </UBadge>
-            </div>
-
+        <section v-show="showHistory" id="past-entries" aria-label="Past entries">
+          <div class="journal-history">
             <p
               v-if="isLoading"
               role="status"
@@ -237,151 +312,74 @@ onMounted(loadEntries)
 
             <div v-else-if="logs.length === 0" class="py-10 text-center">
               <p class="font-sans text-sm text-muted">
-                No journal entries yet. Save your first journal above.
+                No entries yet. Choose “Back to writing” to make your first entry.
               </p>
             </div>
 
-            <div v-else class="max-h-[540px] space-y-3 overflow-y-auto pr-1">
-              <article
-                v-for="log in logs"
-                :key="log._id"
-                class="journal-entry rounded-lg border border-default p-4"
-              >
-                <div class="flex items-center justify-between gap-3">
-                  <time :datetime="log.createdAt" class="font-sans text-xs text-muted">
-                    {{ formatDate(log.createdAt) }}
-                  </time>
-                  <UBadge :class="['mood-badge', moodBadgeClass(log.mood)]" variant="soft">
-                    {{ log.mood }}
-                  </UBadge>
+            <div v-else class="history-list">
+              <article v-for="log in logs" :key="log._id" class="journal-entry">
+                <div
+                  class="entry-sheet notebook-page"
+                  :class="{ 'has-drawing': log.drawing?.items?.length }"
+                >
+                  <header class="entry-metadata">
+                    <time :datetime="log.createdAt">{{ formatDate(log.createdAt) }}</time>
+                    <span class="entry-emotion">
+                      <MoodFace :mood="log.mood" class="emotion-sketch" />
+                      {{ log.mood }}
+                    </span>
+                  </header>
+                  <p>{{ log.journal || 'No written reflection.' }}</p>
+                  <JournalDrawingNote
+                    v-if="log.drawing?.items?.length"
+                    :drawing="log.drawing"
+                    :label="'Drawing from ' + formatDate(log.createdAt)"
+                  />
                 </div>
-
-                <p
-                  class="body-text mt-3 whitespace-pre-wrap break-words text-default"
-                >
-                  {{ log.journal || 'No written reflection.' }}
-                </p>
-                <button
-                  v-if="log.drawing?.items?.length"
-                  type="button"
-                  class="view-drawing-button mt-3"
-                  @click="viewDrawing(log)"
-                >
-                  View drawing
-                </button>
               </article>
             </div>
           </div>
-
-          <section class="journal-idea-card xl:col-span-3" aria-labelledby="journal-idea-heading">
-            <video
-              class="helper-liquid"
-              src="/videos/banner-sunset.mp4"
-              poster="/videos/banner-sunset.jpg"
-              autoplay
-              muted
-              loop
-              playsinline
-              aria-hidden="true"
-            />
-            <div class="helper-liquid-scrim" aria-hidden="true" />
-            <div class="journal-idea-content">
-              <h2 id="journal-idea-heading" class="journal-idea-title sub-header">
-                <img src="@/assets/images/journal-helper-sparkle.png" alt="" class="journal-helper-icon" />
-                Helper
-              </h2>
-              <p class="mt-2 text-sm text-muted">Need help? Describe what happened today</p>
-
-              <form class="mt-4 space-y-3" @submit.prevent="createJournalIdea">
-                <label for="journal-idea-prompt" class="text-sm font-medium text-default">
-                  Your prompt
-                </label>
-                <textarea
-                  id="journal-idea-prompt"
-                  v-model="ideaPrompt"
-                  class="journal-idea-prompt"
-                  maxlength="800"
-                  rows="3"
-                  placeholder="Need help ideating journal? Try writing a prompt to get started."
-                  :disabled="isGeneratingIdea"
-                  @input="clearJournalIdea"
-                ></textarea>
-                <div class="flex flex-wrap gap-3">
-                  <UButton
-                    type="submit"
-                    color="primary"
-                    class="glass-action rounded-full font-sans"
-                    :disabled="!ideaPrompt.trim() || isGeneratingIdea"
-                    :loading="isGeneratingIdea"
-                  >
-                    {{ isGeneratingIdea ? 'Thinking...' : 'Generate idea' }}
-                  </UButton>
-                  <UButton
-                    type="button"
-                    color="primary"
-                    class="glass-action rounded-full font-sans"
-                    :disabled="!journalIdea || isGeneratingIdea"
-                    @click="insertJournalIdea"
-                  >
-                    Insert
-                  </UButton>
-                </div>
-              </form>
-
-              <div
-                class="journal-idea-result"
-                :class="{ 'is-empty': !journalIdea }"
-                role="region"
-                aria-label="Generated journal idea"
-                aria-live="polite"
-              >
-                {{ journalIdea || 'Your journal idea will appear here after you generate one.' }}
-              </div>
-
-              <p v-if="ideaError" role="alert" class="mt-3 text-sm text-error">
-                {{ ideaError }}
-              </p>
-              <p v-if="ideaStatus" role="status" aria-live="polite" class="mt-3 text-sm text-muted">
-                {{ ideaStatus }}
-              </p>
-
-              <div class="helper-attribution">
-                <p class="text-xs text-muted">
-                  Your prompt would be processed by Groq AI. AI usage limit applies.
-                </p>
-                <img class="groq-mark" src="@/assets/images/groq-logo.svg" alt="Groq" />
-              </div>
-            </div>
-          </section>
-        </aside>
+        </section>
       </div>
 
-      <section class="mt-10" aria-labelledby="journal-canvas-heading">
-        <div class="mb-5">
-          <h2 id="journal-canvas-heading" class="section-title">Canvas</h2>
-          <p class="body-text mt-1 text-muted">Can't describe your thoughts? Draw it.</p>
-        </div>
-        <p v-if="drawingSource" class="mb-3 text-sm text-muted" role="status">
-          {{ drawingSource }}
-        </p>
-        <JournalCanvas v-model="drawingData" />
-      </section>
-
-      <div class="mt-6 flex flex-wrap items-center gap-4">
-        <UButton
-          form="daily-journal-form"
-          type="submit"
-          color="primary"
-          class="glass-action rounded-full font-sans"
-          :disabled="!canSave"
-          :loading="isSaving"
+      <div v-show="!showHistory" class="writing-extras">
+        <!-- The canvas stays folded away until someone wants to draw. -->
+        <details
+          class="drawing-disclosure"
+          :open="showDrawing"
+          @toggle="showDrawing = $event.target.open"
         >
-          Save Journal
-        </UButton>
+          <summary>
+            <span class="disclosure-text">
+              <span id="journal-canvas-heading" class="section-title">Add a drawing</span>
+              <span class="body-text text-muted">Can't describe your thoughts? Draw it.</span>
+            </span>
+            <span class="disclosure-optional">Optional</span>
+            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <section class="drawing-section" aria-labelledby="journal-canvas-heading">
+            <JournalCanvas v-model="drawingData" />
+          </section>
+        </details>
+        <div class="save-row">
+          <UButton
+            form="daily-journal-form"
+            type="submit"
+            color="primary"
+            class="glass-action rounded-full font-sans"
+            :disabled="!canSave"
+            :loading="isSaving"
+          >
+            Save entry
+          </UButton>
+        </div>
+        <p v-if="saveStatus" role="status" class="mt-4">{{ saveStatus }}</p>
+        <p v-if="saveError" role="alert" class="mt-4 text-sm text-error">
+          {{ saveError }} Your entry is still here so you can retry.
+        </p>
       </div>
-      <p v-if="saveError" role="alert" class="mt-4 text-sm text-error">
-        {{ saveError }} Your entry is still here so you can retry.
-      </p>
     </main>
     <SiteFooter />
   </div>
@@ -395,52 +393,128 @@ onMounted(loadEntries)
   background: var(--ui-bg);
 }
 
+/* The same width and edges as the other pages, so the title lines up. */
 .daily-mood-content {
   width: var(--page-width);
   margin-inline: auto;
-  padding-top: var(--page-top);
+  padding-block: var(--page-top) var(--page-bottom);
 }
 
+.journal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+.history-toggle.glass-secondary {
+  --button-top: color-mix(in srgb, var(--color-peach) 55%, white);
+  --button-base: var(--color-peach);
+  --button-ink: var(--color-brand-950);
+  min-height: 44px;
+  color: var(--ui-primary);
+  font: 600 0.9rem var(--font-sans);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.history-toggle:hover {
+  text-decoration: underline;
+}
+.history-clock {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.history-toggle:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 4px;
+}
+.journal-column .sub-header {
+  font-size: 1.15rem;
+}
+.writing-extras {
+  margin-top: 24px;
+}
+.drawing-disclosure {
+  margin-top: 40px;
+}
+.drawing-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-radius: 16px;
+  list-style: none;
+  cursor: pointer;
+}
+.drawing-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+.drawing-disclosure summary:hover {
+  background: color-mix(in srgb, var(--ui-primary) 6%, transparent);
+}
+.drawing-disclosure summary:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+.disclosure-text {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+}
+.disclosure-optional {
+  color: var(--ui-text-muted);
+  font: 400 0.85rem var(--font-sans);
+}
+.disclosure-chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms ease;
+}
+.drawing-disclosure[open] .disclosure-chevron {
+  transform: rotate(180deg);
+}
+.drawing-section {
+  padding: 0 0 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-chevron {
+    transition: none;
+  }
+}
+.save-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 28px;
+}
 @media (max-width: 600px) {
-  .daily-mood-content {
-    width: calc(100% - 48px);
+  .journal-header {
+    flex-direction: column;
+    gap: 12px;
   }
 }
-
-@media (min-width: 1280px) {
-  .journal-column {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .journal-form {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .journal-field-group {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .journal-field-group .notebook-field {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .journal-field-group .notebook-field :deep(textarea) {
-    flex: 1;
-  }
-}
-
 .mood-option {
   --mood-color: #cd6651;
   --mood-text: #fff;
-  min-height: 44px;
-  padding: 0.55rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0.55rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.94);
   border-radius: 9999px;
   color: #292321;
@@ -465,6 +539,12 @@ onMounted(loadEntries)
     transform 160ms ease;
 }
 
+.button-mood-face {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  transform-origin: center;
+}
 .mood-option--sad {
   --mood-color: #4389d1;
 }
@@ -510,190 +590,189 @@ onMounted(loadEntries)
   box-shadow: 0 0 0 2px #fff;
 }
 
-.journal-history {
-  background: var(--ui-bg-elevated);
+.history-list {
+  display: grid;
+  gap: 32px;
+}
+.journal-entry {
+  min-width: 0;
 }
 
-.journal-history h2 {
-  color: var(--ui-text);
-}
-
-.journal-history-title {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.journal-history-clock {
-  width: 1.15em;
-  height: 1.15em;
-  flex: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
-}
-
-.mood-badge {
-  border: 1px solid color-mix(in srgb, var(--mood-color), white 45%);
-  color: var(--mood-text) !important;
-  background: color-mix(in srgb, var(--mood-color), white 80%) !important;
-}
-
-.mood-badge--sad {
-  --mood-color: #4389d1;
-  --mood-text: #17436d;
-}
-
-.mood-badge--happy {
-  --mood-color: #f2c335;
-  --mood-text: #493713;
-}
-
-.mood-badge--relaxed {
-  --mood-color: #998ba1;
-  --mood-text: #4b4052;
-}
-
-.mood-badge--anxious {
-  --mood-color: #ed8a35;
-  --mood-text: #70400d;
-}
-
-.mood-badge--angry {
-  --mood-color: #d94a45;
-  --mood-text: #762722;
-}
-
-.journal-idea-card {
+.journal-column {
   position: relative;
-  overflow: hidden;
-  padding: 20px;
-  border: 1px solid var(--ui-border);
-  border-radius: 14px;
-  background:
-    radial-gradient(ellipse at 85% 15%, rgba(207, 156, 255, 0.95), transparent 48%),
-    linear-gradient(125deg, #654ed8, #9160e7 58%, #aa79e9);
-  box-shadow: 0 5px 16px rgba(59, 43, 35, 0.05);
 }
-
+.helper-widget {
+  position: absolute;
+  right: 12px;
+  bottom: 48px;
+}
+.helper-launcher {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--ui-bg-elevated);
+  color: #ed8a35;
+  border: 1px solid var(--ui-border);
+  box-shadow: none;
+  cursor: pointer;
+  transition: transform 160ms ease;
+}
+.helper-launcher:hover {
+  transform: translateY(-2px);
+}
+.helper-launcher img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+.helper-launcher:focus-visible,
+.helper-close:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
+}
+.helper-popover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: min(340px, calc(100vw - 32px));
+  padding: 20px;
+  color: #fff;
+  background: #654ed8 url('/videos/banner-sunset.jpg') center / cover;
+  border-radius: 16px;
+  font-family: var(--font-sans);
+}
 .helper-liquid,
-.helper-liquid-scrim {
+.helper-popover::before {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: -2;
 }
-
 .helper-liquid {
-  z-index: 0;
   object-fit: cover;
 }
-
-.helper-liquid-scrim {
-  z-index: 1;
+.helper-popover::before {
+  content: '';
+  z-index: -1;
   background:
     radial-gradient(ellipse 58% 66% at 82% 18%, rgba(189, 135, 255, 0.38), transparent 100%),
-    linear-gradient(115deg, rgba(51, 37, 139, 0.5), rgba(90, 52, 164, 0.28));
+    linear-gradient(115deg, rgba(51, 37, 139, 0.7), rgba(90, 52, 164, 0.6));
 }
-
-.journal-idea-content {
-  position: relative;
-  z-index: 2;
-}
-
-.journal-idea-content .text-muted,
-.journal-idea-content .text-default {
-  color: rgba(255, 255, 255, 0.94);
-}
-
-.journal-idea-content .text-error {
-  color: #ffe1df;
-}
-
-.journal-idea-content h2 {
-  color: #fff;
-}
-
-.journal-idea-title {
+.helper-header {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
-
-.journal-helper-icon {
-  width: 2rem;
-  height: 2rem;
-  flex: none;
+.helper-header h2 {
+  font: 600 18px var(--font-sans);
+}
+.helper-close.glass-icon {
+  --button-ink: #fff;
+  --button-top: #ca5555;
+  --button-base: #a93232;
+  width: 44px;
+  height: 44px;
+  margin: -4px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
   border-radius: 50%;
-  object-fit: cover;
 }
-
+.helper-close svg {
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
 .journal-idea-prompt {
-  display: block;
   width: 100%;
-  min-height: 90px;
-  padding: 12px 14px;
+  padding: 12px;
   border: 1px solid var(--ui-border);
-  border-radius: 10px;
-  color: var(--ui-text);
+  border-radius: 8px;
   background: var(--ui-bg);
-  font: 0.92rem/1.5 var(--font-sans);
+  color: var(--ui-text);
+  font: 14px/1.5 var(--font-sans);
   resize: vertical;
 }
-
 .journal-idea-prompt::placeholder {
   color: var(--ui-text-muted);
   opacity: 1;
 }
-
 .journal-idea-prompt:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
 }
-
-.journal-idea-prompt:disabled {
-  opacity: 0.7;
-  cursor: wait;
-}
-
-.journal-idea-result {
-  display: flex;
-  width: 100%;
-  min-height: 120px;
-  margin-top: 14px;
-  padding: 12px 14px;
-  align-items: flex-start;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-left: 4px solid #a77cf0;
-  border-radius: 12px;
-  color: #312943;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 5px 16px rgba(39, 26, 72, 0.14);
-  font: 0.92rem/1.5 var(--font-sans);
-  white-space: pre-wrap;
+.helper-result {
+  margin-top: 16px;
   overflow-wrap: anywhere;
 }
-
-.journal-idea-result.is-empty {
-  color: #756d82;
-  font-style: italic;
+.helper-privacy {
+  margin-top: 12px;
+  font: 12px/1.5 var(--font-sans);
+  color: #fff;
+}
+.entry-sheet {
+  position: relative;
+}
+.entry-sheet > p {
+  margin: 0;
+}
+.entry-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  margin-bottom: 36px;
+  color: #313c50;
+  font: 400 22px/36px var(--font-journal);
+  white-space: normal;
+}
+.entry-emotion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.emotion-sketch {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-5deg);
+}
+@media (max-width: 600px) {
+  .entry-metadata {
+    font-size: 20px;
+    gap: 4px 12px;
+  }
+  .emotion-sketch {
+    width: 30px;
+    height: 30px;
+  }
 }
 
-.helper-attribution {
-  margin-top: 1.1rem;
-  text-align: center;
+.entry-sheet.has-drawing {
+  padding-bottom: 288px;
+  min-height: 420px;
 }
-
-.groq-mark {
-  display: block;
-  width: 3.75rem;
-  height: auto;
-  margin: 0.65rem auto 0;
+@media (prefers-reduced-motion: reduce) {
+  .helper-launcher {
+    transition: none;
+  }
 }
-
-.notebook-field :deep(textarea) {
+.notebook-field :deep(textarea),
+.notebook-page {
   --notebook-line-height: 36px;
   min-height: 300px;
   padding: 18px 24px 18px 48px;
@@ -726,6 +805,10 @@ onMounted(loadEntries)
     text;
 }
 
+.notebook-field :deep(textarea) {
+  padding-right: 72px;
+}
+
 .notebook-field :deep(textarea::placeholder) {
   color: #687181;
   opacity: 1;
@@ -744,21 +827,11 @@ onMounted(loadEntries)
     cursor: text;
   }
 }
-.journal-entry {
-  background: var(--ui-bg);
-}
-
-.view-drawing-button {
-  padding: 0;
-  border: 0;
-  color: var(--ui-primary);
-  background: transparent;
-  font: 600 0.82rem var(--font-sans);
-  cursor: pointer;
-}
-
-.view-drawing-button:hover {
-  text-decoration: underline;
+.notebook-page {
+  min-height: 144px;
+  margin: 0;
+  white-space: pre-wrap;
+  cursor: auto;
 }
 
 @media (max-width: 600px) {

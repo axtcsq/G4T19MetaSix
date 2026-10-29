@@ -9,13 +9,17 @@
     "db:init": "node scripts/db-init.js",
     "db:seed": "node scripts/seed.js",
     "sync": "node jobs/sync.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "analyse": "node jobs/analyse.js",
+    "mood:recompute": "node jobs/recompute.js",
+    "mood:eval": "node testdata/eval.mjs testdata/all.json services/mood/mood.js",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
     "connect-mongo": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.7",

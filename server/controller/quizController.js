@@ -224,6 +224,8 @@ export async function getQuizzes(req, res) {
         description: quiz.description,
         questionCount: quiz.questions.length,
         needsBirthday: Boolean(quiz.needsBirthday),
+        outcomes: quiz.outcomes,
+        outcomeNote: quiz.outcomeNote ?? null,
         latestResult: result
           ? { title: result.title, subtitle: result.subtitle }
           : null,

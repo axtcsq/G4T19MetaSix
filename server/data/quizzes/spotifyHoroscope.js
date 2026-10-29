@@ -81,6 +81,13 @@ export const spotifyHoroscope = {
   id: "spotify-horoscope",
   title: "Spotify Horoscope",
   description: "Your star sign, read through your top genres and energy.",
+  // Every sign, for the list on the Personality page. The full result adds a
+  // genre word and an energy word in front, e.g. "Jazzy Easygoing Libra".
+  outcomes: Object.entries(SIGN_TRAITS).map(([name, meaning]) => {
+    const element = SIGNS.find(([sign]) => sign === name)[1];
+    return { name, tag: `${element[0].toUpperCase()}${element.slice(1)} sign`, meaning };
+  }),
+  outcomeNote: "Your full result puts a genre word and an energy word in front of your sign, like \"Jazzy Easygoing Libra\".",
   dimensions: [],
   questions: [],
   needsBirthday: true,
