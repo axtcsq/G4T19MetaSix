@@ -69,7 +69,7 @@ npm run db:seed                 # a year of plays
 npm run db:seed -- --days 30    # only the last 30 days
 ```
 
-This adds the 156 test songs to `tracks` with both mood readings, creates the demo user (`spotifyId: "demo"`, never synced), generates 10–40 plays a day, and rebuilds their `dailyMoods`. Exam weeks lean sad, holidays lean happy, and weekends are quieter. Re-running replaces the demo user's data, so it is safe to repeat. It refuses to run on a database whose name doesn't end in `_dev` unless you pass `--yes`.
+This adds the 156 test songs to `tracks` with both mood readings, creates the demo user (`spotifyId: "demo"`, never synced), generates 10–40 plays a day, and rebuilds their `dailyMoods`. Exam weeks lean sad, holidays lean happy, and weekends are quieter. It also writes an evening journal entry on about 3 in 4 days, in the mood of that day's music (exam weeks bring Anxious too). Re-running replaces the demo user's plays and generated entries (marked `source: "seed"`), so it is safe to repeat; entries someone wrote by hand are kept, and those days get no generated entry. It refuses to run on a database whose name doesn't end in `_dev` unless you pass `--yes`.
 
 ## Run
 
