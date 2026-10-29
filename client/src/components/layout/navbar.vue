@@ -2,12 +2,15 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ButterflyMark from './ButterflyMark.vue'
+import StoryMode from '@/components/landing/StoryMode.vue'
 import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'SiteNavbar' })
 
 const route = useRoute()
 const auth = useAuthStore()
 const isLanding = computed(() => route.path === '/')
+// The sign-in page shows just the logo: nothing past it works until you log in.
+const isLogin = computed(() => route.path === '/login')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
 
 const links = [
@@ -41,7 +44,7 @@ function onScroll() {
 }
 
 function updateCollapsed() {
-  if (isLanding.value || !nav.value) {
+  if (isLanding.value || isLogin.value || !nav.value) {
     isCollapsed.value = false
     return
   }
@@ -112,13 +115,18 @@ watch(
       </div>
 
       <nav v-if="isLanding" class="header-nav" aria-label="Main navigation">
+        <StoryMode>
+          <template #trigger="{ open }">
+            <button type="button" class="header-link header-story" @click="open">See how it works</button>
+          </template>
+        </StoryMode>
         <RouterLink class="header-cta glass-action" :to="auth.user ? '/dashboard' : '/login'">{{
-          auth.user ? 'Open MetaFor' : 'Get started'
+          auth.user ? 'Back to MetaFor' : 'Get started'
         }}</RouterLink>
       </nav>
 
       <nav
-        v-else
+        v-else-if="!isLogin"
         ref="nav"
         class="header-nav"
         :class="{ 'is-collapsed': isCollapsed }"
@@ -152,8 +160,9 @@ watch(
         <span class="menu-bars" aria-hidden="true" />
       </button>
 
-      <!-- A plain <a> inside, so the fold measurement can read its width. -->
-      <RouterLink v-slot="{ href, navigate, isActive }" to="/profile" custom>
+      <!-- A plain <a> inside, so the fold measurement can read its width. The
+           landing page leaves it out; its button already leads into the app. -->
+      <RouterLink v-if="!isLanding && !isLogin" v-slot="{ href, navigate, isActive }" to="/profile" custom>
         <a
           ref="profile"
           :href="href"
@@ -276,6 +285,13 @@ watch(
 }
 .header-link:hover {
   color: #cd6651;
+}
+.header-story {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 .header-link.router-link-exact-active {
   color: #a54b3b;
@@ -508,8 +524,8 @@ watch(
   .site-menu { padding-inline: 18px; }
   .menu-cta { align-self: stretch; }
   .brand, .header-cta { white-space: nowrap; }
-  /* The landing CTA leads into the app; omit the duplicate profile shortcut on phones. */
-  .site-header-landing .profile-button { display: none; }
+  /* No room beside the CTA; the hero has its own story button just below. */
+  .site-header-landing .header-story { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
   .site-header-landing .brand-group { gap: 6px; }
   .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }
