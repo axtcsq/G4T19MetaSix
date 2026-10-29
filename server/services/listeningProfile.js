@@ -105,6 +105,7 @@ async function loadListeningProfile(user) {
     // Genres come from Last.fm tags, since Spotify no longer returns them.
     topArtists: topArtistNames.map((name) => ({ name, genres: genres[name].map((genre) => genre.name) })),
     topGenre: topGenre(rankedArtists, genres),
+    genreMix: genreMix(rankedArtists, genres),
     topTracks,
     // Playlist names aren't stored, so Maslow's Mixtape uses the answers alone.
     playlists: [],
@@ -116,5 +117,26 @@ async function loadListeningProfile(user) {
       days: firstPlay ? (Date.now() - firstPlay.playedAt.getTime()) / (24 * 60 * 60 * 1000) : 0,
       plays: totalPlays,
     },
+  };
+}
+
+// Split each artist's plays across their tags so extra tags do not add plays.
+export function genreMix(rankedArtists, genres) {
+  const totals = new Map();
+  let taggedPlays = 0;
+  for (const [artist, plays] of rankedArtists) {
+    const tags = genres[artist] ?? [];
+    const weight = tags.reduce((sum, tag) => sum + tag.weight, 0);
+    if (!weight) continue;
+    taggedPlays += plays;
+    for (const tag of tags) totals.set(tag.name, (totals.get(tag.name) ?? 0) + plays * tag.weight / weight);
+  }
+  const ranked = [...totals].sort((a, b) => b[1] - a[1]);
+  const shown = ranked.slice(0, 5);
+  if (ranked.length > 5) shown.push(['Other genres', ranked.slice(5).reduce((sum, entry) => sum + entry[1], 0)]);
+  return {
+    taggedArtistPlays: taggedPlays,
+    artistPlays: rankedArtists.reduce((sum, entry) => sum + entry[1], 0),
+    genres: shown.map(([name, value]) => ({ name, share: value / taggedPlays * 100 })),
   };
 }

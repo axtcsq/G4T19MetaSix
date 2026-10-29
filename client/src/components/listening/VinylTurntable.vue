@@ -33,7 +33,11 @@ let textureVersion = 0,
   resize,
   media
 const reduced = ref(false)
-let inView = true
+const inView = ref(true)
+const pageVisible = ref(!document.hidden)
+const updateVisibility = () => {
+  pageVisible.value = !document.hidden
+}
 const geometries = new Set(),
   materials = new Set()
 function mesh(geometry, material, parent = scene) {
@@ -101,6 +105,7 @@ watch(
 )
 
 onMounted(() => {
+  document.addEventListener('visibilitychange', updateVisibility)
   media = matchMedia('(prefers-reduced-motion: reduce)')
   const preference = () => {
     reduced.value = media.matches
@@ -247,7 +252,7 @@ onMounted(() => {
     observer = new ResizeObserver(resize)
     observer.observe(canvas.value)
     visibilityObserver = new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting
+      inView.value = entry.isIntersecting
     })
     visibilityObserver.observe(canvas.value)
     resize()
@@ -255,7 +260,7 @@ onMounted(() => {
       frame = requestAnimationFrame(animate)
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
-      if (document.hidden || !inView) return
+      if (document.hidden || !inView.value) return
       if (props.spinning && !reduced.value) record.rotation.y -= dt * Math.PI * 1.11
       const target = props.spinning ? -0.43 : 0
       arm.rotation.y = reduced.value ? target : THREE.MathUtils.damp(arm.rotation.y, target, 5, dt)
@@ -291,6 +296,7 @@ function pointerUp(event) {
     emit('toggle')
 }
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', updateVisibility)
   disposed = true
   ++textureVersion
   cancelAnimationFrame(frame)
@@ -306,7 +312,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="turntable-scene">
+  <div
+    class="turntable-scene"
+    :class="{
+      'is-playing': spinning,
+      'aura-moving': spinning && inView && pageVisible && !reduced,
+    }"
+    :style="{
+      '--aura-art': artwork ? `url(${JSON.stringify(artwork)})` : 'none',
+      '--aura-color': color,
+    }"
+  >
     <canvas
       v-show="!failed"
       ref="canvas"
@@ -323,9 +339,63 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .turntable-scene {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   height: 100%;
   min-height: 280px;
+}
+.turntable-scene::before,
+.turntable-scene::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 26% 10% 1%;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    var(--aura-art) center / cover,
+    var(--aura-color);
+  filter: blur(38px) saturate(1.25);
+  opacity: 0;
+  transition: opacity 600ms ease;
+  animation: aura-drift 9s ease-in-out infinite alternate paused;
+}
+.turntable-scene::after {
+  inset: 38% 18% -2%;
+  animation-delay: -4s;
+  animation-direction: alternate-reverse;
+}
+.is-playing::before {
+  opacity: 0.16;
+}
+.is-playing::after {
+  opacity: 0.09;
+}
+.aura-moving::before,
+.aura-moving::after {
+  animation-play-state: running;
+}
+@keyframes aura-drift {
+  from {
+    transform: translate(-2%, -1%) rotate(-5deg) scale(0.96);
+  }
+  to {
+    transform: translate(2%, 1%) rotate(5deg) scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .turntable-scene::before,
+  .turntable-scene::after {
+    animation: none;
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .turntable-scene::before,
+  .turntable-scene::after {
+    display: none;
+  }
 }
 canvas {
   display: block;
