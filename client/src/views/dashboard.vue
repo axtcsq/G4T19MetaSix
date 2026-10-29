@@ -32,6 +32,7 @@ const moodMusicError = ref(false)
 onMounted(() => {
   spotify.initialize()
 })
+
 // Loaded once the signed-in user is known, which can be after the page mounts.
 watch(
   () => auth.user?.id,
@@ -157,8 +158,8 @@ watch(
               target="_blank"
               rel="noopener noreferrer"
               class="spotify-link"
-              ><img src="@/assets/images/spotify-logo.png" alt="" width="18" height="18" />Open Spotify
-              <span aria-hidden="true">↗</span></a
+              ><img src="@/assets/images/spotify-logo.png" alt="" width="18" height="18" />Open
+              Spotify <span aria-hidden="true">↗</span></a
             >
           </div>
           <div class="music-layout">
