@@ -3,6 +3,7 @@ import Listen from "../models/Listen.js";
 import SyncGap from "../models/SyncGap.js";
 import Track from "../models/Track.js";
 import User from "../models/User.js";
+import { analysePendingTracks } from "./analysis.js";
 import { rebuildDailyMoods } from "./dailyMoods.js";
 import * as spotify from "./spotifyAuth.js";
 
@@ -68,7 +69,7 @@ export async function syncUser(
               durationMs: track.duration_ms,
               isrc: track.external_ids?.isrc,
             },
-            // New songs wait for mood analysis (Phase 4).
+            // New songs wait for mood analysis, which runs further down.
             $setOnInsert: { analysis: { status: "pending", attempts: 0 } },
           },
           upsert: true,
@@ -133,6 +134,16 @@ export async function syncUser(
     update.$max = { "tracking.cursor": newest };
   }
   await User.updateOne({ _id: user._id }, update);
+
+  // Give this run's new songs a mood from their sound. A failure only leaves
+  // them pending for the next run, so it never fails the sync.
+  if (items.length) {
+    try {
+      await analysePendingTracks({ trackIds: [...new Set(items.map((item) => item.track.id))] });
+    } catch (error) {
+      console.error("[sync] Mood analysis failed:", error.message);
+    }
+  }
 
   const dates = [...new Set(added.map((listen) => listen.localDate))];
   if (dates.length) {
