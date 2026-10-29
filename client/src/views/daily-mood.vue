@@ -5,7 +5,6 @@ import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
-import ButterflyMark from '@/components/layout/ButterflyMark.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 
 const showHistory = ref(false)
@@ -18,6 +17,7 @@ const journalEntry = ref('')
 const drawingData = ref(null)
 const helperAvailable = ref(false)
 const helperOpen = ref(false)
+const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
 const isLoading = ref(true)
 const isSaving = ref(false)
@@ -152,6 +152,10 @@ onMounted(loadEntries)
           aria-controls="past-entries"
           @click="showHistory = !showHistory"
         >
+          <svg v-if="!showHistory" class="history-clock" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 6v6l4 2" />
+          </svg>
           {{ showHistory ? 'Back to writing' : 'Past entries' }}
         </button>
       </header>
@@ -208,19 +212,35 @@ onMounted(loadEntries)
               <button
                 type="button"
                 class="helper-launcher"
-                aria-label="Open MetaFor helper"
-                title="MetaFor helper"
+                aria-label="Open MetaFor Helper"
+                title="MetaFor Helper"
               >
-                <ButterflyMark :size="27" />
+                <img
+                  src="@/assets/images/journal-helper-sparkle.png"
+                  alt=""
+                  width="46"
+                  height="46"
+                />
               </button>
               <template #content>
                 <section class="helper-popover" aria-labelledby="helper-title">
+                  <video
+                    v-if="!reduceMotion"
+                    class="helper-liquid"
+                    src="/videos/banner-sunset.mp4"
+                    poster="/videos/banner-sunset.jpg"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    aria-hidden="true"
+                  />
                   <header class="helper-header">
-                    <h2 id="helper-title">MetaFor helper</h2>
+                    <h2 id="helper-title">MetaFor Helper</h2>
                     <button
                       type="button"
                       class="helper-close glass-icon"
-                      aria-label="Close MetaFor helper"
+                      aria-label="Close MetaFor Helper"
                       @click="helperOpen = false"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -324,14 +344,20 @@ onMounted(loadEntries)
 
       <div v-show="!showHistory" class="writing-extras">
         <!-- The canvas stays folded away until someone wants to draw. -->
-        <details class="drawing-disclosure" :open="showDrawing" @toggle="showDrawing = $event.target.open">
+        <details
+          class="drawing-disclosure"
+          :open="showDrawing"
+          @toggle="showDrawing = $event.target.open"
+        >
           <summary>
             <span class="disclosure-text">
               <span id="journal-canvas-heading" class="section-title">Add a drawing</span>
               <span class="body-text text-muted">Can't describe your thoughts? Draw it.</span>
             </span>
             <span class="disclosure-optional">Optional</span>
-            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </summary>
           <section class="drawing-section" aria-labelledby="journal-canvas-heading">
             <JournalCanvas v-model="drawingData" />
@@ -394,6 +420,16 @@ onMounted(loadEntries)
 .history-toggle:hover {
   text-decoration: underline;
 }
+.history-clock {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .history-toggle:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 4px;
@@ -406,15 +442,12 @@ onMounted(loadEntries)
 }
 .drawing-disclosure {
   margin-top: 40px;
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  background: var(--ui-bg-elevated);
 }
 .drawing-disclosure summary {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 16px 0;
   border-radius: 16px;
   list-style: none;
   cursor: pointer;
@@ -453,7 +486,7 @@ onMounted(loadEntries)
   transform: rotate(180deg);
 }
 .drawing-section {
-  padding: 0 20px 20px;
+  padding: 0 0 20px;
 }
 @media (prefers-reduced-motion: reduce) {
   .disclosure-chevron {
@@ -582,12 +615,18 @@ onMounted(loadEntries)
   background: var(--ui-bg-elevated);
   color: #ed8a35;
   border: 1px solid var(--ui-border);
-  box-shadow: 0 3px 12px #7d47372b;
+  box-shadow: none;
   cursor: pointer;
   transition: transform 160ms ease;
 }
 .helper-launcher:hover {
   transform: translateY(-2px);
+}
+.helper-launcher img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
 }
 .helper-launcher:focus-visible,
 .helper-close:focus-visible {
@@ -595,12 +634,34 @@ onMounted(loadEntries)
   outline-offset: 3px;
 }
 .helper-popover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: min(340px, calc(100vw - 32px));
   padding: 20px;
-  color: var(--ui-text);
-  background: var(--ui-bg-elevated);
+  color: #fff;
+  background: #654ed8 url('/videos/banner-sunset.jpg') center / cover;
   border-radius: 16px;
   font-family: var(--font-sans);
+}
+.helper-liquid,
+.helper-popover::before {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -2;
+}
+.helper-liquid {
+  object-fit: cover;
+}
+.helper-popover::before {
+  content: '';
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 58% 66% at 82% 18%, rgba(189, 135, 255, 0.38), transparent 100%),
+    linear-gradient(115deg, rgba(51, 37, 139, 0.7), rgba(90, 52, 164, 0.6));
 }
 .helper-header {
   display: flex;
@@ -655,7 +716,7 @@ onMounted(loadEntries)
 .helper-privacy {
   margin-top: 12px;
   font: 12px/1.5 var(--font-sans);
-  color: var(--ui-text-muted);
+  color: #fff;
 }
 .entry-sheet {
   position: relative;
