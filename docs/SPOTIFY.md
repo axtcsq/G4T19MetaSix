@@ -39,3 +39,5 @@ The shelf deduplicates recent tracks. Selecting a track starts it followed by up
 Run `node scripts/verify-spotify.mjs` from client for the targeted HTTP/component/model tests. The HTTP tests run the actual client against a local HTTP stand-in for Spotify on 127.0.0.1:4905, with the token endpoint mocked.
 
 Live login, allowed-user access, Premium audio and browser protected-content compatibility require a signed-in authorized Spotify account. Official contracts: [recent history](https://developer.spotify.com/documentation/web-api/reference/get-recently-played), [playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/reference).
+
+GET /api/quiz/genre-mix requires the existing authenticated session and returns { artistPlays, taggedArtistPlays, genres: [{ name, share }] } from the cached 30-day listening profile. Shares split each top-15 artist play across its weighted Last.fm tags, normalised over tagged artist plays; collaborations count per credited artist. Top five genres are retained, with the remainder grouped as Other genres. Missing tags yield an empty genres array, not fabricated shares. Response uses Cache-Control: no-store.
