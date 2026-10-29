@@ -45,6 +45,9 @@ export function toMoods(track, useLyrics) {
     return {
       sound: reading(track.moods.sound),
       lyrics: useLyrics ? reading(track.moods.lyrics) : null,
+      lyricsLanguage: useLyrics && track.lyrics?.status === "found"
+        ? track.lyrics.translatedFrom || "EN"
+        : null,
       lyricsNote: lyricsNote(track, useLyrics),
       ...(Number.isFinite(track.features?.tempo) && track.features.tempo > 0
         ? { tempo: track.features.tempo }
@@ -65,6 +68,7 @@ const TAG_FIELDS = {
   "moods.sound": 1,
   "moods.lyrics": 1,
   "lyrics.status": 1,
+  "lyrics.translatedFrom": 1,
   "lyrics.valence": 1,
   "analysis.status": 1,
   "analysis.attempts": 1,

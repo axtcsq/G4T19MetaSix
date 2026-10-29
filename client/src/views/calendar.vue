@@ -110,6 +110,22 @@ const recommendationArtists = computed(() => {
   }
   return [...artists.values()].sort((a, b) => b.plays - a.plays).slice(0, 3)
 })
+const recommendationLanguage = computed(() => {
+  const languages = new Map()
+  for (const item of listens.value) {
+    const date = new Date(item.played_at)
+    if (date.getMonth() !== shownMonth.value.getMonth() || date.getFullYear() !== shownMonth.value.getFullYear()) continue
+    const code = item.moods?.lyricsLanguage?.toUpperCase()
+    if (code) languages.set(code, (languages.get(code) || 0) + 1)
+  }
+  const [code] = [...languages].sort((a, b) => b[1] - a[1])[0] || []
+  if (!code) return null
+  try {
+    return new Intl.DisplayNames(['en'], { type: 'language' }).of(code.toLowerCase()) || null
+  } catch {
+    return null
+  }
+})
 const monthMoodCount = computed(() => [...logsByDate.value].reduce((n, [key, entries]) => {
   const d = new Date(`${key}T12:00:00`)
   return n + (d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear() ? entries.length : 0)
@@ -217,18 +233,19 @@ async function loadRecommendations() {
   if (!target || !hasSpotifySession()) return
   recommendationsLoading.value = true
   const moodTerms = target === 'happy' ? 'uplifting happy feel good' : 'calm calming relaxing'
+  const languageTerm = recommendationLanguage.value || ''
   const artists = recommendationArtists.value
   const queries = artists.length
-    ? artists.map((artist) => ({ query: `artist:"${artist.name.replaceAll('"', '')}" ${moodTerms}`, label: `From ${artist.name}` }))
-    : [{ query: moodTerms, label: 'Mood match' }]
+    ? artists.map((artist) => ({ query: `artist:"${artist.name.replaceAll('"', '')}" ${moodTerms} ${languageTerm}`, label: `From ${artist.name}` }))
+    : [{ query: `${moodTerms} ${languageTerm}`, label: 'Mood match' }]
   const fallbackQueries = target === 'happy'
     ? [
-        { query: 'instrumental uplifting feel good', label: 'Instrumental search' },
-        { query: 'happy soul indie pop', label: 'Wider style search' },
+        { query: `instrumental uplifting feel good ${languageTerm}`, label: 'Instrumental search' },
+        { query: `happy soul indie pop ${languageTerm}`, label: 'Wider style search' },
       ]
     : [
-        { query: 'calm ambient instrumental', label: 'Instrumental search' },
-        { query: 'calm acoustic classical', label: 'Wider style search' },
+        { query: `calm ambient instrumental ${languageTerm}`, label: 'Instrumental search' },
+        { query: `calm acoustic classical ${languageTerm}`, label: 'Wider style search' },
       ]
   try {
     const listenedIds = new Set(listens.value.map((item) => item.track?.id))
@@ -264,7 +281,7 @@ async function loadRecommendations() {
   }
 }
 
-watch([songMoodTrend, recommendationArtists], loadRecommendations)
+watch([songMoodTrend, recommendationArtists, recommendationLanguage], loadRecommendations)
 onMounted(loadData)
 </script>
 
@@ -318,6 +335,7 @@ onMounted(loadData)
               <div v-if="recommendationArtists.length" class="recommendation-personalization">
                 <span>Matched to artists you played most:</span>
                 <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
+                <span v-if="recommendationLanguage">Searching mainly in {{ recommendationLanguage }}.</span>
                 <span class="fallback-explainer">If there aren’t enough matches, we’ll widen to other styles and instrumentals.</span>
               </div>
               <p v-else class="recommendation-personalization">We’ll search across mood-matched styles, including instrumental music, since no frequent artists are available for this month.</p>

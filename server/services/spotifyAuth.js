@@ -117,3 +117,28 @@ export function fetchRecentlyPlayed(accessToken) {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 }
+
+// An app token (Client Credentials flow) for public data like search, so
+// visitors who aren't logged in can still look up songs. Reused until it expires.
+let appToken = null;
+
+async function fetchAppToken() {
+  if (appToken && appToken.expiresAt > Date.now()) {
+    return appToken.value;
+  }
+  const { access_token: value, expires_in: expiresIn } = await requestToken({
+    grant_type: "client_credentials",
+  });
+  // Renew a minute early so a request never goes out with an expired token.
+  appToken = { value, expiresAt: Date.now() + (expiresIn - 60) * 1000 };
+  return value;
+}
+
+// Songs matching the words, best match first.
+export async function searchTracks(query, limit = 6) {
+  const params = new URLSearchParams({ q: query, type: "track", limit: String(limit) });
+  const body = await spotifyFetch(`${API_URL}/search?${params}`, {
+    headers: { Authorization: `Bearer ${await fetchAppToken()}` },
+  });
+  return body.tracks?.items ?? [];
+}

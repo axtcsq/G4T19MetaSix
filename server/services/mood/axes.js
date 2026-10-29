@@ -19,6 +19,9 @@ const AXES_BY_MOOD = {
   "Deceptively upbeat": { anxious: 1 },
 };
 
+// Every music mood's name, e.g. for turning dailyMoods' slugs back into names.
+export const MOOD_NAMES = Object.keys(AXES_BY_MOOD);
+
 export function axesOf(moodName) {
   return AXES_BY_MOOD[moodName] ?? {};
 }
