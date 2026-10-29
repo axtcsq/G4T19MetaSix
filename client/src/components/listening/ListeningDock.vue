@@ -5,7 +5,7 @@ import { useListeningRoom } from '@/composables/useListeningRoom'
 import MoodTag from '@/components/mood/MoodTag.vue'
 const route = useRoute()
 const room = useListeningRoom()
-const { connected, ready, track, paused, busy, duration } = room
+const { connected, ready, track, paused, busy, duration, buttonAccent, ambientColors } = room
 // Where the song is up to (the dock's own `position` is where it sits on screen).
 const playPosition = room.position
 const formatTime = (ms) =>
@@ -177,8 +177,16 @@ watch([dock, minimised], measure, { flush: 'post' })
     v-if="visible"
     ref="dock"
     class="listening-dock"
-    :class="{ 'is-minimised': minimised }"
-    :style="dockStyle"
+    :class="{ 'is-minimised': minimised, 'is-playing': !paused }"
+    :style="[
+      dockStyle,
+      {
+        '--dock-accent': buttonAccent,
+        '--dock-color-one': ambientColors[0],
+        '--dock-color-two': ambientColors[1],
+        '--dock-color-three': ambientColors[2],
+      },
+    ]"
     aria-label="Current Spotify playback"
   >
     <button
@@ -230,7 +238,7 @@ watch([dock, minimised], measure, { flush: 'post' })
         </button>
         <button
           type="button"
-          class="dock-icon"
+          class="dock-icon dock-play-button"
           :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
           :title="paused ? 'Play' : 'Pause'"
           :disabled="!ready || !track.id || busy"
@@ -269,7 +277,7 @@ watch([dock, minimised], measure, { flush: 'post' })
     </template>
     <button
       v-else
-      class="dock-icon"
+      class="dock-icon dock-play-button"
       :disabled="!ready || !track.id || busy"
       :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
       :title="paused ? 'Play' : 'Pause'"
@@ -338,22 +346,73 @@ html.has-dock body:not(:has(.site-footer)) {
   padding: 6px 10px 4px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
+  isolation: isolate;
+  overflow: hidden;
   /* Frosted glass, like the sticky navbar. */
-  background: rgba(250, 248, 246, 0.62);
+  background: rgba(250, 248, 246, 0.42);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   backdrop-filter: blur(18px) saturate(1.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   color: var(--ui-text);
   font-size: 13px;
 }
+.listening-dock::before,
+.listening-dock::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.listening-dock::before {
+  inset: -40%;
+  background-image:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-one) 88%, transparent), transparent 68%),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-two) 86%, transparent), transparent 68%),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-three) 82%, transparent), transparent 68%);
+  background-repeat: no-repeat;
+  background-size: 70% 88%, 78% 86%, 72% 90%;
+  background-position: 0% 30%, 100% 0%, 48% 100%;
+  filter: blur(32px) saturate(1.55);
+  opacity: 0.86;
+  transform: scale(1.35);
+}
+.listening-dock::after {
+  background:
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 18%, transparent), transparent 68%),
+    linear-gradient(120deg, rgba(250, 248, 246, 0.62), rgba(250, 248, 246, 0.7));
+}
+.listening-dock.is-playing::before {
+  animation: dock-glow-drift 11s ease-in-out infinite alternate;
+}
+@keyframes dock-glow-drift {
+  from {
+    background-position: 0% 30%, 100% 0%, 48% 100%;
+    transform: scale(1.35) translate(-3%, -2%);
+  }
+  to {
+    background-position: 100% 20%, 0% 100%, 58% 0%;
+    transform: scale(1.52) translate(4%, 3%) rotate(3deg);
+  }
+}
 :global(.dark .listening-dock) {
   border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(22, 18, 16, 0.6);
+  background: rgba(22, 18, 16, 0.5);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+:global(.dark .listening-dock)::after {
+  background:
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
+    linear-gradient(120deg, rgba(22, 18, 16, 0.62), rgba(22, 18, 16, 0.72));
 }
 @media (prefers-reduced-transparency: reduce) {
   .listening-dock {
     background: #faf8f6;
+  }
+  .listening-dock::before,
+  .listening-dock::after {
+    display: none;
   }
   :global(.dark .listening-dock) {
     background: #161210;
@@ -496,6 +555,9 @@ button {
 }
 /* Each browser drops a rule naming the other's thumb, so they stay apart. */
 @media (prefers-reduced-motion: reduce) {
+  .listening-dock.is-playing::before {
+    animation: none;
+  }
   .dock-seek input::-webkit-slider-thumb {
     transition: none;
   }
@@ -522,6 +584,46 @@ button {
   width: 16px;
   height: 16px;
   fill: currentColor;
+}
+.dock-play-button {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--dock-accent) 72%, white);
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--dock-accent) 82%, white),
+    var(--dock-accent) 62%,
+    color-mix(in srgb, var(--dock-accent) 82%, black)
+  );
+  box-shadow:
+    0 3px 9px color-mix(in srgb, var(--dock-accent) 38%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.48);
+  transition: transform 160ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+.dock-play-button:hover:not(:disabled) {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--dock-accent) 76%, white),
+    var(--dock-accent) 62%,
+    color-mix(in srgb, var(--dock-accent) 82%, black)
+  );
+  box-shadow:
+    0 4px 13px color-mix(in srgb, var(--dock-accent) 48%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.55);
+  filter: saturate(1.12);
+  transform: scale(1.05);
+}
+.dock-play-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.dock-play-button:disabled {
+  color: rgba(255, 255, 255, 0.8);
+  background: #8b8582;
+  border-color: rgba(255, 255, 255, 0.58);
+  box-shadow: none;
 }
 .dock-icon .chevron {
   fill: none;
@@ -564,6 +666,6 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible {
   outline: 3px solid var(--color-brand-700);
-  outline-offset: 3px;
+  outline-offset: -2px;
 }
 </style>
