@@ -15,6 +15,7 @@ const props = defineProps({
   trackId: { type: String, default: '' },
   size: { type: String, default: 'md' },
   link: { type: Boolean, default: true },
+  hidePendingLyrics: { type: Boolean, default: false },
 })
 
 const tag = computed(useTrackMood(toRef(props, 'trackId')))
@@ -63,7 +64,10 @@ const LYRICS_NOTES = {
     why: 'We couldn’t find lyrics we could read for this song, so its mood is from the sound only.',
   },
 }
-const lyricsNote = computed(() => LYRICS_NOTES[tag.value?.lyricsNote] ?? null)
+const lyricsNote = computed(() => {
+  if (props.hidePendingLyrics && tag.value?.lyricsNote === 'pending') return null
+  return LYRICS_NOTES[tag.value?.lyricsNote] ?? null
+})
 
 const NO_MOOD = {
   'no-data':
