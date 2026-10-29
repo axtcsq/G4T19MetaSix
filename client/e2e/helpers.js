@@ -59,6 +59,9 @@ export const test = base.extend({
           }
         }
         if (path === '/api/listens') return reply({ items: [] })
+        // Song mood tags: no stored moods, and nothing to work out.
+        if (path === '/api/tracks/moods') return reply({ moods: {}, needsSound: [] })
+        if (path === '/api/tracks/moods/sound') return reply({ moods: {} })
         if (path === '/api/quiz/personality') return reply(null)
         if (path === '/api/quiz/mood-music') return reply({ days: [], byMood: [], musicMoods: null })
         state.unexpected.push(method + ' ' + path)
