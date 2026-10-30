@@ -400,7 +400,7 @@ html.has-dock body:not(:has(.site-footer)) {
   border-color: rgba(255, 205, 166, 0.2);
   /* Smoked glass: dark enough for the cream text, clear enough that the page
      blurs through and the song's colours stay vivid. */
-  background: rgba(22, 18, 16, 0.34);
+  background: rgba(22, 18, 16, 0.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
   box-shadow:
@@ -408,12 +408,14 @@ html.has-dock body:not(:has(.site-footer)) {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 :global(.dark .listening-dock)::before {
-  opacity: 1;
+  /* Deepen the colours without dulling them, so the light ones (peach, pale
+     album art) don't turn the glass white. */
+  filter: blur(30px) saturate(2.2) brightness(0.7);
 }
 :global(.dark .listening-dock)::after {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(22, 18, 16, 0.3), rgba(22, 18, 16, 0.42));
+    linear-gradient(120deg, rgba(22, 18, 16, 0.4), rgba(22, 18, 16, 0.52));
 }
 /* A soft shadow keeps the words clear over the brightest colours. */
 :global(.dark .listening-dock) :is(strong, span, .dock-text) {
