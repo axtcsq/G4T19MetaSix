@@ -600,50 +600,43 @@ button {
   height: 16px;
   fill: currentColor;
 }
+/* A flat outline in the song's colour: no gradient, shine or shadow. */
 .dock-play-button {
   width: 44px;
   min-height: 44px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--dock-accent) 72%, white);
+  border: 2px solid var(--dock-accent);
   border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--dock-accent) 82%, white),
-    var(--dock-accent) 62%,
-    color-mix(in srgb, var(--dock-accent) 82%, black)
-  );
-  box-shadow:
-    0 3px 9px color-mix(in srgb, var(--dock-accent) 38%, transparent),
-    inset 0 1px 1px rgba(255, 255, 255, 0.48);
-  transition: transform 160ms ease, box-shadow 180ms ease, filter 180ms ease;
+  color: var(--dock-accent);
+  background: transparent;
+  box-shadow: none;
+  transition: transform 160ms ease, background-color 180ms ease, color 180ms ease;
 }
 .dock-play-button:hover:not(:disabled) {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--dock-accent) 76%, white),
-    var(--dock-accent) 62%,
-    color-mix(in srgb, var(--dock-accent) 82%, black)
-  );
-  box-shadow:
-    0 4px 13px color-mix(in srgb, var(--dock-accent) 48%, transparent),
-    inset 0 1px 1px rgba(255, 255, 255, 0.55);
-  filter: saturate(1.12);
+  color: #fff;
+  background: var(--dock-accent);
   transform: scale(1.05);
 }
 .dock-play-button:active:not(:disabled) {
   transform: scale(0.96);
 }
 .dock-play-button:disabled {
-  color: rgba(255, 255, 255, 0.8);
-  background: #8b8582;
-  border-color: rgba(255, 255, 255, 0.58);
+  color: rgba(127, 127, 127, 0.75);
+  border-color: rgba(127, 127, 127, 0.5);
+  background: transparent;
   box-shadow: none;
 }
-/* Nothing playing: a quiet outlined button instead of a grey disc. */
+/* A lighter tint of the song's colour, so the outline shows on the dark glass. */
+:global(.dark .dock-play-button:not(:disabled)) {
+  border-color: color-mix(in srgb, var(--dock-accent) 55%, white);
+  color: color-mix(in srgb, var(--dock-accent) 55%, white);
+}
+:global(.dark .dock-play-button:hover:not(:disabled)) {
+  border-color: var(--dock-accent);
+  color: #fff;
+}
 :global(.dark .dock-play-button:disabled) {
   color: rgba(246, 238, 232, 0.5);
-  background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
 }
 .dock-icon .chevron {
