@@ -347,7 +347,7 @@ html.has-dock body:not(:has(.site-footer)) {
   flex-wrap: wrap;
   gap: 2px 8px;
   align-items: center;
-  padding: 6px 10px 4px;
+  padding: 12px 10px 6px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   isolation: isolate;
@@ -467,7 +467,7 @@ span {
 .dock-mood {
   display: flex;
   flex-basis: 100%;
-  margin-top: -2px;
+  margin-top: 6px;
   padding-left: 80px;
   overflow: visible;
 }
