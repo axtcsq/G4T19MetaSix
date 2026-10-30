@@ -347,9 +347,9 @@ html.has-dock body:not(:has(.site-footer)) {
   flex-wrap: wrap;
   gap: 2px 8px;
   align-items: center;
-  padding: 12px 10px 6px;
+  padding: 16px 10px 6px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 16px;
+  border-radius: 10px;
   isolation: isolate;
   overflow: hidden;
   /* Frosted glass, like the sticky navbar. */
@@ -494,7 +494,7 @@ span {
   height: auto;
   min-height: 0;
   padding: 2px 9px 2px 7px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.72);
   box-shadow: none;
   font-size: 10.5px;
