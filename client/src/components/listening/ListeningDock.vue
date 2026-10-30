@@ -221,7 +221,7 @@ watch([dock, minimised], measure, { flush: 'post' })
               ? 'Back to your listening room ↗'
               : 'Spotify Premium needed to play ↗'
         }}</span
-        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" :link="false" /></span></RouterLink
+        ></RouterLink
       >
       <template v-if="canPlay">
         <button
@@ -302,6 +302,10 @@ watch([dock, minimised], measure, { flush: 'post' })
         <path v-else d="M3 6l5 5 5-5" />
       </svg>
     </button>
+    <!-- The song's mood, on its own row so a long name is never squeezed. -->
+    <div v-if="!minimised" class="dock-mood">
+      <MoodTag :track-id="track.id" size="sm" :link="false" />
+    </div>
     <!-- Its own row under the controls, the full width of the dock. -->
     <div v-if="!minimised && canPlay" class="dock-seek">
       <span aria-hidden="true">{{ formatTime(playPosition) }}</span>
@@ -460,6 +464,7 @@ span {
   font-size: 11px;
 }
 .dock-mood {
+  flex-basis: 100%;
   overflow: visible;
 }
 .dock-mood:empty {
@@ -474,6 +479,21 @@ span {
 }
 :global(.dark .listening-dock .dock-mood .mood-tag) {
   background: rgba(22, 18, 16, 0.82);
+}
+/* The dock's text rules (one line, clipped with "...") reach the tag's wrapper
+   too. Undo them here so a long mood name wraps inside the chip, never cut. */
+:global(.listening-dock .dock-mood .mood-tag-root) {
+  margin-top: 0;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+}
+:global(.listening-dock .dock-mood .mood-tag) {
+  height: auto;
+  min-height: 1.25rem;
+  white-space: normal;
+  line-height: 1.2;
+  padding-block: 3px;
 }
 button {
   min-height: 44px;
