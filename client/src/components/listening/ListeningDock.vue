@@ -463,37 +463,58 @@ span {
   margin-top: 4px;
   font-size: 11px;
 }
+/* The song's mood sits on its own row, lined up under the title. */
 .dock-mood {
+  display: flex;
   flex-basis: 100%;
+  margin-top: -2px;
+  padding-left: 80px;
   overflow: visible;
+}
+/* No cover art: the title starts right after the grip. */
+:global(.listening-dock:not(:has(> img)) .dock-mood) {
+  padding-left: 28px;
 }
 .dock-mood:empty {
   display: none;
 }
-/* The song's colours change behind the tag, so it sits on its own solid chip:
-   its mood colour for the words (dark in light mode, pale in dark mode) on
-   near-white or near-black, which reads on any album art. */
-:global(.listening-dock .dock-mood .mood-tag) {
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
-}
-:global(.dark .listening-dock .dock-mood .mood-tag) {
-  background: rgba(22, 18, 16, 0.82);
-}
 /* The dock's text rules (one line, clipped with "...") reach the tag's wrapper
-   too. Undo them here so a long mood name wraps inside the chip, never cut. */
+   too. Undo them here so a long mood name wraps, never cut. */
 :global(.listening-dock .dock-mood .mood-tag-root) {
+  gap: 6px;
   margin-top: 0;
   overflow: visible;
   white-space: normal;
   text-overflow: clip;
 }
+/* Soft pills: a near-white (or near-black) fill keeps the mood's colour
+   readable on any album art, without a heavy outline. */
 :global(.listening-dock .dock-mood .mood-tag) {
+  gap: 5px;
   height: auto;
-  min-height: 1.25rem;
+  min-height: 0;
+  padding: 2px 9px 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
   white-space: normal;
-  line-height: 1.2;
-  padding-block: 3px;
+}
+:global(.dark .listening-dock .dock-mood .mood-tag) {
+  background: rgba(22, 18, 16, 0.66);
+}
+/* The note beside it (lyrics pending and so on) steps back: just a hairline. */
+:global(.listening-dock .dock-mood .mood-tag.text-muted) {
+  padding-inline: 9px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(41, 35, 33, 0.22);
+  font-weight: 500;
+}
+:global(.dark .listening-dock .dock-mood .mood-tag.text-muted) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 button {
   min-height: 44px;
