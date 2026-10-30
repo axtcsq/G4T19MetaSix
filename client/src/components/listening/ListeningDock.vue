@@ -347,7 +347,7 @@ html.has-dock body:not(:has(.site-footer)) {
   flex-wrap: wrap;
   gap: 2px 8px;
   align-items: center;
-  padding: 16px 10px 6px;
+  padding: 16px 10px 10px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 10px;
   isolation: isolate;
@@ -524,7 +524,8 @@ button {
 }
 .listening-dock.is-minimised {
   width: auto;
-  padding-bottom: 6px;
+  /* Even space above and below the single row. */
+  padding-block: 12px;
 }
 .dock-text {
   border: 0;
