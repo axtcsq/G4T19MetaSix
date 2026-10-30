@@ -407,18 +407,18 @@ html.has-dock body:not(:has(.site-footer)) {
     0 10px 30px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-:global(.dark .listening-dock)::before {
+:global(.dark .listening-dock::before) {
   /* Deepen the colours without dulling them, so the light ones (peach, pale
      album art) don't turn the glass white. */
   filter: blur(30px) saturate(2.2) brightness(0.7);
 }
-:global(.dark .listening-dock)::after {
+:global(.dark .listening-dock::after) {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
     linear-gradient(120deg, rgba(22, 18, 16, 0.4), rgba(22, 18, 16, 0.52));
 }
 /* A soft shadow keeps the words clear over the brightest colours. */
-:global(.dark .listening-dock) :is(strong, span, .dock-text) {
+:global(.dark .listening-dock :is(strong, span, .dock-text)) {
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
 }
 @media (prefers-reduced-transparency: reduce) {
