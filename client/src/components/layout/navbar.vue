@@ -219,10 +219,12 @@ watch(
   /* The folded nav stays in the header at full width to be measured. Clipping
      stops it widening the page, which made phones zoom out. */
   overflow-x: clip;
-  border-bottom: 1px solid #998ba155;
-  background: rgba(250, 248, 246, 0.6);
-  backdrop-filter: blur(18px) saturate(1.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(250, 248, 246, 0.45);
+  backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  /* A thin bright line along the bottom edge, like the edge of a glass pane. */
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   transition:
     background-color 220ms ease,
     box-shadow 220ms ease,
@@ -230,7 +232,9 @@ watch(
 }
 .site-header.is-scrolled {
   border-bottom-color: rgba(153, 139, 161, 0.25);
-  box-shadow: 0 6px 20px rgba(41, 35, 33, 0.08);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 20px rgba(41, 35, 33, 0.08);
 }
 @media (prefers-reduced-transparency: reduce) {
   .site-header {
@@ -491,11 +495,14 @@ watch(
 /* Dark mode: the bar matches the app's espresso page and turns into dark glass on scroll. */
 .dark .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: rgba(22, 18, 16, 0.55);
+  background: rgba(22, 18, 16, 0.42);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 .dark .site-header.is-scrolled {
   border-bottom-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 20px rgba(0, 0, 0, 0.35);
 }
 .dark .brand {
   color: #f5f1ee;
