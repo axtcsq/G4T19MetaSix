@@ -397,14 +397,19 @@ html.has-dock body:not(:has(.site-footer)) {
   }
 }
 :global(.dark .listening-dock) {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(22, 18, 16, 0.5);
+  border-color: rgba(255, 205, 166, 0.16);
+  background: rgba(22, 18, 16, 0.62);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+/* The song's colours glow softly. A light page behind (the garden keeps its
+   pale sky in dark mode) can't wash the glass out. */
+:global(.dark .listening-dock)::before {
+  opacity: 0.45;
 }
 :global(.dark .listening-dock)::after {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(22, 18, 16, 0.62), rgba(22, 18, 16, 0.72));
+    linear-gradient(120deg, rgba(22, 18, 16, 0.78), rgba(22, 18, 16, 0.86));
 }
 @media (prefers-reduced-transparency: reduce) {
   .listening-dock {
@@ -624,6 +629,12 @@ button {
   background: #8b8582;
   border-color: rgba(255, 255, 255, 0.58);
   box-shadow: none;
+}
+/* Nothing playing: a quiet outlined button instead of a grey disc. */
+:global(.dark .dock-play-button:disabled) {
+  color: rgba(246, 238, 232, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 .dock-icon .chevron {
   fill: none;
