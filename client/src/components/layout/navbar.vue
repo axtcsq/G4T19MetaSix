@@ -209,7 +209,8 @@ watch(
 </template>
 
 <style scoped>
-/* Sticks to the top of the window; turns to frosted glass once you scroll. */
+/* Sticks to the top of the window as frosted, slightly see-through glass; a
+   shadow joins in once you scroll. */
 .site-header {
   position: sticky;
   top: 0;
@@ -219,7 +220,9 @@ watch(
      stops it widening the page, which made phones zoom out. */
   overflow-x: clip;
   border-bottom: 1px solid #998ba155;
-  background: #faf8f6;
+  background: rgba(250, 248, 246, 0.6);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
   transition:
     background-color 220ms ease,
     box-shadow 220ms ease,
@@ -227,14 +230,13 @@ watch(
 }
 .site-header.is-scrolled {
   border-bottom-color: rgba(153, 139, 161, 0.25);
-  background: rgba(250, 248, 246, 0.72);
   box-shadow: 0 6px 20px rgba(41, 35, 33, 0.08);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 @media (prefers-reduced-transparency: reduce) {
-  .site-header.is-scrolled {
+  .site-header {
     background: #faf8f6;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 .header-inner {
@@ -489,11 +491,10 @@ watch(
 /* Dark mode: the bar matches the app's espresso page and turns into dark glass on scroll. */
 .dark .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: #161210;
+  background: rgba(22, 18, 16, 0.55);
 }
 .dark .site-header.is-scrolled {
   border-bottom-color: rgba(255, 255, 255, 0.1);
-  background: rgba(22, 18, 16, 0.72);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 .dark .brand {
@@ -535,7 +536,7 @@ watch(
   background: rgba(219, 128, 109, 0.16);
 }
 @media (prefers-reduced-transparency: reduce) {
-  .dark .site-header.is-scrolled {
+  .dark .site-header {
     background: #161210;
   }
 }
