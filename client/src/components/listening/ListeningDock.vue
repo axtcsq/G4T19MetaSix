@@ -465,6 +465,16 @@ span {
 .dock-mood:empty {
   display: none;
 }
+/* The song's colours change behind the tag, so it sits on its own solid chip:
+   its mood colour for the words (dark in light mode, pale in dark mode) on
+   near-white or near-black, which reads on any album art. */
+:global(.listening-dock .dock-mood .mood-tag) {
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
+}
+:global(.dark .listening-dock .dock-mood .mood-tag) {
+  background: rgba(22, 18, 16, 0.82);
+}
 button {
   min-height: 44px;
   flex-shrink: 0;
