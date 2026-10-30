@@ -374,14 +374,14 @@ html.has-dock body:not(:has(.site-footer)) {
   background-repeat: no-repeat;
   background-size: 70% 88%, 78% 86%, 72% 90%;
   background-position: 0% 30%, 100% 0%, 48% 100%;
-  filter: blur(32px) saturate(1.55);
-  opacity: 0.86;
+  filter: blur(30px) saturate(1.9);
+  opacity: 1;
   transform: scale(1.35);
 }
 .listening-dock::after {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 18%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(250, 248, 246, 0.62), rgba(250, 248, 246, 0.7));
+    linear-gradient(120deg, rgba(250, 248, 246, 0.4), rgba(250, 248, 246, 0.5));
 }
 .listening-dock.is-playing::before {
   animation: dock-glow-drift 11s ease-in-out infinite alternate;
@@ -397,19 +397,27 @@ html.has-dock body:not(:has(.site-footer)) {
   }
 }
 :global(.dark .listening-dock) {
-  border-color: rgba(255, 205, 166, 0.16);
-  background: rgba(22, 18, 16, 0.62);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 205, 166, 0.2);
+  /* Smoked glass: dark enough for the cream text, clear enough that the page
+     blurs through and the song's colours stay vivid. */
+  background: rgba(22, 18, 16, 0.34);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-/* The song's colours glow softly. A light page behind (the garden keeps its
-   pale sky in dark mode) can't wash the glass out. */
 :global(.dark .listening-dock)::before {
-  opacity: 0.45;
+  opacity: 1;
 }
 :global(.dark .listening-dock)::after {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(22, 18, 16, 0.78), rgba(22, 18, 16, 0.86));
+    linear-gradient(120deg, rgba(22, 18, 16, 0.3), rgba(22, 18, 16, 0.42));
+}
+/* A soft shadow keeps the words clear over the brightest colours. */
+:global(.dark .listening-dock) :is(strong, span, .dock-text) {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
 }
 @media (prefers-reduced-transparency: reduce) {
   .listening-dock {
