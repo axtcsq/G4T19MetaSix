@@ -353,7 +353,7 @@ html.has-dock body:not(:has(.site-footer)) {
   isolation: isolate;
   overflow: hidden;
   /* Frosted glass, like the sticky navbar. */
-  background: rgba(250, 248, 246, 0.42);
+  background: rgba(250, 248, 246, 0.3);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   backdrop-filter: blur(18px) saturate(1.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
@@ -385,7 +385,7 @@ html.has-dock body:not(:has(.site-footer)) {
 .listening-dock::after {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 18%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(250, 248, 246, 0.4), rgba(250, 248, 246, 0.5));
+    linear-gradient(120deg, rgba(250, 248, 246, 0.3), rgba(250, 248, 246, 0.4));
 }
 .listening-dock.is-playing::before {
   animation: dock-glow-drift 11s ease-in-out infinite alternate;
@@ -404,7 +404,7 @@ html.has-dock body:not(:has(.site-footer)) {
   border-color: rgba(255, 205, 166, 0.2);
   /* Smoked glass: dark enough for the cream text, clear enough that the page
      blurs through and the song's colours stay vivid. */
-  background: rgba(22, 18, 16, 0.5);
+  background: rgba(22, 18, 16, 0.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
   box-shadow:
@@ -419,7 +419,7 @@ html.has-dock body:not(:has(.site-footer)) {
 :global(.dark .listening-dock::after) {
   background:
     radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
-    linear-gradient(120deg, rgba(22, 18, 16, 0.4), rgba(22, 18, 16, 0.52));
+    linear-gradient(120deg, rgba(22, 18, 16, 0.32), rgba(22, 18, 16, 0.44));
 }
 /* A soft shadow keeps the words clear over the brightest colours. */
 :global(.dark .listening-dock :is(strong, span, .dock-text)) {
