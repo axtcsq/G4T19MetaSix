@@ -84,7 +84,19 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
           : `Spotify rejected the request (HTTP ${response.status}). Try logging in again.`),
     )
   }
-  return response.status === 204 ? null : response.json()
+  if (response.status === 204) return null
+
+  // Spotify normally answers playback commands with 204, but some successful
+  // commands return an empty or plain-text 200 response. Don't try to parse
+  // those response bodies as JSON.
+  const responseBody = await response.text()
+  if (!responseBody.trim()) return null
+  try {
+    return JSON.parse(responseBody)
+  } catch {
+    if (method !== 'GET') return null
+    throw new Error('Spotify returned an unreadable response. Please try again.')
+  }
 }
 
 export const searchSpotify = (query, signal, offset = 0) => {

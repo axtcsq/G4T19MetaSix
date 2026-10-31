@@ -103,6 +103,7 @@ watch(
     :class="{
       'site-header-landing': isLanding,
       'is-scrolled': isScrolled || menuOpen,
+      'menu-open': menuOpen,
     }"
   >
     <div ref="headerInner" class="header-inner">
@@ -209,7 +210,8 @@ watch(
 </template>
 
 <style scoped>
-/* Sticks to the top of the window; turns to frosted glass once you scroll. */
+/* Sticks to the top of the window as frosted, slightly see-through glass; a
+   shadow joins in once you scroll. */
 .site-header {
   position: sticky;
   top: 0;
@@ -218,8 +220,12 @@ watch(
   /* The folded nav stays in the header at full width to be measured. Clipping
      stops it widening the page, which made phones zoom out. */
   overflow-x: clip;
-  border-bottom: 1px solid #998ba155;
-  background: #faf8f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(250, 248, 246, 0.45);
+  backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  /* A thin bright line along the bottom edge, like the edge of a glass pane. */
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   transition:
     background-color 220ms ease,
     box-shadow 220ms ease,
@@ -227,14 +233,22 @@ watch(
 }
 .site-header.is-scrolled {
   border-bottom-color: rgba(153, 139, 161, 0.25);
-  background: rgba(250, 248, 246, 0.72);
-  box-shadow: 0 6px 20px rgba(41, 35, 33, 0.08);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 20px rgba(41, 35, 33, 0.08);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 20px rgba(41, 35, 33, 0.08);
+}
+.site-header.menu-open {
+  /* Keep the expanded mobile links above page sections with their own layers. */
+  z-index: 1000;
 }
 @media (prefers-reduced-transparency: reduce) {
-  .site-header.is-scrolled {
+  .site-header {
     background: #faf8f6;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 .header-inner {
@@ -489,12 +503,14 @@ watch(
 /* Dark mode: the bar matches the app's espresso page and turns into dark glass on scroll. */
 .dark .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: #161210;
+  background: rgba(22, 18, 16, 0.42);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 .dark .site-header.is-scrolled {
   border-bottom-color: rgba(255, 255, 255, 0.1);
-  background: rgba(22, 18, 16, 0.72);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 20px rgba(0, 0, 0, 0.35);
 }
 .dark .brand {
   color: #f5f1ee;
@@ -535,7 +551,7 @@ watch(
   background: rgba(219, 128, 109, 0.16);
 }
 @media (prefers-reduced-transparency: reduce) {
-  .dark .site-header.is-scrolled {
+  .dark .site-header {
     background: #161210;
   }
 }
