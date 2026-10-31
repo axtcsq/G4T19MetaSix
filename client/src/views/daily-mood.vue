@@ -327,7 +327,7 @@ onMounted(loadEntries)
         </details>
         <!-- Folded away like the drawing, for anyone who wants to add a song. -->
         <details
-          class="drawing-disclosure song-disclosure"
+          class="song-disclosure"
           :open="showSong"
           @toggle="showSong = $event.target.open"
         >
@@ -341,7 +341,7 @@ onMounted(loadEntries)
               <path d="m6 9 6 6 6-6" />
             </svg>
           </summary>
-          <section class="drawing-section" aria-labelledby="song-of-the-day-heading">
+          <section class="drawing-section song-section" aria-labelledby="song-of-the-day-heading">
             <JournalSongPicker v-model="songOfTheDay" @update:model-value="clearSaveFeedback" />
           </section>
         </details>
@@ -426,10 +426,12 @@ onMounted(loadEntries)
 .drawing-disclosure {
   margin-top: 40px;
 }
+/* Song of the Day folds open like the drawing, with its own class so the two
+   can be told apart. */
 .song-disclosure {
   margin-top: 8px;
 }
-.drawing-disclosure summary {
+:is(.drawing-disclosure, .song-disclosure) summary {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -438,13 +440,13 @@ onMounted(loadEntries)
   list-style: none;
   cursor: pointer;
 }
-.drawing-disclosure summary::-webkit-details-marker {
+:is(.drawing-disclosure, .song-disclosure) summary::-webkit-details-marker {
   display: none;
 }
-.drawing-disclosure summary:hover {
+:is(.drawing-disclosure, .song-disclosure) summary:hover {
   background: color-mix(in srgb, var(--ui-primary) 6%, transparent);
 }
-.drawing-disclosure summary:focus-visible {
+:is(.drawing-disclosure, .song-disclosure) summary:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
 }
@@ -468,7 +470,7 @@ onMounted(loadEntries)
   stroke-linejoin: round;
   transition: transform 200ms ease;
 }
-.drawing-disclosure[open] .disclosure-chevron {
+:is(.drawing-disclosure, .song-disclosure)[open] .disclosure-chevron {
   transform: rotate(180deg);
 }
 .drawing-section {
