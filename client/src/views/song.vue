@@ -55,6 +55,16 @@ const counted = computed(() => song.value?.withLyrics ?? song.value?.sound ?? nu
 const agree = computed(() => song.value?.withLyrics?.name === song.value?.sound?.name)
 const blend = computed(() => song.value?.blend)
 const lyrics = computed(() => song.value?.lyrics ?? null)
+const instrumentalSong = computed(() => {
+  const current = song.value
+  return Boolean(
+    current && (
+      current.instrumental ||
+      current.lyricsStatus === 'instrumental' ||
+      /\binstrumental\b|器樂|器乐|伴奏版/i.test(current.name || '')
+    ),
+  )
+})
 // Only draw the sound-only dot when the lyrics moved the song noticeably.
 const showSoundDot = computed(
   () => blend.value?.lyrics != null && Math.abs(blend.value.valence - blend.value.audio) >= 0.02,
@@ -89,15 +99,17 @@ const lyricsWhy = computed(() => {
   if (!s) return ''
   if (s.lyricsOff)
     return 'Lyrics analysis is off in your profile, so this song’s mood comes from the sound only.'
+  if (instrumentalSong.value)
+    return 'This song is instrumental and contains no lyrics. Its mood comes from the sound alone.'
+  if (s.lyricsStatus === 'not-found' || lyrics.value?.status === 'not-found')
+    return 'No lyrics were found for this song, so its mood comes from the sound alone.'
   const note = s.tag?.lyricsNote
   if (note === 'pending')
     return 'The lyrics haven’t been read yet. They’re usually read within a few hours.'
   if (note === 'unavailable')
     return 'The lyrics site was down every time we tried, so the mood comes from the sound only.'
   if (note === 'instrumental')
-    return 'This song has no vocals, so its mood comes from the sound only.'
-  if (lyrics.value?.status === 'not-found')
-    return 'We couldn’t find this song’s lyrics, so its mood comes from the sound only.'
+    return 'This song is instrumental and contains no lyrics. Its mood comes from the sound alone.'
   if (lyrics.value?.status === 'untranslatable')
     return 'The lyrics aren’t in English and couldn’t be translated reliably, so the mood comes from the sound only.'
   if (blend.value?.lyrics == null)
@@ -148,7 +160,7 @@ function back() {
           aria-labelledby="summary-title"
         >
           <h2 id="summary-title" class="sr-only">Mood</h2>
-          <MoodTag :track-id="song.id" size="lg" :link="false" />
+          <MoodTag :track-id="song.id" size="lg" :link="false" :hide-pending-lyrics="instrumentalSong" />
           <p class="summary-line">
             Counts as <strong>{{ JOURNAL_MOOD[counted.axis] }}</strong> in your mood history.
           </p>

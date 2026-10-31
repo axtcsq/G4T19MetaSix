@@ -34,6 +34,8 @@ const position = ref(0)
 const duration = ref(track.value.duration_ms)
 const volume = ref(65)
 const accent = ref('#f0c4a8')
+const buttonAccent = ref('hsl(18 45% 24%)')
+const ambientColors = ref(['#cd6651', '#998ba1', '#ffd3ac'])
 const results = ref([])
 const searching = ref(false)
 const query = ref('')
@@ -47,29 +49,83 @@ let player,
 
 function updateArtwork(next) {
   track.value = next
-  if (next.color) {
-    accent.value = next.color
-    return
-  }
-  accent.value = '#f0c4a8'
+  accent.value = next.color || '#f0c4a8'
+  buttonAccent.value = 'hsl(18 45% 24%)'
+  ambientColors.value = ['#cd6651', '#998ba1', '#ffd3ac']
   const image = new Image()
   image.crossOrigin = 'anonymous'
   image.onload = () => {
     if (track.value.id !== next.id) return
     try {
       const canvas = document.createElement('canvas')
-      canvas.width = canvas.height = 12
+      canvas.width = canvas.height = 24
       const context = canvas.getContext('2d', { willReadFrequently: true })
-      context.drawImage(image, 0, 0, 12, 12)
-      const pixels = context.getImageData(0, 0, 12, 12).data
-      const sum = [0, 0, 0]
-      for (let i = 0; i < pixels.length; i += 4) for (let c = 0; c < 3; c++) sum[c] += pixels[i + c]
-      accent.value = `rgb(${sum.map((n) => Math.round((n / 144) * 0.4 + 150)).join(',')})`
+      context.drawImage(image, 0, 0, 24, 24)
+      const pixels = context.getImageData(0, 0, 24, 24).data
+      const colors = []
+      const average = [0, 0, 0]
+      let visiblePixels = 0
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] < 128) continue
+        const rgb = [pixels[i], pixels[i + 1], pixels[i + 2]]
+        const [red, green, blue] = rgb.map((value) => value / 255)
+        const high = Math.max(red, green, blue)
+        const low = Math.min(red, green, blue)
+        const saturation = high === low ? 0 : (high - low) / high
+        const brightness = (red + green + blue) / 3
+        for (let channel = 0; channel < 3; channel += 1) average[channel] += rgb[channel]
+        visiblePixels += 1
+        if (saturation > 0.18 && brightness > 0.12 && brightness < 0.92) {
+          colors.push({ rgb, score: saturation * (1 - Math.abs(brightness - 0.52)) })
+        }
+      }
+      if (!visiblePixels) return
+
+      // Use the more vivid parts of the cover rather than a washed-out average.
+      colors.sort((first, second) => second.score - first.score)
+      const vivid = colors.slice(0, Math.max(1, Math.ceil(colors.length * 0.22)))
+      const source = vivid.length ? vivid : [{ rgb: average.map((value) => value / visiblePixels) }]
+      const rgb = [0, 1, 2].map((channel) =>
+        Math.round(source.reduce((total, entry) => total + entry.rgb[channel], 0) / source.length),
+      )
+      const palette = []
+      for (const color of colors) {
+        const distinct = palette.every(
+          (chosen) => color.rgb.reduce((distance, value, channel) => distance + Math.abs(value - chosen[channel]), 0) > 90,
+        )
+        if (distinct) palette.push(color.rgb)
+        if (palette.length === 3) break
+      }
+      if (!palette.length) palette.push(rgb)
+      while (palette.length < 3) palette.push(palette[palette.length - 1])
+      accent.value = `rgb(${rgb.join(', ')})`
+      buttonAccent.value = contrastingButtonColor(rgb)
+      ambientColors.value = palette.map((color) => `rgb(${color.join(', ')})`)
     } catch {
       /* A remote cover without CORS keeps the calm fallback palette. */
     }
   }
   image.src = next.album?.images?.[0]?.url || ''
+}
+
+// Keep button text white and readable while carrying the album's hue into a
+// dark, saturated control color.
+function contrastingButtonColor([red, green, blue]) {
+  const channels = [red, green, blue].map((value) => value / 255)
+  const high = Math.max(...channels)
+  const low = Math.min(...channels)
+  const delta = high - low
+  const lightness = (high + low) / 2
+  let hue = 18
+  if (delta) {
+    if (high === channels[0]) hue = ((channels[1] - channels[2]) / delta) % 6
+    else if (high === channels[1]) hue = (channels[2] - channels[0]) / delta + 2
+    else hue = (channels[0] - channels[1]) / delta + 4
+    hue = (hue * 60 + 360) % 360
+  }
+  const saturation = delta ? delta / (1 - Math.abs(2 * lightness - 1)) : 0
+  const readableSaturation = saturation < 0.12 ? 0.38 : Math.max(0.52, saturation * 0.9)
+  return `hsl(${Math.round(hue)} ${Math.round(readableSaturation * 100)}% 24%)`
 }
 // Spotify plays on one device at a time. When the same account starts playing
 // on a phone or in the Spotify app, this browser stops being the active
@@ -252,11 +308,11 @@ async function toggle() {
   await action(async () => {
     if (!ready.value) throw new Error('Reconnect the player to resume listening.')
     await player.activateElement()
-    if (paused.value)
-      await spotifyRequest(`/me/player/play?device_id=${encodeURIComponent(device)}`, {
-        method: 'PUT',
-      })
-    else await player.pause()
+    const playbackAction = paused.value ? 'play' : 'pause'
+    await spotifyRequest(
+      `/me/player/${playbackAction}?device_id=${encodeURIComponent(device)}`,
+      { method: 'PUT' },
+    )
   })
 }
 async function seek(value) {
@@ -337,6 +393,8 @@ export function useListeningRoom() {
     duration,
     volume,
     accent,
+    buttonAccent,
+    ambientColors,
     results,
     query,
     searching,

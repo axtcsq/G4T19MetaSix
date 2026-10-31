@@ -23,6 +23,7 @@ const {
   duration,
   volume,
   accent,
+  buttonAccent,
   results,
   query,
   searching,
@@ -73,7 +74,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="listening-room" :style="{ '--record-color': accent }">
+  <main
+    class="listening-room"
+    :style="{ '--record-color': accent, '--button-color': buttonAccent }"
+  >
     <div class="room-inner">
       <header class="room-heading">
         <div>
@@ -141,7 +145,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="now-playing">
-          <div class="album-sleeve" :style="{ '--cover-art': `url(${cover})` }">
+          <div
+            class="album-sleeve"
+            :class="{ 'is-playing': spinning }"
+            :style="{ '--cover-art': `url(${cover})` }"
+          >
             <img
               v-if="cover"
               :src="cover"
@@ -404,16 +412,17 @@ onBeforeUnmount(() => {
   padding: var(--page-top) 0 var(--page-bottom);
   font: 20px/1.5 var(--font-serif);
 }
+.room-inner {
+  position: relative;
+  width: var(--page-width);
+  margin-inline: auto;
+}
 /* The shared tokens switch for dark mode; the controls and alerts follow. */
 :global(.dark .listening-room) {
   --room-dark: var(--color-brand-600);
   --room-error: #3a2420;
   --room-error-ink: #f09595;
   --room-focus: var(--color-brand-300);
-}
-.room-inner {
-  width: var(--page-width);
-  margin-inline: auto;
 }
 .room-heading {
   display: flex;
@@ -544,36 +553,64 @@ button:disabled {
   isolation: isolate;
   margin: 0 0 28px;
 }
-.album-sleeve::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -16px;
-  background-image: var(--cover-art);
-  background-size: cover;
-  filter: blur(28px);
-  opacity: 0.5;
-  transform: translateY(12px);
-}
+.album-sleeve::before,
 .album-sleeve::after {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: -24px;
-  /* prettier-ignore */
-  background: linear-gradient( /* taste-skill-ignore: user-requested cover glow. */
-    150deg,
-    color-mix(in srgb, var(--record-color) 35%, transparent),
-    transparent 65%
-  );
-  filter: blur(24px);
+  opacity: 0;
+  transition:
+    opacity 650ms ease,
+    filter 650ms ease,
+    transform 650ms ease;
+  pointer-events: none;
+}
+.album-sleeve::before {
+  inset: -22px;
+  background-image: var(--cover-art);
+  background-size: cover;
+  filter: blur(46px) saturate(1.6);
+  transform: translateY(16px) scale(1.04);
+  border-radius: 24px;
+}
+.album-sleeve::after {
+  inset: -32px;
+  background:
+    radial-gradient(ellipse at 24% 25%, color-mix(in srgb, var(--record-color) 72%, white), transparent 58%),
+    radial-gradient(ellipse at 76% 78%, color-mix(in srgb, var(--record-color) 60%, #6846a5), transparent 62%);
+  filter: blur(36px) saturate(1.35);
+  border-radius: 32px;
+}
+.album-sleeve.is-playing::before {
+  opacity: 0.72;
+  animation: album-cover-glow 3s ease-in-out infinite alternate;
+}
+.album-sleeve.is-playing::after {
+  opacity: 0.62;
+  animation: album-colour-glow 12s linear infinite;
+}
+@keyframes album-cover-glow {
+  from {
+    transform: translateY(16px) scale(1.02);
+  }
+  to {
+    transform: translateY(12px) scale(1.045);
+  }
+}
+@keyframes album-colour-glow {
+  from {
+    transform: rotate(0deg) scale(1.02);
+  }
+  to {
+    transform: rotate(360deg) scale(1.02);
+  }
 }
 .album-sleeve img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   display: block;
-  border-radius: 4px;
+  border-radius: 12px;
   box-shadow: 0 14px 28px #30352f24; /* taste-skill-ignore: user requested glow around the album cover. */
 }
 .track-copy h2 {
@@ -627,11 +664,17 @@ button:disabled {
 }
 .transport-buttons .play-button {
   --button-ink: #fff;
-  --button-top: var(--color-brand-400);
-  --button-base: var(--room-dark);
   width: 56px !important;
   height: 56px !important;
   min-width: 56px !important;
+}
+.transport-buttons .glass-icon {
+  --button-ink: #fff;
+  --button-top: color-mix(in srgb, var(--button-color) 84%, white);
+  --button-base: var(--button-color);
+  transition:
+    background-color 450ms ease,
+    transform 160ms ease;
 }
 .transport-buttons button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--room-dark) 12%, var(--room-paper));
@@ -816,18 +859,23 @@ input:disabled {
   align-items: center;
   gap: 12px;
   padding: 6px 8px 6px 20px;
-  border: 1px solid color-mix(in srgb, var(--room-ink) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--button-color) 46%, var(--room-paper));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--room-paper) 88%, var(--room-ground));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent);
+  background: color-mix(in srgb, var(--button-color) 14%, var(--room-paper));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--room-white) 55%, transparent),
+    0 3px 10px color-mix(in srgb, var(--button-color) 12%, transparent);
   margin-bottom: 28px;
   transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+    background-color 450ms ease,
+    border-color 450ms ease,
+    box-shadow 450ms ease;
 }
 .search-form:focus-within {
-  border-color: var(--room-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room-focus) 12%, transparent);
+  border-color: var(--button-color);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--button-color) 20%, transparent),
+    0 3px 10px color-mix(in srgb, var(--button-color) 16%, transparent);
 }
 .search-form > svg {
   width: 20px;
@@ -864,6 +912,9 @@ input:disabled {
   opacity: 0;
 }
 .search-button {
+  --button-ink: #fff;
+  --button-top: color-mix(in srgb, var(--button-color) 84%, white);
+  --button-base: var(--button-color);
   flex-shrink: 0;
   min-width: 88px;
 }
@@ -990,10 +1041,6 @@ input:disabled {
     grid-row: span 2;
     margin: 0;
   }
-  .album-sleeve::before {
-    inset: -8px;
-    filter: blur(18px);
-  }
   .transport {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -1030,10 +1077,6 @@ input:disabled {
   }
 }
 @media (forced-colors: active) {
-  .album-sleeve::before,
-  .album-sleeve::after {
-    display: none;
-  }
   .transport-buttons button {
     border: 1px solid ButtonText;
   }

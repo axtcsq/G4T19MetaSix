@@ -35,9 +35,8 @@
   --color-lavender: #998ba1;
   --color-brown: #7d4737;
 
-  /* The five journal moods, as Nuxt UI colours (vite.config.js) for the song
-     mood tags. 500 is the Daily Mood picker's colour; the rest mix it with
-     white or black. */
+  /* Music mood tags use the original five reflection categories. The extra
+     journal-only moods have their own 500 colour below. */
   --color-mood-sad-50: #f0f6fb;
   --color-mood-sad-100: #e1ecf8;
   --color-mood-sad-200: #c3d9f0;
@@ -93,6 +92,9 @@
   --color-mood-angry-800: #752825;
   --color-mood-angry-900: #571e1c;
   --color-mood-angry-950: #381312;
+  --color-mood-excited-500: #d96f9f;
+  --color-mood-tired-500: #7e8ca6;
+  --color-mood-lonely-500: #4f8f95;
 }
 
 /* Type scale sizes, for page styles that set sizes themselves. The classes

@@ -437,8 +437,8 @@ const showcase = [
   flex-wrap: wrap;
   gap: 6px;
 }
-/* Compact chips, so all five fit on one row; the shared glossy button style
-   is roomier, hence the !important. */
+/* Compact chips keep the mood picker readable as it wraps across rows. The
+   shared glossy button style is roomier, hence the !important. */
 .hero-mood-options .mood-reaction.glass-secondary {
   gap: 5px;
   min-height: 36px !important;

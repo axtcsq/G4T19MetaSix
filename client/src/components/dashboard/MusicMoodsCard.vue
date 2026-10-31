@@ -4,7 +4,7 @@ const selected = ref(null)
 
 // Home's Your Music's Moods: what the mood analysis heard in the user's last two weeks of plays, from
 // musicMoods in /api/quiz/mood-music: one bar of how the plays spread over the
-// journal's five moods, the music moods played most, and how often the music
+// music's five reflection categories, the music moods played most, and how often the music
 // matched the mood they logged.
 const props = defineProps({
   data: { type: Object, required: true },
