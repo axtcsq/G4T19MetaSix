@@ -78,10 +78,19 @@ export function summariseMusicMoods(rows, moods, useLyrics) {
   }
 
   const share = (count) => Math.round((count / plays) * 100);
-  const top = [...byName]
+  // Every music mood played, most first, with the one of the five moods it
+  // counts towards most. mixed marks moods that count towards two, like
+  // Bittersweet, so the page can say so.
+  const allMoods = [...byName]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, TOP_MOODS)
-    .map(([name, count]) => ({ name, axis: strongestAxis(name), plays: count, share: share(count) }));
+    .map(([name, count]) => ({
+      name,
+      axis: strongestAxis(name),
+      plays: count,
+      share: share(count),
+      mixed: Object.keys(axesOf(name)).length > 1,
+    }));
+  const top = allMoods.slice(0, TOP_MOODS).map(({ mixed, ...mood }) => mood);
 
   // A day counts when it has both a logged mood and analysed plays.
   let comparedDays = 0;
@@ -98,6 +107,7 @@ export function summariseMusicMoods(rows, moods, useLyrics) {
     lens: useLyrics ? "lyrics" : "sound",
     plays,
     top,
+    moods: allMoods,
     axes: AXES.map((axis) => ({ axis, share: share(axes[axis]) })).filter((entry) => entry.share > 0),
     comparedDays,
     matchedDays,

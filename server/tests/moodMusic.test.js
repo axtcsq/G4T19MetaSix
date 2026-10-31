@@ -25,6 +25,17 @@ describe("summariseMusicMoods", () => {
     ]);
   });
 
+  it("lists every music mood under the mood it counts towards", () => {
+    const rows = [row("2026-10-01", "Melancholic", 5), row("2026-10-01", "Bittersweet", 3), row("2026-10-02", "Euphoric", 2)];
+    const summary = summariseMusicMoods(rows, new Map(), true);
+
+    assert.deepEqual(summary.moods, [
+      { name: "Melancholic", axis: "sad", plays: 5, share: 50, mixed: false },
+      { name: "Bittersweet", axis: "sad", plays: 3, share: 30, mixed: true },
+      { name: "Euphoric", axis: "happy", plays: 2, share: 20, mixed: false },
+    ]);
+  });
+
   it("counts logged days whose music matched the logged mood", () => {
     const rows = [row("2026-10-01", "Melancholic", 3), row("2026-10-02", "Euphoric", 3), row("2026-10-03", "Serene", 1)];
     const moods = new Map([
