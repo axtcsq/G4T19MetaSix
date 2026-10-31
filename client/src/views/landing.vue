@@ -175,9 +175,6 @@ const HERO_MOODS = {
   Relaxed: { colour: '#998ba1', line: 'Soft and easy. Acoustic and lo-fi to keep things calm.' },
   Anxious: { colour: '#ed8a35', line: 'Steady and calming. A slow beat to help you breathe.' },
   Angry: { colour: '#d94a45', line: 'Loud first, calmer after. Let it out, then wind down.' },
-  Excited: { colour: '#d96f9f', line: 'Full of energy. Keep the momentum going with something bright.' },
-  Tired: { colour: '#7e8ca6', line: 'Running low. Find a softer soundtrack and take it slowly.' },
-  Lonely: { colour: '#4f8f95', line: 'A little disconnected. Let a familiar song keep you company.' },
 }
 const heroMood = ref(null)
 const moodStyle = computed(() =>
