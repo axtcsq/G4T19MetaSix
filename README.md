@@ -1,179 +1,215 @@
-# IS216 - MetaFor by MetaSix
+# IS216 · MetaFor by MetaSix
 
-Metafor is a web-based mood journaling application that helps users express and reflect on their emotions through music and visualisation. Users can select songs that resonate with how they feel and record their
-mood through multiple forms of expression, including mood selections, visual wavelengths, drawings,
-metaphors, and optional written reflections.
+MetaFor helps people reflect on the relationship between their music and how they feel. It brings Spotify listening history, mood check-ins, journaling, and creative self-expression together in one responsive web app.
 
-Instead of relying solely on written descriptions, Metafor allows users to translate their feelings into visual
-representations such as lines, dots, musical notes, water-like patterns, and other wavelength designs.
+## What you can do
 
-These mood entries are stored and presented through an interactive dashboard, allowing users to look
-back at their music, emotions, and visual expressions over time. The application focuses on self-expression and personal reflection, by connecting music with creative forms of emotional expression. Metafor aims to make mood tracking more intuitive, personal, and visually
-engaging.
+- **Check in and journal.** Choose from eight emotions, write a reflection, or draw on the built-in journal canvas. Entries and drawings are saved to your account and can be searched in Past Entries.
+- **Get a journal starting point.** The Helper sends your prompt to Groq and displays a short suggestion. You can review it and insert it into your journal. Your existing journal text is not sent.
+- **Explore your listening.** Connect Spotify to browse and play music in the Listening Room. The room includes a 3D turntable, album-art colors, and a compact mini player. Spotify Premium is required for in-app playback.
+- **Find patterns over time.** The dashboard and calendar show listening history and song mood readings. Compare the sound-only reading with the reading that also considers lyrics.
+- **Explore your music personality.** Take six music quizzes and view a profile that combines quiz results with listening and mood patterns. The profile uses Groq when configured and falls back to the app's scoring rules otherwise.
+- **Use it across devices.** The layout supports small and large screens, and includes light and dark themes.
 
-# 1. Tech Stack
-| Name    | Purpose |
-| -------- | ------- |
-| MongoDB  | Database Choice |
-| Spotify | Account Login & Management |
-| Vue & Express.js    | Frontend & Backend |
-| Nuxt UI | UI Library |
-| Vercel | App Development |
+## Tech stack
 
-# 2. API
-| Name    | Purpose |
-| -------- | ------- |
-| Spotify  | Account |
-| ReccoBeats  | Provides Music Recommendations & Access to an Extensive Music Database |
-| MusicBrainz | Music Metadata |
+| Area | Tools |
+| --- | --- |
+| Client | Vue 3, Vite, Vue Router, Pinia, Axios, Nuxt UI, Tailwind CSS |
+| Server | Node.js, Express 5 |
+| Database | MongoDB Atlas or local MongoDB, accessed with Mongoose |
+| Visualization | Three.js and p5.js |
+| Browser tests | Playwright; unit tests with Vitest and Node's test runner |
+| Deployment | Vercel multi-service project; GitHub Actions for E2E checks and listening-history sync |
 
-# 3. Try it live
--will insert later-
+## How the code is organized
 
-# 4. Prerequisites
-- Git
-- Node.js 22.18+ or 24.12+
-- pnpm, for the client (`npm i -g pnpm`)
-- A MongoDB Atlas connection string (ask the team for access)
+The app uses the Vue patterns covered in the WAD2 lectures:
 
-# 5. Getting Started
-The client and server are separate projects, so each is installed and run in its own terminal.
+- **Components and views:** reusable interface pieces live in `client/src/components/`; each page is a Vue view in `client/src/views/`.
+- **Routing and shared state:** Vue Router maps URLs to views and protects signed-in pages with a navigation guard. Pinia keeps the current account state available across pages; the session cookie itself stays HTTP-only on the server.
+- **API requests:** functions in `client/src/api/` centralize calls to the server and external services. Views call those functions instead of building request URLs and handling HTTP details inline.
+- **Server responsibilities:** Express routes define API paths, controllers handle request input and responses, services contain reusable application and integration logic, and Mongoose models describe stored data.
 
-### 5.1 Clone the repo
+This keeps page presentation, navigation, API communication, and database work in separate places while using straightforward Vue and Express conventions.
+
+## External services
+
+| Service | How MetaFor uses it |
+| --- | --- |
+| Spotify | Sign-in, profile and listening history, track search, and Web Playback SDK |
+| ReccoBeats | Audio features used to understand a song's sound |
+| LRCLIB | Lyrics lookup for song analysis |
+| DeepL (optional) | Translation of non-English lyrics before scoring |
+| Last.fm (optional) | Artist genre tags for music insights and quizzes |
+| Groq (optional) | Journal suggestions and generated personality summaries |
+| Open-Meteo | Current weather for the Listening Room environment |
+
+Song lyrics are analyzed for emotional signals; lyric text is not saved in the database. Playback in the browser requires Spotify Premium. Spotify sign-in may be limited to accounts on the app's allowed-user list while the Spotify app is in Development Mode.
+
+## Run locally
+
+### Requirements
+
+- Node.js 22.18 or newer
+- npm
+- pnpm (`npm install --global pnpm`)
+- A MongoDB database (local MongoDB or MongoDB Atlas)
+- A Spotify Developer app for Spotify login and listening features
+
+### 1. Clone the repository
+
 ```sh
 git clone https://github.com/axtcsq/G4T19MetaSix.git
 cd G4T19MetaSix
 ```
 
-### 5.2 Configure the server
-Copy the template, then fill in the values:
+### 2. Configure the server
+
+Create a private environment file from the example:
 
 ```sh
 cp server/.env.example server/.env
 ```
 
-| Setting | Where it comes from |
-| --- | --- |
-| `PORT`, `CLIENT_ORIGIN`, `SPOTIFY_REDIRECT_URI` | Already filled in. Keep `127.0.0.1`: Spotify login doesn't work on `localhost`. |
-| `MONGODB_URI` | From the team. It must end in `/metafor_dev`. |
-| `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | From the team (the Spotify developer dashboard). |
-| `TOKEN_KEY` | From the team. Everyone uses the same value, since it decrypts the Spotify tokens stored in the shared database. |
-| `SESSION_SECRET` | From the team, or your own from `openssl rand -hex 32`. Either works. |
-| `DEMO_LOGIN` | `true` shows "Use the test account" on the login page. The test account comes from `npm run db:seed` (section 5.3). |
-| `GROQ_API_KEY` | Your own API key from [Groq Console](https://console.groq.com/keys), for the journal idea helper. |
-| `DEEPL_API_KEY` | Optional. A free [DeepL API](https://www.deepl.com/pro-api) key, so `npm run analyse` can translate non-English lyrics before scoring them. Without it, those songs get a sound-only mood. Only needed if you run the analysis job yourself. |
+Set `MONGODB_URI` to a database named `metafor_dev` for local work. Add your Spotify app credentials and register the exact `SPOTIFY_REDIRECT_URI` in the Spotify Developer Dashboard. For local use, the example callback is `http://127.0.0.1:3000/api/auth/callback`; open the app at `127.0.0.1`, not `localhost`.
 
-Use the `metafor_dev` database for development and testing. Only the deployed app uses `metafor`. Keep `.env` private; it is ignored by Git. Ask for the shared values in a private message, never in a commit or a group chat.
+Set `TOKEN_KEY` to a 64-character hexadecimal key. Generate one with:
 
-### Groq journal helper
-The Helper on the Daily Mood page sends the prompt you write to Groq, which generates a short journal idea that you can insert into your journal. It sends only that prompt, not the journal entry. Each developer should create and use their own Groq API key: add `GROQ_API_KEY=your_key_here` to `server/.env`. The key stays on the server and must never be added to client code or committed. Groq usage limits apply.
+```sh
+openssl rand -hex 32
+```
 
-If a setting seems to be ignored, check that it isn't also set in your terminal (`env | grep -E "MONGODB|CLIENT|SPOTIFY"`). Values already in the terminal win over `.env`, so open a new terminal or `unset` them.
+Keep the same `TOKEN_KEY` wherever the database's encrypted Spotify refresh tokens are used. Replacing it makes existing encrypted tokens unreadable. Never commit `.env` files or put server keys in client code.
 
-### 5.3 Set up the database
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `PORT` | No | Server port; defaults to `3000` |
+| `CLIENT_ORIGIN` | Yes | Client origin allowed to use the API; local default is `http://127.0.0.1:5173` |
+| `MONGODB_URI` | Yes | MongoDB connection string; use a development database ending in `_dev` for seeding |
+| `SESSION_SECRET` | Yes | Signs the login session cookie; use a private random value |
+| `TOKEN_KEY` | Yes | 64 hexadecimal characters used to encrypt Spotify refresh tokens |
+| `SPOTIFY_CLIENT_ID` | For Spotify | Spotify Developer app client ID |
+| `SPOTIFY_CLIENT_SECRET` | For Spotify | Spotify Developer app secret |
+| `SPOTIFY_REDIRECT_URI` | For Spotify | Exact OAuth callback URL registered in Spotify |
+| `DEMO_LOGIN` | No | Set to `true` to enable the seeded test account |
+| `GROQ_API_KEY` | No | Enables journal suggestions and generated personality summaries |
+| `DEEPL_API_KEY` | No | Enables translation of non-English lyrics |
+| `LASTFM_API_KEY` | No | Enables artist genre tags; genre data is omitted without it |
+
+Each developer should use their own Groq API key. The Helper sends only the prompt to Groq, not the journal draft. Groq usage limits apply.
+
+### 3. Install server dependencies and initialize MongoDB
+
 ```sh
 cd server
-npm i
+npm install
 npm run db:init
 ```
 
-`db:init` creates every collection and its indexes, then lists them. Run it once per database, and again whenever an index is added or changed. It only creates what is missing, so it is safe to re-run. The server does not create indexes on startup.
+`db:init` creates collections and indexes. To create or refresh the sample test account in a development database:
 
-To add test data, run `npm run db:seed`. It creates the demo user (the test account on the login page) with a year of generated listening history and daily moods. `metafor_dev` is already seeded, so you only need it to bring the test account's plays up to today, or on a new database. Re-running it replaces the demo user's listens and daily moods and nothing else, and it refuses to run on a database whose name doesn't end in `_dev`. Use `npm run db:seed -- --days 30` for a shorter history.
-
-### 5.4 Run the server
 ```sh
-cd server
+npm run db:seed
+# Optional: generate only 30 days of sample history
+npm run db:seed -- --days 30
+```
+
+Seeding replaces the demo user's generated listening history and sample journal entries, but keeps entries written by hand. The command refuses to seed a database whose name does not end in `_dev` unless explicitly overridden.
+
+### 4. Start the server
+
+From `server/`:
+
+```sh
 npm run dev
 ```
 
-The API runs at http://127.0.0.1:3000. Check http://127.0.0.1:3000/api/health: it should report `"database": "connected"`.
+The API runs at `http://127.0.0.1:3000`. Check `http://127.0.0.1:3000/api/health` for the database connection status.
 
-### 5.5 Run the client
-In a second terminal:
+### 5. Start the client
+
+In a second terminal, from the repository root:
 
 ```sh
 cd client
-pnpm i
+pnpm install
 pnpm dev
 ```
 
-Open http://127.0.0.1:5173 (not `localhost`). Requests to `/api` are forwarded to the server on port 3000.
+Open the Vite URL shown in the terminal (normally `http://127.0.0.1:5173`). Vite forwards `/api` requests to the server on port 3000. Use **Continue with Spotify** if your Spotify account is allowed by the app, or **Use the test account** when `DEMO_LOGIN=true` and the database has been seeded. The test account has generated sample history and does not connect to Spotify.
 
-To log in, use **Continue with Spotify** if your Spotify email is on the app's user list (ask the team to add it), or **Use the test account**, which has a year of sample listening history but no Spotify connection.
+## Testing
 
-### 5.6 Listening history sync
-Spotify only ever returns a user's latest 50 plays, so MetaFor saves them as they happen:
+Run client unit tests from `client/`:
 
-- **Every 15 minutes** (GitHub often runs scheduled jobs late or skips some), GitHub Actions runs `.github/workflows/sync.yml`, which saves the newest plays of every user who has logged in with Spotify. It needs four repository secrets (Settings > Secrets and variables > Actions): `MONGODB_URI`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `TOKEN_KEY`, with the same values as `server/.env`. Use **Run workflow** in the Actions tab to run it straight away.
-- **When the dashboard or calendar opens**, the client calls `POST /api/sync` to save the user's newest plays first.
-- **By hand**, run `npm run sync` from `server/`.
-
-Plays from before a user's first login can't be recovered beyond their latest 50, so new users should log in early. The test account is never synced.
-
-# 6. Database
-MetaFor stores everything in MongoDB. Listening history is recorded one play at a time, each song is analysed once and shared by every user, and daily mood summaries are calculated from those plays.
-
-### 6.1 Collections
-| Collection | One document is | Notes |
-| --- | --- | --- |
-| `users` | one Spotify account | Identified by `spotifyId` at login and by `_id` everywhere else. Holds the timezone, the mood lens preference and the sync status. |
-| `listens` | one play | Each replay is its own play. A play fetched twice is stored once (unique `userId` + `playedAt`). |
-| `tracks` | one song, shared by all users | `_id` is the Spotify track ID. Holds the audio features, lyric scores and both mood readings. |
-| `dailyMoods` | one user's moods on one day | Calculated from `listens` and `tracks`. It can be dropped and rebuilt at any time. |
-| `syncGaps` | a period where plays may be missing | Written by the sync job. |
-| `dailylogs` | one self-reported mood entry | The daily mood log: a mood and an optional journal. |
-| `sessions` | one login session | Managed automatically; no model. |
-
-```
-users ──1:n──► listens ──n:1──► tracks
-users ──1:n──► dailyMoods     (rebuilt from listens + tracks, per user per day)
-users ──1:n──► dailylogs, syncGaps
+```sh
+pnpm test:unit -- --run
 ```
 
-The models are in `server/models/`.
+Run the Playwright browser suite from `client/`:
 
-### 6.2 Song moods
-Every song gets two mood readings, and the user chooses which one the charts show. Both are stored, so switching never needs a recalculation.
+```sh
+pnpm exec playwright install chromium  # first run only
+pnpm test:e2e
+```
 
-| | Sound only | Sound + lyrics (default) |
-| --- | --- | --- |
-| Based on | valence, energy, danceability, acousticness | the same, plus the lyrics' emotions and themes |
-| Possible moods | Euphoric, Uplifting, Breezy, Serene, Melancholic, Cathartic, Bittersweet, Aggressive, Dark and driving | the same nine, plus Deceptively upbeat and Hope in the dark |
+Playwright starts its own Vite server on `127.0.0.1:5199`; it does not require MongoDB or a Spotify account. The browser tests mock API responses, so they check user flows but do not verify real Spotify OAuth, database persistence, Groq generation, or backend authorization. GitHub Actions runs these E2E tests on pushes to `main` and `test-cases`, and on pull requests targeting `main`.
 
-The readings are never averaged. *Pumped Up Kicks* is Euphoric by sound alone but Deceptively upbeat with its lyrics, so a day of playing it reads as Happy in one view and Anxious in the other.
+Run server tests from `server/`:
 
-### 6.3 From music mood to daily mood
-Music moods map onto the daily log's five moods, so what a user played can be compared with how they said they felt. Each row adds up to 1, so every play counts once.
+```sh
+npm test
+```
 
-| Music mood | Happy | Relaxed | Sad | Angry | Anxious |
-| --- | --- | --- | --- | --- | --- |
-| Euphoric, Uplifting | 1 | | | | |
-| Breezy, Serene | | 1 | | | |
-| Melancholic, Cathartic | | | 1 | | |
-| Bittersweet | 0.4 | | 0.6 | | |
-| Hope in the dark | 0.5 | | 0.5 | | |
-| Aggressive | | | | 1 | |
-| Dark and driving, Deceptively upbeat | | | | | 1 |
+The song-mood evaluation can be run with `npm run mood:eval` from `server/`. It uses the checked-in labelled test data.
 
-The Anxious and Hope in the dark rows are still being agreed.
+## Data model
 
-### 6.4 Rules for new features
-- Filter every query by the logged-in user's `_id`, never by an ID sent in the request.
-- Refer to songs by their Spotify track ID. Look up names, artists and moods in `tracks` instead of copying them.
-- Store dates as `"YYYY-MM-DD"` strings in the user's timezone, and timestamps as UTC dates.
-- Treat `users`, `listens`, `tracks`, `dailyMoods` and `syncGaps` as read-only, and agree any change with the team first.
-- A new collection needs a `userId`, an index starting with `userId`, and an entry in `server/scripts/db-init.js`.
-- Store drawings as vector data (paths and points), not images. Atlas's free tier has 512 MB in total.
+MetaFor stores Spotify listening records and personal reflections separately:
 
-# 7. More docs
-| File | What it covers |
-| -------- | ------- |
-| [docs/STYLE.md](docs/STYLE.md) | Shared styling rules: colours, type scale, layout |
-| [docs/DESIGN.md](docs/DESIGN.md) | Design notes for the dashboard, journal and listening room |
-| [docs/PersonalityQuiz.md](docs/PersonalityQuiz.md) | The personality quizzes and Patterns |
-| [docs/SPOTIFY.md](docs/SPOTIFY.md) | Spotify auth and playback |
-| [docs/WEATHER.md](docs/WEATHER.md) | Live weather in the listening garden |
+- `users` stores account and preference data.
+- `listens` stores individual plays, linked to a user and a shared `tracks` record.
+- `tracks` stores song metadata and sound/lyrics mood analysis shared across users.
+- `dailyMoods` stores per-user, per-day summaries derived from listening history; it can be rebuilt from `listens` and `tracks`.
+- `dailylogs` stores a user's selected emotion, optional journal text, and optional vector drawing.
+- `quizattempts` and `personalities` store quiz answers and the combined personality profile.
+- `syncGaps` records listening-history periods that may be incomplete. `sessions` stores server-managed login sessions.
 
-# 8. Browser tests
-See [the Playwright guide](client/e2e/README.md) for setup, coverage, and debugging. Run `pnpm test:e2e` from `client/`; the suite starts its own server and uses isolated API fixtures.
+Personal data queries are scoped to the signed-in user's database ID. Drawings are stored as vector data (strokes, shapes, and text), rather than image files.
+
+## Deployment and scheduled sync
+
+The root `vercel.json` defines two services: `client` and `server`. Set the Vercel project root directory to the repository root. Requests under `/api/*` are routed to the server; other paths are routed to the Vue single-page app. Set production environment variables in Vercel. In particular, set `SPOTIFY_REDIRECT_URI` to `https://<your-production-domain>/api/auth/callback` and register that exact URL in the Spotify Developer Dashboard. Use the production domain currently assigned to the project in Vercel.
+
+GitHub Actions can sync active Spotify users' newest plays every 15 minutes and analyze newly discovered songs. Configure repository secrets `MONGODB_URI`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, and `TOKEN_KEY`; `DEEPL_API_KEY` is optional and enables lyric translation during analysis. Spotify only exposes a limited recent-play history, so the scheduled job helps retain plays over time.
+
+## Project structure
+
+```text
+client/src/
+├── api/           # Client requests to the server and public APIs
+├── components/    # Shared UI, journal canvas, listening and dashboard pieces
+├── composables/   # Reusable stateful Vue logic
+├── router/        # Routes and authentication guards
+├── stores/        # Shared Pinia state
+└── views/         # Landing, dashboard, journal, calendar, listening, quizzes
+
+server/
+├── routes/        # Express URL definitions
+├── controller/    # Request handling and validation
+├── models/        # Mongoose schemas and database operations
+├── services/      # Spotify, sync, mood analysis and personality logic
+├── jobs/          # Scheduled/manual sync and analysis tasks
+└── tests/         # Server-side tests
+```
+
+## More documentation
+
+- [Server API and mood-analysis notes](server/README.md)
+- [Playwright setup and coverage](client/e2e/README.md)
+- [Design overview](docs/DESIGN.md)
+- [Shared style guide](docs/STYLE.md)
+- [Spotify authentication and playback](docs/SPOTIFY.md)
+- [Personality quizzes](docs/PersonalityQuiz.md)
+- [Listening Room weather](docs/WEATHER.md)
