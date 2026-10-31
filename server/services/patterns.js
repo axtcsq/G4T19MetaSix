@@ -122,7 +122,16 @@ export function songForType(profile, traits) {
 }
 
 // Roughly how happy (valence) music tends to sound for each logged mood.
-const MOOD_VALENCE = { Happy: 0.75, Relaxed: 0.55, Anxious: 0.4, Angry: 0.35, Sad: 0.25 };
+const MOOD_VALENCE = {
+  Happy: 0.75,
+  Excited: 0.8,
+  Relaxed: 0.55,
+  Tired: 0.35,
+  Lonely: 0.25,
+  Anxious: 0.4,
+  Angry: 0.35,
+  Sad: 0.25,
+};
 
 // One line connecting the user's mood logs with their listening.
 export function moodLink(moodPatterns, stats) {

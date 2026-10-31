@@ -5,7 +5,7 @@ import { useListeningRoom } from '@/composables/useListeningRoom'
 import MoodTag from '@/components/mood/MoodTag.vue'
 const route = useRoute()
 const room = useListeningRoom()
-const { connected, ready, track, paused, busy, duration } = room
+const { connected, ready, track, paused, busy, duration, buttonAccent, ambientColors } = room
 // Where the song is up to (the dock's own `position` is where it sits on screen).
 const playPosition = room.position
 const formatTime = (ms) =>
@@ -177,8 +177,16 @@ watch([dock, minimised], measure, { flush: 'post' })
     v-if="visible"
     ref="dock"
     class="listening-dock"
-    :class="{ 'is-minimised': minimised }"
-    :style="dockStyle"
+    :class="{ 'is-minimised': minimised, 'is-playing': !paused }"
+    :style="[
+      dockStyle,
+      {
+        '--dock-accent': buttonAccent,
+        '--dock-color-one': ambientColors[0],
+        '--dock-color-two': ambientColors[1],
+        '--dock-color-three': ambientColors[2],
+      },
+    ]"
     aria-label="Current Spotify playback"
   >
     <button
@@ -213,7 +221,7 @@ watch([dock, minimised], measure, { flush: 'post' })
               ? 'Back to your listening room ↗'
               : 'Spotify Premium needed to play ↗'
         }}</span
-        ><span class="dock-mood"><MoodTag :track-id="track.id" size="sm" :link="false" /></span></RouterLink
+        ></RouterLink
       >
       <template v-if="canPlay">
         <button
@@ -230,7 +238,7 @@ watch([dock, minimised], measure, { flush: 'post' })
         </button>
         <button
           type="button"
-          class="dock-icon"
+          class="dock-icon dock-play-button"
           :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
           :title="paused ? 'Play' : 'Pause'"
           :disabled="!ready || !track.id || busy"
@@ -269,7 +277,7 @@ watch([dock, minimised], measure, { flush: 'post' })
     </template>
     <button
       v-else
-      class="dock-icon"
+      class="dock-icon dock-play-button"
       :disabled="!ready || !track.id || busy"
       :aria-label="paused ? `Play ${track.name}` : `Pause ${track.name}`"
       :title="paused ? 'Play' : 'Pause'"
@@ -294,6 +302,10 @@ watch([dock, minimised], measure, { flush: 'post' })
         <path v-else d="M3 6l5 5 5-5" />
       </svg>
     </button>
+    <!-- The song's mood, on its own row so a long name is never squeezed. -->
+    <div v-if="!minimised" class="dock-mood">
+      <MoodTag :track-id="track.id" size="sm" :link="false" />
+    </div>
     <!-- Its own row under the controls, the full width of the dock. -->
     <div v-if="!minimised && canPlay" class="dock-seek">
       <span aria-hidden="true">{{ formatTime(playPosition) }}</span>
@@ -335,25 +347,91 @@ html.has-dock body:not(:has(.site-footer)) {
   flex-wrap: wrap;
   gap: 2px 8px;
   align-items: center;
-  padding: 6px 10px 4px;
+  padding: 16px 10px 10px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 16px;
+  border-radius: 10px;
+  isolation: isolate;
+  overflow: hidden;
   /* Frosted glass, like the sticky navbar. */
-  background: rgba(250, 248, 246, 0.62);
+  background: rgba(250, 248, 246, 0.3);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   backdrop-filter: blur(18px) saturate(1.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   color: var(--ui-text);
   font-size: 13px;
 }
+.listening-dock::before,
+.listening-dock::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.listening-dock::before {
+  inset: -40%;
+  background-image:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-one) 88%, transparent), transparent 68%),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-two) 86%, transparent), transparent 68%),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--dock-color-three) 82%, transparent), transparent 68%);
+  background-repeat: no-repeat;
+  background-size: 70% 88%, 78% 86%, 72% 90%;
+  background-position: 0% 30%, 100% 0%, 48% 100%;
+  filter: blur(30px) saturate(1.9);
+  opacity: 1;
+  transform: scale(1.35);
+}
+.listening-dock::after {
+  background:
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 18%, transparent), transparent 68%),
+    linear-gradient(120deg, rgba(250, 248, 246, 0.3), rgba(250, 248, 246, 0.4));
+}
+.listening-dock.is-playing::before {
+  animation: dock-glow-drift 11s ease-in-out infinite alternate;
+}
+@keyframes dock-glow-drift {
+  from {
+    background-position: 0% 30%, 100% 0%, 48% 100%;
+    transform: scale(1.35) translate(-3%, -2%);
+  }
+  to {
+    background-position: 100% 20%, 0% 100%, 58% 0%;
+    transform: scale(1.52) translate(4%, 3%) rotate(3deg);
+  }
+}
 :global(.dark .listening-dock) {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(22, 18, 16, 0.6);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 205, 166, 0.2);
+  /* Smoked glass: dark enough for the cream text, clear enough that the page
+     blurs through and the song's colours stay vivid. */
+  background: rgba(22, 18, 16, 0.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+:global(.dark .listening-dock::before) {
+  /* Deepen the colours without dulling them, so the light ones (peach, pale
+     album art) don't turn the glass white. */
+  filter: blur(30px) saturate(2.2) brightness(0.7);
+}
+:global(.dark .listening-dock::after) {
+  background:
+    radial-gradient(ellipse at 22% 28%, color-mix(in srgb, var(--dock-accent) 22%, transparent), transparent 68%),
+    linear-gradient(120deg, rgba(22, 18, 16, 0.32), rgba(22, 18, 16, 0.44));
+}
+/* A soft shadow keeps the words clear over the brightest colours. */
+:global(.dark .listening-dock :is(strong, span, .dock-text)) {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
 }
 @media (prefers-reduced-transparency: reduce) {
   .listening-dock {
     background: #faf8f6;
+  }
+  .listening-dock::before,
+  .listening-dock::after {
+    display: none;
   }
   :global(.dark .listening-dock) {
     background: #161210;
@@ -385,11 +463,58 @@ span {
   margin-top: 4px;
   font-size: 11px;
 }
+/* The song's mood sits on its own row, lined up under the title. */
 .dock-mood {
+  display: flex;
+  flex-basis: 100%;
+  margin-top: 6px;
+  padding-left: 80px;
   overflow: visible;
+}
+/* No cover art: the title starts right after the grip. */
+:global(.listening-dock:not(:has(> img)) .dock-mood) {
+  padding-left: 28px;
 }
 .dock-mood:empty {
   display: none;
+}
+/* The dock's text rules (one line, clipped with "...") reach the tag's wrapper
+   too. Undo them here so a long mood name wraps, never cut. */
+:global(.listening-dock .dock-mood .mood-tag-root) {
+  gap: 6px;
+  margin-top: 0;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+}
+/* Soft pills: a near-white (or near-black) fill keeps the mood's colour
+   readable on any album art, without a heavy outline. */
+:global(.listening-dock .dock-mood .mood-tag) {
+  gap: 5px;
+  height: auto;
+  min-height: 0;
+  padding: 2px 9px 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+}
+:global(.dark .listening-dock .dock-mood .mood-tag) {
+  background: rgba(22, 18, 16, 0.66);
+}
+/* The note beside it (lyrics pending and so on) steps back: just a hairline. */
+:global(.listening-dock .dock-mood .mood-tag.text-muted) {
+  padding-inline: 9px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(41, 35, 33, 0.22);
+  font-weight: 500;
+}
+:global(.dark .listening-dock .dock-mood .mood-tag.text-muted) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 button {
   min-height: 44px;
@@ -399,7 +524,8 @@ button {
 }
 .listening-dock.is-minimised {
   width: auto;
-  padding-bottom: 6px;
+  /* Even space above and below the single row. */
+  padding-block: 12px;
 }
 .dock-text {
   border: 0;
@@ -496,6 +622,9 @@ button {
 }
 /* Each browser drops a rule naming the other's thumb, so they stay apart. */
 @media (prefers-reduced-motion: reduce) {
+  .listening-dock.is-playing::before {
+    animation: none;
+  }
   .dock-seek input::-webkit-slider-thumb {
     transition: none;
   }
@@ -522,6 +651,45 @@ button {
   width: 16px;
   height: 16px;
   fill: currentColor;
+}
+/* A flat outline in the song's colour: no gradient, shine or shadow. */
+.dock-play-button {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 2px solid var(--dock-accent);
+  border-radius: 50%;
+  color: var(--dock-accent);
+  background: transparent;
+  box-shadow: none;
+  transition: transform 160ms ease, background-color 180ms ease, color 180ms ease;
+}
+.dock-play-button:hover:not(:disabled) {
+  color: #fff;
+  background: var(--dock-accent);
+  transform: scale(1.05);
+}
+.dock-play-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.dock-play-button:disabled {
+  color: rgba(127, 127, 127, 0.75);
+  border-color: rgba(127, 127, 127, 0.5);
+  background: transparent;
+  box-shadow: none;
+}
+/* A lighter tint of the song's colour, so the outline shows on the dark glass. */
+:global(.dark .dock-play-button:not(:disabled)) {
+  border-color: color-mix(in srgb, var(--dock-accent) 55%, white);
+  color: color-mix(in srgb, var(--dock-accent) 55%, white);
+}
+:global(.dark .dock-play-button:hover:not(:disabled)) {
+  border-color: var(--dock-accent);
+  color: #fff;
+}
+:global(.dark .dock-play-button:disabled) {
+  color: rgba(246, 238, 232, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 .dock-icon .chevron {
   fill: none;
@@ -564,6 +732,6 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible {
   outline: 3px solid var(--color-brand-700);
-  outline-offset: 3px;
+  outline-offset: -2px;
 }
 </style>
