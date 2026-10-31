@@ -321,8 +321,7 @@ const showcase = [
     <section class="taste landing-shell" aria-labelledby="taste-title">
       <h2 id="taste-title">Try a Taste Test.</h2>
       <p class="taste-intro">
-        Answer three quick questions for a peek at your personality, or search a song to see its
-        mood.
+        See what your music taste says about you or find out how your favourite song feels.
       </p>
       <div class="taste-grid">
         <TasteQuiz />
