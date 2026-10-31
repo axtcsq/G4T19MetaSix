@@ -103,6 +103,7 @@ watch(
     :class="{
       'site-header-landing': isLanding,
       'is-scrolled': isScrolled || menuOpen,
+      'menu-open': menuOpen,
     }"
   >
     <div ref="headerInner" class="header-inner">
@@ -235,6 +236,10 @@ watch(
   box-shadow:
     inset 0 -1px 0 rgba(255, 255, 255, 0.35),
     0 6px 20px rgba(41, 35, 33, 0.08);
+}
+.site-header.menu-open {
+  /* Keep the expanded mobile links above page sections with their own layers. */
+  z-index: 1000;
 }
 @media (prefers-reduced-transparency: reduce) {
   .site-header {
