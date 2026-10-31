@@ -92,6 +92,31 @@ function validDrawing(drawing) {
   });
 }
 
+// A Song of the Day as the journal page sends it: a Spotify ID, the title,
+// the artists and the cover, or null for no song.
+function validSong(song) {
+  if (song === null) return true;
+  if (!song || typeof song !== "object" || Array.isArray(song)) return false;
+  if (Object.keys(song).some((key) => !["id", "name", "artists", "imageUrl"].includes(key))) {
+    return false;
+  }
+
+  return (
+    typeof song.id === "string" &&
+    /^[A-Za-z0-9]{22}$/.test(song.id) &&
+    typeof song.name === "string" &&
+    song.name.length > 0 &&
+    song.name.length <= 300 &&
+    Array.isArray(song.artists) &&
+    song.artists.length <= 20 &&
+    song.artists.every((artist) => typeof artist === "string" && artist.length <= 200) &&
+    (song.imageUrl === undefined ||
+      (typeof song.imageUrl === "string" &&
+        song.imageUrl.length <= 500 &&
+        song.imageUrl.startsWith("https://")))
+  );
+}
+
 function validateEntry(body, requireMood = false) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return "Request body must be an object";
@@ -99,7 +124,7 @@ function validateEntry(body, requireMood = false) {
 
   const keys = Object.keys(body);
 
-  if (keys.some((key) => !["mood", "journal", "drawing"].includes(key))) {
+  if (keys.some((key) => !["mood", "journal", "drawing", "song"].includes(key))) {
     return "Unsupported field";
   }
 
@@ -122,6 +147,10 @@ function validateEntry(body, requireMood = false) {
     return "Drawing data is invalid or exceeds the supported size";
   }
 
+  if ("song" in body && !validSong(body.song)) {
+    return "Song of the Day is invalid";
+  }
+
   return null;
 }
 
@@ -137,6 +166,7 @@ export async function createMood(req, res) {
     mood: req.body.mood,
     journal: req.body.journal ?? "",
     drawing: req.body.drawing ?? null,
+    song: req.body.song ?? null,
   });
 
   res.status(201).json(log);

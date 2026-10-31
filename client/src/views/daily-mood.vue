@@ -6,15 +6,19 @@ import SiteFooter from '@/components/layout/footer.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 import PastEntries from '@/components/journal/PastEntries.vue'
+import JournalSongPicker from '@/components/journal/JournalSongPicker.vue'
 
 const showHistory = ref(false)
 const showDrawing = ref(false)
+const showSong = ref(false)
 const saveStatus = ref('')
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry', 'Excited', 'Tired', 'Lonely']
 const selectedMood = ref(null)
 const journalEntry = ref('')
 const drawingData = ref(null)
+// The optional Song of the Day: null or { id, name, artists, imageUrl }.
+const songOfTheDay = ref(null)
 const helperOpen = ref(false)
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
@@ -31,7 +35,9 @@ const ideaStatus = ref('')
 const canSave = computed(
   () =>
     selectedMood.value !== null &&
-    (journalEntry.value.trim().length > 0 || drawingData.value?.items?.length > 0) &&
+    (journalEntry.value.trim().length > 0 ||
+      drawingData.value?.items?.length > 0 ||
+      songOfTheDay.value !== null) &&
     !isLoading.value &&
     !isSaving.value,
 )
@@ -60,6 +66,8 @@ async function saveEntry() {
       mood: selectedMood.value,
       journal: journalEntry.value.trim(),
       drawing: drawingData.value,
+      // Only sent when a song was picked, so entries without one stay as before.
+      ...(songOfTheDay.value ? { song: songOfTheDay.value } : {}),
     })
 
     logs.value = [savedEntry, ...logs.value]
@@ -67,6 +75,8 @@ async function saveEntry() {
     selectedMood.value = null
     journalEntry.value = ''
     drawingData.value = null
+    songOfTheDay.value = null
+    showSong.value = false
     helperOpen.value = false
   } catch (error) {
     saveError.value = error.message
@@ -190,7 +200,7 @@ onMounted(loadEntries)
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
-                {{ journalEntry.length }} / 5000 characters. Write a reflection or add a drawing.
+                {{ journalEntry.length }} / 5000 characters. Write a reflection, add a drawing or pick a song.
               </p>
             </div>
           </form>
@@ -315,6 +325,26 @@ onMounted(loadEntries)
             <JournalCanvas v-model="drawingData" />
           </section>
         </details>
+        <!-- Folded away like the drawing, for anyone who wants to add a song. -->
+        <details
+          class="drawing-disclosure song-disclosure"
+          :open="showSong"
+          @toggle="showSong = $event.target.open"
+        >
+          <summary>
+            <span class="disclosure-text">
+              <span id="song-of-the-day-heading" class="section-title">Song of the Day</span>
+              <span class="body-text text-muted">Which song sums up today?</span>
+            </span>
+            <span class="disclosure-optional">Optional</span>
+            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <section class="drawing-section" aria-labelledby="song-of-the-day-heading">
+            <JournalSongPicker v-model="songOfTheDay" @update:model-value="clearSaveFeedback" />
+          </section>
+        </details>
         <div class="save-row">
           <UButton
             form="daily-journal-form"
@@ -395,6 +425,9 @@ onMounted(loadEntries)
 }
 .drawing-disclosure {
   margin-top: 40px;
+}
+.song-disclosure {
+  margin-top: 8px;
 }
 .drawing-disclosure summary {
   display: flex;
