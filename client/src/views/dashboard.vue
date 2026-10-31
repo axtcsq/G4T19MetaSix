@@ -7,6 +7,7 @@ import MoodTag from '@/components/mood/MoodTag.vue'
 import TodayStory from '@/components/dashboard/TodayStory.vue'
 import MoodMusicChart from '@/components/dashboard/MoodMusicChart.vue'
 import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
+import ArtistRecords from '@/components/dashboard/ArtistRecords.vue'
 import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
 import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
@@ -168,7 +169,11 @@ watch(
               <MoodMusicChart :data="moodMusic" />
             </article>
             <article class="chart-panel">
-              <MusicMoodsCard v-if="moodMusic.musicMoods" :data="moodMusic.musicMoods" />
+              <MusicMoodsCard
+                v-if="moodMusic.musicMoods"
+                :data="moodMusic.musicMoods"
+                :dates="moodMusic.days.map((day) => day.date)"
+              />
               <p v-else class="unavailable-note">
                 Your songs’ moods show here once MetaFor has listened to them, usually within a few
                 minutes of a sync.
@@ -196,30 +201,7 @@ watch(
                 <h3>Top Artists</h3>
                 <span>Recorded plays</span>
               </div>
-              <ol class="artist-list">
-                <li v-for="(artist, index) in data.artists" :key="artist.name">
-                  <span class="rank">{{ index + 1 }}</span
-                  ><img
-                    v-if="artist.art"
-                    :src="artist.art"
-                    :alt="`${artist.album} album artwork`"
-                    width="56"
-                    height="56"
-                    loading="lazy"
-                  />
-                  <div class="artist-detail">
-                    <a :href="artist.url" target="_blank" rel="noopener noreferrer"
-                      >{{ artist.name }}<span class="sr-only"> on Spotify (opens new tab)</span></a
-                    >
-                    <div class="artist-meter" aria-hidden="true">
-                      <span
-                        :style="{ width: `${(artist[period] / data.artists[0][period]) * 100}%` }"
-                      />
-                    </div>
-                  </div>
-                  <strong>{{ artist[period] }}</strong>
-                </li>
-              </ol>
+              <ArtistRecords :artists="data.artists" :period="period" :paused="motionPaused" />
             </article>
             <article class="songs-panel">
               <div class="panel-heading">
@@ -568,16 +550,6 @@ watch(
   color: var(--dash-muted);
   font-variant-numeric: tabular-nums;
 }
-.artist-list img {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-}
-.artist-detail {
-  min-width: 0;
-  flex: 1;
-}
-.artist-detail a,
 .song-detail a {
   display: block;
   color: var(--dash-ink);
@@ -586,35 +558,14 @@ watch(
   text-decoration: none;
   width: fit-content;
 }
-.artist-detail a:hover,
 .song-detail a:hover {
   text-decoration: underline;
   text-underline-offset: 5px;
 }
-.artist-meter {
-  height: 3px;
-  width: 85%;
-  background: var(--dash-hover);
-  margin-top: 8px;
-}
-.artist-meter > span {
-  display: block;
-  height: 100%;
-  background: var(--dash-meter);
-  transition: width 0.3s;
-}
-.artist-list strong,
 .song-list strong {
   font-size: 16px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-}
-.artist-list small {
-  display: block;
-  font-size: 13px;
-  text-align: right;
-  color: var(--dash-muted);
-  font-weight: 400;
 }
 .song-art {
   display: block;
@@ -805,7 +756,6 @@ watch(
 .section-intro {
   margin-top: 0;
 }
-.artist-detail a,
 .song-detail a {
   font-family: var(--font-serif);
   font-size: 21px;
@@ -813,6 +763,7 @@ watch(
 .song-detail > span {
   font-size: 17px;
 }
+
 .period-control button[aria-pressed='true']:hover {
   background: var(--dash-strong);
   color: var(--dash-paper);
