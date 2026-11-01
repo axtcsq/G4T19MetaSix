@@ -45,6 +45,7 @@ let player,
   initPromise,
   searchController,
   searchVersion = 0,
+  actionVersion = 0,
   connectVersion = 0
 
 function updateArtwork(next) {
@@ -91,7 +92,11 @@ function updateArtwork(next) {
       const palette = []
       for (const color of colors) {
         const distinct = palette.every(
-          (chosen) => color.rgb.reduce((distance, value, channel) => distance + Math.abs(value - chosen[channel]), 0) > 90,
+          (chosen) =>
+            color.rgb.reduce(
+              (distance, value, channel) => distance + Math.abs(value - chosen[channel]),
+              0,
+            ) > 90,
         )
         if (distinct) palette.push(color.rgb)
         if (palette.length === 3) break
@@ -146,36 +151,55 @@ function applyState(state) {
 }
 async function action(fn) {
   if (busy.value) return
+  const version = actionVersion
   busy.value = true
   error.value = ''
   try {
-    return await fn()
+    return await fn(() => version === actionVersion)
   } catch (e) {
+    if (version !== actionVersion) return
     const message = e.message || 'Something interrupted playback. Please try again.'
     if (connected.value && !hasSpotifySession()) disconnect()
     error.value = message
   } finally {
-    busy.value = false
+    if (version === actionVersion) busy.value = false
   }
 }
 async function connectPlayer() {
   const version = ++connectVersion
   const Spotify = await loadSpotifySDK()
   if (version !== connectVersion) return
-  player?.disconnect()
+  if (player && ready.value) await player.disconnect()
+  if (version !== connectVersion) return
   clearInterval(poll)
   ready.value = false
   device = null
-  player = new Spotify.Player({
+  // Spotify.Player instances share one SDK iframe; reconnect the existing owner.
+  player ??= new Spotify.Player({
     name: 'MetaFor Listening Room',
     volume: volume.value / 100,
-    getOAuthToken: (cb) =>
-      spotifyToken()
-        .then(cb)
+    getOAuthToken: (cb) => {
+      const tokenVersion = connectVersion
+      return spotifyToken()
+        .then((token) => {
+          if (tokenVersion === connectVersion) cb(token)
+        })
         .catch((e) => {
-          error.value = e.message
-        }),
+          if (tokenVersion === connectVersion) error.value = e.message
+        })
+    },
   })
+  for (const event of [
+    'initialization_error',
+    'authentication_error',
+    'account_error',
+    'playback_error',
+    'autoplay_failed',
+    'ready',
+    'not_ready',
+    'player_state_changed',
+  ])
+    player.removeListener(event)
   for (const event of [
     'initialization_error',
     'authentication_error',
@@ -209,7 +233,7 @@ async function connectPlayer() {
     device = null
     paused.value = true
   })
-  // Replaced players can deliver late events after reconnect or disconnect.
+  // Previous connections can deliver late callbacks after reconnect or disconnect.
   player.addListener('player_state_changed', (state) => {
     if (version === connectVersion) applyState(state)
   })
@@ -232,13 +256,16 @@ async function connectPlayer() {
     ])
     if (!success) throw new Error('Spotify could not connect. Please retry the player.')
   } catch (e) {
-    instance.disconnect()
+    if (version === connectVersion) {
+      instance.disconnect()
+      device = null
+      ready.value = false
+    }
     throw e
   } finally {
     clearTimeout(timer)
   }
   if (version !== connectVersion) {
-    instance.disconnect()
     return
   }
   poll = setInterval(async () => {
@@ -271,32 +298,58 @@ async function refreshHistory() {
   }
 }
 function initialize() {
-  if (!initPromise)
-    initPromise = action(async () => {
+  if (!initPromise) {
+    const version = actionVersion
+    initPromise = action(async (isCurrent) => {
       connected.value = hasSpotifySession()
       if (connected.value) {
         await refreshHistory()
-        if (connected.value && !player) await connectPlayer()
+        if (isCurrent() && connected.value && !ready.value) await connectPlayer()
       }
     }).finally(() => {
-      initPromise = null
+      if (version === actionVersion) initPromise = null
     })
+  }
   return initPromise
+}
+async function startPlayback(command, isCurrent) {
+  const target = device
+  // A reconnected SDK device can be ready before Spotify's playback API sees it.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (!isCurrent() || device !== target) return
+    try {
+      await spotifyRequest('/me/player', {
+        method: 'PUT',
+        body: { device_ids: [target], play: false },
+      })
+      if (!isCurrent() || device !== target) return
+      return await command(target)
+    } catch (failure) {
+      if (!isCurrent() || device !== target) return
+      if (failure.status !== 404 || attempt === 3) throw failure
+      await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt))
+    }
+  }
 }
 async function selectRecord(record) {
   if (!connected.value) return
-  await action(async () => {
+  await action(async (isCurrent) => {
     if (!ready.value || !device)
       throw new Error('Reconnect the Spotify player before choosing a song.')
     // activateElement must run inside the user's click, before any network awaits.
     await player.activateElement()
+    if (!isCurrent()) return
     const chosen = record
     if (!chosen.uri) throw new Error('Choose a song from Spotify search or listening history.')
     if (chosen.is_playable === false) throw new Error('This song is not available in your market.')
     const queue = records.value.filter(
       (item) => item.uri !== chosen.uri && item.is_playable !== false,
     )
-    await playSpotify(device, [chosen.uri, ...queue.map((item) => item.uri)].slice(0, 50))
+    await startPlayback(
+      (target) => playSpotify(target, [chosen.uri, ...queue.map((item) => item.uri)].slice(0, 50)),
+      isCurrent,
+    )
+    if (!isCurrent()) return
     updateArtwork(chosen)
     duration.value = chosen.duration_ms
     position.value = 0
@@ -305,27 +358,32 @@ async function selectRecord(record) {
 }
 async function toggle() {
   if (!connected.value || !track.value.id) return
-  await action(async () => {
+  await action(async (isCurrent) => {
     if (!ready.value) throw new Error('Reconnect the player to resume listening.')
     await player.activateElement()
+    if (!isCurrent()) return
     const playbackAction = paused.value ? 'play' : 'pause'
-    await spotifyRequest(
-      `/me/player/${playbackAction}?device_id=${encodeURIComponent(device)}`,
-      { method: 'PUT' },
-    )
+    const command = (target) =>
+      spotifyRequest(`/me/player/${playbackAction}?device_id=${encodeURIComponent(target)}`, {
+        method: 'PUT',
+      })
+    if (paused.value) await startPlayback(command, isCurrent)
+    else await command(device)
   })
 }
 async function seek(value) {
   if (!connected.value || !ready.value) return
-  await action(async () => {
+  await action(async (isCurrent) => {
     await player.seek(Number(value))
+    if (!isCurrent()) return
     position.value = Number(value)
   })
 }
 async function changeVolume(value) {
   if (!connected.value || !ready.value) return
-  await action(async () => {
+  await action(async (isCurrent) => {
     await player.setVolume(Number(value) / 100)
+    if (!isCurrent()) return
     volume.value = Number(value)
   })
 }
@@ -358,13 +416,15 @@ function cancelSearch() {
   searching.value = false
 }
 function disconnect() {
+  ++actionVersion
+  initPromise = null
+  busy.value = false
   ++connectVersion
   ++searchVersion
   searchController?.abort()
   searching.value = false
   clearInterval(poll)
   player?.disconnect()
-  player = null
   device = null
   clearSpotifySession()
   connected.value = ready.value = false

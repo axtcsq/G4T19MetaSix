@@ -19,6 +19,7 @@ export function hasSpotifySession() {
 export function clearSpotifySession() {
   generation++
   cached = null
+  refreshPromise = null
 }
 
 // Spotify is connected by logging in, so "Connect Spotify" goes to the login.
@@ -39,6 +40,7 @@ export async function spotifyToken(force = false) {
         return token.accessToken
       })
       .catch((failure) => {
+        if (epoch !== generation) throw failure
         const auth = useAuthStore()
         // 401: the MetaFor session ended. 403: Spotify access has to be granted again.
         if (failure.status === 401) auth.user = null
@@ -46,7 +48,7 @@ export async function spotifyToken(force = false) {
         throw failure
       })
       .finally(() => {
-        refreshPromise = null
+        if (epoch === generation) refreshPromise = null
       })
   }
   return refreshPromise
@@ -77,11 +79,14 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
       404: 'The player is unavailable. Reconnect the player and try again.',
       429: `Spotify needs a short break. Try again in ${response.headers.get('Retry-After') || 'a few'} seconds.`,
     }
-    throw new Error(
-      messages[response.status] ||
-        (response.status >= 500
-          ? `Spotify is temporarily unavailable (HTTP ${response.status}). Try again shortly.`
-          : `Spotify rejected the request (HTTP ${response.status}). Try logging in again.`),
+    throw Object.assign(
+      new Error(
+        messages[response.status] ||
+          (response.status >= 500
+            ? `Spotify is temporarily unavailable (HTTP ${response.status}). Try again shortly.`
+            : `Spotify rejected the request (HTTP ${response.status}). Try logging in again.`),
+      ),
+      { status: response.status },
     )
   }
   if (response.status === 204) return null
