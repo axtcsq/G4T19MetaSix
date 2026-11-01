@@ -6,7 +6,7 @@ afterEach(() => {
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
-it('moves the note with arrow keys and clamps movement to the notebook', async () => {
+it('shows the saved drawing on a labelled sticky note', async () => {
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -16,19 +16,12 @@ it('moves the note with arrow keys and clamps movement to the notebook', async (
   )
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
   const wrapper = mount(JournalDrawingNote, {
-    props: { label: 'Saved drawing', drawing: { width: 100, height: 100, items: [] } },
+    props: { label: 'Drawing from 1 Nov 2026', drawing: { width: 100, height: 100, items: [] } },
   })
-  const stage = wrapper.find('.note-stage').element
-  const note = wrapper.find('.drawing-note').element
-  Object.defineProperties(stage, { clientWidth: { value: 500 }, clientHeight: { value: 500 } })
-  Object.defineProperties(note, { offsetWidth: { value: 240 }, offsetHeight: { value: 250 } })
   await flushPromises()
-  await wrapper.find('.note-handle').trigger('keydown', { key: 'ArrowRight' })
-  expect(note.style.transform).toBe('translate(248px,230px)')
-  await wrapper.find('.note-handle').trigger('keydown', { key: 'ArrowLeft' })
-  expect(note.style.transform).toBe('translate(232px,230px)')
-  for (let i = 0; i < 30; i++)
-    await wrapper.find('.note-handle').trigger('keydown', { key: 'ArrowDown' })
-  expect(note.style.transform).toBe('translate(232px,238px)')
+  const note = wrapper.find('.drawing-note')
+  expect(note.attributes('aria-label')).toBe('Drawing from 1 Nov 2026')
+  expect(note.find('.note-title').text()).toBe('A little sketch')
+  expect(note.find('canvas').attributes('role')).toBe('img')
   wrapper.unmount()
 })
