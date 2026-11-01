@@ -251,8 +251,9 @@ const fill = (position) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24px;
+  justify-content: flex-start;
+  padding: 80px 24px 60px;
+  overflow-y: auto;
   color: #fff;
   background: radial-gradient(ellipse at 50% 30%, var(--slide), #1b1517 75%);
   transition: background 500ms ease;
@@ -313,6 +314,8 @@ const fill = (position) => {
 }
 .story-slide {
   max-width: 34rem;
+  flex-shrink: 0;
+  margin-block: auto;
   text-align: center;
 }
 .story-icon {

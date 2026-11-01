@@ -638,10 +638,11 @@ onMounted(loadData)
 .analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .78rem; }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
+.mood-entry > div { min-width: 0; overflow-wrap: anywhere; }
 .mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
 .mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
-.track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
+.track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-top: 20px; }
 .track-list h4 { grid-column: 1 / -1; }
 .history-toggle { margin-top: 14px; padding: 7px 13px; border: 1px solid var(--ui-border); border-radius: 999px; background: transparent; color: var(--calendar-accent); font-weight: 700; cursor: pointer; }
 .track-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 13px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
