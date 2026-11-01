@@ -7,7 +7,9 @@ import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 import PastEntries from '@/components/journal/PastEntries.vue'
 import JournalSongPicker from '@/components/journal/JournalSongPicker.vue'
+import { useTodayMoodStore } from '@/stores/todayMood'
 
+const todayMood = useTodayMoodStore()
 const showHistory = ref(false)
 const showDrawing = ref(false)
 const showSong = ref(false)
@@ -72,6 +74,7 @@ async function saveEntry() {
     })
 
     logs.value = [savedEntry, ...logs.value]
+    todayMood.add(savedEntry)
     showSaveSuccess()
     selectedMood.value = null
     journalEntry.value = ''

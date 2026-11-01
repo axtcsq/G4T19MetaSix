@@ -163,10 +163,10 @@ export function getMe(req, res) {
   res.json(publicUser(req.user));
 }
 
-// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean }
-// The privacy toggles on the profile page. Send only the ones that changed.
+// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean, moodGlow?: boolean }
+// The toggles on the profile page. Send only the ones that changed.
 export async function updateSettings(req, res) {
-  const { analyseLyrics, savePlays } = req.body ?? {};
+  const { analyseLyrics, savePlays, moodGlow } = req.body ?? {};
   const changes = {};
   if (analyseLyrics !== undefined) {
     if (typeof analyseLyrics !== "boolean") {
@@ -179,6 +179,12 @@ export async function updateSettings(req, res) {
       return res.status(400).json({ error: "savePlays must be true or false" });
     }
     changes["preferences.savePlays"] = savePlays;
+  }
+  if (moodGlow !== undefined) {
+    if (typeof moodGlow !== "boolean") {
+      return res.status(400).json({ error: "moodGlow must be true or false" });
+    }
+    changes["preferences.moodGlow"] = moodGlow;
   }
   if (!Object.keys(changes).length) {
     return res.status(400).json({ error: "Nothing to change" });

@@ -24,6 +24,8 @@ const userSchema = new mongoose.Schema(
       // False stops the hourly job and Sync now saving new plays. Plays already
       // saved are kept.
       savePlays: { type: Boolean, default: true },
+      // True tints the top-left corner of every page with today's check-in mood.
+      moodGlow: { type: Boolean, default: true },
     },
     tracking: {
       status: { type: String, enum: TRACKING_STATUSES, default: "active" },

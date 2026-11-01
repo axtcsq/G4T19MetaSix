@@ -75,27 +75,34 @@ const settings = computed(() => [
     disabled: user.value?.isDemo,
   },
 ])
+const moodGlow = computed(() => ({
+  key: 'moodGlow',
+  card: 'appearance',
+  on: user.value?.preferences?.moodGlow !== false,
+}))
 const saving = reactive({})
-const settingsMessage = ref('')
+// The saved or failed message, shown in the card the toggle is in.
+const messages = reactive({ privacy: '', appearance: '' })
 
 async function toggle(setting) {
   const next = !setting.on
   const previous = user.value
+  const card = setting.card ?? 'privacy'
   saving[setting.key] = true
-  settingsMessage.value = ''
+  messages[card] = ''
   auth.user = {
     ...previous,
     preferences: {
       ...previous.preferences,
-      ...(setting.key === 'analyseLyrics' ? { moodLens: next ? 'lyrics' : 'sound' } : { savePlays: next }),
+      ...(setting.key === 'analyseLyrics' ? { moodLens: next ? 'lyrics' : 'sound' } : { [setting.key]: next }),
     },
   }
   try {
     auth.user = await updateSettings({ [setting.key]: next })
-    settingsMessage.value = 'Saved.'
+    messages[card] = 'Saved.'
   } catch (error) {
     auth.user = previous
-    settingsMessage.value = `Couldn’t save: ${error.message}`
+    messages[card] = `Couldn’t save: ${error.message}`
   } finally {
     saving[setting.key] = false
   }
@@ -215,7 +222,7 @@ const logOut = useLogOut()
         <p class="muted small privacy-note">
           MetaFor only keeps mood scores worked out from lyrics, never the lyrics themselves.
         </p>
-        <p class="muted small" role="status" aria-live="polite">{{ settingsMessage }}</p>
+        <p class="muted small" role="status" aria-live="polite">{{ messages.privacy }}</p>
       </section>
 
       <section class="card" aria-labelledby="appearance-title">
@@ -240,7 +247,29 @@ const logOut = useLogOut()
               <span class="switch-thumb" aria-hidden="true" />
             </button>
           </li>
+          <li class="setting">
+            <div>
+              <p id="mood-glow-label" class="setting-label">Mood glow</p>
+              <p id="mood-glow-description" class="muted small">
+                Light the top-left corner of every page in the colour of today’s main mood, from your
+                check-ins.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              :aria-checked="moodGlow.on"
+              aria-labelledby="mood-glow-label"
+              aria-describedby="mood-glow-description"
+              :disabled="saving.moodGlow"
+              @click="toggle(moodGlow)"
+            >
+              <span class="switch-thumb" aria-hidden="true" />
+            </button>
+          </li>
         </ul>
+        <p class="muted small" role="status" aria-live="polite">{{ messages.appearance }}</p>
       </section>
 
       <section class="card coming-soon" aria-labelledby="soon-title">
