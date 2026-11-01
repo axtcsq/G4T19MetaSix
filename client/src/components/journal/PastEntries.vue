@@ -151,22 +151,27 @@ function formatDate(date) {
               </button>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
-            <!-- The Song of the Day, clipped to the page like a ticket stub. -->
-            <div v-if="entry.song" class="entry-song">
-              <img v-if="entry.song.imageUrl" class="entry-song-cover" :src="entry.song.imageUrl" alt="" />
-              <span class="entry-song-text">
-                <span class="entry-song-label">Song of the Day</span>
-                <RouterLink class="entry-song-title" :to="`/song/${entry.song.id}`"
-                  >{{ entry.song.name }}<span class="sr-only">, see its mood</span></RouterLink
-                >
-                <span class="entry-song-artists">{{ entry.song.artists.join(', ') }}</span>
-              </span>
+            <!-- The Song of the Day and the drawing share one row under the
+                 writing, so the entry stays short. -->
+            <div v-if="entry.song || entry.drawing?.items?.length" class="entry-extras">
+              <!-- The Song of the Day, clipped to the page like a ticket stub. -->
+              <div v-if="entry.song" class="entry-song">
+                <img v-if="entry.song.imageUrl" class="entry-song-cover" :src="entry.song.imageUrl" alt="" />
+                <span class="entry-song-text">
+                  <span class="entry-song-label">Song of the Day</span>
+                  <RouterLink class="entry-song-title" :to="`/song/${entry.song.id}`"
+                    >{{ entry.song.name }}<span class="sr-only">, see its mood</span></RouterLink
+                  >
+                  <span class="entry-song-artists">{{ entry.song.artists.join(', ') }}</span>
+                </span>
+              </div>
+              <JournalDrawingNote
+                v-if="entry.drawing?.items?.length"
+                class="entry-drawing"
+                :drawing="entry.drawing"
+                :label="'Drawing from ' + formatDate(entry.createdAt)"
+              />
             </div>
-            <JournalDrawingNote
-              v-if="entry.drawing?.items?.length"
-              :drawing="entry.drawing"
-              :label="'Drawing from ' + formatDate(entry.createdAt)"
-            />
           </div>
         </article>
       </div>
@@ -315,13 +320,28 @@ function formatDate(date) {
   transform: rotate(-5deg);
 }
 
+/* The song on the left and the drawing on the right, tops lined up. On a
+   narrow page the drawing drops under the song. Room above is left for the
+   drawing's paper clip. */
+.entry-extras {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px 24px;
+  margin-top: 24px;
+  white-space: normal;
+}
+.entry-drawing {
+  margin-left: auto;
+}
+
 .entry-song {
   display: flex;
   width: fit-content;
   max-width: 100%;
   align-items: center;
   gap: 12px;
-  margin: 18px 0 0;
+  margin: 0;
   padding: 8px 16px 8px 8px;
   border: 1px solid #e3d6c4;
   border-radius: 12px;
@@ -371,11 +391,6 @@ function formatDate(date) {
   font-size: 0.85rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.entry-sheet.has-drawing {
-  min-height: 420px;
-  padding-bottom: 288px;
 }
 
 .notebook-page {

@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ListeningRoom from '../views/listen.vue'
 import { useListeningRoom } from '../composables/useListeningRoom'
+import { useAuthStore } from '../stores/auth'
 import AmbientWave from '../components/listening/AmbientWave.vue'
 
 describe('Spotify listening room', () => {
@@ -65,6 +66,33 @@ describe('Spotify listening room', () => {
     expect(room.spinning.value).toBe(false)
     expect(room.track.value.id).toBe('')
     wrapper.unmount()
+  })
+  it('waits for the login check after a refresh before connecting Spotify', async () => {
+    const auth = useAuthStore()
+    const room = useListeningRoom()
+    room.disconnect()
+    const load = vi.spyOn(auth, 'load').mockImplementation(async () => {
+      auth.user = { spotifyLinked: false }
+      auth.checked = true
+    })
+    const mountRoom = () =>
+      mount(ListeningRoom, {
+        global: {
+          stubs: {
+            RouterLink: { template: '<a><slot /></a>' },
+            VinylTurntable: { props: ['spinning'], template: '<div />' },
+          },
+        },
+      })
+    const refreshed = mountRoom()
+    await flushPromises()
+    expect(load).toHaveBeenCalledOnce()
+    refreshed.unmount()
+    // Once the login is known, opening the page again doesn't re-check it.
+    const reopened = mountRoom()
+    await flushPromises()
+    expect(load).toHaveBeenCalledOnce()
+    reopened.unmount()
   })
   it('paces the seek wave from track tempo and falls back when tempo is unavailable', async () => {
     const wrapper = mount(AmbientWave, { props: { tempo: 60 } })

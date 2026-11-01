@@ -9,7 +9,7 @@ const BASE_URL = 'https://api.reccobeats.com/v1'
 /** Features for whichever of these Spotify IDs ReccoBeats knows, in the order given. */
 async function lookup(ids) {
   if (!ids.length) return []
-  const res = await fetch(`${BASE_URL}/audio-features?${new URLSearchParams({ ids: ids.join(',') })}`)
+  const res = await fetch(`${BASE_URL}/audio-features?${new URLSearchParams({ ids: ids.join(',') })}`, { signal: AbortSignal.timeout(10000) })
   const body = await res.json().catch(() => null)
   if (!res.ok) throw new HttpError(502, `ReccoBeats returned ${res.status}.`)
 
@@ -30,7 +30,7 @@ export async function idsForIsrc(title, isrc) {
   if (!title || !isrc) return []
   for (let page = 0; page < SEARCH_PAGES; page++) {
     const params = new URLSearchParams({ searchText: title, page, size: SEARCH_PAGE })
-    const res = await fetch(`${BASE_URL}/track/search?${params}`)
+    const res = await fetch(`${BASE_URL}/track/search?${params}`, { signal: AbortSignal.timeout(10000) })
     if (!res.ok) throw new HttpError(502, `ReccoBeats returned ${res.status}.`)
     const body = await res.json()
     const ids = (body.content ?? []).filter((t) => t.isrc === isrc).map((t) => t.href?.split('/').pop())

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { searchSongs } from '@/api/songs'
 
 // The Song of the Day for a journal entry: search Spotify, pick one, and it
@@ -19,6 +19,7 @@ let latestSearch = 0
 
 watch(query, (text) => {
   window.clearTimeout(searchTimer)
+  latestSearch += 1
   searchError.value = ''
   if (text.trim().length < 2) {
     latestSearch += 1
@@ -56,6 +57,11 @@ function pick(found) {
 function remove() {
   song.value = null
 }
+
+onBeforeUnmount(() => {
+  window.clearTimeout(searchTimer)
+  latestSearch += 1
+})
 </script>
 
 <template>

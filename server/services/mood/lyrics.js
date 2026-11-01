@@ -6,7 +6,7 @@ const BASE_URL = 'https://lrclib.net/api'
 const HEADERS = { 'User-Agent': 'MetaFor (SMU WAD2 project, github.com/axtcsq/G4T19MetaSix)' }
 
 async function lrclib(path, params) {
-  const res = await fetch(`${BASE_URL}${path}?${new URLSearchParams(params)}`, { headers: HEADERS })
+  const res = await fetch(`${BASE_URL}${path}?${new URLSearchParams(params)}`, { headers: HEADERS, signal: AbortSignal.timeout(10000) })
   if (res.status === 404) return null
   if (!res.ok) throw new Error(`LRCLIB returned ${res.status}`)
   return res.json()

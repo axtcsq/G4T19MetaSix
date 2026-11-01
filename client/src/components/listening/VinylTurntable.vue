@@ -261,7 +261,7 @@ onMounted(() => {
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
       if (document.hidden || !inView.value) return
-      if (props.spinning && !reduced.value) record.rotation.y -= dt * Math.PI * 1.11
+      if (props.spinning && !reduced.value) record.rotation.y -= dt * Math.PI * 0.5
       const target = props.spinning ? -0.43 : 0
       arm.rotation.y = reduced.value ? target : THREE.MathUtils.damp(arm.rotation.y, target, 5, dt)
       lightMaterial.color.set(props.spinning ? '#b85b40' : '#817d6c')

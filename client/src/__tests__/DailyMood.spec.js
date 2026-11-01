@@ -122,7 +122,7 @@ describe('Daily Mood API flow', () => {
 
     expect(createMood).toHaveBeenCalledWith({ mood: 'Happy', journal: 'A good day', drawing: null })
     expect(wrapper.text()).toContain('A good day')
-    expect(wrapper.text()).toContain('Entry saved.')
+    expect(wrapper.text()).toContain('Entry Submitted')
   })
 
   it('offers the additional moods and saves them as selected', async () => {

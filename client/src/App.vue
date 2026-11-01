@@ -26,7 +26,7 @@ watch(
     <MoodGlow />
     <CheckInReminder />
     <Navbar />
-    <RouterView />
+    <RouterView :key="$route.path" />
     <ListeningDock />
   </UApp>
 </template>

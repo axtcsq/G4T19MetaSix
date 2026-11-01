@@ -40,8 +40,8 @@ test('dashboard switches listening periods', async ({ page, app }) => {
     'aria-pressed',
     'false',
   )
-  await expect(page.locator('.play-calendar')).toBeVisible()
-  await page.locator('.play-calendar button').first().click()
+  await expect(page.locator('.play-equaliser')).toBeVisible()
+  await page.locator('.play-equaliser button').first().click()
   await expect(page.locator('.chart-days .calendar-readout')).toContainText('recorded plays')
 })
 
@@ -66,10 +66,10 @@ test('genre mix highlights real shares and fits desktop and mobile', async ({ pa
   await genre.getByRole('button', { name: 'rock 63%' }).focus()
   await expect(genre.locator('.disc-label')).toContainText('63%')
   await page.getByRole('button', { name: 'This month', exact: true }).click()
-  await page.locator('.play-calendar').scrollIntoViewIfNeeded()
+  await page.locator('.play-equaliser').scrollIntoViewIfNeeded()
   await page.screenshot({ path: 'test-results/dashboard-desktop.png', fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })
-  await expect(page.locator('.play-calendar')).toBeVisible()
+  await expect(page.locator('.play-equaliser')).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({ path: 'test-results/dashboard-mobile.png', fullPage: true })
 })

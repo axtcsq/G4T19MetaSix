@@ -38,6 +38,8 @@ let controls
 let model
 let frame
 let resizeObserver
+let visibilityObserver
+let visible = true
 let environment
 const timer = new THREE.Timer()
 
@@ -491,6 +493,7 @@ function resize() {
 
 function animate(timestamp) {
   frame = requestAnimationFrame(animate)
+  if (!visible || document.hidden) return
   timer.update(timestamp)
   const t = timer.getElapsed()
   // A slow float up and down with a little sway.
@@ -544,6 +547,8 @@ onMounted(() => {
 
   resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas.value)
+  visibilityObserver = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting })
+  visibilityObserver.observe(canvas.value)
   resize()
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -558,6 +563,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
   resizeObserver?.disconnect()
+  visibilityObserver?.disconnect()
   controls?.dispose()
   const textures = new Set()
   scene?.traverse((child) => {

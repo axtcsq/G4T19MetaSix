@@ -3,6 +3,8 @@ import { test as base, expect } from '@playwright/test'
 // Each test owns its data. API requests never reach the shared database.
 export const test = base.extend({
   app: async ({ page }, use) => {
+    // Keep font, weather and Spotify network availability out of fixture-based UI tests.
+    await page.route(/^https:\/\//, (route) => route.abort())
     const state = {
       user: {
         _id: 'e2e-user',

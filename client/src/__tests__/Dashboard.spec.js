@@ -33,7 +33,6 @@ describe('Spotify listening portrait', () => {
     expect(week.hourly[10]).toBe(2)
     expect(week.daily).toHaveLength(7)
     expect(week.daily.reduce((sum, day) => sum + day.value, 0)).toBe(2)
-    expect(week.repeatListening.map((item) => item.value)).toEqual([1, 1])
     expect(getDashboard('monthly', history, now).plays).toBe(3)
     expect(week.minutes).toBeUndefined()
     expect(week.radar).toBeUndefined()
@@ -44,9 +43,8 @@ describe('Spotify listening portrait', () => {
     expect(data.artists).toEqual([])
     expect(data.peak).toBeNull()
     expect(data.daily.every((day) => day.value === 0)).toBe(true)
-    expect(data.repeatListening.map((item) => item.value)).toEqual([0, 0])
   })
-  it('renders observed daily and repeat counts without inferring discoveries', () => {
+  it('renders observed daily counts without inferring discoveries', () => {
     const data = getDashboard(
       'weekly',
       [
@@ -57,8 +55,8 @@ describe('Spotify listening portrait', () => {
       now,
     )
     const daily = mount(ListeningChart, { props: { type: 'days', data } })
-    expect(daily.findAll('.daily-plays li')).toHaveLength(7)
-    expect(daily.findAll('.daily-plays strong').map((node) => node.text())).toEqual([
+    expect(daily.findAll('.play-equaliser li')).toHaveLength(7)
+    expect(daily.findAll('.day-value').map((node) => node.text())).toEqual([
       '0',
       '0',
       '0',
@@ -67,10 +65,7 @@ describe('Spotify listening portrait', () => {
       '1',
       '2',
     ])
-    const repeats = mount(ListeningChart, { props: { type: 'repeats', data } })
-    expect(repeats.text()).toContain('2 plays')
-    expect(repeats.text()).toContain('1 play')
-    expect(repeats.html()).not.toContain('NaN')
+    expect(daily.html()).not.toContain('NaN')
   })
   it('shows a connection prompt instead of sample rankings', () => {
     const wrapper = mount(Dashboard, {
@@ -84,18 +79,20 @@ describe('Spotify listening portrait', () => {
   it('encodes Spotify searches', () => {
     expect(spotifySearch('a / b')).toBe('https://open.spotify.com/search/a%20%2F%20b')
   })
-  it('keeps monthly dates in a compact calendar with accessible counts', async () => {
+  it('keeps monthly dates in a compact equaliser with accessible counts', async () => {
     const data = getDashboard(
       'monthly',
       [{ track: record('a'), played_at: '2026-10-19T10:00:00' }],
       now,
     )
     const chart = mount(ListeningChart, { props: { type: 'days', data } })
-    expect(chart.findAll('.play-calendar button')).toHaveLength(19)
-    expect(chart.find('.daily-plays').exists()).toBe(false)
-    await chart.findAll('.play-calendar button').at(-1).trigger('click')
+    const days = chart.findAll('.play-equaliser button')
+    expect(days).toHaveLength(19)
+    expect(chart.findAll('.day-value').map((node) => node.text())).toEqual(['1'])
+    expect(days.at(-1).findAll('.day-blocks span')).toHaveLength(10)
+    await days.at(-1).trigger('click')
     expect(chart.find('.calendar-readout').text()).toContain('1 recorded plays')
-    expect(chart.findAll('.play-calendar button').at(-1).attributes('aria-pressed')).toBe('true')
+    expect(days.at(-1).attributes('aria-pressed')).toBe('true')
   })
   it('draws plays by hour as a 24-hour clock with the busiest hour marked', async () => {
     const data = getDashboard(

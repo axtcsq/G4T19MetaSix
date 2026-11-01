@@ -13,7 +13,7 @@ const tooltip = {
 }
 const badge = {
   props: ['color'],
-  template: '<span class="badge" :data-color="color"><slot /></span>',
+  template: '<span class="badge" :data-axis="color"><slot /></span>',
 }
 // Nuxt UI's components are imported directly, so stub them by file name too.
 const link = { props: ['to'], template: '<a class="song-link" :href="to"><slot /></a>' }
@@ -55,9 +55,13 @@ describe('MoodTag', () => {
     const wrapper = mountTag('kicks')
     await flushPromises()
 
-    const badge = wrapper.find('.badge')
+    const badge = wrapper.find('.mood-tag')
     expect(badge.text()).toContain('Deceptively upbeat')
-    expect(badge.attributes('data-color')).toBe('anxious')
+    expect(badge.attributes('data-axis')).toBe('anxious')
+    expect(wrapper.find('.mood-line').attributes('aria-hidden')).toBe('true')
+    expect(wrapper.find('.mood-line path').attributes('d')).toBe(
+      'M2 13 L8 7 L12 17 L18 5 L23 15 L30 9',
+    )
     expect(wrapper.find('.tooltip').attributes('data-text')).toBe(
       'Deceptively upbeat from sound and lyrics; Euphoric from sound alone. Counts as Anxious.',
     )
@@ -70,13 +74,13 @@ describe('MoodTag', () => {
     const wrapper = mountTag('serene')
     await flushPromises()
 
-    const [mood, note] = wrapper.findAll('.badge')
+    const [mood, note] = wrapper.findAll('.mood-tag')
     expect(mood.text()).toContain('Serene')
     expect(wrapper.find('.tooltip').attributes('data-text')).toBe(
       'Serene, from how the song sounds. Counts as Relaxed.',
     )
     expect(note.text()).toBe('Lyrics pending')
-    expect(note.attributes('data-color')).toBe('neutral')
+    expect(note.attributes('data-axis')).toBe('neutral')
   })
 
   it('says when a song has no lyrics, and shows no second tag when the lyrics counted', async () => {
@@ -90,11 +94,11 @@ describe('MoodTag', () => {
     const kicks = mountTag('kicks')
     await flushPromises()
 
-    expect(instrumental.findAll('.badge').map((badge) => badge.text())).toEqual([
+    expect(instrumental.findAll('.mood-tag').map((badge) => badge.text())).toEqual([
       'Song mood: Serene, see why',
       'Instrumental',
     ])
-    expect(kicks.findAll('.badge')).toHaveLength(1)
+    expect(kicks.findAll('.mood-tag')).toHaveLength(1)
   })
 
   it('shows a grey Analysing tag for songs the job hasn’t reached', async () => {
@@ -102,7 +106,7 @@ describe('MoodTag', () => {
     const wrapper = mountTag('waiting')
     await flushPromises()
 
-    expect(wrapper.find('.badge').attributes('data-color')).toBe('neutral')
+    expect(wrapper.find('.mood-tag').attributes('data-axis')).toBe('neutral')
     expect(wrapper.text()).toContain('Analysing…')
   })
 
@@ -112,8 +116,8 @@ describe('MoodTag', () => {
     const wrapper = mountTag('tooNew')
     await flushPromises()
 
-    expect(wrapper.find('.badge').text()).toBe('Song mood: No mood data')
-    expect(wrapper.find('.badge').attributes('data-color')).toBe('neutral')
+    expect(wrapper.find('.mood-tag').text()).toBe('Song mood: No mood data')
+    expect(wrapper.find('.mood-tag').attributes('data-axis')).toBe('neutral')
     expect(wrapper.find('.tooltip').attributes('data-text')).toContain('common for new releases')
   })
 
@@ -122,7 +126,7 @@ describe('MoodTag', () => {
     const wrapper = mount(MoodTag, { props: { trackId: 'kicks', link: false }, global: { stubs } })
     await flushPromises()
 
-    expect(wrapper.find('.badge').text()).toContain('Deceptively upbeat')
+    expect(wrapper.find('.mood-tag').text()).toContain('Deceptively upbeat')
     expect(wrapper.find('.song-link').exists()).toBe(false)
   })
 
@@ -131,7 +135,7 @@ describe('MoodTag', () => {
     const wrapper = mountTag('unknown-song')
     await flushPromises()
 
-    expect(wrapper.find('.badge').exists()).toBe(false)
+    expect(wrapper.find('.mood-tag').exists()).toBe(false)
   })
 
   it('asks for every tag on the page in one request', async () => {
@@ -149,11 +153,11 @@ describe('MoodTag', () => {
     logIn({ id: 'user-6', preferences: { moodLens: 'lyrics' } })
     const wrapper = mountTag('kicks')
     await flushPromises()
-    expect(wrapper.find('.badge').exists()).toBe(true)
+    expect(wrapper.find('.mood-tag').exists()).toBe(true)
 
     useAuthStore(pinia).user = null
     await flushPromises()
-    expect(wrapper.find('.badge').exists()).toBe(false)
+    expect(wrapper.find('.mood-tag').exists()).toBe(false)
   })
 
   it('works out the sound mood of a song nobody has played, showing Analysing meanwhile', async () => {
@@ -176,8 +180,8 @@ describe('MoodTag', () => {
       },
     })
     await flushPromises()
-    expect(wrapper.find('.badge').text()).toContain('Serene')
-    expect(wrapper.find('.badge').attributes('data-color')).toBe('relaxed')
+    expect(wrapper.find('.mood-tag').text()).toContain('Serene')
+    expect(wrapper.find('.mood-tag').attributes('data-axis')).toBe('relaxed')
   })
 
   it('shows nothing for a new song the server can’t place', async () => {
@@ -186,7 +190,7 @@ describe('MoodTag', () => {
     await flushPromises()
 
     expect(addSoundMoods).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('.badge').exists()).toBe(false)
+    expect(wrapper.find('.mood-tag').exists()).toBe(false)
   })
 
   it('updates an Analysing tag by itself once the job has finished', async () => {
@@ -204,7 +208,7 @@ describe('MoodTag', () => {
       }
       await vi.advanceTimersByTimeAsync(2 * 60 * 1000)
       await flushPromises()
-      expect(wrapper.find('.badge').text()).toContain('Uplifting')
+      expect(wrapper.find('.mood-tag').text()).toContain('Uplifting')
     } finally {
       MOODS.waiting = { analysing: true }
       vi.useRealTimers()
@@ -216,6 +220,6 @@ describe('MoodTag', () => {
     await flushPromises()
 
     expect(getTrackMoods).not.toHaveBeenCalled()
-    expect(wrapper.find('.badge').exists()).toBe(false)
+    expect(wrapper.find('.mood-tag').exists()).toBe(false)
   })
 })
