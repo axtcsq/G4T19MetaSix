@@ -19,6 +19,7 @@ export async function generateJournalIdea(req, res) {
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
         "Content-Type": "application/json",

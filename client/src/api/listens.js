@@ -13,7 +13,7 @@ export function usesStoredHistory() {
 export async function syncBeforeReading() {
   if (useAuthStore().user?.isDemo) return
   try {
-    await api.post('/api/sync')
+    await api.post('/api/sync', undefined, { timeout: 5000 })
   } catch {
     // The hourly job will catch up.
   }
