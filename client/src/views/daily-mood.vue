@@ -10,12 +10,11 @@ import JournalSongPicker from '@/components/journal/JournalSongPicker.vue'
 import { useTodayMoodStore } from '@/stores/todayMood'
 import { useAuthStore } from '@/stores/auth'
 import { updateSettings } from '@/api/auth'
-import { useRoute } from 'vue-router'
 
 const todayMood = useTodayMoodStore()
 const auth = useAuthStore()
 // The profile page links to #past-entries to open them straight away.
-const showHistory = ref(useRoute().hash === '#past-entries')
+const showHistory = ref(window.location.hash === '#past-entries')
 const showDrawing = ref(false)
 const showSong = ref(false)
 const saveStatus = ref('')

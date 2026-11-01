@@ -6,7 +6,7 @@ import { onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTodayMoodStore } from '@/stores/todayMood'
-import { useToast } from '#imports'
+import { useToast } from '@nuxt/ui/composables'
 
 const auth = useAuthStore()
 const today = useTodayMoodStore()

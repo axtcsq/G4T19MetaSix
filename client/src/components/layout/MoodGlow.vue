@@ -11,7 +11,7 @@ const today = useTodayMoodStore()
 const enabled = computed(() => Boolean(auth.user) && auth.user.preferences?.moodGlow !== false)
 
 const color = computed(() =>
-  today.mainMood ? `var(--color-mood-${today.mainMood.toLowerCase()}-400)` : null,
+  today.mainMood ? `var(--color-mood-${today.mainMood.toLowerCase()}-500)` : null,
 )
 </script>
 
@@ -32,8 +32,9 @@ const color = computed(() =>
   height: min(70vmax, 720px);
   background: radial-gradient(
     circle at 0 0,
-    color-mix(in srgb, var(--glow-color) 45%, transparent) 0%,
-    color-mix(in srgb, var(--glow-color) 18%, transparent) 35%,
+    color-mix(in srgb, var(--glow-color) 55%, transparent) 0%,
+    color-mix(in srgb, var(--glow-color) 25%, transparent) 30%,
+    color-mix(in srgb, var(--glow-color) 8%, transparent) 50%,
     transparent 70%
   );
   mix-blend-mode: multiply;
@@ -41,9 +42,9 @@ const color = computed(() =>
   transition: background 600ms ease;
 }
 
-:global(.dark) .mood-glow {
+:global(.dark .mood-glow) {
   mix-blend-mode: screen;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 .mood-glow-enter-active,

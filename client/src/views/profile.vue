@@ -213,7 +213,8 @@ const dangerActions = {
     async run() {
       auth.user = await clearHistory()
       personality.value = null
-      todayMood.clear()
+      // Today's check-ins are gone too, so the glow fades and the reminder can show.
+      todayMood.load()
       return 'Your history has been cleared.'
     },
   },
@@ -890,7 +891,7 @@ dd {
 }
 
 .horoscope .text-link {
-  margin-top: 0.5rem;
+  margin-block: 0.5rem;
 }
 
 .pinned-entry {
@@ -917,7 +918,7 @@ dd {
   gap: 0.4rem;
 }
 
-:global(.dark) .pinned-mood {
+:global(.dark .profile-page .pinned-mood) {
   filter: brightness(1.6);
 }
 
@@ -968,11 +969,15 @@ dd {
   cursor: pointer;
 }
 
+.data-button:disabled {
+  cursor: not-allowed;
+}
+
 .data-button.danger {
   --button-ink: var(--color-mood-angry-700);
 }
 
-:global(.dark) .data-button.danger {
+:global(.dark .profile-page .data-button.danger) {
   --button-ink: var(--color-mood-angry-300);
 }
 
