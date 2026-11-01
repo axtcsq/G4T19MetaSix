@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { getSongAnalysis, searchSongs } from '@/api/songs'
 import { useAuthStore } from '@/stores/auth'
 
@@ -33,6 +33,7 @@ let latestSearch = 0
 
 watch(query, (text) => {
   window.clearTimeout(searchTimer)
+  latestSearch += 1
   // Typing again after picking a song starts a new search.
   if (chosen.value && text === songLabel(chosen.value)) return
   chosen.value = null
@@ -76,19 +77,25 @@ function tryExample(song) {
 }
 
 async function analyse() {
-  if (!chosen.value) return
+  if (!chosen.value || isAnalysing.value) return
+  const song = chosen.value
 
   isAnalysing.value = true
   searchError.value = ''
   try {
-    const analysis = await getSongAnalysis(chosen.value.id)
-    selected.value = { ...chosen.value, ...analysis }
+    const analysis = await getSongAnalysis(song.id)
+    if (chosen.value?.id === song.id) selected.value = { ...song, ...analysis }
   } catch (error) {
     searchError.value = error.message
   } finally {
     isAnalysing.value = false
   }
 }
+
+onBeforeUnmount(() => {
+  window.clearTimeout(searchTimer)
+  latestSearch += 1
+})
 </script>
 
 <template>
