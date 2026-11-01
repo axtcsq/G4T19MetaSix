@@ -479,10 +479,10 @@ onMounted(loadPage)
               <p class="insight-text">{{ personality.song.reason }}</p>
               <div class="song-actions">
                 <a
-                  class="peach-button"
+                  class="glass-secondary spotify-green"
                   :href="`https://open.spotify.com/track/${personality.song.id}`"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Open in Spotify
                 </a>

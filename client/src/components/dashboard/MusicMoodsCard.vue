@@ -1,16 +1,20 @@
 <script setup>
-import { computed, ref } from 'vue'
-const selected = ref(null)
+import { computed } from 'vue'
+import MoodRiver from '@/components/dashboard/MoodRiver.vue'
 
-// Home's Your Music's Moods: what the mood analysis heard in the user's last two weeks of plays, from
-// musicMoods in /api/quiz/mood-music: one bar of how the plays spread over the
-// music's five reflection categories, the music moods played most, and how often the music
-// matched the mood they logged.
+// Home's Your Music's Moods: what the mood analysis heard in the user's last
+// two weeks of plays, from musicMoods in /api/quiz/mood-music. Two levels,
+// shown as one: every song gets a song mood like Melancholic, and song moods
+// add up to five big moods (Happy, Relaxed, Sad, Angry, Anxious). The river
+// shows the big moods day by day; the breakdown lists each big mood with the
+// song moods inside it.
 const props = defineProps({
   data: { type: Object, required: true },
+  // The days the card covers, oldest first, like 2026-10-19.
+  dates: { type: Array, default: () => [] },
 })
 
-const JOURNAL_MOOD = {
+const MOOD_NAME = {
   happy: 'Happy',
   relaxed: 'Relaxed',
   sad: 'Sad',
@@ -20,27 +24,44 @@ const JOURNAL_MOOD = {
 
 const colour = (axis) => `var(--color-mood-${axis}-500)`
 
+// Every song mood played, with the big mood it belongs to. Older servers only
+// send the top three.
+const songMoods = computed(() => props.data.moods ?? props.data.top)
+
+// The big moods, biggest first, each with its song moods.
+const groups = computed(() =>
+  [...props.data.axes]
+    .sort((a, b) => b.share - a.share)
+    .map((entry) => ({
+      ...entry,
+      name: MOOD_NAME[entry.axis],
+      songs: songMoods.value.filter((mood) => mood.axis === entry.axis && mood.share > 0),
+    })),
+)
+
+// Song moods like Bittersweet count towards two big moods, so the numbers
+// under a big mood don't always add up to it exactly.
+const mixedSongs = computed(() =>
+  songMoods.value.filter((mood) => mood.mixed).map((mood) => mood.name),
+)
+
 const lead = computed(() => {
-  const [first] = props.data.top
-  const journal = JOURNAL_MOOD[first.axis]
-  return journal
-    ? `Your music has mostly been ${first.name.toLowerCase()}, which reads as ${journal}.`
-    : `Your music has mostly been ${first.name.toLowerCase()}.`
+  const [biggest] = groups.value
+  if (!biggest) return ''
+  const [song] = biggest.songs
+  return song
+    ? `Mostly ${biggest.name} (${biggest.share}%), led by ${song.name} songs.`
+    : `Mostly ${biggest.name} (${biggest.share}%).`
 })
 
 const match = computed(() => {
   const { comparedDays, matchedDays } = props.data
-  if (!comparedDays)
-    return 'Log your mood on days you listen to see if your music matches how you feel.'
-  if (!matchedDays)
-    return `On the ${comparedDays} days you logged, your music told a different story from your mood.`
-  return `Your music matched how you felt on ${matchedDays} of the ${comparedDays} days you logged.`
+  if (!comparedDays) return 'Log your mood to compare it with your music.'
+  return `Matched your mood on ${matchedDays} of ${comparedDays} logged days.`
 })
 
 const source = computed(() =>
-  props.data.lens === 'lyrics'
-    ? 'Read from how your songs sound and what they say.'
-    : 'Read from how your songs sound.',
+  props.data.lens === 'lyrics' ? 'From sound and lyrics' : 'From sound',
 )
 </script>
 
@@ -49,99 +70,47 @@ const source = computed(() =>
     <div class="moods-copy">
       <h3 class="sub-header">Your Music’s Moods</h3>
       <p class="insight-text mt-2">{{ lead }} {{ match }}</p>
-      <p class="source-note">{{ source }} Last 14 days, {{ data.plays }} analysed plays.</p>
+      <p class="source-note">{{ source }} · last 14 days · {{ data.plays }} plays</p>
+
+      <!-- Beside the river, so the card stays short. -->
+      <section class="mood-breakdown" aria-labelledby="mood-breakdown-title">
+        <h4 id="mood-breakdown-title" class="breakdown-title">What’s in each mood</h4>
+        <p class="breakdown-note">Each song has its own mood, like Melancholic.</p>
+        <ul class="mood-groups">
+          <li v-for="group in groups" :key="group.axis" class="mood-group">
+            <span class="group-head">
+              <strong
+                ><span class="legend-dot" :style="{ background: colour(group.axis) }" />{{
+                  group.name
+                }}</strong
+              >
+              <span class="group-share">{{ group.share }}%</span>
+            </span>
+            <span class="group-bar" aria-hidden="true">
+              <span :style="{ width: `${group.share}%`, background: colour(group.axis) }" />
+            </span>
+            <span v-if="group.songs.length" class="group-songs">
+              <span v-for="song in group.songs" :key="song.name" class="song-mood">
+                {{ song.name }}{{ song.mixed ? '*' : '' }} <span>{{ song.share }}%</span>
+              </span>
+            </span>
+          </li>
+        </ul>
+        <p v-if="mixedSongs.length" class="breakdown-note">* Also counts partly as another mood.</p>
+      </section>
     </div>
 
     <div class="moods-visual">
-      <div
-        class="mood-bar"
-        role="group"
-        :aria-label="
-          data.axes.map((entry) => `${JOURNAL_MOOD[entry.axis]} ${entry.share}%`).join(', ')
-        "
-      >
-        <button
-          v-for="entry in data.axes"
-          :key="entry.axis"
-          type="button"
-          class="mood-segment"
-          :aria-label="`${JOURNAL_MOOD[entry.axis]} ${entry.share}%`"
-          @pointerenter="selected = entry"
-          @focus="selected = entry"
-          @click="selected = entry"
-          :style="{ flexGrow: entry.share, background: colour(entry.axis) }"
-          :title="`${JOURNAL_MOOD[entry.axis]} ${entry.share}%`"
-        />
-      </div>
-      <p class="segment-readout" aria-live="polite">
-        {{
-          selected
-            ? `${JOURNAL_MOOD[selected.axis]}: ${selected.share}% of analysed plays`
-            : 'Select a mood to explore its share.'
-        }}
-      </p>
-      <p class="bar-legend" aria-hidden="true">
-        <span v-for="entry in data.axes" :key="entry.axis" class="legend-item">
-          <span class="legend-dot" :style="{ background: colour(entry.axis) }" />
-          {{ JOURNAL_MOOD[entry.axis] }} {{ entry.share }}%
-        </span>
-      </p>
-
-      <ol class="top-moods">
-        <li v-for="(mood, index) in data.top" :key="mood.name" class="top-mood">
-          <span class="rank">{{ index + 1 }}</span>
-          <span class="mood-name">
-            <span
-              class="legend-dot"
-              :style="{ background: mood.axis ? colour(mood.axis) : 'var(--ui-text-muted)' }"
-            />
-            {{ mood.name }}
-          </span>
-          <span class="mood-share">{{ mood.share }}%</span>
-        </li>
-      </ol>
+      <MoodRiver v-if="dates.length" :from="dates[0]" :to="dates.at(-1)" />
     </div>
   </div>
 </template>
 
 <style scoped>
-.segment-readout {
-  min-height: 24px;
-  margin-top: 8px;
-  font: 13px/1.5 var(--font-sans);
-  color: var(--ui-text-muted);
-}
-.mood-segment {
-  cursor: pointer;
-  padding: 0;
-  transition:
-    flex-grow 400ms,
-    filter 180ms;
-  animation: mix-reveal 500ms ease-out;
-}
-.mood-segment:is(:hover, :focus-visible) {
-  filter: brightness(0.75);
-  outline: 2px solid var(--ui-text);
-  outline-offset: -2px;
-}
-@keyframes mix-reveal {
-  from {
-    opacity: 0.25;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mood-segment {
-    animation: none;
-    transition: none;
-  }
-}
 .music-moods {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
+  align-items: start;
   gap: 2rem;
 }
 
@@ -164,33 +133,94 @@ const source = computed(() =>
   font-size: 0.85rem;
 }
 
-.mood-bar {
-  display: flex;
-  height: 18px;
-  gap: 3px;
-  overflow: hidden;
-  border-radius: 999px;
-}
-
-.mood-segment {
-  min-width: 6px;
-  flex-basis: 0;
-}
-
-.bar-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1rem;
-  margin-top: 0.6rem;
+.mood-breakdown {
+  margin-top: 1.25rem;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
 }
 
-.legend-item,
-.mood-name {
+.breakdown-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.breakdown-note {
+  margin-top: 0.25rem;
+  color: var(--ui-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.mood-groups {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0.6rem 0 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each big mood is one slim row: name, a bar of its share and the share,
+   with the song moods inside it on a small line underneath. */
+.mood-group {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) 2.75rem;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--ui-border);
+  font-size: 0.9rem;
+}
+
+.mood-group:last-child {
+  border-bottom: none;
+}
+
+.group-head {
+  display: contents;
+}
+
+.group-head strong {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
+}
+
+.group-share {
+  grid-column: 3;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.group-bar {
+  display: block;
+  grid-column: 2;
+  grid-row: 1;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ui-text) 10%, transparent);
+}
+
+.group-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  animation: share-fill 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+}
+
+.group-songs {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 0 0.8rem;
+  font-size: 0.76rem;
+}
+
+.song-mood span {
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .legend-dot {
@@ -200,40 +230,26 @@ const source = computed(() =>
   border-radius: 50%;
 }
 
-.top-moods {
-  display: grid;
-  gap: 0.4rem;
-  margin-top: 1.25rem;
+@keyframes share-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
-.top-mood {
-  display: grid;
-  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
-  align-items: center;
-  padding: 0.55rem 0.8rem;
-  border-radius: 10px;
-  background: var(--ui-bg-accented);
-  font-family: var(--font-sans);
-}
-
-.rank {
-  color: var(--ui-text-muted);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.mood-name {
-  font-weight: 600;
-}
-
-.mood-share {
-  color: var(--ui-text-muted);
-  font-size: 0.9rem;
+@media (prefers-reduced-motion: reduce) {
+  .group-bar span {
+    animation: none;
+  }
 }
 
 @media (max-width: 1000px) {
   .music-moods {
-    grid-template-columns: 1fr;
+    /* minmax(0, …) lets the river shrink to the screen instead of holding the
+       column at its old width. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
   }
 }
