@@ -44,6 +44,8 @@ const filteredEntries = computed(() => {
       formatDate(entry.createdAt),
       entry.createdAt,
       entry.drawing?.items?.length ? 'drawing' : '',
+      entry.song?.name,
+      entry.song?.artists?.join(' '),
     ]
       .join(' ')
       .toLocaleLowerCase()
@@ -136,6 +138,17 @@ function formatDate(date) {
               </span>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
+            <!-- The Song of the Day, clipped to the page like a ticket stub. -->
+            <div v-if="entry.song" class="entry-song">
+              <img v-if="entry.song.imageUrl" class="entry-song-cover" :src="entry.song.imageUrl" alt="" />
+              <span class="entry-song-text">
+                <span class="entry-song-label">Song of the Day</span>
+                <RouterLink class="entry-song-title" :to="`/song/${entry.song.id}`"
+                  >{{ entry.song.name }}<span class="sr-only">, see its mood</span></RouterLink
+                >
+                <span class="entry-song-artists">{{ entry.song.artists.join(', ') }}</span>
+              </span>
+            </div>
             <JournalDrawingNote
               v-if="entry.drawing?.items?.length"
               :drawing="entry.drawing"
@@ -266,6 +279,64 @@ function formatDate(date) {
   stroke-linecap: round;
   stroke-linejoin: round;
   transform: rotate(-5deg);
+}
+
+.entry-song {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid #e3d6c4;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 70%);
+  box-shadow: 0 2px 6px #78694d14;
+  white-space: normal;
+  transform: rotate(-1deg);
+}
+.entry-song-cover {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.entry-song-text {
+  display: grid;
+  min-width: 0;
+  font-family: var(--font-sans);
+  line-height: 1.3;
+}
+.entry-song-label {
+  color: #b0573f;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.entry-song-title {
+  overflow: hidden;
+  color: #313c50;
+  font-size: 1rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.entry-song-title:hover {
+  color: #b0573f;
+}
+.entry-song-title:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+.entry-song-artists {
+  overflow: hidden;
+  color: #687181;
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .entry-sheet.has-drawing {

@@ -97,4 +97,24 @@ describe('Spotify listening portrait', () => {
     expect(chart.find('.calendar-readout').text()).toContain('1 recorded plays')
     expect(chart.findAll('.play-calendar button').at(-1).attributes('aria-pressed')).toBe('true')
   })
+  it('draws plays by hour as a 24-hour clock with the busiest hour marked', async () => {
+    const data = getDashboard(
+      'weekly',
+      [
+        { track: record('a'), played_at: '2026-10-18T13:05:00' },
+        { track: record('b'), played_at: '2026-10-18T13:40:00' },
+        { track: record('c'), played_at: '2026-10-18T23:10:00' },
+      ],
+      now,
+    )
+    const chart = mount(ListeningChart, { props: { type: 'hours', data } })
+    const wedges = chart.findAll('.hour-wedge')
+    expect(wedges).toHaveLength(24)
+    expect(chart.find('.hours-summary').text()).toContain('1 pm')
+    expect(wedges.at(13).classes()).toContain('peak')
+    expect(chart.find('.clock-hand').exists()).toBe(true)
+    await wedges.at(23).trigger('click')
+    expect(chart.find('.calendar-readout').text()).toBe('11 pm: 1 recorded plays')
+    chart.unmount()
+  })
 })

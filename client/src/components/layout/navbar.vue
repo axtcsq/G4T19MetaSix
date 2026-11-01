@@ -30,6 +30,7 @@ const nav = ref(null)
 const profile = ref(null)
 const isCollapsed = ref(false)
 const menuOpen = ref(false)
+const avatarFailed = ref(false)
 // Once the page scrolls, the bar turns into frosted glass over the content.
 const isScrolled = ref(false)
 let resizeObserver
@@ -92,6 +93,13 @@ watch(
     closeMenu()
     await nextTick()
     updateCollapsed()
+  },
+)
+
+watch(
+  () => auth.user?.avatarUrl,
+  () => {
+    avatarFailed.value = false
   },
 )
 </script>
@@ -186,7 +194,15 @@ watch(
           :title="auth.user ? `Your profile (${auth.user.displayName})` : 'Your profile'"
           @click="navigate"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
+          <img
+            v-if="auth.user?.avatarUrl && !avatarFailed"
+            class="profile-avatar"
+            :src="auth.user.avatarUrl"
+            alt=""
+            referrerpolicy="no-referrer"
+            @error="avatarFailed = true"
+          />
+          <svg v-else viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="8" r="4" />
             <path d="M4 21a8 8 0 0 1 16 0" />
           </svg>
@@ -233,6 +249,9 @@ watch(
 }
 .site-header.is-scrolled {
   border-bottom-color: rgba(153, 139, 161, 0.25);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 20px rgba(41, 35, 33, 0.08);
   box-shadow:
     inset 0 -1px 0 rgba(255, 255, 255, 0.35),
     0 6px 20px rgba(41, 35, 33, 0.08);
@@ -356,6 +375,8 @@ watch(
   justify-content: center;
   border: 1px solid #998ba155;
   border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
   color: #625a53;
   background: #fff;
   cursor: pointer;
@@ -378,6 +399,13 @@ watch(
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.profile-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
 }
 /* Folded away, but still laid out at full width so it can be measured. */
 .header-nav.is-collapsed {

@@ -1,11 +1,16 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import DailyMood from '../views/daily-mood.vue'
 import { createMood, getMoods } from '@/api/moods'
+import { searchSongs } from '@/api/songs'
 
 vi.mock('@/api/moods', () => ({
   createMood: vi.fn(),
   getMoods: vi.fn(),
+}))
+
+vi.mock('@/api/songs', () => ({
+  searchSongs: vi.fn(),
 }))
 
 const stubs = {
@@ -157,5 +162,84 @@ describe('Daily Mood API flow', () => {
 
     expect(wrapper.find('textarea').element.value).toBe('Keep this reflection')
     expect(wrapper.text()).toContain('Database unavailable')
+  })
+})
+
+describe('Song of the Day', () => {
+  const song = {
+    id: '5wANPM4fQCJwkGd4rN57mH',
+    name: 'drivers license',
+    artists: ['Olivia Rodrigo'],
+    album: { name: 'SOUR', imageUrl: 'https://i.scdn.co/image/cover' },
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+    getMoods.mockResolvedValue([])
+    searchSongs.mockResolvedValue([song])
+    createMood.mockResolvedValue({
+      _id: 'entry-2',
+      mood: 'Sad',
+      journal: '',
+      createdAt: '2026-11-01T10:00:00.000Z',
+    })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('searches for a song and saves it with the entry', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text() === 'Sad')
+      .trigger('click')
+    await wrapper.find('#song-of-the-day-search').setValue('drivers')
+    await vi.advanceTimersByTimeAsync(300)
+    await flushPromises()
+
+    expect(searchSongs).toHaveBeenCalledWith('drivers')
+    await wrapper.find('.song-result').trigger('click')
+    expect(wrapper.find('.picked-song').text()).toContain('drivers license')
+
+    // A song on its own is enough to save the entry.
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(createMood).toHaveBeenCalledWith({
+      mood: 'Sad',
+      journal: '',
+      drawing: null,
+      song: {
+        id: song.id,
+        name: 'drivers license',
+        artists: ['Olivia Rodrigo'],
+        imageUrl: 'https://i.scdn.co/image/cover',
+      },
+    })
+  })
+
+  it('shows the song on a past entry', async () => {
+    getMoods.mockResolvedValue([
+      {
+        _id: 'entry-3',
+        mood: 'Sad',
+        journal: 'Long drive home',
+        song: { id: song.id, name: 'drivers license', artists: ['Olivia Rodrigo'] },
+        createdAt: '2026-11-01T10:00:00.000Z',
+      },
+    ])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    const card = wrapper.find('.entry-song')
+    expect(card.text()).toContain('Song of the Day')
+    expect(card.text()).toContain('drivers license')
+    expect(card.text()).toContain('Olivia Rodrigo')
   })
 })

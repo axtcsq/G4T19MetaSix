@@ -2,6 +2,18 @@ import mongoose from "mongoose";
 
 const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry", "Excited", "Tired", "Lonely"];
 
+// The song picked as the entry's Song of the Day. A copy of what Spotify
+// showed, so old entries still show it without asking Spotify again.
+const songSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    artists: [String],
+    imageUrl: String,
+  },
+  { _id: false },
+);
+
 const moodLogSchema = new mongoose.Schema(
   {
     userId: {
@@ -23,6 +35,11 @@ const moodLogSchema = new mongoose.Schema(
     // Versioned vector drawing data from the Daily Mood canvas.
     drawing: {
       type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    // Optional Song of the Day.
+    song: {
+      type: songSchema,
       default: null,
     },
     // "seed" for the demo user's generated entries, so re-seeding replaces

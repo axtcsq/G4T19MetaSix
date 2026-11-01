@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 const props = defineProps({
   type: { type: String, required: true },
   data: { type: Object, required: true },
@@ -16,6 +16,72 @@ const calendarOffset = computed(
 const repeatTotal = computed(() =>
   props.data.repeatListening.reduce((sum, item) => sum + item.value, 0),
 )
+
+// The listening clock: one wedge per hour around a 24-hour dial, midnight at
+// the top and noon at the bottom. Longer wedges mean more recorded plays.
+const CLOCK_CENTRE = 120
+const CLOCK_INNER = 34
+const CLOCK_OUTER = 104
+const hourlyMaximum = computed(() => Math.max(1, ...props.data.hourly))
+
+function clockPoint(radius, hour) {
+  const angle = (hour / 24) * 2 * Math.PI - Math.PI / 2
+  const x = CLOCK_CENTRE + Math.cos(angle) * radius
+  const y = CLOCK_CENTRE + Math.sin(angle) * radius
+  return `${x.toFixed(2)} ${y.toFixed(2)}`
+}
+
+// A small gap either side keeps neighbouring hours apart. Hours with no plays
+// keep a thin sliver so the dial still reads as a full day.
+function hourWedge(hour, value) {
+  const length = Math.max(3, (value / hourlyMaximum.value) * (CLOCK_OUTER - CLOCK_INNER))
+  const outer = CLOCK_INNER + length
+  const start = hour + 0.06
+  const end = hour + 0.94
+  return [
+    `M ${clockPoint(CLOCK_INNER, start)}`,
+    `L ${clockPoint(outer, start)}`,
+    `A ${outer} ${outer} 0 0 1 ${clockPoint(outer, end)}`,
+    `L ${clockPoint(CLOCK_INNER, end)}`,
+    `A ${CLOCK_INNER} ${CLOCK_INNER} 0 0 0 ${clockPoint(CLOCK_INNER, start)}`,
+    'Z',
+  ].join(' ')
+}
+
+const clockLabels = [
+  { text: 'Midnight', hour: 0 },
+  { text: '6 am', hour: 6 },
+  { text: 'Noon', hour: 12 },
+  { text: '6 pm', hour: 18 },
+].map((label) => {
+  const [x, y] = clockPoint(CLOCK_OUTER + 12, label.hour).split(' ')
+  return { ...label, x, y }
+})
+
+// The hand points at the time now. It moves a quarter of a degree a minute,
+// so checking once a minute is enough, and it rests while the tab is hidden.
+const now = ref(new Date())
+const handAngle = computed(
+  () => ((now.value.getHours() + now.value.getMinutes() / 60) / 24) * 360,
+)
+let clockTimer
+function tick() {
+  now.value = new Date()
+}
+function startClock() {
+  window.clearInterval(clockTimer)
+  if (!document.hidden) clockTimer = window.setInterval(tick, 60_000)
+  tick()
+}
+onMounted(() => {
+  if (props.type !== 'hours') return
+  startClock()
+  document.addEventListener('visibilitychange', startClock)
+})
+onBeforeUnmount(() => {
+  window.clearInterval(clockTimer)
+  document.removeEventListener('visibilitychange', startClock)
+})
 </script>
 <template>
   <div class="listening-chart" :class="`chart-${type}`">
@@ -101,37 +167,68 @@ const repeatTotal = computed(() =>
         Most recorded plays were around <strong>{{ formatHour(peakHour) }}</strong
         >.
       </p>
-      <div
-        class="hour-chart"
+      <svg
+        class="hour-clock"
+        viewBox="0 0 240 240"
         role="group"
-        :aria-label="`Recorded plays across 24 hours. Busiest at ${formatHour(peakHour)}. Taller bars mean more recorded plays.`"
+        :aria-label="`Recorded plays across 24 hours, drawn as a clock with midnight at the top. Busiest at ${formatHour(peakHour)}. Longer wedges mean more recorded plays.`"
       >
-        <button
-          v-for="(value, i) in data.hourly"
-          :key="i"
-          type="button"
-          class="hour-column"
-          :aria-label="`${formatHour(i)}: ${value} recorded plays`"
-          @pointerenter="selectedHour = i"
-          @focus="selectedHour = i"
-          @click="selectedHour = i"
-        >
-          <span
-            :class="{ peak: i === peakHour }"
-            :style="{ height: `${(value / Math.max(1, ...data.hourly)) * 100}%` }"
+        <circle
+          v-for="radius in [CLOCK_INNER, 69, CLOCK_OUTER]"
+          :key="radius"
+          class="clock-ring"
+          :cx="CLOCK_CENTRE"
+          :cy="CLOCK_CENTRE"
+          :r="radius"
+        />
+        <g class="clock-wedges">
+          <path
+            v-for="(value, i) in data.hourly"
+            :key="i"
+            class="hour-wedge"
+            :class="{ peak: i === peakHour, selected: i === selectedHour }"
+            :d="hourWedge(i, value)"
+            tabindex="0"
+            role="button"
+            :aria-label="`${formatHour(i)}: ${value} recorded plays`"
+            @pointerenter="selectedHour = i"
+            @focus="selectedHour = i"
+            @click="selectedHour = i"
           />
-        </button>
-      </div>
+        </g>
+        <text
+          v-for="label in clockLabels"
+          :key="label.text"
+          class="clock-label"
+          :x="label.x"
+          :y="label.y"
+          aria-hidden="true"
+        >
+          {{ label.text }}
+        </text>
+        <g class="clock-hand" :style="{ transform: `rotate(${handAngle}deg)` }" aria-hidden="true">
+          <line
+            :x1="CLOCK_CENTRE"
+            :y1="CLOCK_CENTRE - CLOCK_INNER + 4"
+            :x2="CLOCK_CENTRE"
+            :y2="CLOCK_CENTRE - CLOCK_OUTER - 2"
+          />
+          <circle :cx="CLOCK_CENTRE" :cy="CLOCK_CENTRE - CLOCK_OUTER - 2" r="3" />
+        </g>
+        <text class="clock-centre-label" :x="CLOCK_CENTRE" :y="CLOCK_CENTRE - 5" aria-hidden="true">
+          {{ selectedHour === null ? 'peak' : 'plays' }}
+        </text>
+        <text class="clock-centre-value" :x="CLOCK_CENTRE" :y="CLOCK_CENTRE + 12" aria-hidden="true">
+          {{ selectedHour === null ? formatHour(peakHour) : data.hourly[selectedHour] }}
+        </text>
+      </svg>
       <p class="calendar-readout" aria-live="polite">
         {{
           selectedHour === null
-            ? 'Select an hour to explore.'
+            ? 'Select an hour to explore. The hand shows the time now.'
             : `${formatHour(selectedHour)}: ${data.hourly[selectedHour]} recorded plays`
         }}
       </p>
-      <div class="hour-axis" aria-hidden="true">
-        <span>Midnight</span><span>6 am</span><span>Noon</span><span>6 pm</span><span>11 pm</span>
-      </div>
     </template>
   </div>
 </template>
@@ -181,15 +278,13 @@ const repeatTotal = computed(() =>
   font: 13px/1.5 var(--font-sans);
   color: var(--dash-muted);
 }
-.bar-track span,
-.hour-column span {
+.bar-track span {
   transform-origin: bottom left;
-  animation: chart-grow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: chart-fill 500ms cubic-bezier(0.16, 1, 0.3, 1);
   transition: filter 180ms;
 }
 .daily-plays li:is(:hover, :focus-visible) .bar-track span,
-.repeat-plays li:is(:hover, :focus-visible) .bar-track span,
-.hour-column:is(:hover, :focus-visible) span {
+.repeat-plays li:is(:hover, :focus-visible) .bar-track span {
   filter: brightness(0.8);
 }
 .daily-plays li:focus-visible,
@@ -209,17 +304,21 @@ const repeatTotal = computed(() =>
     transform: scaleX(1);
   }
 }
-@keyframes chart-grow {
+@keyframes clock-grow {
   from {
-    transform: scaleY(0.1);
+    transform: scale(0.35);
+    opacity: 0;
   }
   to {
-    transform: scaleY(1);
+    transform: scale(1);
+    opacity: 1;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .bar-track span,
-  .hour-column span {
+  .clock-wedges,
+  .clock-hand,
+  .hour-wedge {
     animation: none;
     transition: none;
   }
@@ -277,33 +376,69 @@ const repeatTotal = computed(() =>
   font-style: italic;
   margin: 0 0 22px;
 }
-.hour-chart {
-  display: flex;
-  gap: 5px;
-  height: 140px;
-  align-items: end;
+/* The wedges grow out from the middle when the chart appears or the period
+   changes; the hand turns round the same centre. */
+.hour-clock {
+  display: block;
+  width: min(100%, 320px);
+  margin: 0 auto;
+  overflow: visible;
 }
-.hour-column {
+.clock-ring {
+  fill: none;
+  stroke: var(--dash-rule);
+}
+.clock-wedges {
+  transform-box: view-box;
+  transform-origin: 120px 120px;
+  animation: clock-grow 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hour-wedge {
+  fill: var(--dash-meter-soft);
   cursor: pointer;
-  padding: 0;
-  height: 100%;
-  flex: 1;
-  display: flex;
-  align-items: end;
+  transition:
+    fill 180ms,
+    filter 180ms;
 }
-.hour-column span {
-  width: 100%;
-  min-height: 3px;
-  background: var(--dash-meter-soft);
+.hour-wedge.peak {
+  fill: var(--dash-strong);
 }
-.hour-column .peak {
-  background: var(--dash-strong);
+.hour-wedge:is(:hover, .selected) {
+  filter: brightness(0.82);
 }
-.hour-axis {
-  display: flex;
-  justify-content: space-between;
-  font: 12px var(--font-sans);
-  color: var(--dash-muted);
-  margin-top: 12px;
+.hour-wedge:focus-visible {
+  outline: none;
+  stroke: var(--dash-accent);
+  stroke-width: 2;
+}
+.clock-label {
+  fill: var(--dash-muted);
+  font: 11px var(--font-sans);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.clock-hand {
+  transform-box: view-box;
+  transform-origin: 120px 120px;
+  transition: transform 800ms ease;
+  pointer-events: none;
+}
+.clock-hand line {
+  stroke: var(--dash-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.clock-hand circle {
+  fill: var(--dash-ink);
+}
+.clock-centre-label {
+  fill: var(--dash-muted);
+  font: 11px var(--font-sans);
+  text-anchor: middle;
+}
+.clock-centre-value {
+  fill: var(--dash-strong);
+  font: 700 15px var(--font-sans);
+  text-anchor: middle;
 }
 </style>
