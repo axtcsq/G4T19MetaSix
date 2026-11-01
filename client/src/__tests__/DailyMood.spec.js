@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia } from 'pinia'
 import DailyMood from '../views/daily-mood.vue'
 import { createMood, getMoods } from '@/api/moods'
 import { searchSongs } from '@/api/songs'
@@ -37,7 +38,7 @@ const stubs = {
 }
 
 function mountView() {
-  return mount(DailyMood, { global: { stubs } })
+  return mount(DailyMood, { global: { plugins: [createPinia()], stubs } })
 }
 
 describe('Daily Mood API flow', () => {

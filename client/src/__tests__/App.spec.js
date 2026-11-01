@@ -19,6 +19,7 @@ describe('App', () => {
         stubs: {
           RouterView: true,
           ListeningDock: true,
+          CheckInReminder: true,
           UApp: { template: '<div><slot /></div>' },
         },
       },
