@@ -14,6 +14,9 @@ let camera
 let controls
 let animationFrame
 let resizeObserver
+let visibilityObserver
+let visible = true
+let disposed = false
 
 function resizeRenderer() {
   if (!renderer || !canvas.value) return
@@ -28,6 +31,7 @@ function resizeRenderer() {
 
 function animate() {
   animationFrame = requestAnimationFrame(animate)
+  if (!visible || document.hidden) return
   controls?.update()
   renderer?.render(scene, camera)
 }
@@ -37,12 +41,18 @@ onMounted(() => {
   camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100)
   camera.position.set(0, 0.1, 5.6)
 
-  renderer = new THREE.WebGLRenderer({
+  try {
+    renderer = new THREE.WebGLRenderer({
     canvas: canvas.value,
     alpha: true,
     antialias: true,
     powerPreference: 'low-power',
-  })
+    })
+  } catch {
+    loading.value = false
+    loadError.value = true
+    return
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -71,11 +81,17 @@ onMounted(() => {
 
   resizeObserver = new ResizeObserver(resizeRenderer)
   resizeObserver.observe(canvas.value)
+  visibilityObserver = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting })
+  visibilityObserver.observe(canvas.value)
   resizeRenderer()
 
   new GLTFLoader().load(
     '/cassette_tape.glb',
     ({ scene: model }) => {
+      if (disposed) {
+        disposeModel(model)
+        return
+      }
       const bounds = new THREE.Box3().setFromObject(model)
       const center = bounds.getCenter(new THREE.Vector3())
       const size = bounds.getSize(new THREE.Vector3())
@@ -99,11 +115,26 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  disposed = true
   cancelAnimationFrame(animationFrame)
   resizeObserver?.disconnect()
+  visibilityObserver?.disconnect()
   controls?.dispose()
+  if (scene) disposeModel(scene)
   renderer?.dispose()
+  renderer?.forceContextLoss()
 })
+
+function disposeModel(model) {
+  model.traverse((child) => {
+    child.geometry?.dispose()
+    for (const material of [child.material].flat()) {
+      if (!material) continue
+      for (const value of Object.values(material)) if (value?.isTexture) value.dispose()
+      material.dispose()
+    }
+  })
+}
 </script>
 
 <template>

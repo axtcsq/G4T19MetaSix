@@ -4,6 +4,7 @@ import axios from 'axios'
 // during development; the top-level Vercel rewrite routes them in deployments.
 export const api = axios.create({
   baseURL: '',
+  timeout: 30000,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -20,7 +21,9 @@ api.interceptors.response.use(
 
     const { data, status } = error.response
     const message = typeof data === 'object' && data !== null ? data.error : data
-    const failure = new Error(message || `Request failed with status ${status}.`)
+    const failure = new Error(
+      typeof message === 'string' && message ? message : `Request failed with status ${status}.`,
+    )
     // Lets callers tell "not logged in" (401) apart from other failures.
     failure.status = status
     return Promise.reject(failure)

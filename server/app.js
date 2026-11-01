@@ -15,10 +15,13 @@ import songRoutes from "./routes/songRoutes.js";
 import spotifyRoutes from "./routes/spotifyRoutes.js";
 import syncRoutes from "./routes/syncRoutes.js";
 import trackRoutes from "./routes/trackRoutes.js";
+import { apiSafety } from "./middleware/apiSafety.js";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const app = express();
+app.disable("x-powered-by");
+app.use("/api", apiSafety);
 
 // Vercel sits in front of the server, so trust its proxy for secure cookies.
 app.set("trust proxy", 1);
@@ -103,20 +106,6 @@ app.use(
   }),
 );
 
-// Connect to MongoDB before database requests
-app.use("/api/moods", async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error(
-      "[API] Mood request unavailable because MongoDB is not connected:",
-      error.message,
-    );
-    res.status(503).json({ error: "Database unavailable" });
-  }
-});
-
 // Login and account routes
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);
@@ -135,20 +124,6 @@ app.use("/api/songs", songRoutes);
 app.use("/api/moods", requireUser, moodRoutes);
 app.use("/api/journal", requireUser, journalRoutes);
 
-// Connect to MongoDB before quiz requests
-app.use("/api/quiz", async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error(
-      "[API] Quiz request unavailable because MongoDB is not connected:",
-      error.message,
-    );
-    res.status(503).json({ error: "Database unavailable" });
-  }
-});
-
 // Personality quiz routes
 app.use("/api/quiz", requireUser, quizRoutes);
 
@@ -163,6 +138,10 @@ app.use((error, req, res, next) => {
 
   if (error.type === "entity.too.large") {
     return res.status(413).json({ error: "Request body is too large" });
+  }
+
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Request body must be valid JSON" });
   }
 
   if (error.name === "ValidationError") {

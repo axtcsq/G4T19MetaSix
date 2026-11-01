@@ -33,6 +33,13 @@ beforeAll(async () => {
     } else if (mode === 'forbidden') {
       res.writeHead(403)
       res.end('{}')
+    } else if (
+      mode === 'reconnecting' &&
+      req.method === 'PUT' &&
+      calls.filter((call) => call.path === req.url && call.method === 'PUT').length === 1
+    ) {
+      res.writeHead(404)
+      res.end(JSON.stringify({ error: { status: 404, message: 'Device not found' } }))
     } else if (req.url === '/v1/me/player/recently-played?limit=50') {
       res.end(
         JSON.stringify({
@@ -88,7 +95,7 @@ beforeEach(async () => {
   tokens = ['original-access', 'refreshed-access']
   getToken.mockReset()
   getToken.mockImplementation(async (path) => {
-    expect(path).toBe('/api/spotify/token')
+    if (path !== '/api/spotify/token') throw new Error(`Unexpected token request: ${path}`)
     return { accessToken: tokens.shift() ?? 'refreshed-access', expiresAt: Date.now() + 3600000 }
   })
   vi.stubGlobal('fetch', (url, init) =>
@@ -105,6 +112,76 @@ afterEach(() => {
 const tokenCalls = () => getToken.mock.calls.length
 
 describe('Spotify HTTP integration against a local stand-in', () => {
+  it('starts a fresh token request on reconnect and ignores the old session failure', async () => {
+    const previous = Promise.withResolvers()
+    const current = Promise.withResolvers()
+    getToken.mockReturnValueOnce(previous.promise).mockReturnValueOnce(current.promise)
+    const oldToken = api.spotifyToken().catch((failure) => failure)
+    api.clearSpotifySession()
+    const newToken = api.spotifyToken()
+    previous.reject(Object.assign(new Error('Old session expired'), { status: 401 }))
+    await oldToken
+    const concurrent = api.spotifyToken()
+    expect(tokenCalls()).toBe(2)
+    expect(api.hasSpotifySession()).toBe(true)
+    current.resolve({ accessToken: 'new-access', expiresAt: Date.now() + 3600000 })
+    await expect(newToken).resolves.toBe('new-access')
+    await expect(concurrent).resolves.toBe('new-access')
+    await expect(api.spotifyToken()).resolves.toBe('new-access')
+  })
+
+  it('plays again after disconnect, delayed device registration and a playback 404', async () => {
+    let nextDevice = 0
+    vi.stubGlobal('Spotify', {
+      Player: class {
+        listeners = {}
+        addListener(event, callback) {
+          this.listeners[event] = callback
+        }
+        removeListener(event) {
+          delete this.listeners[event]
+        }
+        async connect() {
+          this.listeners.ready({ device_id: `browser-${++nextDevice}` })
+          return true
+        }
+        disconnect() {}
+        async activateElement() {}
+        async getCurrentState() {
+          return null
+        }
+      },
+    })
+    const { useListeningRoom } = await import('../composables/useListeningRoom')
+    const room = useListeningRoom()
+    try {
+      await room.initialize()
+      const song = room.records.value[0]
+      await room.selectRecord(song)
+      expect(room.error.value).toBe('')
+      room.disconnect()
+      calls = []
+      mode = 'reconnecting'
+      await room.connect()
+      await room.selectRecord(song)
+      const commands = calls.filter((call) => call.method === 'PUT')
+      expect(commands.map((call) => call.path)).toEqual([
+        '/v1/me/player',
+        '/v1/me/player',
+        '/v1/me/player/play?device_id=browser-2',
+        '/v1/me/player',
+        '/v1/me/player/play?device_id=browser-2',
+      ])
+      expect(JSON.parse(commands[0].body)).toEqual({ device_ids: ['browser-2'], play: false })
+      expect(room.connected.value).toBe(true)
+      expect(room.ready.value).toBe(true)
+      expect(room.track.value.id).toBe(song.id)
+      expect(room.error.value).toBe('')
+    } finally {
+      room.disconnect()
+    }
+  })
+
   it('loads authenticated recent history with the explicit 50-play limit', async () => {
     const history = await api.recentSpotify()
     expect(history.items[0].track.uri).toBe('spotify:track:recent')

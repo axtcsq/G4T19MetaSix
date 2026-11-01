@@ -56,7 +56,7 @@ test('save requires mood and reflection, then appears in history and calendar', 
   await expect(save).toBeDisabled()
   await page.getByPlaceholder('Write your thoughts here...').fill('  A good day with friends.  ')
   await save.click()
-  await expect(page.getByRole('status').filter({ hasText: 'Entry saved.' })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Entry Submitted' })).toBeVisible()
   expect(app.moods[0]).toMatchObject({ mood: 'Happy', journal: 'A good day with friends.' })
   await expect(page.getByPlaceholder('Write your thoughts here...')).toBeEmpty()
   await page.reload()
@@ -79,7 +79,7 @@ test('failed saves preserve the entry and allow retry', async ({ page, app }) =>
   await expect(page.getByPlaceholder('Write your thoughts here...')).toHaveValue('A quiet evening.')
   app.failSave = false
   await page.getByRole('button', { name: 'Save Entry', exact: true }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'Entry saved.' })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Entry Submitted' })).toBeVisible()
   expect(app.moods).toHaveLength(1)
 })
 

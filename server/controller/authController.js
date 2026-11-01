@@ -12,8 +12,8 @@ function clientUrl(path) {
 }
 
 // Only paths inside the app, so the login can't be used to send people elsewhere.
-function safeReturnPath(next) {
-  if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) {
+export function safeReturnPath(next) {
+  if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//") || /[\\\x00-\x20]/.test(next)) {
     return "/dashboard";
   }
   return next;

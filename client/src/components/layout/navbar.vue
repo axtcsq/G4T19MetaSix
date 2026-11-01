@@ -30,6 +30,7 @@ const nav = ref(null)
 const profile = ref(null)
 const isCollapsed = ref(false)
 const menuOpen = ref(false)
+const avatarFailed = ref(false)
 // Once the page scrolls, the bar turns into frosted glass over the content.
 const isScrolled = ref(false)
 let resizeObserver
@@ -92,6 +93,13 @@ watch(
     closeMenu()
     await nextTick()
     updateCollapsed()
+  },
+)
+
+watch(
+  () => auth.user?.avatarUrl,
+  () => {
+    avatarFailed.value = false
   },
 )
 </script>
@@ -186,7 +194,15 @@ watch(
           :title="auth.user ? `Your profile (${auth.user.displayName})` : 'Your profile'"
           @click="navigate"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
+          <img
+            v-if="auth.user?.avatarUrl && !avatarFailed"
+            class="profile-avatar"
+            :src="auth.user.avatarUrl"
+            alt=""
+            referrerpolicy="no-referrer"
+            @error="avatarFailed = true"
+          />
+          <svg v-else viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="8" r="4" />
             <path d="M4 21a8 8 0 0 1 16 0" />
           </svg>
@@ -221,15 +237,23 @@ watch(
      stops it widening the page, which made phones zoom out. */
   overflow-x: clip;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  background: rgba(250, 248, 246, 0.45);
-  backdrop-filter: blur(22px) saturate(1.7);
-  -webkit-backdrop-filter: blur(22px) saturate(1.7);
   /* A thin bright line along the bottom edge, like the edge of a glass pane. */
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   transition:
-    background-color 220ms ease,
     box-shadow 220ms ease,
     border-color 220ms ease;
+}
+/* The glass sits on its own layer behind the content. A blur on the header
+   itself would stop the mobile menu inside it from blurring the page. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(250, 248, 246, 0.45);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(22px) saturate(1.7);
+  transition: background-color 220ms ease;
 }
 .site-header.is-scrolled {
   border-bottom-color: rgba(153, 139, 161, 0.25);
@@ -245,10 +269,11 @@ watch(
   z-index: 1000;
 }
 @media (prefers-reduced-transparency: reduce) {
-  .site-header {
+  .site-header::before,
+  .site-menu {
     background: #faf8f6;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 .header-inner {
@@ -359,6 +384,8 @@ watch(
   justify-content: center;
   border: 1px solid #998ba155;
   border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
   color: #625a53;
   background: #fff;
   cursor: pointer;
@@ -381,6 +408,13 @@ watch(
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.profile-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
 }
 /* Folded away, but still laid out at full width so it can be measured. */
 .header-nav.is-collapsed {
@@ -456,8 +490,11 @@ watch(
   /* Lines up with the header content above it. */
   padding: 10px max(32px, calc((100% - 1180px) / 2)) 18px;
   border-bottom: 1px solid #998ba155;
-  /* Solid: a blurred panel inside the blurred bar lets the page show through. */
-  background: #faf8f6;
+  /* The same frosted glass as the bar, a little more solid so the links stay
+     easy to read over busy pages. */
+  background: rgba(250, 248, 246, 0.72);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(22px) saturate(1.7);
   box-shadow: 0 12px 24px rgba(41, 35, 33, 0.12);
 }
 .menu-link {
@@ -503,8 +540,10 @@ watch(
 /* Dark mode: the bar matches the app's espresso page and turns into dark glass on scroll. */
 .dark .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: rgba(22, 18, 16, 0.42);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+.dark .site-header::before {
+  background: rgba(22, 18, 16, 0.42);
 }
 .dark .site-header.is-scrolled {
   border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -541,7 +580,7 @@ watch(
 }
 .dark .site-menu {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  background: #161210;
+  background: rgba(22, 18, 16, 0.72);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 .dark .menu-link:hover {
@@ -551,7 +590,8 @@ watch(
   background: rgba(219, 128, 109, 0.16);
 }
 @media (prefers-reduced-transparency: reduce) {
-  .dark .site-header {
+  .dark .site-header::before,
+  .dark .site-menu {
     background: #161210;
   }
 }

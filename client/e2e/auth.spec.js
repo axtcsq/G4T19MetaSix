@@ -1,6 +1,6 @@
 import { test, expect } from './helpers.js'
 
-for (const path of ['/daily-mood', '/calendar', '/quiz', '/profile']) {
+for (const path of ['/daily-mood', '/calendar', '/quiz', '/profile', '/song/example']) {
   test('signed-out visitors must log in before opening ' + path, async ({ page, app }) => {
     app.signedIn = false
     await page.goto(path)
@@ -8,6 +8,20 @@ for (const path of ['/daily-mood', '/calendar', '/quiz', '/profile']) {
     await expect(page.getByRole('heading', { name: 'Welcome to MetaFor' })).toBeVisible()
   })
 }
+
+test('unknown URLs recover to the landing page', async ({ page, app }) => {
+  app.signedIn = false
+  await page.goto('/does-not-exist')
+  await expect(page).toHaveURL('/')
+  await expect(page.locator('main')).toBeVisible()
+})
+
+test('login does not loop on a login return destination', async ({ page, app }) => {
+  expect(app.signedIn).toBe(true)
+  await page.goto('/login?next=/login')
+  await expect(page).toHaveURL('/dashboard')
+  await expect(page.locator('main')).toBeVisible()
+})
 
 test('account login returns to requested page and can log out', async ({ page, app }) => {
   app.signedIn = false

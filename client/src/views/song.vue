@@ -58,11 +58,10 @@ const lyrics = computed(() => song.value?.lyrics ?? null)
 const instrumentalSong = computed(() => {
   const current = song.value
   return Boolean(
-    current && (
-      current.instrumental ||
+    current &&
+    (current.instrumental ||
       current.lyricsStatus === 'instrumental' ||
-      /\binstrumental\b|器樂|器乐|伴奏版/i.test(current.name || '')
-    ),
+      /\binstrumental\b|器樂|器乐|伴奏版/i.test(current.name || '')),
   )
 })
 // Only draw the sound-only dot when the lyrics moved the song noticeably.
@@ -137,18 +136,25 @@ function back() {
       <template v-else-if="song">
         <header class="song-header">
           <img v-if="song.album.imageUrl" :src="song.album.imageUrl" alt="" class="cover" />
-          <span v-else class="cover cover-blank" aria-hidden="true">♫</span>
+          <span v-else class="cover cover-blank" aria-hidden="true">
+            <svg viewBox="0 0 100 100" width="70%" fill="none" stroke="currentColor">
+              <circle cx="50" cy="50" r="43" />
+              <circle cx="50" cy="50" r="34" />
+              <circle cx="50" cy="50" r="24" />
+              <circle cx="50" cy="50" r="6" />
+            </svg>
+          </span>
           <div class="song-heading">
             <h1 class="page-title">{{ song.name }}</h1>
             <p class="artist">{{ artists }}</p>
             <p v-if="song.album.name" class="album">{{ song.album.name }}</p>
             <p class="plays">{{ playLine }}</p>
             <a
-              class="glass-secondary spotify"
+              class="glass-secondary spotify-green spotify"
               :href="song.spotifyUrl"
               target="_blank"
               rel="noopener noreferrer"
-              >Open in Spotify ↗<span class="sr-only"> (opens new tab)</span></a
+              >Open in Spotify<span class="sr-only"> (opens new tab)</span></a
             >
           </div>
         </header>
@@ -160,7 +166,12 @@ function back() {
           aria-labelledby="summary-title"
         >
           <h2 id="summary-title" class="sr-only">Mood</h2>
-          <MoodTag :track-id="song.id" size="lg" :link="false" :hide-pending-lyrics="instrumentalSong" />
+          <MoodTag
+            :track-id="song.id"
+            size="lg"
+            :link="false"
+            :hide-pending-lyrics="instrumentalSong"
+          />
           <p class="summary-line">
             Counts as <strong>{{ JOURNAL_MOOD[counted.axis] }}</strong> in your mood history.
           </p>
@@ -181,36 +192,6 @@ function back() {
         </section>
 
         <template v-if="song.sound">
-          <div class="readings">
-            <section class="card reading" :class="`axis-${song.sound.axis}`">
-              <p class="kicker">Sound only</p>
-              <h2 class="sub-header">{{ song.sound.name }}</h2>
-              <p class="prose">{{ song.sound.blurb }}</p>
-              <p class="basis">From the song’s positivity, energy and danceability.</p>
-            </section>
-            <section
-              class="card reading"
-              :class="song.withLyrics ? `axis-${song.withLyrics.axis}` : 'is-missing'"
-            >
-              <p class="kicker">Sound + lyrics</p>
-              <template v-if="song.withLyrics">
-                <h2 class="sub-header">{{ song.withLyrics.name }}</h2>
-                <p class="prose">{{ song.withLyrics.blurb }}</p>
-              </template>
-              <h2 v-else class="sub-header">Not available</h2>
-              <p class="basis">{{ lyricsWhy }}</p>
-            </section>
-          </div>
-          <p v-if="song.withLyrics" class="agreement">
-            <template v-if="agree"
-              >Both readings agree: the lyrics don’t change this song’s mood.</template
-            >
-            <template v-else>
-              The readings differ: <strong>{{ song.sound.name }}</strong> from the sound alone,
-              <strong>{{ song.withLyrics.name }}</strong> once the lyrics count.
-            </template>
-          </p>
-
           <div class="panels">
             <section class="card" aria-labelledby="map-title">
               <h2 id="map-title" class="sub-header">Mood map</h2>
@@ -284,74 +265,109 @@ function back() {
             </section>
           </div>
 
-          <section class="card" aria-labelledby="lyrics-title">
-            <h2 id="lyrics-title" class="sub-header">What the lyrics add</h2>
-            <p v-if="!lyrics || blend.lyrics == null" class="prose">{{ lyricsWhy }}</p>
-            <template v-else>
-              <p v-if="blend.contrastLabel" class="contrast">{{ blend.contrastLabel }}</p>
-              <p v-if="translatedFrom" class="caption">
-                Translated from {{ translatedFrom }} before reading.
-              </p>
-              <p v-if="lyrics.darkThemes.length" class="prose">
-                Dark themes in the words: <strong>{{ lyrics.darkThemes.join(', ') }}</strong
-                >.
-              </p>
-              <div class="bar-head">
-                <span>How positive the words are</span
-                ><span class="value">{{ pct(blend.lyrics) }}</span>
-              </div>
-              <div
-                class="bar"
-                role="meter"
-                aria-label="How positive the words are"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                :aria-valuenow="pct(blend.lyrics)"
+          <details class="analysis-details">
+            <summary>Compare sound and lyrics</summary>
+            <div class="readings">
+              <section class="card reading" :class="`axis-${song.sound.axis}`">
+                <p class="reading-label">Sound only</p>
+                <h2 class="sub-header">{{ song.sound.name }}</h2>
+                <p class="prose">{{ song.sound.blurb }}</p>
+                <p class="basis">From the song’s positivity, energy and danceability.</p>
+              </section>
+              <section
+                class="card reading"
+                :class="song.withLyrics ? `axis-${song.withLyrics.axis}` : 'is-missing'"
               >
-                <span :style="{ width: `${blend.lyrics * 100}%` }" />
-              </div>
-              <div class="bar-ends" aria-hidden="true">
-                <span>Negative</span><span>Positive</span>
-              </div>
-              <p class="prose">
-                <template v-if="lyrics.emotionalShare != null">
-                  {{ pct(lyrics.emotionalShare) }}% of the lyrics carry a clear emotion.
+                <p class="reading-label">Sound + lyrics</p>
+                <template v-if="song.withLyrics">
+                  <h2 class="sub-header">{{ song.withLyrics.name }}</h2>
+                  <p class="prose">{{ song.withLyrics.blurb }}</p>
                 </template>
-                The words count for <strong>{{ pct(blend.weight) }}%</strong> of the song’s
-                positivity: {{ pct(blend.audio) }} from the sound becomes
-                {{ pct(blend.valence) }} with the lyrics.
-              </p>
-
-              <ul
-                v-if="lyrics.emotions.length"
-                class="emotions"
-                aria-label="Strongest feelings in the lyrics"
+                <h2 v-else class="sub-header">Not available</h2>
+                <p class="basis">{{ lyricsWhy }}</p>
+              </section>
+            </div>
+            <p v-if="song.withLyrics" class="agreement">
+              <template v-if="agree"
+                >Both readings agree: the lyrics don’t change this song’s mood.</template
               >
-                <li v-for="[emotion, share] in lyrics.emotions" :key="emotion">
-                  <span class="emotion-name">{{ emotion }}</span>
-                  <span class="emotion-bar" aria-hidden="true"
-                    ><span :style="{ width: `${share * 100}%` }"
-                  /></span>
-                  <span class="value">{{ pct(share) }}%</span>
-                </li>
-              </ul>
+              <template v-else>
+                The readings differ: <strong>{{ song.sound.name }}</strong> from the sound alone,
+                <strong>{{ song.withLyrics.name }}</strong> once the lyrics count.
+              </template>
+            </p>
+          </details>
+          <details class="analysis-details">
+            <summary>What the lyrics add</summary>
+            <section class="lyrics-body" aria-labelledby="lyrics-title">
+              <h2 id="lyrics-title" class="sr-only">What the lyrics add</h2>
+              <p v-if="!lyrics || blend.lyrics == null" class="prose">{{ lyricsWhy }}</p>
+              <template v-else>
+                <p v-if="blend.contrastLabel" class="contrast">{{ blend.contrastLabel }}</p>
+                <p v-if="translatedFrom" class="caption">
+                  Translated from {{ translatedFrom }} before reading.
+                </p>
+                <p v-if="lyrics.darkThemes.length" class="prose">
+                  Dark themes in the words: <strong>{{ lyrics.darkThemes.join(', ') }}</strong
+                  >.
+                </p>
+                <div class="bar-head">
+                  <span>How positive the words are</span
+                  ><span class="value">{{ pct(blend.lyrics) }}</span>
+                </div>
+                <div
+                  class="bar"
+                  role="meter"
+                  aria-label="How positive the words are"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  :aria-valuenow="pct(blend.lyrics)"
+                >
+                  <span :style="{ width: `${blend.lyrics * 100}%` }" />
+                </div>
+                <div class="bar-ends" aria-hidden="true">
+                  <span>Negative</span><span>Positive</span>
+                </div>
+                <p class="prose">
+                  <template v-if="lyrics.emotionalShare != null">
+                    {{ pct(lyrics.emotionalShare) }}% of the lyrics carry a clear emotion.
+                  </template>
+                  The words count for <strong>{{ pct(blend.weight) }}%</strong> of the song’s
+                  positivity: {{ pct(blend.audio) }} from the sound becomes
+                  {{ pct(blend.valence) }} with the lyrics.
+                </p>
 
-              <div class="quotes">
-                <div v-if="lyrics.highlights.positive.length">
-                  <h3 class="quote-title">Most positive lines</h3>
-                  <blockquote v-for="line in lyrics.highlights.positive" :key="line">
-                    {{ line }}
-                  </blockquote>
+                <ul
+                  v-if="lyrics.emotions.length"
+                  class="emotions"
+                  aria-label="Strongest feelings in the lyrics"
+                >
+                  <li v-for="[emotion, share] in lyrics.emotions" :key="emotion">
+                    <span class="emotion-name">{{ emotion }}</span>
+                    <span class="emotion-bar" aria-hidden="true"
+                      ><span :style="{ width: `${share * 100}%` }"
+                    /></span>
+                    <span class="value">{{ pct(share) }}%</span>
+                  </li>
+                </ul>
+
+                <div class="quotes">
+                  <div v-if="lyrics.highlights.positive.length">
+                    <h3 class="quote-title">Most positive lines</h3>
+                    <blockquote v-for="line in lyrics.highlights.positive" :key="line">
+                      {{ line }}
+                    </blockquote>
+                  </div>
+                  <div v-if="lyrics.highlights.negative.length">
+                    <h3 class="quote-title">Most negative lines</h3>
+                    <blockquote v-for="line in lyrics.highlights.negative" :key="line">
+                      {{ line }}
+                    </blockquote>
+                  </div>
                 </div>
-                <div v-if="lyrics.highlights.negative.length">
-                  <h3 class="quote-title">Most negative lines</h3>
-                  <blockquote v-for="line in lyrics.highlights.negative" :key="line">
-                    {{ line }}
-                  </blockquote>
-                </div>
-              </div>
-            </template>
-          </section>
+              </template>
+            </section>
+          </details>
         </template>
       </template>
     </main>
@@ -368,10 +384,10 @@ function back() {
 }
 .song-shell {
   display: grid;
-  width: min(900px, var(--page-width));
+  width: min(1080px, var(--page-width));
   flex: 1;
   align-content: start;
-  gap: 20px;
+  gap: 32px;
   margin-inline: auto;
   padding-block: var(--page-top) var(--page-bottom);
 }
@@ -387,16 +403,16 @@ function back() {
 /* Header: cover, title, who and how often */
 .song-header {
   display: flex;
-  align-items: flex-start;
-  gap: 24px;
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
 }
 .cover {
-  width: 160px;
-  height: 160px;
+  width: clamp(180px, 26vw, 280px);
+  height: auto;
+  aspect-ratio: 1;
   flex-shrink: 0;
-  border-radius: 14px;
+  border-radius: 2px;
   object-fit: cover;
-  box-shadow: 0 10px 28px rgba(33, 26, 33, 0.14);
 }
 .cover-blank {
   display: grid;
@@ -411,6 +427,10 @@ function back() {
 .song-heading .page-title {
   margin: 0;
   overflow-wrap: anywhere;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 .artist,
 .album,
@@ -432,11 +452,7 @@ function back() {
 
 /* Cards */
 .card {
-  padding: 20px 24px;
-  border: 1px solid var(--ui-border);
-  border-radius: 18px;
-  background: var(--ui-bg-elevated);
-  box-shadow: 0 6px 18px rgba(118, 62, 50, 0.08);
+  min-width: 0;
 }
 .card .sub-header {
   margin: 0 0 8px;
@@ -451,12 +467,10 @@ function back() {
   color: var(--ui-text-muted);
   font: 0.9rem / 1.4 var(--font-sans);
 }
-.kicker {
-  margin: 0 0 6px;
+.reading-label {
+  margin: 0 0 16px;
   color: var(--ui-text-muted);
-  font: 700 0.75rem / 1.2 var(--font-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 500 1rem / 1.4 var(--font-sans);
 }
 .value {
   font-family: var(--font-sans);
@@ -484,7 +498,8 @@ function back() {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 16px;
-  border-left: 6px solid var(--mood);
+  padding: 24px 28px;
+  background: var(--ui-bg-elevated);
 }
 .summary-line {
   margin: 0;
@@ -494,10 +509,10 @@ function back() {
 .panels {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: clamp(28px, 5vw, 64px);
 }
 .reading {
-  border-top: 5px solid var(--mood, var(--ui-border));
+  padding-block: 24px;
 }
 .reading.is-missing .sub-header {
   color: var(--ui-text-muted);
@@ -519,8 +534,7 @@ function back() {
   aspect-ratio: 1;
   margin: 12px 0 0;
   overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: 12px;
+  border-radius: 2px;
 }
 .cell {
   padding: 8px 10px;
@@ -555,7 +569,6 @@ function back() {
 .dot-song {
   border: 3px solid #fff;
   background: var(--mood);
-  box-shadow: 0 2px 8px rgba(33, 26, 33, 0.35);
 }
 .dot-words {
   width: 12px;
@@ -682,7 +695,7 @@ function back() {
 }
 .quotes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
   margin-top: 16px;
 }
@@ -693,10 +706,73 @@ function back() {
 blockquote {
   margin: 0 0 10px;
   padding-left: 12px;
-  border-left: 3px solid var(--ui-border);
   font: italic 1.1rem / 1.4 var(--font-serif);
 }
 
+.panels {
+  align-items: start;
+  padding-block: 8px 16px;
+}
+.bars {
+  gap: 28px;
+  margin-top: 28px;
+}
+.analysis-details {
+  min-width: 0;
+  padding: 24px 28px;
+  background: var(--ui-bg-elevated);
+}
+.analysis-details > summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  list-style: none;
+  font: 600 1.2rem / 1.4 var(--font-sans);
+  transition: color 180ms ease;
+}
+.analysis-details > summary::-webkit-details-marker {
+  display: none;
+}
+.analysis-details > summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 24px;
+}
+.analysis-details[open] > summary::after {
+  content: '\2212';
+}
+.analysis-details > summary:hover {
+  color: var(--ui-primary);
+}
+.analysis-details > summary:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 8px;
+}
+.lyrics-body {
+  padding-top: 28px;
+}
+.analysis-details[open] > :not(summary) {
+  animation: notes-in 240ms ease-out;
+}
+@keyframes notes-in {
+  from {
+    opacity: 0.5;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .analysis-details > summary {
+    transition: none;
+  }
+  .analysis-details[open] > :not(summary) {
+    animation: none;
+  }
+}
 @media (max-width: 768px) {
   .readings,
   .panels {
@@ -708,10 +784,10 @@ blockquote {
     flex-direction: column;
   }
   .cover {
-    width: 120px;
-    height: 120px;
+    width: min(64vw, 240px);
+    height: auto;
   }
-  .card {
+  .summary {
     padding: 16px;
   }
 }

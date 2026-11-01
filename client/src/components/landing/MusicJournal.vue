@@ -1,7 +1,7 @@
 <script setup>
-import { onBeforeUnmount, ref } from 'vue'
+import { defineAsyncComponent, onBeforeUnmount, ref } from 'vue'
 import ButterflyMark from '@/components/layout/ButterflyMark.vue'
-import LandingObject3D from './LandingObject3D.vue'
+const LandingObject3D = defineAsyncComponent(() => import('./LandingObject3D.vue'))
 
 // "Spotify + journal" on the landing page. Dragging the Spotify tile into the
 // journal merges them into the MetaFor butterfly with a burst of notes. The

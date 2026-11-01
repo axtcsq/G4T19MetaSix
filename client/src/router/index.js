@@ -1,18 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { setPageTitle } from '@/utils/pageTitle'
+import { returnPath } from '@/utils/returnPath'
 
-import Landing from '../views/landing.vue'
-import DailyMood from '../views/daily-mood.vue'
-import MoodCalendar from '../views/calendar.vue'
-import Login from '../views/login.vue'
-import Dashboard from '../views/dashboard.vue'
-import PersonalityHub from '../views/personality/personality-hub.vue'
-import Profile from '../views/profile.vue'
-import PersonalityQuiz from '../views/personality/personality-quiz.vue'
-import PersonalityResult from '../views/personality/personality-result.vue'
+const Landing = () => import('../views/landing.vue')
+const DailyMood = () => import('../views/daily-mood.vue')
+const MoodCalendar = () => import('../views/calendar.vue')
+const Login = () => import('../views/login.vue')
+const Dashboard = () => import('../views/dashboard.vue')
+const PersonalityHub = () => import('../views/personality/personality-hub.vue')
+const Profile = () => import('../views/profile.vue')
+const PersonalityQuiz = () => import('../views/personality/personality-quiz.vue')
+const PersonalityResult = () => import('../views/personality/personality-result.vue')
 
 const routes = [
+  { path: '/:pathMatch(.*)*', redirect: '/' },
   {
     path: '/dashboard',
     name: 'dashboard',
@@ -93,6 +95,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || (to.hash ? { el: to.hash } : { top: 0 })
+  },
 })
 
 // Pages that read or write the user's own data need a login first.
@@ -112,11 +117,8 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { next: to.fullPath } }
   }
   if (to.name === 'login' && auth.user) {
-    return typeof to.query.next === 'string' &&
-      to.query.next.startsWith('/') &&
-      !to.query.next.startsWith('//')
-      ? to.query.next
-      : '/dashboard'
+    const next = returnPath(to.query.next)
+    return next.split(/[?#]/)[0] === '/login' ? '/dashboard' : next
   }
 })
 
