@@ -32,9 +32,9 @@ const color = computed(() =>
   height: min(70vmax, 720px);
   background: radial-gradient(
     circle at 0 0,
-    color-mix(in srgb, var(--glow-color) 55%, transparent) 0%,
-    color-mix(in srgb, var(--glow-color) 25%, transparent) 30%,
-    color-mix(in srgb, var(--glow-color) 8%, transparent) 50%,
+    color-mix(in srgb, var(--glow-color) 35%, transparent) 0%,
+    color-mix(in srgb, var(--glow-color) 15%, transparent) 30%,
+    color-mix(in srgb, var(--glow-color) 5%, transparent) 50%,
     transparent 70%
   );
   mix-blend-mode: multiply;
@@ -44,7 +44,7 @@ const color = computed(() =>
 
 :global(.dark .mood-glow) {
   mix-blend-mode: screen;
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 .mood-glow-enter-active,
