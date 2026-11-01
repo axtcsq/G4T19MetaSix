@@ -83,7 +83,7 @@ const moodGlow = computed(() => ({
 }))
 const saving = reactive({})
 // The saved or failed message, shown in the card the toggle is in.
-const messages = reactive({ privacy: '', appearance: '', birthday: '' })
+const messages = reactive({ privacy: '', appearance: '', birthday: '', reminder: '' })
 
 async function toggle(setting) {
   const next = !setting.on
@@ -146,6 +146,26 @@ const birthdayLabel = computed(() =>
       )
     : '',
 )
+
+// The daily check-in reminder. It shows while MetaFor is open, so browser
+// notifications are asked for too, for when the tab is in the background.
+const reminderTime = ref('')
+watch(
+  () => user.value?.preferences?.reminderTime,
+  (saved) => {
+    reminderTime.value = saved ?? ''
+  },
+  { immediate: true },
+)
+const reminderChanged = computed(
+  () => reminderTime.value !== (user.value?.preferences?.reminderTime ?? ''),
+)
+async function saveReminder(time = reminderTime.value || null) {
+  const saved = await saveSettings({ reminderTime: time }, 'reminder')
+  if (saved && time && 'Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission()
+  }
+}
 
 // Dark mode is kept in this browser, not the account. index.html makes light
 // the default.
@@ -468,6 +488,40 @@ const logOut = useLogOut()
           </RouterLink>
         </div>
         <p class="muted small" role="status" aria-live="polite">{{ messages.birthday }}</p>
+      </section>
+
+      <section class="card" aria-labelledby="reminder-title">
+        <h2 id="reminder-title" class="card-title">Daily Reminder</h2>
+        <form class="birthday-form" @submit.prevent="saveReminder()">
+          <label for="reminder-time" class="setting-label">Remind me to check in at</label>
+          <div class="birthday-row">
+            <input id="reminder-time" v-model="reminderTime" class="field" type="time" />
+            <button
+              type="submit"
+              class="glass-action data-button"
+              :disabled="!reminderChanged || !reminderTime || saving.reminder"
+            >
+              Save
+            </button>
+            <button
+              v-if="user?.preferences?.reminderTime"
+              type="button"
+              class="glass-secondary data-button"
+              :disabled="saving.reminder"
+              @click="saveReminder(null)"
+            >
+              Turn off
+            </button>
+          </div>
+          <p class="muted small">
+            {{
+              user?.preferences?.reminderTime
+                ? `If you haven’t checked in by ${user.preferences.reminderTime}, MetaFor will remind you while it’s open.`
+                : 'No reminder set. Pick a time and MetaFor will remind you while it’s open, if you haven’t checked in yet.'
+            }}
+          </p>
+        </form>
+        <p class="muted small" role="status" aria-live="polite">{{ messages.reminder }}</p>
       </section>
 
       <section class="card coming-soon" aria-labelledby="soon-title">

@@ -176,10 +176,10 @@ export function getMe(req, res) {
 }
 
 // PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean,
-//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null }
+//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null }
 // The settings on the profile page. Send only the ones that changed.
 export async function updateSettings(req, res) {
-  const { analyseLyrics, savePlays, moodGlow, birthday } = req.body ?? {};
+  const { analyseLyrics, savePlays, moodGlow, birthday, reminderTime } = req.body ?? {};
   const changes = {};
   if (analyseLyrics !== undefined) {
     if (typeof analyseLyrics !== "boolean") {
@@ -204,6 +204,12 @@ export async function updateSettings(req, res) {
       return res.status(400).json({ error: "Please enter a real birthday that isn't in the future" });
     }
     changes.birthday = birthday;
+  }
+  if (reminderTime !== undefined) {
+    if (reminderTime !== null && (typeof reminderTime !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(reminderTime))) {
+      return res.status(400).json({ error: "reminderTime must be a time like 21:30" });
+    }
+    changes["preferences.reminderTime"] = reminderTime;
   }
   if (!Object.keys(changes).length) {
     return res.status(400).json({ error: "Nothing to change" });

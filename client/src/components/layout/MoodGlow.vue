@@ -1,7 +1,7 @@
 <script setup>
 // A soft light in the top-left corner, in the colour of today's main mood.
 // Turned on and off on the profile page.
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTodayMoodStore } from '@/stores/todayMood'
 
@@ -9,15 +9,6 @@ const auth = useAuthStore()
 const today = useTodayMoodStore()
 
 const enabled = computed(() => Boolean(auth.user) && auth.user.preferences?.moodGlow !== false)
-
-watch(
-  () => auth.user?.id,
-  (id) => {
-    if (id) today.load()
-    else today.clear()
-  },
-  { immediate: true },
-)
 
 const color = computed(() =>
   today.mainMood ? `var(--color-mood-${today.mainMood.toLowerCase()}-400)` : null,
