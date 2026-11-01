@@ -8,12 +8,12 @@ import PersonalityBreakdown from '@/components/personality/PersonalityBreakdown.
 import ShareCardDialog from '@/components/personality/ShareCardDialog.vue'
 import TraitBar from '@/components/personality/TraitBar.vue'
 import WaveBackground from '@/components/personality/WaveBackground.vue'
-import musicMbtiImage from '@/assets/images/personality/music-mbti.png'
-import spotifyHoroscopeImage from '@/assets/images/personality/spotify-horoscope.png'
-import auxAlignmentImage from '@/assets/images/personality/aux-alignment.png'
-import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.png'
-import soundwoodsImage from '@/assets/images/personality/soundwoods.png'
-import musicalNeedsImage from '@/assets/images/personality/musical-needs.png'
+import musicMbtiImage from '@/assets/images/personality/music-mbti.webp'
+import spotifyHoroscopeImage from '@/assets/images/personality/spotify-horoscope.webp'
+import auxAlignmentImage from '@/assets/images/personality/aux-alignment.webp'
+import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.webp'
+import soundwoodsImage from '@/assets/images/personality/soundwoods.webp'
+import musicalNeedsImage from '@/assets/images/personality/musical-needs.webp'
 
 // Card images by quiz id, from Unsplash (credits in docs/PersonalityQuiz.md).
 // Quizzes without one show the lilac placeholder.
@@ -1162,6 +1162,7 @@ onMounted(loadPage)
   }
 }
 
+
 /* Patterns while it loads, has no quizzes yet, or fails. */
 .patterns-loading,
 .patterns-empty {
@@ -1235,8 +1236,14 @@ onMounted(loadPage)
 
 .song-body {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 1.25rem;
+}
+
+.song-body > div,
+.type-header > div {
+  min-width: 0;
 }
 
 .song-art {
@@ -1333,7 +1340,7 @@ onMounted(loadPage)
   }
 
   .song-actions {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
   }
 
@@ -1383,6 +1390,16 @@ onMounted(loadPage)
 
   .share-label {
     display: none;
+  }
+}
+@media (max-width: 400px) {
+  .type-header,
+  .song-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .song-actions {
+    grid-template-columns: 1fr;
   }
 }
 </style>

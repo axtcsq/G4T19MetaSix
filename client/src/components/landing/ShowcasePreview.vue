@@ -237,6 +237,7 @@ onBeforeUnmount(() => {
 /* The preview cards share the feature cards' look. */
 .preview {
   display: flex;
+  min-width: 0;
   min-height: 240px;
   flex-direction: column;
   justify-content: center;
@@ -508,7 +509,7 @@ onBeforeUnmount(() => {
 }
 .preview-trait {
   display: grid;
-  grid-template-columns: 5.5rem 1fr 5.5rem;
+  grid-template-columns: minmax(0, 5.5rem) minmax(20px, 1fr) minmax(0, 5.5rem);
   align-items: center;
   gap: 10px;
   color: var(--ui-text-muted);
@@ -545,6 +546,17 @@ onBeforeUnmount(() => {
   .preview {
     min-height: 0;
     padding: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .preview-listen {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .preview-record {
+    align-self: center;
   }
 }
 

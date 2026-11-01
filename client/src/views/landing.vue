@@ -1,7 +1,5 @@
 <script setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { getDemoStatus } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
@@ -10,6 +8,7 @@ import MusicJournal from '@/components/landing/MusicJournal.vue'
 import ShowcasePreview from '@/components/landing/ShowcasePreview.vue'
 import TasteQuiz from '@/components/landing/TasteQuiz.vue'
 import StatementLine from '@/components/landing/StatementLine.vue'
+import StoryMode from '@/components/landing/StoryMode.vue'
 import SongSearch from '@/components/landing/SongSearch.vue'
 
 defineOptions({ name: 'LandingPage' })
@@ -25,29 +24,9 @@ const fullTitle = "What's MetaFor?"
 const displayedTitle = ref('')
 let typingTimer
 
-// The hero and the closing banner log people in straight from here, the same
-// way as the login page.
-const router = useRouter()
 const auth = useAuthStore()
-// The test account is offered only when the server has DEMO_LOGIN=true.
-const demoEnabled = ref(false)
-const isDemoLoading = ref(false)
-const loginError = ref('')
 
-async function useTestAccount() {
-  isDemoLoading.value = true
-  loginError.value = ''
-  try {
-    await auth.demoLogin()
-    router.push('/dashboard')
-  } catch (error) {
-    loginError.value = error.message
-  } finally {
-    isDemoLoading.value = false
-  }
-}
-
-onMounted(async () => {
+onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // The banner shows the video's first frame instead of playing it.
     bannerVideo.value?.pause()
@@ -59,12 +38,6 @@ onMounted(async () => {
       displayedTitle.value = fullTitle.slice(0, character)
       if (character >= fullTitle.length) window.clearInterval(typingTimer)
     }, 95)
-  }
-
-  try {
-    demoEnabled.value = (await getDemoStatus()).enabled
-  } catch {
-    demoEnabled.value = false
   }
 })
 
@@ -248,8 +221,9 @@ const showcase = [
           playlists.
         </p>
 
-        <div v-if="auth.user" class="hero-actions">
-          <RouterLink class="get-started glass-action" to="/dashboard">Go to your dashboard</RouterLink>
+        <div class="hero-actions">
+          <RouterLink v-if="auth.user" class="get-started glass-action" to="/dashboard">Go to your dashboard</RouterLink>
+          <div class="hero-story"><StoryMode /></div>
         </div>
         <div class="hero-mood" role="group" aria-labelledby="hero-mood-label">
           <p id="hero-mood-label" class="hero-mood-label">How are you feeling right now?</p>
@@ -537,7 +511,7 @@ const showcase = [
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   align-items: center;
   gap: 48px;
   padding-block: 72px var(--section-space);
@@ -561,6 +535,9 @@ const showcase = [
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+.hero-story {
+  display: none;
 }
 .privacy-note,
 .login-error {
@@ -876,7 +853,7 @@ const showcase = [
 }
 .showcase-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: clamp(32px, 6vw, 80px);
 }
@@ -1075,6 +1052,12 @@ const showcase = [
   }
   .showcase-row:nth-child(odd of .showcase-row) .preview {
     order: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-story {
+    display: block;
   }
 }
 

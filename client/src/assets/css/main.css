@@ -143,6 +143,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Long names and pasted text must reflow without widening the page. */
+main {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Light theme */
 :root {
   --scroll-thumb: #9a8d85;

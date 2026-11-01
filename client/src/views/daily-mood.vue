@@ -220,7 +220,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
-                {{ journalEntry.length }} / 5000 characters. Write a reflection, add a drawing or pick a song.
+                {{ journalEntry.length }} / 5000 characters. Write a reflection, add a drawing or
+                pick a song.
               </p>
             </div>
           </form>
@@ -346,11 +347,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
           </section>
         </details>
         <!-- Folded away like the drawing, for anyone who wants to add a song. -->
-        <details
-          class="song-disclosure"
-          :open="showSong"
-          @toggle="showSong = $event.target.open"
-        >
+        <details class="song-disclosure" :open="showSong" @toggle="showSong = $event.target.open">
           <summary>
             <span class="disclosure-text">
               <span id="song-of-the-day-heading" class="section-title">Song of the Day</span>
@@ -409,7 +406,10 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   border-radius: 999px;
   color: #fff;
   background: color-mix(in srgb, #26844a 92%, transparent);
-  box-shadow: 0 10px 30px rgba(29, 116, 64, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 10px 30px rgba(29, 116, 64, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   backdrop-filter: blur(20px) saturate(1.5);
   font-size: 0.98rem;
@@ -431,7 +431,9 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 
 .entry-toast-enter-active,
 .entry-toast-leave-active {
-  transition: opacity 220ms ease, transform 220ms ease;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 .entry-toast-enter-from,
@@ -442,7 +444,9 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 
 .dark .entry-toast {
   border-color: rgba(255, 255, 255, 0.38);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -512,15 +516,17 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0;
+  padding: 20px clamp(12px, 3vw, 24px);
   border-radius: 16px;
   list-style: none;
   cursor: pointer;
+  transition: background-color 220ms ease;
 }
 :is(.drawing-disclosure, .song-disclosure) summary::-webkit-details-marker {
   display: none;
 }
-:is(.drawing-disclosure, .song-disclosure) summary:hover {
+:is(.drawing-disclosure, .song-disclosure) summary:hover,
+:is(.drawing-disclosure, .song-disclosure) summary:focus-visible {
   background: color-mix(in srgb, var(--ui-primary) 6%, transparent);
 }
 :is(.drawing-disclosure, .song-disclosure) summary:focus-visible {
@@ -530,6 +536,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 .disclosure-text {
   display: grid;
   flex: 1;
+  min-width: 0;
   gap: 2px;
 }
 .disclosure-optional {
@@ -551,9 +558,10 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   transform: rotate(180deg);
 }
 .drawing-section {
-  padding: 0 0 20px;
+  padding: 20px 0;
 }
 @media (prefers-reduced-motion: reduce) {
+  :is(.drawing-disclosure, .song-disclosure) summary,
   .disclosure-chevron {
     transition: none;
   }

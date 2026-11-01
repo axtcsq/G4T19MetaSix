@@ -89,6 +89,7 @@ const wave = Array.from({ length: 241 }, (_, i) => {
   min-width: 0;
   position: relative;
   height: 28px;
+  overflow: hidden;
   pointer-events: none;
 }
 .ambient-wave::before {
