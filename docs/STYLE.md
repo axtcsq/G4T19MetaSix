@@ -172,6 +172,23 @@ so they take the text colour and work in both modes. Keep them `1rem` to
 `1.25rem` beside text, and add `aria-hidden="true"` when a label is next to
 them.
 
+### Logo and butterfly
+
+In the app, draw the butterfly with `ButterflyMark.vue` (the share card in
+`utils/shareCard.js` uses the same wing paths). Exported files for slides,
+reports and the README live in `docs/brand/`:
+
+| File | Use for |
+| --- | --- |
+| `metafor-butterfly.svg`, `metafor-butterfly.png` | The butterfly on its own (`#b9543f` line wings) |
+| `metafor-logo.png` | Full logo, transparent, for light backgrounds |
+| `metafor-logo-cream.png` | Full logo on a solid cream (`#faf8f6`) background, for places without transparency |
+| `metafor-logo-dark.png` | Full logo, transparent, for dark backgrounds (cream wordmark, light terracotta wings) |
+| `metafor-style-reference.png` | One-page sheet of the colours, fonts and type scale from `main.css` |
+
+The favicon (`client/public/favicon.ico`) is the butterfly. If you change the
+wing paths, update the component, the share card and these files together.
+
 ## Motion
 
 - Hovers and small state changes: `140ms` to `200ms ease`. Bigger panels can take up to `300ms`.
