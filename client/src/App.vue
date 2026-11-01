@@ -6,7 +6,7 @@ import ListeningDock from "./components/listening/ListeningDock.vue"
 <template>
   <UApp>
     <Navbar />
-    <RouterView />
+    <RouterView :key="$route.path" />
     <ListeningDock />
   </UApp>
 </template>

@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDemoStatus, spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
+import { returnPath } from '@/utils/returnPath'
 import SiteFooter from '@/components/layout/footer.vue'
 defineOptions({ name: 'LoginPage' })
 
@@ -39,9 +40,7 @@ async function useTestAccount() {
   demoError.value = ''
   try {
     await auth.demoLogin()
-    router.replace(
-      next.value?.startsWith('/') && !next.value.startsWith('//') ? next.value : '/dashboard',
-    )
+    await router.replace(returnPath(next.value))
   } catch (error) {
     demoError.value = error.message
   } finally {
