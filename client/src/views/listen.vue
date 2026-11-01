@@ -65,7 +65,10 @@ function clearSearch() {
 function connect() {
   room.connect()
 }
-onMounted(() => {
+// After a refresh the login check is still running when the page opens, so
+// wait for it before deciding whether Spotify is connected.
+onMounted(async () => {
+  if (!auth.checked) await auth.load()
   room.initialize()
 })
 onBeforeUnmount(() => {
@@ -82,7 +85,7 @@ onBeforeUnmount(() => {
       <header class="room-heading">
         <div>
           <h1 class="page-title">Listening Room</h1>
-          <p>Put a record on</p>
+          <p>Put on a record</p>
         </div>
         <div class="connection" :class="{ 'is-connected': connected }">
           <div class="connection-state" role="status">

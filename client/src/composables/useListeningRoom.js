@@ -144,7 +144,9 @@ function applyState(state) {
     return
   }
   paused.value = state.paused
-  position.value = state.position
+  // Spotify can report a position past the end of the song, so the time
+  // stops at the song's length instead.
+  position.value = state.duration ? Math.min(state.position, state.duration) : state.position
   duration.value = state.duration
   const current = state.track_window?.current_track
   if (current && current.id !== track.value.id) updateArtwork(current)
