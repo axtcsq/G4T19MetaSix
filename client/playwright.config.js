@@ -6,6 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 2,
+  expect: { timeout: 15000 },
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:5199',
@@ -13,10 +14,18 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     timezoneId: 'Asia/Singapore',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'mobile-chromium',
+      testIgnore: '**/responsive.spec.js',
+      use: { ...devices['Pixel 7'] },
+    },
+  ],
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 5199 --strictPort',
+    command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 5199 --strictPort',
     url: 'http://127.0.0.1:5199',
     reuseExistingServer: false,
+    timeout: 120000,
   },
 })
