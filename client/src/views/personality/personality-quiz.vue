@@ -5,13 +5,15 @@ import { getQuiz, submitQuiz } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/layout/footer.vue'
 import { setPageTitle } from '@/utils/pageTitle'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 
 const quiz = ref(null)
 const answers = ref({})
-const birthday = ref('')
+// Filled in from the profile when the user has saved one there.
+const birthday = ref(useAuthStore().user?.birthday ?? '')
 const currentIndex = ref(0)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
@@ -21,8 +23,6 @@ const submitError = ref('')
 const today = new Date().toISOString().slice(0, 10)
 
 // The birthday, when a quiz needs one, is asked before the questions.
-// TODO: read it from the user's profile once accounts are merged, and only
-// ask when it's missing.
 const steps = computed(() => [
   ...(quiz.value?.needsBirthday ? [{ type: 'birthday', id: 'birthday' }] : []),
   ...(quiz.value?.questions ?? []).map((question) => ({ type: 'question', id: question.id, question })),

@@ -22,7 +22,7 @@ const SIGNS = [
   ["Capricorn", "earth", 12, 22],
 ];
 
-const SIGN_TRAITS = {
+export const SIGN_TRAITS = {
   Aries: "Bold and impatient, you want the song to start with the chorus.",
   Taurus: "Loyal to what feels good, you'll replay a comfort album for years.",
   Gemini: "Curious and restless, your queue changes genre every three songs.",
@@ -37,7 +37,7 @@ const SIGN_TRAITS = {
   Pisces: "A dreamer, you drift into music and come back changed.",
 };
 
-const ELEMENT_TRAITS = {
+export const ELEMENT_TRAITS = {
   fire: "As a fire sign, music is fuel: you play it to get moving.",
   air: "As an air sign, music is conversation: you love sharing and swapping songs.",
   earth: "As an earth sign, music is grounding: you return to what's reliable.",
@@ -60,7 +60,7 @@ export function starSign(month, day) {
   return { name: sign[0], element: sign[1] };
 }
 
-function parseBirthday(value) {
+export function parseBirthday(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
 
   const [year, month, day] = value.split("-").map(Number);

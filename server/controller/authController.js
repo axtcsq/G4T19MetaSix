@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { encrypt } from "../lib/crypto.js";
 import User from "../models/User.js";
 import { authorizeUrl, exchangeCode, fetchProfile, isSpotifyLinked } from "../services/spotifyAuth.js";
+import { ELEMENT_TRAITS, parseBirthday, SIGN_TRAITS, starSign } from "../data/quizzes/spotifyHoroscope.js";
 
 // A login that isn't finished within 10 minutes has to start again.
 const LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
@@ -45,6 +46,15 @@ function startSession(req, userId) {
   });
 }
 
+// The star sign for a "YYYY-MM-DD" birthday, with what it says about how
+// the user listens. null without a birthday.
+function horoscope(birthday) {
+  const date = parseBirthday(birthday);
+  if (!date) return null;
+  const sign = starSign(date.month, date.day);
+  return { ...sign, reading: `${SIGN_TRAITS[sign.name]} ${ELEMENT_TRAITS[sign.element]}` };
+}
+
 // The user fields the client may see. Never includes the refresh token.
 export function publicUser(user) {
   return {
@@ -53,6 +63,8 @@ export function publicUser(user) {
     avatarUrl: user.avatarUrl ?? null,
     timezone: user.timezone,
     isDemo: user.isDemo,
+    birthday: user.birthday ?? null,
+    starSign: horoscope(user.birthday),
     // False for the demo user, and for users who need to log in again.
     spotifyLinked: isSpotifyLinked(user),
     preferences: user.preferences,
@@ -163,10 +175,11 @@ export function getMe(req, res) {
   res.json(publicUser(req.user));
 }
 
-// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean, moodGlow?: boolean }
-// The toggles on the profile page. Send only the ones that changed.
+// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean,
+//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null }
+// The settings on the profile page. Send only the ones that changed.
 export async function updateSettings(req, res) {
-  const { analyseLyrics, savePlays, moodGlow } = req.body ?? {};
+  const { analyseLyrics, savePlays, moodGlow, birthday } = req.body ?? {};
   const changes = {};
   if (analyseLyrics !== undefined) {
     if (typeof analyseLyrics !== "boolean") {
@@ -185,6 +198,12 @@ export async function updateSettings(req, res) {
       return res.status(400).json({ error: "moodGlow must be true or false" });
     }
     changes["preferences.moodGlow"] = moodGlow;
+  }
+  if (birthday !== undefined) {
+    if (birthday !== null && !parseBirthday(birthday)) {
+      return res.status(400).json({ error: "Please enter a real birthday that isn't in the future" });
+    }
+    changes.birthday = birthday;
   }
   if (!Object.keys(changes).length) {
     return res.status(400).json({ error: "Nothing to change" });

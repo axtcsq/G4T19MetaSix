@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema(
     // IANA timezone sent by the browser at login, e.g. "Asia/Singapore".
     timezone: { type: String, default: "UTC" },
     isDemo: { type: Boolean, default: false },
+    // "YYYY-MM-DD", set on the profile. Used for the star sign.
+    birthday: { type: String, default: null },
     spotify: {
       // AES-256-GCM encrypted. Never sent to the client.
       refreshToken: { type: String, select: false },

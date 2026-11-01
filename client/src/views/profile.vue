@@ -1,7 +1,7 @@
 <script setup>
 // The profile page: who is logged in, their MetaFor personality, a few
 // listening facts and the privacy settings. Editing the profile comes later.
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
 import { getPersonality } from '@/api/quiz'
@@ -83,7 +83,7 @@ const moodGlow = computed(() => ({
 }))
 const saving = reactive({})
 // The saved or failed message, shown in the card the toggle is in.
-const messages = reactive({ privacy: '', appearance: '' })
+const messages = reactive({ privacy: '', appearance: '', birthday: '' })
 
 async function toggle(setting) {
   const next = !setting.on
@@ -108,6 +108,44 @@ async function toggle(setting) {
     saving[setting.key] = false
   }
 }
+
+// Saves settings that aren't on/off switches, like the birthday.
+async function saveSettings(changes, card) {
+  saving[card] = true
+  messages[card] = ''
+  try {
+    auth.user = await updateSettings(changes)
+    messages[card] = 'Saved.'
+    return true
+  } catch (error) {
+    messages[card] = `Couldn’t save: ${error.message}`
+    return false
+  } finally {
+    saving[card] = false
+  }
+}
+
+// The birthday, for the star sign and the Spotify Horoscope quiz.
+const today = new Date().toISOString().slice(0, 10)
+const birthday = ref('')
+watch(
+  () => user.value?.birthday,
+  (saved) => {
+    birthday.value = saved ?? ''
+  },
+  { immediate: true },
+)
+const birthdayChanged = computed(() => birthday.value !== (user.value?.birthday ?? ''))
+function saveBirthday() {
+  saveSettings({ birthday: birthday.value || null }, 'birthday')
+}
+const birthdayLabel = computed(() =>
+  user.value?.birthday
+    ? new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(
+        new Date(user.value.birthday),
+      )
+    : '',
+)
 
 // Dark mode is kept in this browser, not the account. index.html makes light
 // the default.
@@ -402,9 +440,39 @@ const logOut = useLogOut()
         <p class="muted small" role="status" aria-live="polite">{{ messages.appearance }}</p>
       </section>
 
+      <section class="card" aria-labelledby="birthday-title">
+        <h2 id="birthday-title" class="card-title">Birthday and Horoscope</h2>
+        <form class="birthday-form" @submit.prevent="saveBirthday">
+          <label for="birthday" class="setting-label">Your birthday</label>
+          <div class="birthday-row">
+            <input id="birthday" v-model="birthday" class="field" type="date" :max="today" min="1900-01-01" />
+            <button
+              type="submit"
+              class="glass-action data-button"
+              :disabled="!birthdayChanged || saving.birthday"
+            >
+              Save
+            </button>
+          </div>
+          <p class="muted small">Only used for your star sign. Clear the date and save to remove it.</p>
+        </form>
+        <div v-if="user?.starSign" class="horoscope">
+          <p class="type-name">{{ user.starSign.name }}</p>
+          <p class="muted small">
+            Born {{ birthdayLabel }}, {{ user.starSign.element === 'air' || user.starSign.element === 'earth' ? 'an' : 'a' }}
+            {{ user.starSign.element }} sign.
+          </p>
+          <p class="muted">{{ user.starSign.reading }}</p>
+          <RouterLink class="text-link" :to="{ name: 'personality-quiz', params: { quizId: 'spotify-horoscope' } }">
+            Read your full Spotify Horoscope →
+          </RouterLink>
+        </div>
+        <p class="muted small" role="status" aria-live="polite">{{ messages.birthday }}</p>
+      </section>
+
       <section class="card coming-soon" aria-labelledby="soon-title">
         <h2 id="soon-title" class="card-title">Coming Soon</h2>
-        <p class="muted">Editing your profile and your birthday for Spotify Horoscope.</p>
+        <p class="muted">Editing your name and profile picture.</p>
       </section>
 
       <button type="button" class="glass-action log-out" @click="logOut">Log out</button>
@@ -665,6 +733,47 @@ dd {
   .switch-thumb {
     transition: none;
   }
+}
+
+.birthday-form {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.birthday-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.field {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 12px;
+  color: var(--pq-on-surface);
+  background: var(--ui-bg-elevated);
+  font: 400 1rem var(--font-sans);
+  color-scheme: light dark;
+}
+
+.field:focus-visible {
+  outline: 3px solid var(--pq-focus);
+  outline-offset: 2px;
+}
+
+.horoscope {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pq-border);
+}
+
+.horoscope .text-link {
+  margin-top: 0.5rem;
 }
 
 .data-title {
