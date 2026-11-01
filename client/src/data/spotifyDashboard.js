@@ -60,10 +60,6 @@ export function getDashboard(period, history = [], now = new Date()) {
     songs: [...songs.values()].sort((a, b) => b[period] - a[period]).slice(0, 5),
     hourly,
     daily,
-    repeatListening: [
-      { name: 'First play in returned history', value: songs.size, color: 'var(--dash-meter)' },
-      { name: 'Repeat plays', value: items.length - songs.size, color: 'var(--dash-strong)' },
-    ],
     metric: 'plays',
     peak: items.length
       ? new Date(2000, 0, 1, peak).toLocaleTimeString([], { hour: 'numeric' })

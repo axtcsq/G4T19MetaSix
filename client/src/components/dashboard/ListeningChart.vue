@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 const props = defineProps({
   type: { type: String, required: true },
   data: { type: Object, required: true },
+  paused: Boolean,
 })
 const peakHour = computed(() => props.data.hourly.indexOf(Math.max(...props.data.hourly)))
 const formatHour = (i) => `${i % 12 || 12} ${i < 12 ? 'am' : 'pm'}`
@@ -10,12 +11,24 @@ const dailyMaximum = computed(() => Math.max(1, ...props.data.daily.map((day) =>
 const selectedDay = ref(null)
 const selectedHour = ref(null)
 const dayReadout = computed(() => props.data.daily.find((day) => day.date === selectedDay.value))
-const calendarOffset = computed(
-  () => (new Date(`${props.data.daily[0]?.date}T00:00:00`).getDay() + 6) % 7,
+
+// The days equaliser: one column of blocks per day, the busiest day full.
+// A month only labels every fifth date, so thirty columns still fit a phone.
+const EQUALISER_BLOCKS = 10
+const busiestDay = computed(() =>
+  props.data.daily.findIndex((day) => day.value === dailyMaximum.value),
 )
-const repeatTotal = computed(() =>
-  props.data.repeatListening.reduce((sum, item) => sum + item.value, 0),
-)
+const isMonth = computed(() => props.data.period === 'monthly')
+const litBlocks = (value) =>
+  value ? Math.max(1, Math.round((value / dailyMaximum.value) * EQUALISER_BLOCKS)) : 0
+const dayLabel = (point, index) =>
+  isMonth.value ? (index === 0 || (index + 1) % 5 === 0 ? index + 1 : '') : point.label
+// Each column bounces at its own pace, so the bars never move in step. The
+// bounce waits for the rise-in to finish.
+const bounceStyle = (index) => ({
+  '--bounce-time': `${1.6 + ((index * 7) % 5) * 0.22}s`,
+  '--bounce-delay': `${0.6 + ((index * 3) % 7) * 0.15}s`,
+})
 
 // The listening clock: one wedge per hour around a 24-hour dial, midnight at
 // the top and noon at the bottom. Longer wedges mean more recorded plays.
@@ -87,80 +100,48 @@ onBeforeUnmount(() => {
   <div class="listening-chart" :class="`chart-${type}`">
     <template v-if="type === 'days'">
       <p class="chart-explanation">Plays by date in the returned Spotify history.</p>
-      <template v-if="data.period === 'monthly'">
-        <div class="calendar-weekdays" aria-hidden="true">
-          <span v-for="(day, index) in ['M', 'T', 'W', 'T', 'F', 'S', 'S']" :key="index">{{
-            day
-          }}</span>
-        </div>
-        <ol class="play-calendar" aria-label="Recorded plays by date">
-          <li
-            v-for="(point, index) in data.daily"
-            :key="point.date"
-            :style="index === 0 ? { gridColumnStart: calendarOffset + 1 } : null"
+      <ol
+        class="play-equaliser"
+        :class="{ 'is-month': isMonth, 'is-paused': paused }"
+        :style="{ '--days': data.daily.length }"
+        aria-label="Recorded plays by day"
+      >
+        <li v-for="(point, index) in data.daily" :key="point.date">
+          <button
+            type="button"
+            :aria-label="`${point.label}: ${point.value} recorded plays`"
+            :aria-pressed="selectedDay === point.date"
+            @pointerenter="selectedDay = point.date"
+            @focus="selectedDay = point.date"
+            @click="selectedDay = point.date"
           >
-            <button
-              type="button"
-              :aria-label="`${point.label}: ${point.value} recorded plays`"
-              :aria-pressed="selectedDay === point.date"
-              :class="{ 'has-plays': point.value > 0 }"
-              :style="{
-                '--intensity': point.value ? 0.18 + (0.82 * point.value) / dailyMaximum : 0,
-              }"
-              @pointerenter="selectedDay = point.date"
-              @focus="selectedDay = point.date"
-              @click="selectedDay = point.date"
+            <strong
+              v-if="!isMonth || index === busiestDay"
+              class="day-value"
+              :class="{ empty: !point.value }"
+              aria-hidden="true"
+              >{{ point.value }}</strong
             >
-              {{ index + 1 }}
-            </button>
-          </li>
-        </ol>
-        <p class="calendar-readout" aria-live="polite">
-          {{
-            dayReadout
-              ? `${dayReadout.label}: ${dayReadout.value} recorded plays`
-              : 'Select a date to see recorded plays.'
-          }}
-        </p>
-      </template>
-      <ol v-else class="daily-plays" aria-label="Recorded plays by day">
-        <li
-          v-for="point in data.daily"
-          :key="point.date"
-          tabindex="0"
-          :aria-label="`${point.label}: ${point.value} recorded plays`"
-        >
-          <span>{{ point.label }}</span>
-          <div class="bar-track" aria-hidden="true">
-            <span :style="{ width: `${(point.value / dailyMaximum) * 100}%` }" />
-          </div>
-          <strong>{{ point.value }}</strong>
+            <span class="day-track" aria-hidden="true">
+              <span
+                class="day-blocks"
+                :class="{ busiest: index === busiestDay }"
+                :style="bounceStyle(index)"
+              >
+                <span v-for="block in litBlocks(point.value)" :key="block" />
+              </span>
+            </span>
+            <span class="day-label" aria-hidden="true">{{ dayLabel(point, index) }}</span>
+          </button>
         </li>
       </ol>
-    </template>
-    <template v-else-if="type === 'repeats'">
-      <p class="chart-explanation">How often songs appeared again in the returned history.</p>
-      <ul class="repeat-plays" aria-label="First and repeat plays">
-        <li
-          v-for="item in data.repeatListening"
-          :key="item.name"
-          tabindex="0"
-          :aria-label="`${item.name}: ${item.value} plays`"
-        >
-          <div>
-            <span>{{ item.name }}</span
-            ><strong>{{ item.value }} {{ item.value === 1 ? 'play' : 'plays' }}</strong>
-          </div>
-          <div class="bar-track" aria-hidden="true">
-            <span
-              :style="{
-                width: `${repeatTotal ? (item.value / repeatTotal) * 100 : 0}%`,
-                background: item.color,
-              }"
-            />
-          </div>
-        </li>
-      </ul>
+      <p class="calendar-readout" aria-live="polite">
+        {{
+          dayReadout
+            ? `${dayReadout.label}: ${dayReadout.value} recorded plays`
+            : 'Select a day to see its plays.'
+        }}
+      </p>
     </template>
     <template v-else-if="type === 'hours'">
       <p class="hours-summary">
@@ -233,76 +214,101 @@ onBeforeUnmount(() => {
   </div>
 </template>
 <style scoped>
-.calendar-weekdays,
-.play-calendar {
+/* Each day is a column of ten block slots, lit from the bottom. The lit
+   blocks rise in when the chart appears, then bounce gently. */
+.play-equaliser {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(var(--days), minmax(0, 1fr));
+  gap: 8px;
   padding: 0;
   margin: 0;
   list-style: none;
-  text-align: center;
   font: 12px var(--font-sans);
 }
-.calendar-weekdays {
-  margin-bottom: 8px;
+.play-equaliser.is-month {
+  gap: 3px;
+}
+.play-equaliser button {
+  display: grid;
+  grid-template-rows: 20px 147px 18px;
+  justify-items: center;
+  align-items: end;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
   color: var(--dash-muted);
 }
-.play-calendar button {
-  position: relative;
-  isolation: isolate;
+/* Fixed rows, so a month's columns without a number still line up. */
+.day-value {
+  grid-row: 1;
+  font: 600 13px var(--font-sans);
+  color: var(--dash-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.day-value.empty {
+  color: var(--dash-muted);
+  font-weight: 400;
+}
+.day-track {
+  grid-row: 2;
+  display: flex;
+  align-items: flex-end;
+  width: min(100%, 30px);
+  height: 147px;
+  background: repeating-linear-gradient(to top, var(--dash-rule) 0 12px, transparent 12px 15px);
+}
+.day-blocks {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
   width: 100%;
-  min-height: 36px;
-  cursor: pointer;
-  border-radius: 5px;
-  font: 13px var(--font-sans);
-  background: var(--dash-rule);
+  transform-origin: bottom;
+  animation:
+    equaliser-rise 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    equaliser-bounce var(--bounce-time) ease-in-out var(--bounce-delay) infinite alternate;
 }
-.play-calendar button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
+.day-blocks span {
+  flex: 0 0 12px;
   background: var(--dash-meter);
-  opacity: var(--intensity);
-  z-index: -1;
+  transition: filter 180ms;
 }
-.play-calendar button:hover,
-.play-calendar button[aria-pressed='true'] {
-  outline: 2px solid var(--dash-strong);
-  outline-offset: 1px;
+.day-blocks.busiest span {
+  background: var(--dash-strong);
+}
+.day-label {
+  grid-row: 3;
+  white-space: nowrap;
+}
+.play-equaliser button:is(:hover, [aria-pressed='true']) .day-blocks span {
+  filter: brightness(0.8);
+}
+.play-equaliser button:is(:hover, [aria-pressed='true']) .day-label {
+  color: var(--dash-ink);
+}
+.play-equaliser button:focus-visible {
+  outline: 2px solid var(--dash-accent);
+  outline-offset: 3px;
+}
+.play-equaliser.is-paused .day-blocks {
+  animation-play-state: paused;
+}
+@keyframes equaliser-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes equaliser-bounce {
+  to {
+    transform: scaleY(0.86);
+  }
 }
 .calendar-readout {
   min-height: 24px;
   margin-top: 12px;
   font: 13px/1.5 var(--font-sans);
   color: var(--dash-muted);
-}
-.bar-track span {
-  transform-origin: bottom left;
-  animation: chart-fill 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  transition: filter 180ms;
-}
-.daily-plays li:is(:hover, :focus-visible) .bar-track span,
-.repeat-plays li:is(:hover, :focus-visible) .bar-track span {
-  filter: brightness(0.8);
-}
-.daily-plays li:focus-visible,
-.repeat-plays li:focus-visible {
-  outline: 2px solid var(--dash-accent);
-  outline-offset: 4px;
-}
-.chart-days .bar-track span,
-.chart-repeats .bar-track span {
-  animation-name: chart-fill;
-}
-@keyframes chart-fill {
-  from {
-    transform: scaleX(0.1);
-  }
-  to {
-    transform: scaleX(1);
-  }
 }
 @keyframes clock-grow {
   from {
@@ -315,7 +321,7 @@ onBeforeUnmount(() => {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bar-track span,
+  .day-blocks,
   .clock-wedges,
   .clock-hand,
   .hour-wedge {
@@ -323,53 +329,12 @@ onBeforeUnmount(() => {
     transition: none;
   }
 }
-.daily-plays,
-.repeat-plays {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 12px;
-}
-.daily-plays li {
-  display: grid;
-  grid-template-columns: 70px minmax(20px, 1fr) 32px;
-  align-items: center;
-  gap: 12px;
-}
-.daily-plays strong,
-.repeat-plays strong {
-  font: 600 13px var(--font-sans);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.daily-plays .bar-track span {
-  background: var(--dash-meter);
-}
-.repeat-plays li > div:first-child {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
-  align-items: baseline;
-}
-.repeat-plays {
-  gap: 24px;
-}
 .listening-chart {
   font: var(--text-body)/1.5 var(--font-serif);
 }
 .listening-chart .chart-explanation {
   margin: 0 0 18px;
   color: var(--dash-muted);
-}
-.bar-track {
-  height: 10px;
-  background: var(--dash-rule);
-}
-.bar-track span {
-  display: block;
-  height: 100%;
 }
 .listening-chart .hours-summary {
   font-size: var(--text-quote);

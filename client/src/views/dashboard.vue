@@ -9,6 +9,7 @@ import MoodMusicChart from '@/components/dashboard/MoodMusicChart.vue'
 import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
 import ArtistRecords from '@/components/dashboard/ArtistRecords.vue'
 import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
+import MonthMoods from '@/components/dashboard/MonthMoods.vue'
 import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
@@ -278,12 +279,17 @@ watch(
             </p>
           </article>
           <article class="chart-panel">
-            <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
-            <ListeningChart :key="`days-${period}`" type="days" :data="data" />
+            <div class="panel-heading"><h3>Month at a Glance</h3></div>
+            <MonthMoods />
           </article>
           <article class="chart-panel">
-            <div class="panel-heading"><h3>Repeat Listening</h3></div>
-            <ListeningChart :key="`repeats-${period}`" type="repeats" :data="data" />
+            <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
+            <ListeningChart
+              :key="`days-${period}`"
+              type="days"
+              :data="data"
+              :paused="motionPaused"
+            />
           </article>
         </section>
       </template>
