@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
@@ -31,6 +31,7 @@ const journalIdea = ref('')
 const isGeneratingIdea = ref(false)
 const ideaError = ref('')
 const ideaStatus = ref('')
+let saveStatusTimer
 
 const canSave = computed(
   () =>
@@ -71,7 +72,7 @@ async function saveEntry() {
     })
 
     logs.value = [savedEntry, ...logs.value]
-    saveStatus.value = 'Entry saved.'
+    showSaveSuccess()
     selectedMood.value = null
     journalEntry.value = ''
     drawingData.value = null
@@ -85,7 +86,17 @@ async function saveEntry() {
   }
 }
 
+function showSaveSuccess() {
+  window.clearTimeout(saveStatusTimer)
+  saveStatus.value = 'Entry Submitted'
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+  saveStatusTimer = window.setTimeout(() => {
+    saveStatus.value = ''
+  }, 3200)
+}
+
 function clearSaveFeedback() {
+  window.clearTimeout(saveStatusTimer)
   saveError.value = ''
   saveStatus.value = ''
 }
@@ -130,10 +141,19 @@ function insertJournalIdea() {
 }
 
 onMounted(loadEntries)
+onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 </script>
 
 <template>
   <div class="daily-mood-page">
+    <Transition name="entry-toast">
+      <div v-if="saveStatus" class="entry-toast" role="status" aria-live="polite">
+        <svg class="entry-toast-check" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m5 12 4.5 4.5L19 7" />
+        </svg>
+        <span>{{ saveStatus }}</span>
+      </div>
+    </Transition>
     <main class="daily-mood-content flex-1">
       <header class="journal-header">
         <div>
@@ -357,7 +377,6 @@ onMounted(loadEntries)
             Save Entry
           </UButton>
         </div>
-        <p v-if="saveStatus" role="status" class="mt-4">{{ saveStatus }}</p>
         <p v-if="saveError" role="alert" class="mt-4 text-sm text-error">
           {{ saveError }} Your entry is still here so you can retry.
         </p>
@@ -373,6 +392,64 @@ onMounted(loadEntries)
   min-height: calc(100vh - 76px);
   flex-direction: column;
   background: var(--ui-bg);
+}
+
+.entry-toast {
+  position: fixed;
+  z-index: 80;
+  top: calc(env(safe-area-inset-top, 0px) + 88px);
+  left: 50%;
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 22px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 999px;
+  color: #fff;
+  background: color-mix(in srgb, #26844a 92%, transparent);
+  box-shadow: 0 10px 30px rgba(29, 116, 64, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  font-size: 0.98rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.entry-toast-check {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.entry-toast-enter-active,
+.entry-toast-leave-active {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.entry-toast-enter-from,
+.entry-toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -12px);
+}
+
+.dark .entry-toast {
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-toast-enter-active,
+  .entry-toast-leave-active {
+    transition: none;
+  }
 }
 
 /* The same width and edges as the other pages, so the title lines up. */
