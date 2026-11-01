@@ -410,8 +410,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   color: #fff;
   background: color-mix(in srgb, #26844a 92%, transparent);
   box-shadow: 0 10px 30px rgba(29, 116, 64, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.32);
-  backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  backdrop-filter: blur(20px) saturate(1.5);
   font-size: 0.98rem;
   font-weight: 700;
   white-space: nowrap;
@@ -590,8 +590,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
     inset 0 2px 2px rgba(255, 255, 255, 0.98),
     inset 0 -2px 4px rgba(86, 65, 55, 0.12),
     0 3px 8px rgba(59, 43, 35, 0.12);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   font-family: var(--font-sans);
   font-size: 0.9rem;
   font-weight: 600;

@@ -398,8 +398,8 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
     inset 0 2px 2px rgba(255, 255, 255, 0.98),
     inset 0 -2px 4px rgba(86, 65, 55, 0.12),
     0 3px 8px rgba(59, 43, 35, 0.12);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .tool-button svg,
