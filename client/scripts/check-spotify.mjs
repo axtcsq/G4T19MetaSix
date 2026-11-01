@@ -54,8 +54,7 @@ try {
     duration_ms: 180000,
     external_urls: { spotify: 'https://open.spotify.com/track/test-song' },
   }
-  let plays = 0,
-    failure = false
+  let failure = false
   await page.route('https://api.spotify.com/v1/**', async (route) => {
     if (route.request().url().includes('/recently-played')) {
       await route.fulfill({
@@ -63,7 +62,6 @@ try {
         json: { items: [{ track: song, played_at: new Date().toISOString() }] },
       })
     } else if (route.request().method() === 'PUT') {
-      plays++
       await route.fulfill({ status: 204 })
     } else await route.fulfill({ json: { tracks: { items: [song] } } })
   })

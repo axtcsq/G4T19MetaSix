@@ -81,6 +81,31 @@ describe('auth store', () => {
     expect(logout).toHaveBeenCalled()
     expect(auth.user).toBeNull()
   })
+
+  it('ignores a session check that finishes after logout', async () => {
+    let resolve
+    getMe.mockReturnValue(new Promise((done) => { resolve = done }))
+    logout.mockResolvedValue(null)
+    const auth = useAuthStore()
+    const checking = auth.load()
+    await auth.logout()
+    resolve({ id: 'old-user' })
+    await checking
+    expect(auth.user).toBeNull()
+  })
+
+  it('ignores a session check that finishes after demo login', async () => {
+    let reject
+    getMe.mockReturnValue(new Promise((resolve, fail) => { reject = fail }))
+    demoLogin.mockResolvedValue({ id: 'demo' })
+    const auth = useAuthStore()
+    const checking = auth.load()
+    await auth.demoLogin()
+    reject(failure(401, 'Not logged in'))
+    await checking
+    expect(auth.user).toEqual({ id: 'demo' })
+    expect(auth.checked).toBe(true)
+  })
 })
 
 describe('spotifyLoginUrl', () => {

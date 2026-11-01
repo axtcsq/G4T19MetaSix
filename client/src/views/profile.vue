@@ -76,9 +76,11 @@ const settings = computed(() => [
   },
 ])
 const saving = reactive({})
+const settingsPending = computed(() => Object.values(saving).some(Boolean))
 const settingsMessage = ref('')
 
 async function toggle(setting) {
+  if (settingsPending.value || !user.value) return
   const next = !setting.on
   const previous = user.value
   saving[setting.key] = true
@@ -90,10 +92,14 @@ async function toggle(setting) {
       ...(setting.key === 'analyseLyrics' ? { moodLens: next ? 'lyrics' : 'sound' } : { savePlays: next }),
     },
   }
+  const optimistic = auth.user
   try {
-    auth.user = await updateSettings({ [setting.key]: next })
+    const updated = await updateSettings({ [setting.key]: next })
+    if (auth.user !== optimistic) return
+    auth.user = updated
     settingsMessage.value = 'Saved.'
   } catch (error) {
+    if (auth.user !== optimistic) return
     auth.user = previous
     settingsMessage.value = `Couldn’t save: ${error.message}`
   } finally {
@@ -205,7 +211,7 @@ const logOut = useLogOut()
               :aria-checked="setting.on"
               :aria-labelledby="`${setting.key}-label`"
               :aria-describedby="`${setting.key}-description`"
-              :disabled="setting.disabled || saving[setting.key]"
+              :disabled="setting.disabled || settingsPending"
               @click="toggle(setting)"
             >
               <span class="switch-thumb" aria-hidden="true" />
@@ -282,6 +288,11 @@ const logOut = useLogOut()
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+
+.identity > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .avatar {
@@ -531,6 +542,14 @@ dd {
 
   .card {
     padding: 1.25rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .details div,
+  .facts div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
   }
 }
 </style>

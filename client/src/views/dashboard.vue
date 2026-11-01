@@ -191,7 +191,7 @@ watch(
               target="_blank"
               rel="noopener noreferrer"
               class="spotify-link"
-              ><img src="@/assets/images/spotify-logo.png" alt="" width="18" height="18" />Open
+              ><img src="@/assets/images/spotify-logo.webp" alt="" width="18" height="18" />Open
               Spotify <span aria-hidden="true">↗</span></a
             >
           </div>

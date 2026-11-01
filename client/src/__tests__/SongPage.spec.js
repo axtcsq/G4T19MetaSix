@@ -1,6 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SongPage from '../views/song.vue'
+import MoodTag from '@/components/mood/MoodTag.vue'
 import { getTrack } from '@/api/tracks'
 
 vi.mock('@/api/tracks', () => ({ getTrack: vi.fn() }))
@@ -160,7 +161,7 @@ describe('Song page', () => {
     expect(wrapper.findAll('.reading')[1].text()).toContain(
       'This song is instrumental and contains no lyrics.',
     )
-    expect(wrapper.find('.mood-tag-stub').props('hidePendingLyrics')).toBe(true)
+    expect(wrapper.findComponent(MoodTag).props('hidePendingLyrics')).toBe(true)
   })
 
   it('explains a song with no audio data', async () => {
