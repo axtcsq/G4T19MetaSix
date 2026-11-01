@@ -588,11 +588,6 @@ const logOut = useLogOut()
         <p class="muted small" role="status" aria-live="polite">{{ messages.reminder }}</p>
       </section>
 
-      <section class="card coming-soon" aria-labelledby="soon-title">
-        <h2 id="soon-title" class="card-title">Coming Soon</h2>
-        <p class="muted">Editing your name and profile picture.</p>
-      </section>
-
       <button type="button" class="glass-action log-out" @click="logOut">Log out</button>
     </main>
     <SiteFooter />
@@ -1013,12 +1008,6 @@ dd {
 
 .danger-fill {
   --button-base: var(--color-mood-angry-600);
-}
-
-.coming-soon {
-  border-style: dashed;
-  background: var(--pq-tint);
-  box-shadow: none;
 }
 
 .log-out {
