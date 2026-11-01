@@ -3,9 +3,10 @@
 // listening facts and the privacy settings. Editing the profile comes later.
 import { computed, onMounted, reactive, ref } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
-import { updateSettings } from '@/api/auth'
+import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
 import { getPersonality } from '@/api/quiz'
 import { useAuthStore } from '@/stores/auth'
+import { useTodayMoodStore } from '@/stores/todayMood'
 import { useLogOut } from '@/composables/useLogOut'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
@@ -116,6 +117,74 @@ function toggleDark() {
   colorMode.preference = isDark.value ? 'light' : 'dark'
 }
 
+// Export, clear history and disconnect Spotify. The last two ask first.
+const dataMessage = ref('')
+const dataBusy = ref(false)
+const confirmDialog = ref(null)
+const confirming = ref(null)
+const todayMood = useTodayMoodStore()
+
+const dangerActions = {
+  clear: {
+    title: 'Clear your history?',
+    body: 'This deletes every journal entry, your listening history and your quiz results. Your account, settings and Spotify connection stay. It can’t be undone.',
+    button: 'Clear history',
+    async run() {
+      auth.user = await clearHistory()
+      personality.value = null
+      todayMood.clear()
+      return 'Your history has been cleared.'
+    },
+  },
+  disconnect: {
+    title: 'Disconnect Spotify?',
+    body: 'MetaFor will forget your Spotify login and stop saving your plays. Plays already saved stay. Log in with Spotify again any time to reconnect.',
+    button: 'Disconnect',
+    async run() {
+      auth.user = await disconnectSpotify()
+      return 'Spotify is disconnected.'
+    },
+  },
+}
+
+function askToConfirm(action) {
+  confirming.value = dangerActions[action]
+  confirmDialog.value.showModal()
+}
+
+async function runConfirmed() {
+  const action = confirming.value
+  confirmDialog.value.close()
+  dataBusy.value = true
+  dataMessage.value = ''
+  try {
+    dataMessage.value = await action.run()
+  } catch (error) {
+    dataMessage.value = `Couldn’t finish: ${error.message}`
+  } finally {
+    dataBusy.value = false
+  }
+}
+
+async function downloadData() {
+  dataBusy.value = true
+  dataMessage.value = ''
+  try {
+    const data = await exportData()
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `metafor-data-${new Date().toISOString().slice(0, 10)}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    dataMessage.value = 'Your data has been downloaded.'
+  } catch (error) {
+    dataMessage.value = `Couldn’t download: ${error.message}`
+  } finally {
+    dataBusy.value = false
+  }
+}
+
 const logOut = useLogOut()
 </script>
 
@@ -223,6 +292,67 @@ const logOut = useLogOut()
           MetaFor only keeps mood scores worked out from lyrics, never the lyrics themselves.
         </p>
         <p class="muted small" role="status" aria-live="polite">{{ messages.privacy }}</p>
+
+        <h3 class="data-title">Your data</h3>
+        <ul class="settings">
+          <li class="setting">
+            <div>
+              <p class="setting-label">Export my data</p>
+              <p class="muted small">Download your journal, listening history and quiz answers as a JSON file.</p>
+            </div>
+            <button type="button" class="glass-secondary data-button" :disabled="dataBusy" @click="downloadData">
+              Export
+            </button>
+          </li>
+          <li class="setting">
+            <div>
+              <p class="setting-label">Clear history</p>
+              <p class="muted small">Delete your journal entries, listening history and quiz results.</p>
+            </div>
+            <button
+              type="button"
+              class="glass-secondary data-button danger"
+              :disabled="dataBusy"
+              @click="askToConfirm('clear')"
+            >
+              Clear
+            </button>
+          </li>
+          <li class="setting">
+            <div>
+              <p class="setting-label">Disconnect Spotify</p>
+              <p class="muted small">
+                {{
+                  user?.spotifyLinked
+                    ? 'Stop MetaFor using your Spotify account.'
+                    : 'Spotify isn’t connected right now.'
+                }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="glass-secondary data-button danger"
+              :disabled="dataBusy || !user?.spotifyLinked"
+              @click="askToConfirm('disconnect')"
+            >
+              Disconnect
+            </button>
+          </li>
+        </ul>
+        <p class="muted small" role="status" aria-live="polite">{{ dataMessage }}</p>
+
+        <dialog ref="confirmDialog" class="confirm-dialog" aria-labelledby="confirm-title">
+          <template v-if="confirming">
+            <h3 id="confirm-title" class="card-title">{{ confirming.title }}</h3>
+            <p class="muted">{{ confirming.body }}</p>
+            <div class="confirm-actions">
+              <button type="button" class="glass-secondary" @click="confirmDialog.close()">Cancel</button>
+              <button type="button" class="glass-action danger-fill" @click="runConfirmed">
+                {{ confirming.button }}
+              </button>
+            </div>
+          </template>
+        </dialog>
       </section>
 
       <section class="card" aria-labelledby="appearance-title">
@@ -535,6 +665,60 @@ dd {
   .switch-thumb {
     transition: none;
   }
+}
+
+.data-title {
+  margin-top: 1.75rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.data-button {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.data-button.danger {
+  --button-ink: var(--color-mood-angry-700);
+}
+
+:global(.dark) .data-button.danger {
+  --button-ink: var(--color-mood-angry-300);
+}
+
+.confirm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  margin: auto;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--pq-border);
+  border-radius: 18px;
+  color: var(--pq-on-surface);
+  background: var(--pq-surface);
+}
+
+.confirm-dialog::backdrop {
+  background: rgb(30 20 15 / 45%);
+}
+
+.confirm-dialog .muted {
+  margin-top: 0.5rem;
+}
+
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.confirm-actions button {
+  cursor: pointer;
+}
+
+.danger-fill {
+  --button-base: var(--color-mood-angry-600);
 }
 
 .coming-soon {

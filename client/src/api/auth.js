@@ -20,6 +20,21 @@ export function updateSettings(changes) {
   return api.patch('/api/me/settings', changes)
 }
 
+// Everything MetaFor keeps about the user, as an object to save as JSON.
+export function exportData() {
+  return api.get('/api/me/export')
+}
+
+// Deletes journal entries, listening history and quiz results. Returns the user.
+export function clearHistory() {
+  return api.delete('/api/me/history')
+}
+
+// Forgets the Spotify login and stops saving plays. Returns the updated user.
+export function disconnectSpotify() {
+  return api.post('/api/me/spotify/disconnect')
+}
+
 // The seeded test account, for teammates and graders without a Spotify login.
 export function getDemoStatus() {
   return api.get('/api/auth/demo')

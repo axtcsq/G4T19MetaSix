@@ -46,7 +46,7 @@ function startSession(req, userId) {
 }
 
 // The user fields the client may see. Never includes the refresh token.
-function publicUser(user) {
+export function publicUser(user) {
   return {
     id: user._id,
     displayName: user.displayName,
