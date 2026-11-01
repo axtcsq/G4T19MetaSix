@@ -1,5 +1,5 @@
 <script setup>
-// A song's mood, as a small tinted label in the colour of the journal mood it
+// A song's mood, as an ink-line annotation in the colour of the journal mood it
 // counts towards (Bittersweet is Sad's blue). Shows the sound + lyrics reading
 // when there is one, otherwise sound only; the tooltip gives both. A second,
 // grey tag appears only when the mood didn't use the lyrics, saying why. Songs
@@ -29,13 +29,6 @@ const TEXT = {
   relaxed: 'text-(color:--ui-color-relaxed-800) dark:text-(color:--ui-color-relaxed-200)',
   anxious: 'text-(color:--ui-color-anxious-800) dark:text-(color:--ui-color-anxious-200)',
   angry: 'text-(color:--ui-color-angry-800) dark:text-(color:--ui-color-angry-200)',
-}
-const DOT = {
-  sad: 'bg-(color:--ui-sad)',
-  happy: 'bg-(color:--ui-happy)',
-  relaxed: 'bg-(color:--ui-relaxed)',
-  anxious: 'bg-(color:--ui-anxious)',
-  angry: 'bg-(color:--ui-angry)',
 }
 const JOURNAL_MOOD = {
   sad: 'Sad',
@@ -100,17 +93,24 @@ const details = computed(() => {
           v-bind="link ? { to: `/song/${trackId}` } : {}"
           class="mood-tag-link"
         >
-          <UBadge
-            :color="reading.axis || 'neutral'"
-            variant="subtle"
-            :size="size"
+          <span
+            :data-axis="reading.axis || 'neutral'"
             class="mood-tag"
-            :class="TEXT[reading.axis]"
+            :class="[TEXT[reading.axis], `mood-tag--${size}`]"
           >
-            <span class="mood-dot" :class="DOT[reading.axis]" aria-hidden="true" />
+            <svg class="mood-line" viewBox="0 0 32 22" aria-hidden="true">
+              <path v-if="reading.axis === 'happy'" d="M2 17 Q10 17 14 9 T30 5" />
+              <path v-else-if="reading.axis === 'sad'" d="M2 5 Q10 5 16 12 T30 17" />
+              <path
+                v-else-if="reading.axis === 'anxious'"
+                d="M2 13 L8 7 L12 17 L18 5 L23 15 L30 9"
+              />
+              <path v-else-if="reading.axis === 'angry'" d="M2 16 L10 5 L14 16 L22 5 L30 9" />
+              <path v-else d="M2 12 Q9 6 16 12 T30 12" />
+            </svg>
             <span class="sr-only">Song mood: </span>{{ reading.name
             }}<span v-if="link" class="sr-only">, see why</span>
-          </UBadge>
+          </span>
         </component>
       </UTooltip>
       <UTooltip v-if="lyricsNote" :text="lyricsNote.why">
@@ -146,9 +146,20 @@ const details = computed(() => {
   font-family: var(--font-sans);
 }
 .mood-tag {
-  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   max-width: 100%;
-  white-space: nowrap;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.mood-tag--sm {
+  font-size: 14px;
+}
+.mood-tag--lg {
+  font-size: 18px;
 }
 .mood-tag-link {
   display: inline-flex;
@@ -165,15 +176,19 @@ a.mood-tag-link:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
 }
-.mood-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 999px;
+.mood-line {
+  width: 28px;
+  height: 20px;
   flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 @media (forced-colors: active) {
-  .mood-dot {
-    background: CanvasText;
+  .mood-line {
+    stroke: CanvasText;
   }
 }
 </style>

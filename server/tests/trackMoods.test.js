@@ -28,6 +28,7 @@ describe("toMoods", () => {
     assert.deepEqual(toMoods(analysed, true), {
       sound: { name: "Euphoric", axis: "happy" },
       lyrics: { name: "Deceptively upbeat", axis: "anxious" },
+      lyricsLanguage: "EN",
       lyricsNote: null,
     });
   });
@@ -43,6 +44,7 @@ describe("toMoods", () => {
     assert.deepEqual(toMoods(partial, true), {
       sound: { name: "Serene", axis: "relaxed" },
       lyrics: null,
+      lyricsLanguage: null,
       lyricsNote: "pending",
     });
   });
@@ -57,6 +59,7 @@ describe("toMoods", () => {
     assert.deepEqual(toMoods(searched, true), {
       sound: { name: "Bittersweet", axis: "sad" },
       lyrics: null,
+      lyricsLanguage: null,
       lyricsNote: "pending",
     });
   });
