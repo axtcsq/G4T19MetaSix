@@ -11,7 +11,7 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Playwright starts and stops its own Vite server at http://127.0.0.1:5199.
+Playwright builds the app, then starts and stops Vite's production preview at http://127.0.0.1:5199.
 Keep that port free. No Express server, database, .env, or Spotify account is required.
 
 For interactive debugging:
@@ -24,6 +24,8 @@ pnpm test:e2e e2e/journal.spec.js
 ```
 
 Coverage:
+- Every route at 320, 390, 768, 1024 and 1440 CSS pixels, checking content bounds,
+  horizontal overflow, journal drawing/history, calendar details, and mobile menu dismissal.
 - Landing page to login, protected-route redirects, demo login and logout.
 - Journal validation, save, history, calendar display, and retry after failed saves.
 - Quiz answer validation, Back navigation, submission, and result display.

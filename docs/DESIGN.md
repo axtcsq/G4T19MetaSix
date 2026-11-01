@@ -1,5 +1,9 @@
 # MetaFor design context
 
+## Responsive layout
+
+Keep the established desktop composition and shared `--page-width`/`--page-gutter` tokens in `client/src/assets/css/main.css`. Screens must reflow at 320 CSS pixels, including populated content and expanded controls. `main` permits long names and pasted text to wrap; grid and flex owners must also allow their children to shrink. Use zero-minimum fractional grid tracks and cap fixed minimum card widths at the available width. Do not hide content overflow to disguise layout failures. Small landing listening previews stack their record above transport controls at 400px; profile facts stack labels above values at that width. Preserve native page scrolling and the navbar's measured collapse behavior.
+
 ## Existing visual direction
 
 The application uses light mode only. The navbar has no theme switch, and Nuxt UI color-mode management is disabled in vite.config.js so saved preferences and system dark mode do not change the application palette. Existing dark CSS remains dormant.
@@ -69,3 +73,11 @@ Application actions use the flat pill family defined in main.css and STYLE.md: t
 Application actions use flat solid fills from the existing theme, without bevels, gradients, blur or drop shadows. Primary actions use brand-600 with white text; secondary and icon actions use the accented surface and theme text. Existing peach, listening-room brown and danger-red variants remain. Keep pill geometry, focus rings, hover/pressed feedback and disabled states. The landing and daily journal emotion choices, drawing tools and color swatches retain their original sculpted 3D treatment. The drawing canvas has no outer panel box; only the drawing surface keeps its boundary. The shared Happy face uses a balanced closed smile and gentle smiling eyes on hover. This supersedes earlier glossy-button guidance.
 
 Dashboard charts: monthly recorded plays use a Monday-first calendar heatmap with date counts on hover, focus and tap. Weekly counts retain bars. Charts use short reveal/highlight transitions and respect reduced motion. Genre mix is a donut with a keyboard-accessible legend, using the independent 30-day listening profile, top 15 artists and play-weighted Last.fm tags; untagged artists are excluded and coverage is shown. This replaces the earlier unavailable Genre mix placeholder.
+
+### Song mood annotations
+
+MoodTag.vue owns shared unboxed italic Crimson Text feeling notes with static ink lines: rising for happy, falling for sad, gentle for relaxed and angular for anxious/angry. Preserve journal colors, explanations, statuses and navigation.
+
+### Song analysis
+
+The song route uses an album-sleeve composition: larger square artwork and track identity, an unboxed mood takeaway on a flat surface, then an open two-column mood map and sound profile. Compare sound and lyrics and What the lyrics add are native disclosures, closed initially to reduce reading load while retaining every reading, chart and lyric excerpt. Keep the shared palette and typography; avoid repeated outlined cards, colored card edges and resting shadows. Narrow screens stack naturally; disclosure motion respects reduced motion.
