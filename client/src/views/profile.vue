@@ -78,15 +78,10 @@ const settings = computed(() => [
     disabled: user.value?.isDemo,
   },
 ])
-const moodGlow = computed(() => ({
-  key: 'moodGlow',
-  card: 'appearance',
-  on: user.value?.preferences?.moodGlow !== false,
-}))
 const saving = reactive({})
 const settingsPending = computed(() => Object.values(saving).some(Boolean))
 // The saved or failed message, shown in the card the toggle is in.
-const messages = reactive({ privacy: '', appearance: '', birthday: '', reminder: '', pinned: '' })
+const messages = reactive({ privacy: '', birthday: '', reminder: '', pinned: '' })
 
 async function toggle(setting) {
   if (settingsPending.value || !user.value) return
@@ -219,7 +214,7 @@ const dangerActions = {
     async run() {
       auth.user = await clearHistory()
       personality.value = null
-      // Today's check-ins are gone too, so the glow fades and the reminder can show.
+      // Today's check-ins are gone too, so the reminder can show.
       todayMood.load()
       return 'Your history has been cleared.'
     },
@@ -505,29 +500,7 @@ const logOut = useLogOut()
               <span class="switch-thumb" aria-hidden="true" />
             </button>
           </li>
-          <li class="setting">
-            <div>
-              <p id="mood-glow-label" class="setting-label">Mood glow</p>
-              <p id="mood-glow-description" class="muted small">
-                Light the top-left corner of every page in the colour of today’s main mood, from your
-                check-ins.
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              class="switch"
-              :aria-checked="moodGlow.on"
-              aria-labelledby="mood-glow-label"
-              aria-describedby="mood-glow-description"
-              :disabled="saving.moodGlow"
-              @click="toggle(moodGlow)"
-            >
-              <span class="switch-thumb" aria-hidden="true" />
-            </button>
-          </li>
         </ul>
-        <p class="muted small" role="status" aria-live="polite">{{ messages.appearance }}</p>
       </section>
 
       <section class="card" aria-labelledby="birthday-title">

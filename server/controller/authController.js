@@ -179,11 +179,11 @@ export function getMe(req, res) {
 }
 
 // PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean,
-//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null,
+//   birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null,
 //   pinnedEntryId?: string | null }
 // The settings on the profile page. Send only the ones that changed.
 export async function updateSettings(req, res) {
-  const { analyseLyrics, savePlays, moodGlow, birthday, reminderTime, pinnedEntryId } = req.body ?? {};
+  const { analyseLyrics, savePlays, birthday, reminderTime, pinnedEntryId } = req.body ?? {};
   const changes = {};
   if (analyseLyrics !== undefined) {
     if (typeof analyseLyrics !== "boolean") {
@@ -196,12 +196,6 @@ export async function updateSettings(req, res) {
       return res.status(400).json({ error: "savePlays must be true or false" });
     }
     changes["preferences.savePlays"] = savePlays;
-  }
-  if (moodGlow !== undefined) {
-    if (typeof moodGlow !== "boolean") {
-      return res.status(400).json({ error: "moodGlow must be true or false" });
-    }
-    changes["preferences.moodGlow"] = moodGlow;
   }
   if (birthday !== undefined) {
     if (birthday !== null && !parseBirthday(birthday)) {

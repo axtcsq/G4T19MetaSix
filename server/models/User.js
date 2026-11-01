@@ -28,8 +28,6 @@ const userSchema = new mongoose.Schema(
       // False stops the hourly job and Sync now saving new plays. Plays already
       // saved are kept.
       savePlays: { type: Boolean, default: true },
-      // True tints the top-left corner of every page with today's check-in mood.
-      moodGlow: { type: Boolean, default: true },
       // "HH:MM" in the user's own time, or null for no check-in reminder.
       reminderTime: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: null },
     },
