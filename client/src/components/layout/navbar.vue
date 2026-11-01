@@ -251,8 +251,8 @@ watch(
   inset: 0;
   z-index: -1;
   background: rgba(250, 248, 246, 0.45);
-  backdrop-filter: blur(22px) saturate(1.7);
   -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(22px) saturate(1.7);
   transition: background-color 220ms ease;
 }
 .site-header.is-scrolled {
@@ -272,8 +272,8 @@ watch(
   .site-header::before,
   .site-menu {
     background: #faf8f6;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 .header-inner {
@@ -493,8 +493,8 @@ watch(
   /* The same frosted glass as the bar, a little more solid so the links stay
      easy to read over busy pages. */
   background: rgba(250, 248, 246, 0.72);
-  backdrop-filter: blur(22px) saturate(1.7);
   -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(22px) saturate(1.7);
   box-shadow: 0 12px 24px rgba(41, 35, 33, 0.12);
 }
 .menu-link {

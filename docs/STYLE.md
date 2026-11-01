@@ -217,6 +217,7 @@ wing paths, update the component, the share card and these files together.
 - [ ] Works at 375px wide with no sideways scroll
 - [ ] Reduced motion is respected
 - [ ] Buttons and links have hover and focus states
+- [ ] `-webkit-backdrop-filter` comes before `backdrop-filter`. The build keeps only the last of the pair, and Chrome ignores the prefixed one, so the wrong order loses the blur on the live site
 
 ## Allowed exceptions
 
