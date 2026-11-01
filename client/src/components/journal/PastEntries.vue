@@ -27,9 +27,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  // The entry pinned to the profile page, if any.
+  pinnedId: {
+    type: String,
+    default: null,
+  },
 })
 
-const emit = defineEmits(['retry'])
+const emit = defineEmits(['retry', 'pin'])
 const searchInput = ref('')
 const searchQuery = ref('')
 
@@ -136,6 +141,14 @@ function formatDate(date) {
                 <MoodFace :mood="entry.mood" class="emotion-sketch" />
                 {{ entry.mood }}
               </span>
+              <button
+                type="button"
+                class="pin-button"
+                :aria-pressed="entry._id === pinnedId"
+                @click="emit('pin', entry._id === pinnedId ? null : entry._id)"
+              >
+                {{ entry._id === pinnedId ? 'Pinned to profile' : 'Pin to profile' }}
+              </button>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
             <!-- The Song of the Day, clipped to the page like a ticket stub. -->
@@ -269,6 +282,27 @@ function formatDate(date) {
   color: var(--entry-mood-color, #313c50);
 }
 
+.pin-button {
+  padding: 2px 12px;
+  border: 1px solid #d9cdbb;
+  border-radius: 999px;
+  color: #687181;
+  background: rgb(255 255 255 / 70%);
+  font: 600 0.8rem/1.8 var(--font-sans);
+  cursor: pointer;
+}
+
+.pin-button[aria-pressed='true'] {
+  border-color: #b0573f;
+  color: #fff;
+  background: #b0573f;
+}
+
+.pin-button:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
 .emotion-sketch {
   width: 36px;
   height: 36px;
@@ -394,7 +428,28 @@ function formatDate(date) {
     font-size: 20px;
   }
 
-  .emotion-sketch {
+  .pin-button {
+  padding: 2px 12px;
+  border: 1px solid #d9cdbb;
+  border-radius: 999px;
+  color: #687181;
+  background: rgb(255 255 255 / 70%);
+  font: 600 0.8rem/1.8 var(--font-sans);
+  cursor: pointer;
+}
+
+.pin-button[aria-pressed='true'] {
+  border-color: #b0573f;
+  color: #fff;
+  background: #b0573f;
+}
+
+.pin-button:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+.emotion-sketch {
     width: 30px;
     height: 30px;
   }

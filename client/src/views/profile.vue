@@ -4,7 +4,9 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
+import { getMood } from '@/api/moods'
 import { getPersonality } from '@/api/quiz'
+import MoodFace from '@/components/journal/MoodFace.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTodayMoodStore } from '@/stores/todayMood'
 import { useLogOut } from '@/composables/useLogOut'
@@ -83,7 +85,7 @@ const moodGlow = computed(() => ({
 }))
 const saving = reactive({})
 // The saved or failed message, shown in the card the toggle is in.
-const messages = reactive({ privacy: '', appearance: '', birthday: '', reminder: '' })
+const messages = reactive({ privacy: '', appearance: '', birthday: '', reminder: '', pinned: '' })
 
 async function toggle(setting) {
   const next = !setting.on
@@ -166,6 +168,27 @@ async function saveReminder(time = reminderTime.value || null) {
     Notification.requestPermission()
   }
 }
+
+// The journal entry pinned from Past Entries.
+const pinnedEntry = ref(null)
+watch(
+  () => user.value?.pinnedEntryId,
+  async (id) => {
+    pinnedEntry.value = null
+    if (!id) return
+    try {
+      pinnedEntry.value = await getMood(id)
+    } catch (error) {
+      messages.pinned = `Couldn’t load your pinned entry: ${error.message}`
+    }
+  },
+  { immediate: true },
+)
+const pinnedDate = computed(() =>
+  pinnedEntry.value
+    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'long' }).format(new Date(pinnedEntry.value.createdAt))
+    : '',
+)
 
 // Dark mode is kept in this browser, not the account. index.html makes light
 // the default.
@@ -324,6 +347,46 @@ const logOut = useLogOut()
         </section>
       </div>
 
+      <section class="card" aria-labelledby="pinned-title">
+        <h2 id="pinned-title" class="card-title">Pinned Entry</h2>
+        <article v-if="pinnedEntry" class="pinned-entry">
+          <header class="pinned-meta">
+            <time :datetime="pinnedEntry.createdAt">{{ pinnedDate }}</time>
+            <span class="pinned-mood" :style="{ color: `var(--color-mood-${pinnedEntry.mood.toLowerCase()}-600)` }">
+              <MoodFace :mood="pinnedEntry.mood" class="pinned-face" />
+              {{ pinnedEntry.mood }}
+            </span>
+          </header>
+          <p class="pinned-text">{{ pinnedEntry.journal || 'No written reflection.' }}</p>
+          <p v-if="pinnedEntry.song" class="muted small">
+            Song of the Day:
+            <RouterLink class="text-link" :to="`/song/${pinnedEntry.song.id}`">{{ pinnedEntry.song.name }}</RouterLink>
+            by {{ pinnedEntry.song.artists.join(', ') }}
+          </p>
+          <p v-if="pinnedEntry.drawing?.items?.length" class="muted small">This entry has a drawing.</p>
+          <div class="pinned-actions">
+            <RouterLink class="text-link" :to="{ name: 'daily-mood', hash: '#past-entries' }">
+              See all entries →
+            </RouterLink>
+            <button
+              type="button"
+              class="glass-secondary data-button"
+              :disabled="saving.pinned"
+              @click="saveSettings({ pinnedEntryId: null }, 'pinned')"
+            >
+              Unpin
+            </button>
+          </div>
+        </article>
+        <template v-else-if="!user?.pinnedEntryId">
+          <p class="muted">Pin a favourite journal entry to keep it here.</p>
+          <RouterLink class="text-link" :to="{ name: 'daily-mood', hash: '#past-entries' }">
+            Choose one from Past Entries →
+          </RouterLink>
+        </template>
+        <p class="muted small" role="status" aria-live="polite">{{ messages.pinned }}</p>
+      </section>
+
       <section class="card" aria-labelledby="privacy-title">
         <h2 id="privacy-title" class="card-title">Privacy and Data</h2>
         <ul class="settings">
@@ -462,9 +525,9 @@ const logOut = useLogOut()
 
       <section class="card" aria-labelledby="birthday-title">
         <h2 id="birthday-title" class="card-title">Birthday and Horoscope</h2>
-        <form class="birthday-form" @submit.prevent="saveBirthday">
+        <form class="inline-form" @submit.prevent="saveBirthday">
           <label for="birthday" class="setting-label">Your birthday</label>
-          <div class="birthday-row">
+          <div class="inline-row">
             <input id="birthday" v-model="birthday" class="field" type="date" :max="today" min="1900-01-01" />
             <button
               type="submit"
@@ -492,9 +555,9 @@ const logOut = useLogOut()
 
       <section class="card" aria-labelledby="reminder-title">
         <h2 id="reminder-title" class="card-title">Daily Reminder</h2>
-        <form class="birthday-form" @submit.prevent="saveReminder()">
+        <form class="inline-form" @submit.prevent="saveReminder()">
           <label for="reminder-time" class="setting-label">Remind me to check in at</label>
-          <div class="birthday-row">
+          <div class="inline-row">
             <input id="reminder-time" v-model="reminderTime" class="field" type="time" />
             <button
               type="submit"
@@ -789,13 +852,13 @@ dd {
   }
 }
 
-.birthday-form {
+.inline-form {
   display: grid;
   gap: 0.4rem;
   margin-top: 0.75rem;
 }
 
-.birthday-row {
+.inline-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -828,6 +891,69 @@ dd {
 
 .horoscope .text-link {
   margin-top: 0.5rem;
+}
+
+.pinned-entry {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.pinned-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  color: var(--pq-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pinned-mood {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+:global(.dark) .pinned-mood {
+  filter: brightness(1.6);
+}
+
+.pinned-face {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pinned-text {
+  font-family: var(--font-journal);
+  font-size: 1.5rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pinned-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.pinned-actions .text-link {
+  margin-top: 0;
 }
 
 .data-title {

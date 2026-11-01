@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../models/User.js";
 import {
   addMoodLog,
   editMoodLog,
@@ -230,6 +231,9 @@ export async function deleteMood(req, res) {
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
   }
+
+  // A deleted entry can't stay pinned to the profile.
+  await User.updateOne({ _id: req.user._id, pinnedEntryId: log._id }, { $set: { pinnedEntryId: null } });
 
   res.status(204).send();
 }

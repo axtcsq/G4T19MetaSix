@@ -8,9 +8,14 @@ import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 import PastEntries from '@/components/journal/PastEntries.vue'
 import JournalSongPicker from '@/components/journal/JournalSongPicker.vue'
 import { useTodayMoodStore } from '@/stores/todayMood'
+import { useAuthStore } from '@/stores/auth'
+import { updateSettings } from '@/api/auth'
+import { useRoute } from 'vue-router'
 
 const todayMood = useTodayMoodStore()
-const showHistory = ref(false)
+const auth = useAuthStore()
+// The profile page links to #past-entries to open them straight away.
+const showHistory = ref(useRoute().hash === '#past-entries')
 const showDrawing = ref(false)
 const showSong = ref(false)
 const saveStatus = ref('')
@@ -86,6 +91,17 @@ async function saveEntry() {
     saveError.value = error.message
   } finally {
     isSaving.value = false
+  }
+}
+
+// Pins an entry to the profile page, or unpins it when id is null.
+const pinError = ref('')
+async function pinEntry(id) {
+  pinError.value = ''
+  try {
+    auth.user = await updateSettings({ pinnedEntryId: id })
+  } catch (error) {
+    pinError.value = `Couldn’t pin that entry: ${error.message}`
   }
 }
 
@@ -318,12 +334,15 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
           </div>
         </section>
 
+        <p v-if="showHistory && pinError" role="alert" class="mb-4 text-sm text-error">{{ pinError }}</p>
         <PastEntries
           v-show="showHistory"
           :entries="logs"
           :is-loading="isLoading"
           :load-error="loadError"
+          :pinned-id="auth.user?.pinnedEntryId ?? null"
           @retry="loadEntries"
+          @pin="pinEntry"
         />
       </div>
 

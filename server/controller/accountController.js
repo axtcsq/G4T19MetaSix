@@ -47,7 +47,8 @@ export async function clearHistory(req, res) {
     QuizAttempt.deleteMany({ userId }),
     Personality.deleteMany({ userId }),
   ]);
-  res.json(publicUser(req.user));
+  const user = await User.findByIdAndUpdate(userId, { $set: { pinnedEntryId: null } }, { returnDocument: "after" });
+  res.json(publicUser(user));
 }
 
 // POST /api/me/spotify/disconnect

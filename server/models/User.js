@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
     isDemo: { type: Boolean, default: false },
     // "YYYY-MM-DD", set on the profile. Used for the star sign.
     birthday: { type: String, default: null },
+    // The journal entry pinned to the profile page.
+    pinnedEntryId: { type: mongoose.Schema.Types.ObjectId, ref: "MoodLog", default: null },
     spotify: {
       // AES-256-GCM encrypted. Never sent to the client.
       refreshToken: { type: String, select: false },

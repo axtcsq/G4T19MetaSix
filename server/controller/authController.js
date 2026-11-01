@@ -1,5 +1,7 @@
 import { randomBytes } from "node:crypto";
+import mongoose from "mongoose";
 import { encrypt } from "../lib/crypto.js";
+import MoodLog from "../models/MoodLog.js";
 import User from "../models/User.js";
 import { authorizeUrl, exchangeCode, fetchProfile, isSpotifyLinked } from "../services/spotifyAuth.js";
 import { ELEMENT_TRAITS, parseBirthday, SIGN_TRAITS, starSign } from "../data/quizzes/spotifyHoroscope.js";
@@ -65,6 +67,7 @@ export function publicUser(user) {
     isDemo: user.isDemo,
     birthday: user.birthday ?? null,
     starSign: horoscope(user.birthday),
+    pinnedEntryId: user.pinnedEntryId ?? null,
     // False for the demo user, and for users who need to log in again.
     spotifyLinked: isSpotifyLinked(user),
     preferences: user.preferences,
@@ -176,10 +179,11 @@ export function getMe(req, res) {
 }
 
 // PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean,
-//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null }
+//   moodGlow?: boolean, birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null,
+//   pinnedEntryId?: string | null }
 // The settings on the profile page. Send only the ones that changed.
 export async function updateSettings(req, res) {
-  const { analyseLyrics, savePlays, moodGlow, birthday, reminderTime } = req.body ?? {};
+  const { analyseLyrics, savePlays, moodGlow, birthday, reminderTime, pinnedEntryId } = req.body ?? {};
   const changes = {};
   if (analyseLyrics !== undefined) {
     if (typeof analyseLyrics !== "boolean") {
@@ -210,6 +214,18 @@ export async function updateSettings(req, res) {
       return res.status(400).json({ error: "reminderTime must be a time like 21:30" });
     }
     changes["preferences.reminderTime"] = reminderTime;
+  }
+  if (pinnedEntryId !== undefined) {
+    if (pinnedEntryId !== null) {
+      // Only the user's own entries can be pinned.
+      const own =
+        mongoose.isObjectIdOrHexString(pinnedEntryId) &&
+        (await MoodLog.exists({ _id: pinnedEntryId, userId: req.user._id }));
+      if (!own) {
+        return res.status(400).json({ error: "That journal entry can't be pinned" });
+      }
+    }
+    changes.pinnedEntryId = pinnedEntryId;
   }
   if (!Object.keys(changes).length) {
     return res.status(400).json({ error: "Nothing to change" });
