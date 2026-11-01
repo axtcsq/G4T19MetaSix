@@ -740,8 +740,8 @@ onMounted(loadPage)
   --pq-surface: rgba(255, 255, 255, 0.74);
   --pq-tint: rgba(102, 95, 120, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
   transition:
     transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 220ms ease,
