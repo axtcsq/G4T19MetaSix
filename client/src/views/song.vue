@@ -144,11 +144,11 @@ function back() {
             <p v-if="song.album.name" class="album">{{ song.album.name }}</p>
             <p class="plays">{{ playLine }}</p>
             <a
-              class="glass-secondary spotify"
+              class="glass-secondary spotify-green spotify"
               :href="song.spotifyUrl"
               target="_blank"
               rel="noopener noreferrer"
-              >Open in Spotify ↗<span class="sr-only"> (opens new tab)</span></a
+              >Open in Spotify<span class="sr-only"> (opens new tab)</span></a
             >
           </div>
         </header>

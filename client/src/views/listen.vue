@@ -168,22 +168,24 @@ onBeforeUnmount(() => {
             <span>{{ track.album?.name }}</span>
           </div>
           <div class="now-mood"><MoodTag :track-id="track.id" /></div>
-          <a
-            v-if="track.external_urls?.spotify"
-            class="spotify-link"
-            :href="track.external_urls.spotify"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Listen on Spotify ↗</a
-          >
-          <a
-            v-else-if="track.id"
-            class="spotify-link"
-            :href="`https://open.spotify.com/search/${encodeURIComponent(track.name + ' ' + artist)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Find on Spotify ↗</a
-          >
+          <div class="track-actions">
+            <RouterLink
+              v-if="auth.user && track.id"
+              class="track-action track-action--analysis glass-secondary"
+              :to="`/song/${track.id}`"
+            >
+              View Song Analysis
+            </RouterLink>
+            <a
+              v-if="track.id"
+              class="track-action glass-secondary spotify-green"
+              :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Spotify
+            </a>
+          </div>
         </div>
       </section>
 
@@ -637,17 +639,20 @@ button:disabled {
   font-size: var(--text-body);
   color: var(--room-muted);
 }
-.spotify-link {
-  display: inline-flex;
+.track-actions {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  font: 13px var(--font-sans);
-  min-height: 44px;
-  margin-top: 12px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
+  gap: 10px;
+  margin-top: 16px;
 }
-.spotify-link:hover {
-  color: var(--room-focus);
+.track-action {
+  max-width: 100%;
+}
+.track-action.track-action--analysis {
+  --button-ink: #fff;
+  --button-top: color-mix(in srgb, var(--button-color) 84%, white);
+  --button-base: var(--button-color);
 }
 .transport {
   display: grid;

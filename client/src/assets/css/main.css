@@ -263,6 +263,11 @@ body {
   --button-ink: var(--ui-text);
   --button-base: var(--ui-bg-accented);
 }
+.spotify-green {
+  --button-ink: #191414;
+  --button-top: color-mix(in srgb, #1ed760 84%, white);
+  --button-base: #1ed760;
+}
 .glass-icon {
   width: 44px !important;
   height: 44px !important;
