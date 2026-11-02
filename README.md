@@ -1,15 +1,14 @@
 # IS216 · MetaFor by MetaSix
 
-MetaFor helps people reflect on the relationship between their music and how they feel. It brings Spotify listening history, mood check-ins, journaling, and creative self-expression together in one responsive web app.
+MetaFor is a web app for tracking moods and journaling alongside Spotify listening history.
 
 ## What you can do
 
-- **Check in and journal.** Choose from eight emotions, write a reflection, or draw on the built-in journal canvas. Entries and drawings are saved to your account and can be searched in Past Entries.
-- **Get a journal starting point.** The Helper sends your prompt to Groq and displays a short suggestion. You can review it and insert it into your journal. Your existing journal text is not sent.
-- **Explore your listening.** Connect Spotify to browse and play music in the Listening Room. The room includes a 3D turntable, album-art colors, and a compact mini player. Spotify Premium is required for in-app playback.
-- **Find patterns over time.** The dashboard and calendar show listening history and song mood readings. Compare the sound-only reading with the reading that also considers lyrics.
-- **Explore your music personality.** Take six music quizzes and view a profile that combines quiz results with listening and mood patterns. The profile uses Groq when configured and falls back to the app's scoring rules otherwise.
-- **Use it across devices.** The layout supports small and large screens, and includes light and dark themes.
+- **Daily Mood:** Record one of eight emotions, write a journal entry, draw, and optionally attach a song. Entries can be searched in Past Entries.
+- **Journal Helper:** Send a prompt to Groq for a suggested journal starting point. Review it and insert it into the entry. The existing journal draft is not sent.
+- **Listening Room:** Search and play Spotify tracks, view album art, and use the 3D turntable and mini player. In-app playback requires Spotify Premium.
+- **Dashboard and Calendar:** Review listening history and song mood readings over time, including sound and lyrics-based readings.
+- **Personality:** Complete six music quizzes and view a profile based on quiz results, listening and mood data. Groq can generate the profile summary; the app uses a scoring-based fallback when Groq is unavailable.
 
 ## Tech stack
 
@@ -22,16 +21,12 @@ MetaFor helps people reflect on the relationship between their music and how the
 | Browser tests | Playwright; unit tests with Vitest and Node's test runner |
 | Deployment | Vercel multi-service project; GitHub Actions for E2E checks and listening-history sync |
 
-## How the code is organized
-
-The app uses the Vue patterns covered in the WAD2 lectures:
+## Architecture
 
 - **Components and views:** reusable interface pieces live in `client/src/components/`; each page is a Vue view in `client/src/views/`.
 - **Routing and shared state:** Vue Router maps URLs to views and protects signed-in pages with a navigation guard. Pinia keeps the current account state available across pages; the session cookie itself stays HTTP-only on the server.
 - **API requests:** functions in `client/src/api/` centralize calls to the server and external services. Views call those functions instead of building request URLs and handling HTTP details inline.
 - **Server responsibilities:** Express routes define API paths, controllers handle request input and responses, services contain reusable application and integration logic, and Mongoose models describe stored data.
-
-This keeps page presentation, navigation, API communication, and database work in separate places while using straightforward Vue and Express conventions.
 
 ## External services
 
@@ -72,7 +67,7 @@ Create a private environment file from the example:
 cp server/.env.example server/.env
 ```
 
-Set `MONGODB_URI` to a database named `metafor_dev` for local work. Add your Spotify app credentials and register the exact `SPOTIFY_REDIRECT_URI` in the Spotify Developer Dashboard. For local use, the example callback is `http://127.0.0.1:3000/api/auth/callback`; open the app at `127.0.0.1`, not `localhost`.
+Set `MONGODB_URI` to a development database named `metafor_dev`. Add your Spotify app credentials and register `SPOTIFY_REDIRECT_URI` in the Spotify Developer Dashboard. The local callback is `http://127.0.0.1:3000/api/auth/callback`; use `127.0.0.1` rather than `localhost` when opening the app locally.
 
 Set `TOKEN_KEY` to a 64-character hexadecimal key. Generate one with:
 
@@ -80,7 +75,7 @@ Set `TOKEN_KEY` to a 64-character hexadecimal key. Generate one with:
 openssl rand -hex 32
 ```
 
-Keep the same `TOKEN_KEY` wherever the database's encrypted Spotify refresh tokens are used. Replacing it makes existing encrypted tokens unreadable. Never commit `.env` files or put server keys in client code.
+Use the same `TOKEN_KEY` wherever this database is used. Changing it makes saved Spotify refresh tokens unreadable. Do not commit `.env` files or put server keys in client code.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
@@ -97,7 +92,7 @@ Keep the same `TOKEN_KEY` wherever the database's encrypted Spotify refresh toke
 | `DEEPL_API_KEY` | No | Enables translation of non-English lyrics |
 | `LASTFM_API_KEY` | No | Enables artist genre tags; genre data is omitted without it |
 
-Each developer should use their own Groq API key. The Helper sends only the prompt to Groq, not the journal draft. Groq usage limits apply.
+Each developer should use their own Groq API key. The Helper sends the prompt, not the journal draft. Groq usage limits apply.
 
 ### 3. Install server dependencies and initialize MongoDB
 
