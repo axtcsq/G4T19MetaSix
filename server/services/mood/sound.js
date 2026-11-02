@@ -42,7 +42,7 @@ export async function fetchFeatures(track, deps) {
 }
 
 // The tracks fields for a song from Spotify's track object, as sync saves them.
-function fromSpotify(track) {
+export function fromSpotify(track) {
   return {
     name: track.name,
     artists: (track.artists ?? []).map((artist) => ({ id: artist.id, name: artist.name })),
