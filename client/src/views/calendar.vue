@@ -4,7 +4,8 @@ import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import { getMoods } from '@/api/moods'
-import { authorizeSpotify, hasSpotifySession, recentSpotify, searchSpotify } from '@/api/spotify'
+import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
+import { getRecommendations } from '@/api/recommendations'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
 defineOptions({ name: "MoodCalendar" })
@@ -23,7 +24,7 @@ const isConnectingSpotify = ref(false)
 const recommendations = ref([])
 const recommendationsLoading = ref(false)
 const recommendationsError = ref('')
-const recommendationSearchOffset = ref(0)
+const recommendationPage = ref(0)
 const shownRecommendationIds = new Set()
 let recommendationRequest = 0
 // The test account's plays come from our database, one month at a time.
@@ -125,22 +126,6 @@ const recommendationTypeMix = computed(() => {
   }
   const instrumentalShare = known ? instrumental / known : 0.5
   return { instrumental: Math.round(instrumentalShare * 4), vocal: 4 - Math.round(instrumentalShare * 4) }
-})
-const recommendationLanguage = computed(() => {
-  const languages = new Map()
-  for (const item of listens.value) {
-    const date = new Date(item.played_at)
-    if (date.getMonth() !== shownMonth.value.getMonth() || date.getFullYear() !== shownMonth.value.getFullYear()) continue
-    const code = item.moods?.lyricsLanguage?.toUpperCase()
-    if (code) languages.set(code, (languages.get(code) || 0) + 1)
-  }
-  const [code] = [...languages].sort((a, b) => b[1] - a[1])[0] || []
-  if (!code) return null
-  try {
-    return new Intl.DisplayNames(['en'], { type: 'language' }).of(code.toLowerCase()) || null
-  } catch {
-    return null
-  }
 })
 const monthMoodCount = computed(() => [...logsByDate.value].reduce((n, [key, entries]) => {
   const d = new Date(`${key}T12:00:00`)
@@ -246,100 +231,23 @@ async function loadRecommendations() {
   recommendationsError.value = ''
   recommendationsLoading.value = false
   const target = recommendationTarget.value
-  if (!target || !hasSpotifySession()) return
-  recommendationsLoading.value = true
-  const languageTerm = recommendationLanguage.value || ''
   const artists = recommendationArtists.value
-  const searchTerms = target === 'happy'
-    ? { vocal: 'uplifting happy soul indie pop vocal', instrumental: 'instrumental uplifting feel good' }
-    : { vocal: 'calm acoustic classical vocal', instrumental: 'calm ambient instrumental' }
-  const queries = artists.length
-    ? artists.flatMap((artist) => {
-        const artistTerm = `artist:"${artist.name.replaceAll('"', '')}"`
-        const artistKey = artist.id || artist.name.toLocaleLowerCase()
-        return [
-          { query: `${artistTerm} ${searchTerms.vocal} ${languageTerm}`, label: `From ${artist.name}`, type: 'vocal', artistKey, artistPlays: artist.plays },
-          { query: `${artistTerm} ${searchTerms.instrumental} ${languageTerm}`, label: `From ${artist.name} · instrumental`, type: 'instrumental', artistKey, artistPlays: artist.plays },
-        ]
-      })
-    : [
-        { query: `${searchTerms.vocal} ${languageTerm}`, label: 'Mood match', type: 'vocal', artistKey: 'style', artistPlays: 1 },
-        { query: `${searchTerms.instrumental} ${languageTerm}`, label: 'Instrumental search', type: 'instrumental', artistKey: 'instrumental', artistPlays: 1 },
-      ]
-  const widerStyleQueries = [
-    { query: `${searchTerms.vocal} ${languageTerm}`, label: 'Wider style search', type: 'vocal', artistKey: 'style', artistPlays: 1 },
-    { query: `${searchTerms.instrumental} ${languageTerm}`, label: 'Instrumental search', type: 'instrumental', artistKey: 'instrumental', artistPlays: 1 },
-  ]
+  if (!target || !artists.length) return
+  recommendationsLoading.value = true
   try {
-    const listenedIds = new Set(listens.value.map((item) => item.track?.id))
-    const seenIds = new Set()
-    const picks = []
-    let searchError = ''
-    async function addSearchResults(searches) {
-      const results = await Promise.allSettled(searches.map(({ query }) =>
-        searchSpotify(query, undefined, recommendationSearchOffset.value),
-      ))
-      if (request !== recommendationRequest) return
-      results.forEach((result, index) => {
-        if (result.status === 'rejected') {
-          searchError ||= result.reason?.message || 'Spotify search failed.'
-          return
-        }
-        for (const track of result.value.tracks?.items || []) {
-          if (!track.id || listenedIds.has(track.id) || seenIds.has(track.id) || shownRecommendationIds.has(track.id)) continue
-          seenIds.add(track.id)
-          picks.push({
-            ...track,
-            recommendationSource: searches[index].label,
-            recommendationType: searches[index].type,
-            recommendationArtist: searches[index].artistKey,
-            artistPlayWeight: searches[index].artistPlays,
-          })
-        }
-      })
-    }
-
-    await addSearchResults(queries)
+    // Skip songs already played this month and ones suggested before.
+    const exclude = new Set(listens.value.map((item) => item.track?.id).filter(Boolean))
+    shownRecommendationIds.forEach((id) => exclude.add(id))
+    const { tracks } = await getRecommendations({
+      target,
+      artists: artists.map(({ name, plays }) => ({ name, plays })),
+      mix: recommendationTypeMix.value,
+      exclude: [...exclude].slice(-2000),
+      page: recommendationPage.value,
+    })
     if (request !== recommendationRequest) return
-    await addSearchResults(widerStyleQueries)
-    if (request !== recommendationRequest) return
-    function pickProportionally(candidates, count) {
-      const groups = new Map()
-      for (const track of candidates) {
-        const key = track.recommendationArtist || 'other'
-        const group = groups.get(key) || { weight: track.artistPlayWeight || 1, tracks: [], selected: 0 }
-        group.tracks.push(track)
-        groups.set(key, group)
-      }
-      const selected = []
-      while (selected.length < count) {
-        const available = [...groups.values()].filter((group) => group.tracks.length)
-        if (!available.length) break
-        const group = available.sort((a, b) => b.weight / (b.selected + 1) - a.weight / (a.selected + 1))[0]
-        selected.push(group.tracks.shift())
-        group.selected++
-      }
-      return selected
-    }
-    let vocalPicks = pickProportionally(picks.filter((track) => track.recommendationType === 'vocal'), recommendationTypeMix.value.vocal)
-    let instrumentalPicks = pickProportionally(picks.filter((track) => track.recommendationType === 'instrumental'), recommendationTypeMix.value.instrumental)
-    const pickedIds = new Set([...vocalPicks, ...instrumentalPicks].map((track) => track.id))
-    const leftovers = picks.filter((track) => !pickedIds.has(track.id))
-    const missing = 4 - vocalPicks.length - instrumentalPicks.length
-    const extra = pickProportionally(leftovers, missing)
-    for (const track of extra) {
-      if (track.recommendationType === 'instrumental') instrumentalPicks.push(track)
-      else vocalPicks.push(track)
-    }
-    const mixedPicks = []
-    const slots = Math.max(vocalPicks.length, instrumentalPicks.length)
-    for (let index = 0; index < slots; index++) {
-      if (vocalPicks[index]) mixedPicks.push(vocalPicks[index])
-      if (instrumentalPicks[index]) mixedPicks.push(instrumentalPicks[index])
-    }
-    recommendations.value = mixedPicks
-    recommendations.value.forEach((track) => shownRecommendationIds.add(track.id))
-    if (!recommendations.value.length && searchError) recommendationsError.value = searchError
+    recommendations.value = tracks
+    tracks.forEach((track) => shownRecommendationIds.add(track.id))
   } catch (error) {
     if (request === recommendationRequest) recommendationsError.value = error.message
   } finally {
@@ -349,12 +257,12 @@ async function loadRecommendations() {
 
 function refreshRecommendations() {
   if (recommendationsLoading.value) return
-  recommendationSearchOffset.value = (recommendationSearchOffset.value + 10) % 1000
+  recommendationPage.value++
   loadRecommendations()
 }
 
-watch([songMoodTrend, recommendationArtists, recommendationLanguage, recommendationTypeMix], () => {
-  recommendationSearchOffset.value = 0
+watch([songMoodTrend, recommendationArtists, recommendationTypeMix], () => {
+  recommendationPage.value = 0
   shownRecommendationIds.clear()
   loadRecommendations()
 })
@@ -409,17 +317,15 @@ onMounted(loadData)
               <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
               <p class="recommendation-reason">{{ moodTrendSummary }}</p>
               <div v-if="recommendationArtists.length" class="recommendation-personalization">
-                <span>Matched to artists you played most:</span>
+                <span>Artists similar to the ones you played most:</span>
                 <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
-                <span v-if="recommendationLanguage">Searching mainly in {{ recommendationLanguage }}.</span>
-                <span class="fallback-explainer">Artist and vocal/instrumental picks follow your listening mix.</span>
+                <span class="fallback-explainer">Every pick’s sound is checked against the mood, and vocal/instrumental picks follow your listening mix.</span>
               </div>
-              <p v-else class="recommendation-personalization">Vocal and instrumental picks follow your listening mix; we’ll search mood-matched styles because no frequent artists are available this month.</p>
             </div>
             <div class="recommendation-actions">
               <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
               <button
-                v-if="recommendationTarget && hasSpotifySession()"
+                v-if="recommendationTarget && recommendationArtists.length"
                 type="button"
                 class="refresh-recommendations glass-secondary"
                 :disabled="recommendationsLoading"
@@ -434,17 +340,16 @@ onMounted(loadData)
           <div v-else-if="recommendations.length" class="recommendation-list">
             <!-- The title opens the song's mood page; the artwork and arrow open Spotify. -->
             <article v-for="track in recommendations" :key="track.id" class="recommendation-card">
-              <a class="art-link" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
-                <img v-if="track.album?.images?.length" :src="track.album.images[track.album.images.length > 1 ? 1 : 0].url" alt="" />
+              <a class="art-link" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                <img v-if="track.imageUrl" :src="track.imageUrl" alt="" />
                 <span v-else class="track-art">♫</span>
               </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists?.map((artist) => artist.name).join(', ') }}</small><small v-if="track.recommendationSource !== 'Wider style search'" class="recommendation-source">{{ track.recommendationSource }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.recommendationType === 'instrumental'" /></span>
-              <a class="recommendation-open" :href="track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
+              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
+              <a class="recommendation-open" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
             </article>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
-          <p v-else-if="!hasSpotifySession()" class="recommendation-status">Connect Spotify to explore matching tracks.</p>
-          <p v-else class="recommendation-status">No new matching tracks came up from your artists, wider styles, or instrumental searches. Try again after more songs are analyzed.</p>
+          <p v-else class="recommendation-status">No songs by similar artists matched the mood this time. Try refreshing for other artists.</p>
         </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">

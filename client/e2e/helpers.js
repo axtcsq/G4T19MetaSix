@@ -61,9 +61,11 @@ export const test = base.extend({
           }
         }
         if (path === '/api/listens') return reply({ items: [] })
+        if (path === '/api/listens/insights') return reply({ days: [], emotions: null })
         // Song mood tags: no stored moods, and nothing to work out.
         if (path === '/api/tracks/moods') return reply({ moods: {}, needsSound: [] })
         if (path === '/api/tracks/moods/sound') return reply({ moods: {} })
+        if (path === '/api/recommendations') return reply({ tracks: [] })
         if (path === '/api/quiz/genre-mix')
           return reply({ genres: [], artistPlays: 0, taggedArtistPlays: 0 })
         if (path === '/api/quiz/personality') return reply(null)

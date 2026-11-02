@@ -9,6 +9,7 @@ import listenRoutes from "./routes/listenRoutes.js";
 import meRoutes from "./routes/meRoutes.js";
 import { requireUser } from "./middleware/requireUser.js";
 import moodRoutes from "./routes/moodRoutes.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import songRoutes from "./routes/songRoutes.js";
@@ -116,6 +117,8 @@ app.use("/api/listens", requireUser, listenRoutes);
 app.use("/api/sync", requireUser, syncRoutes);
 // Stored song moods, for the mood tags
 app.use("/api/tracks", requireUser, trackRoutes);
+// Song suggestions on the mood calendar
+app.use("/api/recommendations", requireUser, recommendationRoutes);
 
 // Song search and analysis. Public, so the landing page can use it.
 app.use("/api/songs", songRoutes);
