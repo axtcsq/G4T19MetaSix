@@ -202,34 +202,27 @@ function selectDay(date) {
 }
 function isToday(date) { return keyForDate(date) === keyForDate(today) }
 function tracksFor(date) { return listensByDate.value.get(keyForDate(date)) || [] }
-const coverCollagesByDate = computed(() => {
-  const collages = new Map()
+const mostReplayedByDate = computed(() => {
+  const mostReplayed = new Map()
   for (const [dateKey, items] of listensByDate.value) {
-    const seen = new Set()
-    const covers = items.flatMap((item) => {
-      const images = item.track?.album?.images || []
-      const url = images[images.length > 1 ? 1 : 0]?.url
-      if (!url || seen.has(url)) return []
-      seen.add(url)
-      return [url]
-    })
-    if (!covers.length) continue
-
-    const columns = Math.min(4, Math.ceil(Math.sqrt(covers.length)))
-    const rows = Math.ceil(covers.length / columns)
-    const tiles = [...covers]
-    while (tiles.length < columns * rows) tiles.push(covers[tiles.length % covers.length])
-    collages.set(dateKey, {
-      tiles,
-      style: {
-        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-      },
-    })
+    const playCounts = new Map()
+    for (const item of items) {
+      const track = item.track
+      if (!track) continue
+      const trackKey = track.id || `${track.name}-${(track.artists || []).map((artist) => artist.name).join(',')}`
+      const current = playCounts.get(trackKey) || { track, count: 0, lastPlayed: 0 }
+      current.count += 1
+      current.lastPlayed = Math.max(current.lastPlayed, new Date(item.played_at).getTime())
+      playCounts.set(trackKey, current)
+    }
+    const favorite = [...playCounts.values()].sort((a, b) => b.count - a.count || b.lastPlayed - a.lastPlayed)[0]
+    const images = favorite?.track.album?.images || []
+    const cover = images[images.length > 1 ? 1 : 0]?.url
+    if (favorite && cover) mostReplayed.set(dateKey, { ...favorite, cover })
   }
-  return collages
+  return mostReplayed
 })
-function collageFor(date) { return date ? coverCollagesByDate.value.get(keyForDate(date)) : null }
+function mostReplayedFor(date) { return date ? mostReplayedByDate.value.get(keyForDate(date)) : null }
 function moodFor(date) { return (logsByDate.value.get(keyForDate(date)) || [])[0]?.mood }
 function listeningMoodFor(date) {
   if (!date) return null
@@ -399,16 +392,11 @@ onMounted(loadData)
                 class="day-cell"
                 :class="{ 'is-empty': !date, 'is-today': date && isToday(date), 'is-selected': date && selectedKey === keyForDate(date), 'has-content': date && (moodFor(date) || tracksFor(date).length), 'has-listens': date && tracksFor(date).length }"
                 :disabled="!date"
-                :aria-label="date ? `${date.toLocaleDateString('en-SG', { day: 'numeric', month: 'long' })}${moodFor(date) ? `, journal mood ${moodFor(date)}` : ''}${listeningMoodFor(date) ? `, listening mood ${listeningMoodFor(date).name}` : ''}, ${tracksFor(date).length} songs` : undefined"
+                :aria-label="date ? `${date.toLocaleDateString('en-SG', { day: 'numeric', month: 'long' })}${moodFor(date) ? `, journal mood ${moodFor(date)}` : ''}${listeningMoodFor(date) ? `, listening mood ${listeningMoodFor(date).name}` : ''}, ${tracksFor(date).length} songs${mostReplayedFor(date) ? `, most replayed ${mostReplayedFor(date).track.name}` : ''}` : undefined"
                 @click="date && selectDay(date)"
               >
-                <span
-                  v-if="date && collageFor(date)"
-                  class="day-artwork-collage"
-                  :style="collageFor(date).style"
-                  aria-hidden="true"
-                >
-                  <img v-for="(cover, coverIndex) in collageFor(date).tiles" :key="`${cover}-${coverIndex}`" :src="cover" alt="" loading="lazy" decoding="async" />
+                <span v-if="date && mostReplayedFor(date)" class="day-artwork-cover" aria-hidden="true">
+                  <img :src="mostReplayedFor(date).cover" alt="" loading="lazy" decoding="async" />
                 </span>
                 <span v-if="date" class="day-number">{{ date.getDate() }}</span>
                 <span v-if="date && moodFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(moodFor(date))" :title="`Journal mood: ${moodFor(date)}`">
@@ -546,9 +534,9 @@ onMounted(loadData)
 .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--ui-border); border-left: 1px solid var(--ui-border); }
 .weekday { padding: 10px 4px; color: var(--ui-text-muted); font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
 .day-cell { position: relative; display: flex; min-width: 0; min-height: clamp(74px, 10vw, 116px); flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 4px 7px; border: 0; border-right: 1px solid var(--ui-border); border-bottom: 1px solid var(--ui-border); color: var(--ui-text); background: var(--ui-bg-elevated); cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
-.day-cell > :not(.day-artwork-collage) { z-index: 1; }
-.day-artwork-collage { position: absolute; inset: 0; display: grid; overflow: hidden; opacity: .32; pointer-events: none; }
-.day-artwork-collage img { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: cover; }
+.day-cell > :not(.day-artwork-cover) { z-index: 1; }
+.day-artwork-cover { position: absolute; inset: 0; overflow: hidden; opacity: .38; pointer-events: none; }
+.day-artwork-cover img { width: 100%; height: 100%; object-fit: cover; }
 .day-cell.has-listens .day-number, .day-cell.has-listens .song-count { color: #fff; background: rgba(23, 27, 39, .72); }
 .day-cell.has-listens .day-number { border-radius: 999px; }
 .day-cell.has-listens .song-count { padding: 2px 6px; border-radius: 999px; }
