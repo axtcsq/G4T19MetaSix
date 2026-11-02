@@ -387,11 +387,11 @@ onBeforeUnmount(() => {
                 />
               </div>
               <strong>{{ item.name }}</strong
-              ><span class="shelf-mood"
-                ><MoodTag :track-id="item.id" size="sm" :link="false" /></span
-              ><span class="sr-only">{{
+              ><span class="shelf-artist">{{
                 item.artists?.map((artist) => artist.name).join(', ')
-              }}</span>
+              }}</span
+              ><span class="shelf-mood"
+                ><MoodTag :track-id="item.id" size="sm" :link="false" /></span>
             </button>
           </div>
         </template>
@@ -861,6 +861,10 @@ input:disabled {
 .shelf-record[aria-pressed='true'] > strong {
   text-decoration: underline;
   text-underline-offset: 5px;
+}
+.shelf-artist {
+  font: 18px var(--font-serif);
+  margin-top: 4px;
 }
 .search-form {
   display: flex;

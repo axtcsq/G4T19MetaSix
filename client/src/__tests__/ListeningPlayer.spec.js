@@ -33,6 +33,8 @@ vi.mock('../api/spotify', () => ({
         () => new Promise((resolve) => this.options.getOAuthToken(() => resolve(true))),
       )
       disconnect() {}
+      previousTrack = vi.fn(async () => {})
+      seek = vi.fn(async () => {})
       async getCurrentState() {
         return null
       }
@@ -237,6 +239,22 @@ describe('Listening player lifecycle', () => {
     player.listeners.player_state_changed(null)
     expect(room.paused.value).toBe(true)
     expect(room.error.value).toMatch(/another device/)
+  })
+
+  it('goes back a song early on and restarts the song after that', async () => {
+    const room = useListeningRoom()
+    await room.initialize()
+    const player = players[0]
+    player.listeners.ready({ device_id: 'this-browser' })
+    player.listeners.player_state_changed({ paused: false, position: 2000, duration: 100000 })
+    await room.skip(-1)
+    expect(player.previousTrack).toHaveBeenCalledOnce()
+    expect(player.seek).not.toHaveBeenCalled()
+    player.listeners.player_state_changed({ paused: false, position: 40000, duration: 100000 })
+    await room.skip(-1)
+    expect(player.seek).toHaveBeenCalledWith(0)
+    expect(player.previousTrack).toHaveBeenCalledOnce()
+    expect(room.position.value).toBe(0)
   })
 
   it('stays quiet when nothing was playing', async () => {

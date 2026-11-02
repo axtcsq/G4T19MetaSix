@@ -391,7 +391,14 @@ async function changeVolume(value) {
 }
 async function skip(direction) {
   if (!connected.value || !ready.value) return
-  await action(() => (direction > 0 ? player.nextTrack() : player.previousTrack()))
+  await action(async (isCurrent) => {
+    if (direction > 0) return player.nextTrack()
+    // Past the first few seconds, Spotify's player ignores Previous instead of
+    // restarting the song, so the song restarts here.
+    if (position.value <= 3000) return player.previousTrack()
+    await player.seek(0)
+    if (isCurrent()) position.value = 0
+  })
 }
 async function search() {
   searchController?.abort()

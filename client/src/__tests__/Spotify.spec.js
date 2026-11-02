@@ -208,6 +208,7 @@ describe('Spotify HTTP integration against a local stand-in', () => {
     expect(JSON.parse(play[1].body)).toEqual({
       uris: ['spotify:track:song'],
       offset: { position: 0 },
+      position_ms: 0,
     })
     expect(tokenCalls()).toBe(2)
   })
