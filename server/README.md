@@ -14,7 +14,7 @@ The server is an Express API. It uses Mongoose to read and write mood logs in Mo
 - `models/User.js`, `Listen.js`, `Track.js`, `DailyMood.js` and `SyncGap.js` define the listening and mood collections.
 - `scripts/db-init.js` creates every collection and its indexes.
 - `scripts/seed.js` creates the demo user and a year of generated listening history from `scripts/data/demo-songs.json`.
-- `services/mood/` holds the mood rules (`mood.js`), the music-mood-to-axis table (`axes.js`) and the song analysis. `analyse.js` (`analyseTrack`) fetches a song's audio features from ReccoBeats (`reccobeats.js`, falling back to other Spotify IDs for the same recording through `spotify.js`), its lyrics from LRCLIB (`lyrics.js`), translates non-English lyrics with DeepL (`translate.js`), scores them with a local emotion model (`emotion.js`), and saves both mood readings to `tracks`. The lyrics text is never stored, only the scores.
+- `services/mood/` holds the mood rules (`mood.js`), the music-mood-to-axis table (`axes.js`) and the song analysis. `analyse.js` (`analyseTrack`) fetches a song's audio features from ReccoBeats (`reccobeats.js`; when it doesn't know the song's ID, it reuses another stored copy of the same recording, then searches ReccoBeats and Spotify (`spotify.js`) for other IDs with the same ISRC), its lyrics from LRCLIB (`lyrics.js`, or a local copy of LRCLIB's database), translates non-English lyrics with DeepL (`translate.js`), scores them with a local emotion model (`emotion.js`), and saves both mood readings to `tracks`. The lyrics text is never stored, only the scores.
 - `services/dailyMoods.js` rebuilds a user's daily mood summaries from their listens.
 - `services/sync.js` saves a user's newest Spotify plays into `listens` and new songs into `tracks`. `jobs/sync.js` (`npm run sync`) runs it for every active user, and GitHub Actions runs that every 15 minutes.
 - `jobs/analyse.js` (`npm run analyse`) runs after each sync. It analyses up to 100 songs that are new, `partial` (lyrics failed for now) or `failed`, retrying each up to 3 times, then rebuilds the days they were played. The emotion model (~83 MB) downloads into `server/.models/` on first use; GitHub Actions caches it.
@@ -86,3 +86,13 @@ npm run mood:eval   # the mood rules on 156 labelled songs: expect 126/156 (soun
 ```
 
 `testdata/dark.json` and `testdata/foreign.json` are smaller sets for dark lyrics and non-English songs: `node testdata/eval.mjs testdata/dark.json services/mood/mood.js --list`. A change to a threshold in `mood.js` must not lower either reading's score.
+
+## Lyrics from a local LRCLIB copy
+
+When LRCLIB's API is overloaded, songs wait with "Lyrics pending" until it answers. The analysis job can read lyrics from a downloaded copy of LRCLIB's database instead:
+
+1. Download the latest dump from https://lrclib.net/db-dumps and unpack it into `server/.lrclib/` (Git ignores this folder).
+2. Set `LRCLIB_DB_PATH=.lrclib/<file>.sqlite3` in `server/.env`.
+3. Run `npm run analyse`. Songs the copy doesn't have still go to the live API.
+
+Only the scores are saved, to the shared database, so every machine sees the new moods. The GitHub job doesn't have the file and keeps using the live API. Reading the copy needs Node 22.13 or later (`node:sqlite`).

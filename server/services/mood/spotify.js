@@ -2,7 +2,7 @@
 /*  Track details and search for the ISRC fallback. App-only login     */
 /*  (client credentials), so it needs no user.                         */
 /* ------------------------------------------------------------------ */
-import { HttpError } from './errors.js'
+import { HttpError, busyStatus } from './errors.js'
 
 const BASE_URL = 'https://api.spotify.com'
 const TOKEN_URL = 'https://accounts.spotify.com/api/token'
@@ -33,8 +33,20 @@ async function accessToken() {
   return token.value
 }
 
+// After a 429 Spotify says how long to wait (Retry-After, in seconds), and can
+// block the whole app for hours if it keeps being asked. Until then, calls fail
+// at once without reaching Spotify.
+let blockedUntil = 0
+
+function rateLimited() {
+  const error = new HttpError(429, 'Spotify asked us to wait before searching again.')
+  error.temporary = true
+  return error
+}
+
 // JSON request: throws HttpError with the API's own error message on failure.
 async function get(path, params = {}) {
+  if (Date.now() < blockedUntil) throw rateLimited()
   const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''))
   const res = await fetch(`${BASE_URL}${path}${qs.size ? `?${qs}` : ''}`, {
     headers: { Authorization: `Bearer ${await accessToken()}` },
@@ -42,7 +54,13 @@ async function get(path, params = {}) {
   const body = await res.json().catch(() => null)
   if (!res.ok) {
     if (res.status === 401) token = null // revoked or expired early; fetch a fresh one next time
-    throw new HttpError(res.status, body?.error?.message ?? `Spotify API returned ${res.status}.`)
+    if (res.status === 429) {
+      blockedUntil = Date.now() + (Number(res.headers.get('retry-after')) || 60) * 1000
+      throw rateLimited()
+    }
+    const error = new HttpError(res.status, body?.error?.message ?? `Spotify API returned ${res.status}.`)
+    error.temporary = busyStatus(res.status)
+    throw error
   }
   return body
 }
@@ -56,9 +74,19 @@ async function searchTracks(q, { limit = 10, market = 'US' } = {}) {
 /** One track's details. Development-mode apps can't fetch several at once. */
 export const getTrack = (id) => get(`/v1/tracks/${encodeURIComponent(id)}`)
 
-/** Other Spotify IDs for the same recording (same ISRC), e.g. the single or a compilation. */
+/**
+ * Other Spotify IDs for the same recording (same ISRC), e.g. the single or a compilation.
+ * Empty while Spotify has us waiting: this is the last fallback, so the song is
+ * marked as having no data rather than retried into a longer block.
+ */
 export async function sameRecordingIds({ id, isrc }) {
   if (!isrc) return []
-  const hits = await searchTracks(`isrc:${isrc}`)
+  let hits
+  try {
+    hits = await searchTracks(`isrc:${isrc}`)
+  } catch (error) {
+    if (error.status === 429) return []
+    throw error
+  }
   return [...new Set(hits.filter((h) => h.external_ids?.isrc === isrc && h.id !== id).map((h) => h.id))]
 }

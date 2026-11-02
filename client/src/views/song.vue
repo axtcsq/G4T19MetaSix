@@ -106,7 +106,7 @@ const lyricsWhy = computed(() => {
   if (note === 'pending')
     return 'The lyrics haven’t been read yet. They’re usually read within a few hours.'
   if (note === 'unavailable')
-    return 'The lyrics site was down every time we tried, so the mood comes from the sound only.'
+    return 'We couldn’t read this song’s lyrics after several tries, so the mood comes from the sound only.'
   if (note === 'instrumental')
     return 'This song is instrumental and contains no lyrics. Its mood comes from the sound alone.'
   if (lyrics.value?.status === 'untranslatable')

@@ -4,6 +4,7 @@
 /*  translated first. English lyrics never reach DeepL, so they cost   */
 /*  no quota and score exactly as before.                              */
 /* ------------------------------------------------------------------ */
+import { busyStatus } from './errors.js'
 
 // Free-plan keys end in ":fx" and use a separate host.
 const host = (key) => (key.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com')
@@ -58,7 +59,11 @@ export async function translateToEnglish(chunks) {
       body: JSON.stringify({ text: verses.slice(i, i + MAX_TEXTS), target_lang: 'EN-US', preserve_formatting: true }),
     })
     // 456 = monthly quota used up, 403 = bad key, 429 = too many requests.
-    if (!res.ok) throw new Error(`DeepL returned ${res.status}`)
+    if (!res.ok) {
+      const error = new Error(`DeepL returned ${res.status}`)
+      error.temporary = busyStatus(res.status)
+      throw error
+    }
     const { translations } = await res.json()
     translations.forEach((t, j) => {
       out.push(t.text)

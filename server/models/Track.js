@@ -111,6 +111,8 @@ const trackSchema = new mongoose.Schema(
 
 trackSchema.index({ "analysis.status": 1 });
 trackSchema.index({ "moods.version": 1 });
+// Finds other copies of the same recording, e.g. the album and deluxe editions.
+trackSchema.index({ isrc: 1 });
 
 const Track = mongoose.models.Track || mongoose.model("Track", trackSchema);
 

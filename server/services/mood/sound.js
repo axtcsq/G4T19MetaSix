@@ -6,16 +6,29 @@ import { MOOD_VERSION, trackMoods } from "./index.js";
 import { getAudioFeatures, idsForIsrc } from "./reccobeats.js";
 import { getTrack, sameRecordingIds } from "./spotify.js";
 
-const defaultDeps = { getTrack, getAudioFeatures, idsForIsrc, sameRecordingIds };
+const defaultDeps = { getTrack, getAudioFeatures, idsForIsrc, sameRecordingIds, sameRecording };
+
+// Another stored copy of the same recording (same ISRC) that already has its
+// features, e.g. the album and deluxe editions of a song. null when there's none.
+export function sameRecording(track) {
+  if (!track.isrc) {
+    return null;
+  }
+  return Track.findOne(
+    { _id: { $ne: track._id }, isrc: track.isrc, "features.valence": { $ne: null } },
+    { features: 1, lyrics: 1 },
+  ).lean();
+}
 
 // Audio features for a stored track, trying other IDs for the same recording
 // when ReccoBeats doesn't know this one. null when it has none at all.
+// ReccoBeats' own catalogue is searched before Spotify's, which rate-limits the app.
 export async function fetchFeatures(track, deps) {
   try {
     const { id: _id, ...features } = await deps.getAudioFeatures(track._id, {
       fallbacks: [
-        () => deps.sameRecordingIds({ id: track._id, isrc: track.isrc }),
         () => deps.idsForIsrc(track.name, track.isrc),
+        () => deps.sameRecordingIds({ id: track._id, isrc: track.isrc }),
       ],
     });
     return features;
@@ -54,7 +67,7 @@ export async function addSoundMood(trackId, deps = defaultDeps) {
 
   let features;
   try {
-    features = await fetchFeatures(song, deps);
+    features = (await deps.sameRecording(song))?.features ?? (await fetchFeatures(song, deps));
   } catch {
     // ReccoBeats is down: the job tries again later.
     features = undefined;

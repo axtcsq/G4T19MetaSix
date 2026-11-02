@@ -65,6 +65,11 @@ export async function searchSongs(req, res) {
     res.json(tracks.map(toSong));
   } catch (error) {
     console.error("[Songs] Spotify search failed:", error.message);
+    if (error.status === 429) {
+      const minutes = Math.ceil((error.retryAfter ?? 60) / 60);
+      const wait = minutes <= 1 ? "a minute" : minutes < 90 ? `${minutes} minutes` : `${Math.round(minutes / 60)} hours`;
+      return res.status(503).json({ error: `Song search is busy right now. Please try again in about ${wait}.` });
+    }
     res.status(502).json({ error: "Spotify search is unavailable. Please try again." });
   }
 }

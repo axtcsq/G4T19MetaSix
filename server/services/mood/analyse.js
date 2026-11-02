@@ -3,8 +3,9 @@ import { SCORER_VERSION, scoreLyrics, toChunks } from "./emotion.js";
 import { MAX_ATTEMPTS, trackMoods } from "./index.js";
 import { findLyrics } from "./lyrics.js";
 import { getAudioFeatures, idsForIsrc } from "./reccobeats.js";
+import { isTemporary } from "./errors.js";
 import { sameRecordingIds } from "./spotify.js";
-import { fetchFeatures } from "./sound.js";
+import { fetchFeatures, sameRecording } from "./sound.js";
 import { isEnglish, translateToEnglish } from "./translate.js";
 
 // Lyric statuses worth another try on a later run.
@@ -17,6 +18,7 @@ const defaultDeps = {
   getAudioFeatures,
   idsForIsrc,
   sameRecordingIds,
+  sameRecording,
   findLyrics,
   isEnglish,
   translateToEnglish,
@@ -63,7 +65,7 @@ async function analyseLyrics(track, deps) {
       translated = await deps.translateToEnglish(chunks);
     } catch (error) {
       console.warn(`[analyse] ${track._id}: translation failed: ${error.message}`);
-      return toStoredLyrics("untranslated");
+      return { ...toStoredLyrics("untranslated"), busy: isTemporary(error) };
     }
     // DeepL couldn't tell the language (often romanised lyrics); retrying won't help.
     if (!translated.from) return toStoredLyrics("untranslatable");
@@ -71,28 +73,66 @@ async function analyseLyrics(track, deps) {
     return toStoredLyrics("found", scores, translated.from);
   } catch (error) {
     console.warn(`[analyse] ${track._id}: lyrics failed: ${error.message}`);
-    return toStoredLyrics("unavailable");
+    // `busy` isn't saved: it tells analyseTrack not to count this attempt.
+    return { ...toStoredLyrics("unavailable"), busy: isTemporary(error) };
   }
 }
 
+// Lyric scores worth keeping: from the current scorer, and not a temporary failure.
+function finalLyrics(lyrics) {
+  return lyrics?.scorerVersion === SCORER_VERSION && !TEMPORARY_LYRIC_FAILURES.includes(lyrics.status);
+}
+
 // Works out a song's features, lyric scores and both mood readings, without
-// touching the database. A retry reuses what an earlier run already stored:
+// writing to the database. A retry reuses what an earlier run already stored:
 // features never change, and lyrics are only redone after a temporary failure
-// or when the scorer changes.
+// or when the scorer changes. Another copy of the same recording (same ISRC)
+// that's already analysed lends its features and lyrics, so neither is fetched twice.
 export async function analyseSong(track, deps = defaultDeps) {
-  const features = track.features?.valence != null ? track.features : await fetchFeatures(track, deps);
+  const stored = track.features?.valence != null;
+  const copy = stored && finalLyrics(track.lyrics) ? null : await deps.sameRecording(track);
+  const features = stored ? track.features : (copy?.features ?? (await fetchFeatures(track, deps)));
   if (!features) {
     return { status: "no-data" };
   }
 
-  const keepLyrics =
-    track.lyrics?.scorerVersion === SCORER_VERSION &&
-    !TEMPORARY_LYRIC_FAILURES.includes(track.lyrics.status);
-  const lyrics = keepLyrics ? track.lyrics : await analyseLyrics(track, deps);
+  let lyrics = track.lyrics;
+  let lyricsBusy = false;
+  if (finalLyrics(copy?.lyrics) && !finalLyrics(lyrics)) {
+    lyrics = copy.lyrics;
+  } else if (!finalLyrics(lyrics)) {
+    ({ busy: lyricsBusy = false, ...lyrics } = await analyseLyrics(track, deps));
+  }
   const moods = trackMoods(features, lyrics);
 
   // trackMoods leaves the lyrics reading out only after a temporary lyric failure.
-  return { status: moods.lyrics ? "done" : "partial", features, lyrics, moods };
+  // lyricsBusy: the lyrics site or DeepL was busy, so the retry is free.
+  return { status: moods.lyrics ? "done" : "partial", features, lyrics, moods, lyricsBusy };
+}
+
+// The steps the job's log times, by dependency. Fallback searches count towards "sound".
+const TIMED_STEPS = {
+  sameRecording: "copy",
+  getAudioFeatures: "sound",
+  findLyrics: "lyrics",
+  translateToEnglish: "deepl",
+  scoreLyrics: "model",
+};
+
+// The same dependencies, adding each call's time to `timings` by step.
+function timed(deps, timings) {
+  const wrapped = { ...deps };
+  for (const [name, step] of Object.entries(TIMED_STEPS)) {
+    wrapped[name] = async (...args) => {
+      const started = performance.now();
+      try {
+        return await deps[name](...args);
+      } finally {
+        timings[step] = (timings[step] ?? 0) + performance.now() - started;
+      }
+    };
+  }
+  return wrapped;
 }
 
 // Analyses one stored track and saves the result. Returns the new status, and
@@ -104,8 +144,9 @@ export async function analyseTrack(trackId, deps = defaultDeps) {
   }
 
   const analysis = { "analysis.analysedAt": new Date() };
+  const timings = {};
   try {
-    const result = await analyseSong(track, deps);
+    const result = await analyseSong(track, timed(deps, timings));
     const update =
       result.status === "no-data"
         ? { "moods.sound": null, "moods.lyrics": null }
@@ -115,22 +156,23 @@ export async function analyseTrack(trackId, deps = defaultDeps) {
       { _id: trackId },
       {
         $set: { ...update, ...analysis, "analysis.status": result.status },
-        $inc: { "analysis.attempts": 1 },
+        $inc: { "analysis.attempts": result.lyricsBusy ? 0 : 1 },
         $unset: { "analysis.lastError": "" },
       },
     );
-    return { status: result.status, moodsChanged: result.status !== "no-data" };
+    return { status: result.status, moodsChanged: result.status !== "no-data", timings };
   } catch (error) {
     // A song that already has its sound reading keeps it (and stays counted);
-    // anything else is marked failed and retried until MAX_ATTEMPTS.
+    // anything else is marked failed and retried until MAX_ATTEMPTS. A busy or
+    // unreachable service doesn't use up an attempt, so outages can't exhaust them.
     const status = track.moods?.sound ? track.analysis.status : "failed";
     await Track.updateOne(
       { _id: trackId },
       {
         $set: { ...analysis, "analysis.status": status, "analysis.lastError": error.message },
-        $inc: { "analysis.attempts": 1 },
+        $inc: { "analysis.attempts": isTemporary(error) ? 0 : 1 },
       },
     );
-    return { status, moodsChanged: false, error };
+    return { status, moodsChanged: false, error, timings };
   }
 }

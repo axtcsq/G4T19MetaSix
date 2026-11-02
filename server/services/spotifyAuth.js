@@ -45,6 +45,8 @@ async function spotifyFetch(url, options) {
     const reason = body.error_description ?? body.error?.message ?? body.error ?? "request failed";
     const error = new Error(`Spotify ${response.status}: ${reason}`);
     error.status = response.status;
+    // Seconds Spotify wants us to wait after a 429.
+    error.retryAfter = Number(response.headers.get("retry-after")) || null;
     // e.g. "invalid_grant" when the user has removed the app's access.
     error.code = typeof body.error === "string" ? body.error : undefined;
     throw error;
@@ -134,11 +136,50 @@ async function fetchAppToken() {
   return value;
 }
 
+// Recent searches are reused for a while, so people typing the same words don't
+// each cost a Spotify request. After a 429 no search reaches Spotify until its
+// Retry-After has passed: asking again can lengthen the block to hours.
+const SEARCH_CACHE_MS = 10 * 60 * 1000;
+const SEARCH_CACHE_SIZE = 200;
+const searchCache = new Map();
+let searchBlockedUntil = 0;
+
+function searchBlocked() {
+  const error = new Error("Spotify search is rate limited");
+  error.status = 429;
+  error.retryAfter = Math.ceil((searchBlockedUntil - Date.now()) / 1000);
+  return error;
+}
+
 // Songs matching the words, best match first.
 export async function searchTracks(query, limit = 6) {
+  const key = `${limit}:${query.toLowerCase()}`;
+  const cached = searchCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.items;
+  }
+  if (Date.now() < searchBlockedUntil) {
+    throw searchBlocked();
+  }
+
   const params = new URLSearchParams({ q: query, type: "track", limit: String(limit) });
-  const body = await spotifyFetch(`${API_URL}/search?${params}`, {
-    headers: { Authorization: `Bearer ${await fetchAppToken()}` },
-  });
-  return body.tracks?.items ?? [];
+  let body;
+  try {
+    body = await spotifyFetch(`${API_URL}/search?${params}`, {
+      headers: { Authorization: `Bearer ${await fetchAppToken()}` },
+    });
+  } catch (error) {
+    if (error.status === 429) {
+      searchBlockedUntil = Date.now() + (error.retryAfter ?? 60) * 1000;
+    }
+    throw error;
+  }
+
+  const items = body.tracks?.items ?? [];
+  searchCache.delete(key);
+  searchCache.set(key, { items, expiresAt: Date.now() + SEARCH_CACHE_MS });
+  if (searchCache.size > SEARCH_CACHE_SIZE) {
+    searchCache.delete(searchCache.keys().next().value);
+  }
+  return items;
 }

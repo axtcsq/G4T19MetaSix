@@ -34,9 +34,10 @@ async function run() {
     filter.$nor = [{ "analysis.status": "partial", "lyrics.status": "untranslated" }];
   }
 
-  // New songs first, then retries.
+  // New songs first, then retries, least recently tried first so songs waiting
+  // on a busy service don't crowd out the rest.
   const tracks = await Track.find(filter, { _id: 1, name: 1 })
-    .sort({ "analysis.attempts": 1 })
+    .sort({ "analysis.attempts": 1, "analysis.analysedAt": 1 })
     .limit(MAX_TRACKS)
     .lean();
   console.log(`[analyse] ${mongoose.connection.name}: ${tracks.length} songs to analyse`);
@@ -55,13 +56,18 @@ async function run() {
       console.log("[analyse] Out of time; the rest wait for the next run");
       break;
     }
+    const songStarted = Date.now();
     const result = await analyseTrack(track._id);
     counts[result.status] = (counts[result.status] ?? 0) + 1;
     if (result.moodsChanged) {
       changed.push(track._id);
     }
     const note = result.error ? `: ${result.error.message}` : "";
-    console.log(`[analyse] ${track._id} ${track.name}: ${result.status}${note}`);
+    // Where the time went, e.g. "(3.1s: sound 0.8s, lyrics 1.9s)". The rest is the database.
+    const seconds = (ms) => `${(ms / 1000).toFixed(1)}s`;
+    const steps = Object.entries(result.timings ?? {}).map(([step, ms]) => `${step} ${seconds(ms)}`);
+    const took = [seconds(Date.now() - songStarted), ...(steps.length ? [steps.join(", ")] : [])].join(": ");
+    console.log(`[analyse] ${track._id} ${track.name}: ${result.status}${note} (${took})`);
   }
 
   const days = await rebuildDaysWithTracks(changed);
