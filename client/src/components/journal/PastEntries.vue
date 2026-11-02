@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 
@@ -31,6 +31,10 @@ const props = defineProps({
   pinnedId: {
     type: String,
     default: null,
+  },
+  focusEntryId: {
+    type: String,
+    default: '',
   },
 })
 
@@ -67,6 +71,17 @@ function clearSearch() {
   searchInput.value = ''
   searchQuery.value = ''
 }
+
+async function focusRequestedEntry() {
+  if (!props.focusEntryId || props.isLoading) return
+  await nextTick()
+  const entry = document.getElementById(`journal-entry-${props.focusEntryId}`)
+  if (!entry) return
+  entry.focus({ preventScroll: true })
+  entry.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+}
+
+watch(() => [props.entries, props.focusEntryId, props.isLoading], focusRequestedEntry, { immediate: true })
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString('en-SG', {
@@ -130,7 +145,14 @@ function formatDate(date) {
       </div>
 
       <div v-else class="history-list">
-        <article v-for="entry in filteredEntries" :key="entry._id" class="journal-entry">
+        <article
+          v-for="entry in filteredEntries"
+          :id="`journal-entry-${entry._id}`"
+          :key="entry._id"
+          class="journal-entry"
+          :class="{ 'is-focused': entry._id === focusEntryId }"
+          tabindex="-1"
+        >
           <div
             class="entry-sheet notebook-page"
             :class="{ 'has-drawing': entry.drawing?.items?.length }"
@@ -258,6 +280,10 @@ function formatDate(date) {
 
 .journal-entry {
   min-width: 0;
+}
+.journal-entry.is-focused .entry-sheet {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 4px;
 }
 
 .entry-sheet {

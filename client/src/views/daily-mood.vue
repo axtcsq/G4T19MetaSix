@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
@@ -11,10 +12,12 @@ import { useTodayMoodStore } from '@/stores/todayMood'
 import { useAuthStore } from '@/stores/auth'
 import { updateSettings } from '@/api/auth'
 
+const route = useRoute()
 const todayMood = useTodayMoodStore()
 const auth = useAuthStore()
 // The profile page links to #past-entries to open them straight away.
-const showHistory = ref(window.location.hash === '#past-entries')
+const showHistory = ref(window.location.hash === '#past-entries' || typeof route.query.entryId === 'string')
+const focusEntryId = computed(() => typeof route.query.entryId === 'string' ? route.query.entryId : '')
 const showDrawing = ref(false)
 const showSong = ref(false)
 const saveStatus = ref('')
@@ -341,6 +344,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
           :is-loading="isLoading"
           :load-error="loadError"
           :pinned-id="auth.user?.pinnedEntryId ?? null"
+          :focus-entry-id="focusEntryId"
           @retry="loadEntries"
           @pin="pinEntry"
         />

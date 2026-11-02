@@ -398,12 +398,20 @@ onMounted(loadData)
             <section class="day-detail-column journal-column" aria-labelledby="journal-history-title">
               <h4 id="journal-history-title" class="column-title">Mood &amp; Journal <span>{{ selectedLogs.length }}</span></h4>
               <div v-if="selectedLogs.length" class="mood-logs">
-                <article v-for="(entry, index) in selectedLogs" :key="entry._id || index" class="mood-entry">
-                  <span class="detail-mood-face mood-reaction" :class="moodFaceClass(entry.mood)">
-                    <MoodFace :mood="entry.mood" class="button-mood-face detail-face-svg" />
-                  </span>
-                  <div><strong>{{ entry.mood }}</strong><p v-if="entry.journal">“{{ entry.journal }}”</p><p v-else class="no-journal">No written reflection.</p><time>{{ new Date(entry.createdAt).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</time></div>
-                </article>
+                <RouterLink
+                  v-for="(entry, index) in selectedLogs"
+                  :key="entry._id || index"
+                  :to="{ name: 'daily-mood', query: { entryId: entry._id } }"
+                  class="mood-entry-link"
+                  :aria-label="`Open full ${entry.mood} journal entry from ${new Date(entry.createdAt).toLocaleDateString('en-SG')}`"
+                >
+                  <article class="mood-entry">
+                    <span class="detail-mood-face mood-reaction" :class="moodFaceClass(entry.mood)">
+                      <MoodFace :mood="entry.mood" class="button-mood-face detail-face-svg" />
+                    </span>
+                    <div><strong>{{ entry.mood }}</strong><p v-if="entry.journal">“{{ entry.journal }}”</p><p v-else class="no-journal">No written reflection.</p><time>{{ new Date(entry.createdAt).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</time></div>
+                  </article>
+                </RouterLink>
               </div>
               <p v-else class="empty-note">No mood log saved on this day.</p>
             </section>
@@ -543,6 +551,9 @@ onMounted(loadData)
 .analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .78rem; }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
+.mood-entry-link { display: block; border-radius: 12px; color: inherit; text-decoration: none; }
+.mood-entry-link:focus-visible { outline: 2px solid var(--calendar-accent); outline-offset: 3px; }
+.mood-entry-link:hover .mood-entry { background: var(--ui-bg-elevated); }
 .mood-entry > div { min-width: 0; overflow-wrap: anywhere; }
 .mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
