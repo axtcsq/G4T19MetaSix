@@ -1,5 +1,6 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { createMood, getMoods } from '@/api/moods'
 import { generateJournalIdea } from '@/api/journal'
 import SiteFooter from '@/components/layout/footer.vue'
@@ -8,6 +9,7 @@ import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 
 const showHistory = ref(false)
+const route = useRoute()
 const showDrawing = ref(false)
 const saveStatus = ref('')
 
@@ -128,7 +130,27 @@ function formatDate(date) {
   })
 }
 
-onMounted(loadEntries)
+async function focusRequestedEntry() {
+  const entryId = route.query.entryId
+  if (typeof entryId !== 'string') return
+  await nextTick()
+  const entry = document.getElementById(`journal-entry-${entryId}`)
+  if (!entry) return
+  entry.focus({ preventScroll: true })
+  entry.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
+watch(() => route.query.entryId, async (entryId) => {
+  if (typeof entryId !== 'string') return
+  showHistory.value = true
+  if (!isLoading.value) await focusRequestedEntry()
+})
+
+onMounted(async () => {
+  if (typeof route.query.entryId === 'string') showHistory.value = true
+  await loadEntries()
+  await focusRequestedEntry()
+})
 </script>
 
 <template>
@@ -317,7 +339,14 @@ onMounted(loadEntries)
             </div>
 
             <div v-else class="history-list">
-              <article v-for="log in logs" :key="log._id" class="journal-entry">
+              <article
+                v-for="log in logs"
+                :id="`journal-entry-${log._id}`"
+                :key="log._id"
+                class="journal-entry"
+                :class="{ 'is-focused': String(route.query.entryId) === String(log._id) }"
+                tabindex="-1"
+              >
                 <div
                   class="entry-sheet notebook-page"
                   :class="{ 'has-drawing': log.drawing?.items?.length }"
@@ -597,6 +626,10 @@ onMounted(loadEntries)
 }
 .journal-entry {
   min-width: 0;
+}
+.journal-entry.is-focused .entry-sheet {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 4px;
 }
 
 .journal-column {
