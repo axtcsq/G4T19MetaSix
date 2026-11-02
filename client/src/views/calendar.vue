@@ -557,10 +557,12 @@ onMounted(loadData)
 .day-cell.is-selected { z-index: 1; box-shadow: inset 0 0 0 2px #cd6651; }
 .day-cell.is-today .day-number { color: var(--calendar-accent); background: var(--calendar-accent-soft); }
 .day-number { position: absolute; top: 6px; left: 7px; display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; color: var(--ui-text-muted); font-size: .76rem; font-weight: 700; }
-.calendar-face, .detail-mood-face, .listening-mood-icon { display: grid; flex: none; place-items: center; color: var(--mood-color); }
-.calendar-face-svg { width: clamp(32px, 4vw, 42px); height: clamp(32px, 4vw, 42px); }
-.detail-face-svg { width: 34px; height: 34px; }
-.listening-face-svg { width: 32px; height: 32px; }
+.calendar-face, .detail-mood-face, .listening-mood-icon { display: grid; flex: none; place-items: center; border: 1px solid color-mix(in srgb, var(--mood-color), transparent 68%); border-radius: 50%; color: var(--mood-color); background: color-mix(in srgb, var(--mood-color) 16%, var(--ui-bg-elevated)); }
+.calendar-face { width: 46px; height: 46px; box-shadow: 0 2px 5px color-mix(in srgb, var(--mood-color), transparent 88%); }
+.detail-mood-face { width: 40px; height: 40px; }
+.listening-mood-icon { width: 42px; height: 42px; }
+.calendar-face-svg, .detail-face-svg, .listening-face-svg { width: 82%; height: 82%; }
+.calendar-page :deep(.mood-face) { stroke-width: 2.2; }
 .mood-color--happy { --mood-color: #f2c335; }
 .mood-color--sad { --mood-color: #4389d1; }
 .mood-color--relaxed { --mood-color: #998ba1; }
