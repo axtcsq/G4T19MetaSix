@@ -14,6 +14,10 @@ vi.mock('@/api/songs', () => ({
   searchSongs: vi.fn(),
 }))
 
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ query: {} }),
+}))
+
 const stubs = {
   SiteFooter: { template: '<footer />' },
   JournalCanvas: { template: '<div />' },
