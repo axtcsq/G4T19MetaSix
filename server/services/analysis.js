@@ -1,6 +1,7 @@
 import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
 import { rebuildDailyMoods } from "./dailyMoods.js";
+import { busyStatus, isTemporary } from "./mood/errors.js";
 import { trackMoods } from "./mood/index.js";
 
 const RECCOBEATS_URL = "https://api.reccobeats.com/v1/audio-features";
@@ -30,7 +31,9 @@ export async function fetchFeatures(trackIds) {
     signal: AbortSignal.timeout(15000),
   });
   if (!response.ok) {
-    throw new Error(`ReccoBeats ${response.status}`);
+    const error = new Error(`ReccoBeats ${response.status}`);
+    error.temporary = busyStatus(response.status);
+    throw error;
   }
   const body = await response.json();
 
@@ -48,8 +51,26 @@ export async function fetchFeatures(trackIds) {
   return features;
 }
 
+// Features already stored under another copy of the same recording (same
+// ISRC), e.g. the album and deluxe editions, for the songs given. Keyed by
+// Spotify track ID.
+async function featuresFromCopies(ids) {
+  const songs = await Track.find({ _id: { $in: ids }, isrc: { $ne: null } }, { isrc: 1 }).lean();
+  if (!songs.length) {
+    return new Map();
+  }
+  const copies = await Track.find(
+    { isrc: { $in: songs.map((song) => song.isrc) }, "features.valence": { $ne: null } },
+    { isrc: 1, features: 1 },
+  ).lean();
+  const byIsrc = new Map(copies.map((copy) => [copy.isrc, copy.features]));
+  return new Map(songs.filter((song) => byIsrc.has(song.isrc)).map((song) => [song._id, byIsrc.get(song.isrc)]));
+}
+
 // Gives pending songs a mood from their sound. Lyrics aren't read here, so the
 // lyrics reading is the same as the sound one, and the song is "partial".
+// Songs ReccoBeats doesn't know by this ID stay pending for the analysis job,
+// which also searches for other IDs before deciding there's no data.
 // Pass trackIds to analyse only those songs; omit them to work through the
 // oldest pending songs, up to `limit`. Returns how many songs got a mood.
 export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
@@ -70,38 +91,41 @@ export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
     try {
       featuresById = await fetchFeatures(batch);
     } catch (error) {
-      // Try this batch again on the next run.
+      // Try this batch again on the next run. An outage doesn't use up an attempt.
       await Track.updateMany(
         { _id: { $in: batch } },
-        { $inc: { "analysis.attempts": 1 }, $set: { "analysis.lastError": error.message } },
+        {
+          $inc: { "analysis.attempts": isTemporary(error) ? 0 : 1 },
+          $set: { "analysis.lastError": error.message },
+        },
       );
+      continue;
+    }
+
+    const copies = await featuresFromCopies(batch.filter((id) => !featuresById.has(id)));
+    const found = batch.filter((id) => featuresById.has(id) || copies.has(id));
+    if (!found.length) {
       continue;
     }
 
     const analysedAt = new Date();
     await Track.bulkWrite(
-      batch.map((id) => {
-        const features = featuresById.get(id);
-        const update = features
-          ? {
-              $set: {
-                features: { ...features, sourceId: id },
-                moods: trackMoods(features),
-                "analysis.status": "partial",
-                "analysis.analysedAt": analysedAt,
-              },
-              $inc: { "analysis.attempts": 1 },
-            }
-          : {
-              // ReccoBeats has no sound data for this song.
-              $set: { "analysis.status": "no-data", "analysis.analysedAt": analysedAt },
-              $inc: { "analysis.attempts": 1 },
-            };
+      found.map((id) => {
+        const features = featuresById.has(id) ? { ...featuresById.get(id), sourceId: id } : copies.get(id);
+        const update = {
+          $set: {
+            features,
+            moods: trackMoods(features),
+            "analysis.status": "partial",
+            "analysis.analysedAt": analysedAt,
+          },
+          $inc: { "analysis.attempts": 1 },
+        };
         return { updateOne: { filter: { _id: id }, update } };
       }),
       { ordered: false },
     );
-    analysed.push(...batch.filter((id) => featuresById.has(id)));
+    analysed.push(...found);
   }
 
   // The days these songs were played on now have more moods to count.

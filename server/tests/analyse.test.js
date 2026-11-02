@@ -30,6 +30,7 @@ function fakes(overrides = {}) {
     },
     sameRecordingIds: async () => [],
     idsForIsrc: async () => [],
+    sameRecording: async () => null,
     findLyrics: async () => {
       calls.lyrics += 1;
       return { instrumental: false, text: "All the other kids with the pumped up kicks" };
@@ -75,7 +76,11 @@ describe("analyseSong", () => {
   it("saves the ID ReccoBeats matched through a fallback", async () => {
     const { deps } = fakes({
       getAudioFeatures: async (id, { fallbacks }) => {
-        const [single] = await fallbacks[0]();
+        let single;
+        for (const otherIds of fallbacks) {
+          [single] = await otherIds();
+          if (single) break;
+        }
         return { id, sourceId: single, ...kicks.features };
       },
       sameRecordingIds: async ({ isrc }) => (isrc === track.isrc ? ["kicks-single"] : []),
@@ -83,6 +88,49 @@ describe("analyseSong", () => {
     const { features } = await analyseSong(track, deps);
 
     assert.equal(features.sourceId, "kicks-single");
+  });
+
+  it("searches ReccoBeats for the recording before Spotify", async () => {
+    const asked = [];
+    const { deps } = fakes({
+      getAudioFeatures: async (id, { fallbacks }) => {
+        for (const otherIds of fallbacks) await otherIds();
+        return { id, sourceId: id, ...kicks.features };
+      },
+      idsForIsrc: async () => (asked.push("reccobeats"), []),
+      sameRecordingIds: async () => (asked.push("spotify"), []),
+    });
+    await analyseSong(track, deps);
+
+    assert.deepEqual(asked, ["reccobeats", "spotify"]);
+  });
+
+  it("reuses another stored copy of the same recording, without calling any API", async () => {
+    const copy = {
+      features: { ...kicks.features, sourceId: "kicks-deluxe" },
+      lyrics: { ...kicks.lyrics, status: "found", scorerVersion: SCORER_VERSION },
+    };
+    const { deps, calls } = fakes({ sameRecording: async ({ isrc }) => (isrc === track.isrc ? copy : null) });
+    const result = await analyseSong(track, deps);
+
+    assert.equal(calls.features, 0);
+    assert.equal(calls.lyrics, 0);
+    assert.equal(result.status, "done");
+    assert.equal(result.features.sourceId, "kicks-deluxe");
+    assert.equal(result.moods.lyrics.name, "Deceptively upbeat");
+  });
+
+  it("fetches lyrics itself when the copy's lyrics failed temporarily", async () => {
+    const copy = {
+      features: { ...kicks.features, sourceId: "kicks-deluxe" },
+      lyrics: { status: "unavailable", scorerVersion: SCORER_VERSION },
+    };
+    const { deps, calls } = fakes({ sameRecording: async () => copy });
+    const result = await analyseSong(track, deps);
+
+    assert.equal(calls.features, 0);
+    assert.equal(calls.lyrics, 1);
+    assert.equal(result.lyrics.status, "found");
   });
 
   it("marks a song ReccoBeats doesn't have as no-data, without fetching lyrics", async () => {
@@ -152,6 +200,25 @@ describe("analyseSong", () => {
 
     assert.equal(result.status, "partial");
     assert.equal(result.lyrics.status, "unavailable");
+  });
+
+  it("flags a busy lyrics site so the retry isn't counted, without saving the flag", async () => {
+    const busy = fakes({
+      findLyrics: async () => {
+        throw Object.assign(new Error("LRCLIB returned 503"), { temporary: true });
+      },
+    });
+    const broken = fakes({
+      findLyrics: async () => {
+        throw new Error("LRCLIB returned 400");
+      },
+    });
+    const result = await analyseSong(track, busy.deps);
+
+    assert.equal(result.lyricsBusy, true);
+    assert.equal(result.lyrics.status, "unavailable");
+    assert.equal("busy" in result.lyrics, false);
+    assert.equal((await analyseSong(track, broken.deps)).lyricsBusy, false);
   });
 
   it("on a retry, reuses the stored features and only redoes the lyrics", async () => {

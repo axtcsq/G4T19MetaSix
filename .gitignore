@@ -18,3 +18,6 @@ node_modules/
 
 # The emotion model, downloaded by the mood analysis job
 server/.models/
+
+# A local copy of LRCLIB's lyrics database (several GB)
+server/.lrclib/

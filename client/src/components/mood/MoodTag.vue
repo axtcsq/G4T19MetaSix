@@ -46,7 +46,7 @@ const LYRICS_NOTES = {
   },
   unavailable: {
     label: 'Lyrics unavailable',
-    why: 'The lyrics site was down every time we tried, so this mood is from the sound only.',
+    why: 'We couldn’t read this song’s lyrics after several tries, so this mood is from the sound only.',
   },
   instrumental: {
     label: 'Instrumental',
