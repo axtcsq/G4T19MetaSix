@@ -74,6 +74,19 @@ async function searchTracks(q, { limit = 10, market = 'US' } = {}) {
 /** One track's details. Development-mode apps can't fetch several at once. */
 export const getTrack = (id) => get(`/v1/tracks/${encodeURIComponent(id)}`)
 
+// The analysis job can run this fallback for dozens of songs in a row, and a
+// burst of searches can get the whole app blocked for hours, so the searches
+// go out at most one every SEARCH_GAP_MS.
+const SEARCH_GAP_MS = 3000
+let nextSearchAt = 0
+
+async function waitForSearchSlot() {
+  const now = Date.now()
+  const at = Math.max(now, nextSearchAt)
+  nextSearchAt = at + SEARCH_GAP_MS
+  if (at > now) await new Promise((resolve) => setTimeout(resolve, at - now))
+}
+
 /**
  * Other Spotify IDs for the same recording (same ISRC), e.g. the single or a compilation.
  * Empty while Spotify has us waiting: this is the last fallback, so the song is
@@ -83,6 +96,7 @@ export async function sameRecordingIds({ id, isrc }) {
   if (!isrc) return []
   let hits
   try {
+    await waitForSearchSlot()
     hits = await searchTracks(`isrc:${isrc}`)
   } catch (error) {
     if (error.status === 429) return []
