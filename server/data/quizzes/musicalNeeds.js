@@ -1,8 +1,6 @@
 import { clamp, shareRow, shares, tallyAnswers, topDimension } from "../../services/quizEngine.js";
 
-// Maslow’s Mixtape: Maslow's hierarchy of needs for where music sits in
-// the user's life. Answers and the user's Spotify playlist names both add
-// points to a level; the level with the most points is the result.
+// Maslow's Mixtape scores music needs from answers and playlist names.
 const LEVELS = {
   utility: {
     name: "Physiological: Music as Fuel",

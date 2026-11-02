@@ -2,9 +2,7 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { searchSongs } from '@/api/songs'
 
-// The Song of the Day for a journal entry: search Spotify, pick one, and it
-// shows as a card that can be removed. The model is null or
-// { id, name, artists, imageUrl }, which is what the entry saves.
+// Search Spotify and select an optional song for the journal entry.
 const song = defineModel({ type: Object, default: null })
 
 const query = ref('')

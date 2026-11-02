@@ -1,9 +1,5 @@
-// Creates the demo user with generated listening history and journal entries,
-// so the app has data without a Spotify account. Re-running replaces the demo
-// user's plays and generated entries; entries someone wrote by hand are kept.
-//   npm run db:seed                 a year of plays
-//   npm run db:seed -- --days 30    the last 30 days
-// Run npm run db:init first, so the unique indexes exist.
+// Seed demo data with `npm run db:seed` (or add `-- --days 30`).
+// Run `npm run db:init` first.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import { readFile } from "node:fs/promises";

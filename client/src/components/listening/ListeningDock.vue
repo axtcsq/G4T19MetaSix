@@ -31,9 +31,7 @@ watch(visible, (shown) => document.documentElement.classList.toggle('has-dock', 
 })
 onBeforeUnmount(() => document.documentElement.classList.remove('has-dock'))
 
-// The user can drag the dock by its grip. Where they leave it is remembered in
-// this browser, as a distance from the nearest corner, so it stays in that
-// corner when the window changes size. Double-clicking the grip puts it back.
+// The dock is draggable; its position is saved in this browser.
 const STORAGE_KEY = 'metafor-dock-position'
 const EDGE = 8
 const KEY_STEP = 24

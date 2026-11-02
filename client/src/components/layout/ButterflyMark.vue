@@ -1,8 +1,5 @@
 <script setup>
-// The MetaFor butterfly: just its open line wings, drawn in
-// currentColor so its parent sets the colour for light and dark mode.
-// The right half mirrors the left. Lines get thicker at small sizes so the
-// wings stay visible.
+// Butterfly mark drawn with currentColor for theme support.
 import { computed } from 'vue'
 
 const props = defineProps({

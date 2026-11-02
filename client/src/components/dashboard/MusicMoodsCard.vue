@@ -2,12 +2,7 @@
 import { computed } from 'vue'
 import MoodRiver from '@/components/dashboard/MoodRiver.vue'
 
-// Home's Your Music's Moods: what the mood analysis heard in the user's last
-// two weeks of plays, from musicMoods in /api/quiz/mood-music. Two levels,
-// shown as one: every song gets a song mood like Melancholic, and song moods
-// add up to five big moods (Happy, Relaxed, Sad, Angry, Anxious). The river
-// shows the big moods day by day; the breakdown lists each big mood with the
-// song moods inside it.
+// Show the user's music moods and their daily distribution.
 const props = defineProps({
   data: { type: Object, required: true },
   // The days the card covers, oldest first, like 2026-10-19.

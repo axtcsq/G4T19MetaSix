@@ -1,10 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-// Home's Top Artists as a loose cluster of spinning records, bigger for more
-// plays: the top three across the top from left to right, at staggered
-// heights, and the next two tucked in below the gaps between them. A record
-// and its name never touch another's, so nothing overlaps at any width.
+// Display top artists as records sized by play count.
 const props = defineProps({
   artists: { type: Array, required: true },
   // 'weekly' or 'monthly', the key that holds each artist's plays.
@@ -39,8 +36,7 @@ function nameWidth(name) {
 
 const plays = (artist) => artist[props.period] || 0
 
-// How far down each of the top three sits, as a share of how much smaller it
-// is than the biggest record, so the row looks scattered rather than lined up.
+// Stagger the top records vertically.
 const STAGGER = [0, 0.3, 0.75]
 
 // Positions for each artist, worked out from the space available.
@@ -227,8 +223,7 @@ onBeforeUnmount(() => observer?.disconnect())
     width 400ms ease,
     height 400ms ease;
 }
-/* Two layers turn the record: a slow constant spin, and a faster one that only
-   runs on hover. Adding them avoids the jump a changed speed would cause. */
+/* Separate animations keep the spin speed change smooth. */
 .record-turn,
 .record-disc {
   display: grid;

@@ -33,15 +33,7 @@ export function isEnglish(text) {
   return latin / words.length >= MIN_LATIN && common / words.length >= MIN_COMMON
 }
 
-/**
- * Translates each verse chunk to English (one DeepL text per chunk, so they stay paired).
- * Returns { from, english } where `from` is DeepL's detected language code, e.g. "ES",
- * and `english` maps each chunk to its translation, or to null when DeepL's guess at
- * the language isn't trustworthy. Returns { from: null } when too little of the song
- * is: that won't change, so the caller can cache it.
- * Throws when there's no key or DeepL refuses (quota, bad key), so the caller can
- * fall back to the audio and try again later.
- */
+/** Translate lyric chunks to English for emotion scoring. */
 export async function translateToEnglish(chunks) {
   const key = process.env.DEEPL_API_KEY?.trim()
   if (!key) throw new Error('DEEPL_API_KEY is not set')

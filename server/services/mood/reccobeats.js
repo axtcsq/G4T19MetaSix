@@ -28,10 +28,7 @@ async function lookup(ids) {
 const SEARCH_PAGE = 50
 const SEARCH_PAGES = 4
 
-/**
- * Spotify IDs that ReccoBeats files under this ISRC, found by searching its catalogue
- * for the title. Catches releases Spotify's own search doesn't return.
- */
+/** Find ReccoBeats track IDs for an ISRC. */
 export async function idsForIsrc(title, isrc) {
   if (!title || !isrc) return []
   for (let page = 0; page < SEARCH_PAGES; page++) {
@@ -46,17 +43,7 @@ export async function idsForIsrc(title, isrc) {
   return []
 }
 
-/**
- * Audio features for a Spotify track ID:
- * { id, sourceId, valence, energy, danceability, acousticness, instrumentalness,
- *   liveness, speechiness, loudness, tempo, key, mode }
- * `sourceId` is the Spotify ID ReccoBeats matched, which differs from `id` when a
- * fallback found the recording.
- *
- * Spotify lists one recording under several IDs (album, single, compilation) and
- * ReccoBeats often knows only one of them. Each of `fallbacks` returns other IDs for
- * the same recording; they are tried in order, only while nothing has matched.
- */
+/** Fetch audio features, trying alternate IDs when needed. */
 export async function getAudioFeatures(id, { fallbacks = [] } = {}) {
   let [match] = await lookup([id])
   for (const otherIds of fallbacks) {

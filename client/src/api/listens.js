@@ -1,15 +1,12 @@
 import { api } from './http'
 import { useAuthStore } from '@/stores/auth'
 
-// Logged-in users read their history from our database, which keeps growing
-// past Spotify's latest 50 plays. Logged-out visitors have no history.
+// Read saved history for logged-in users.
 export function usesStoredHistory() {
   return Boolean(useAuthStore().user)
 }
 
-// Saves the user's newest plays from Spotify before the history is read, so
-// the page includes songs played since the last hourly sync. The test account
-// has no Spotify, and a failed sync still shows what is already stored.
+// Sync recent plays before loading history; keep saved history if sync fails.
 export async function syncBeforeReading() {
   if (useAuthStore().user?.isDemo) return
   try {

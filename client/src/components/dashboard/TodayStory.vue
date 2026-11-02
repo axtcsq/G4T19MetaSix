@@ -6,10 +6,7 @@ import { getListens } from '@/api/listens'
 import { getMoods } from '@/api/moods'
 import { getTrackMoods } from '@/api/tracks'
 
-// "Your day" on Home: a story ring that opens a tap-through story of the
-// user's day (their logged mood, what they played and how it sounded), with a
-// one-line summary beside it, and a reminder when today's mood isn't logged.
-// With no plays today, the story shows their last day of listening instead.
+// Show a story summary of today's mood and listening activity.
 const MOOD_COLOURS = {
   Sad: '#4389d1',
   Happy: '#f2c335',

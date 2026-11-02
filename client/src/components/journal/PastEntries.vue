@@ -346,9 +346,7 @@ function formatDate(date) {
   transform: rotate(-5deg);
 }
 
-/* The song on the left and the drawing on the right, tops lined up. On a
-   narrow page the drawing drops under the song. Room above is left for the
-   drawing's paper clip. */
+/* Place the song and drawing side by side, wrapping on narrow screens. */
 .entry-extras {
   display: flex;
   flex-wrap: wrap;

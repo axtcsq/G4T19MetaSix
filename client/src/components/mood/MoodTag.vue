@@ -1,12 +1,5 @@
 <script setup>
-// A song's mood, as an ink-line annotation in the colour of the journal mood it
-// counts towards (Bittersweet is Sad's blue). Shows the sound + lyrics reading
-// when there is one, otherwise sound only; the tooltip gives both. A second,
-// grey tag appears only when the mood didn't use the lyrics, saying why. Songs
-// still being analysed show a grey "Analysing…", and songs that can never get
-// a mood a grey "No mood data". Songs we know nothing about show nothing.
-// The mood opens the song's page, which explains it, unless `link` is false
-// (for tags inside another link or button, where a link isn't allowed).
+// Show a track's mood status and optionally link to its analysis page.
 import { computed, toRef } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useTrackMood } from '@/composables/useTrackMoods'
@@ -21,8 +14,7 @@ const props = defineProps({
 const tag = computed(useTrackMood(toRef(props, 'trackId')))
 const reading = computed(() => tag.value?.lyrics ?? tag.value?.sound ?? null)
 
-// Nuxt UI's subtle badge uses the 500 shade for text, which is too light on a
-// light card for yellow and lilac. These shades pass contrast in both themes.
+// Use readable mood colors in both themes.
 const TEXT = {
   sad: 'text-(color:--ui-color-sad-800) dark:text-(color:--ui-color-sad-200)',
   happy: 'text-(color:--ui-color-happy-800) dark:text-(color:--ui-color-happy-200)',

@@ -1,7 +1,5 @@
 <script setup>
-// One song's mood, explained: both readings side by side, where it sits on the
-// mood map, its audio features, and what the lyrics added. Opened by clicking
-// a mood tag. Everything comes from what the analysis stored, so it loads fast.
+// Show a song's mood readings, audio features, and lyric analysis.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SiteFooter from '@/components/layout/footer.vue'

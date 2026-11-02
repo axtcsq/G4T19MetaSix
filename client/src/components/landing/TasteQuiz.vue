@@ -2,9 +2,7 @@
 import { computed, ref } from 'vue'
 import { typeIcon } from '@/utils/typeIcons'
 
-// A three-question taste test on the landing page, beside the song search.
-// The landing page gives the pair its heading. Each answer leans towards
-// one MetaFor personality, and the result is a teaser for the real quizzes.
+// Three-question personality preview for the landing page.
 const TYPES = {
   'storm-chaser': { name: 'The Storm Chaser', tagline: 'Loud, restless and always hunting the next big sound.' },
   'tide-keeper': { name: 'The Tide Keeper', tagline: 'Steady, calm and loyal to the songs that hold you.' },
@@ -48,9 +46,7 @@ const picks = ref([])
 const step = computed(() => picks.value.length)
 const done = computed(() => step.value >= QUESTIONS.length)
 
-// The old question stays clickable while it slides out, so a quick
-// double-click could otherwise answer the next question too. Only answers
-// from the question on screen count.
+// Ignore answers while a question is transitioning.
 function pick(label, type) {
   if (done.value) return
   if (QUESTIONS[step.value].answers.some(([answer]) => answer === label)) picks.value.push(type)

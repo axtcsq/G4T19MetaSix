@@ -1,7 +1,6 @@
 import { api } from './http'
 
-// Stored moods for up to 100 songs, keyed by Spotify track ID. Songs with no
-// tag to show are left out; `needsSound` lists the ones with no sound mood yet.
+// Fetch stored moods and tracks that still need sound analysis.
 export function getTrackMoods(ids) {
   return api.get('/api/tracks/moods', { params: { ids: ids.join(',') } })
 }

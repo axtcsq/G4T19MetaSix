@@ -67,12 +67,7 @@ async function featuresFromCopies(ids) {
   return new Map(songs.filter((song) => byIsrc.has(song.isrc)).map((song) => [song._id, byIsrc.get(song.isrc)]));
 }
 
-// Gives pending songs a mood from their sound. Lyrics aren't read here, so the
-// lyrics reading is the same as the sound one, and the song is "partial".
-// Songs ReccoBeats doesn't know by this ID stay pending for the analysis job,
-// which also searches for other IDs before deciding there's no data.
-// Pass trackIds to analyse only those songs; omit them to work through the
-// oldest pending songs, up to `limit`. Returns how many songs got a mood.
+// Add sound-only mood data to pending tracks. The background job handles lyrics.
 export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
   const filter = {
     "analysis.status": "pending",

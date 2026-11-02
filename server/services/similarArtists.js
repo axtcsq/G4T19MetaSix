@@ -1,6 +1,4 @@
-// Artists similar to an artist, from Last.fm. Spotify no longer gives apps like
-// ours related artists, so Last.fm fills the gap, as it does for genres. Without
-// LASTFM_API_KEY, or when Last.fm can't be reached, the list is empty.
+// Fetch similar artists from Last.fm, which fills Spotify's related-artist gap.
 
 const API_URL = "https://ws.audioscrobbler.com/2.0/";
 const LIMIT = 12;

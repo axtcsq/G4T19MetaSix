@@ -83,11 +83,7 @@ function finalLyrics(lyrics) {
   return lyrics?.scorerVersion === SCORER_VERSION && !TEMPORARY_LYRIC_FAILURES.includes(lyrics.status);
 }
 
-// Works out a song's features, lyric scores and both mood readings, without
-// writing to the database. A retry reuses what an earlier run already stored:
-// features never change, and lyrics are only redone after a temporary failure
-// or when the scorer changes. Another copy of the same recording (same ISRC)
-// that's already analysed lends its features and lyrics, so neither is fetched twice.
+// Analyse a track, reusing saved features and lyrics when possible.
 export async function analyseSong(track, deps = defaultDeps) {
   const stored = track.features?.valence != null;
   const copy = stored && finalLyrics(track.lyrics) ? null : await deps.sameRecording(track);
@@ -162,9 +158,7 @@ export async function analyseTrack(trackId, deps = defaultDeps) {
     );
     return { status: result.status, moodsChanged: result.status !== "no-data", timings };
   } catch (error) {
-    // A song that already has its sound reading keeps it (and stays counted);
-    // anything else is marked failed and retried until MAX_ATTEMPTS. A busy or
-    // unreachable service doesn't use up an attempt, so outages can't exhaust them.
+    // Temporary service failures do not use up retry attempts.
     const status = track.moods?.sound ? track.analysis.status : "failed";
     await Track.updateOne(
       { _id: trackId },

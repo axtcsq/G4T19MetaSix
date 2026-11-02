@@ -74,9 +74,7 @@ export async function searchSongs(req, res) {
   }
 }
 
-// GET /api/songs/:id/analysis
-// Songs already in our database keep their lyric reading. Any other song is
-// read from its sound alone, using ReccoBeats' audio features.
+// GET /api/songs/:id/analysis: return stored or sound-only analysis.
 export async function getSongAnalysis(req, res) {
   const { id } = req.params;
   if (!validTrackId(id)) {

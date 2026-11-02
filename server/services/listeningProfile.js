@@ -3,10 +3,7 @@ import Track from "../models/Track.js";
 import { genreWord } from "../data/genreWords.js";
 import { artistGenres } from "./artistGenres.js";
 
-// Builds the listening profile the quizzes and patterns read, from the user's
-// own plays in the listens collection. It keeps the shape of the old mock
-// profile (Spotify top artists and tracks, ReccoBeats audio features), so the
-// quizzes didn't need to change.
+// Build the listening profile used by quizzes and personality patterns.
 
 const WINDOW_DAYS = 30;
 const TOP_ARTISTS = 5;

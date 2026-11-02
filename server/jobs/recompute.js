@@ -1,10 +1,5 @@
-// Recomputes both mood readings of every analysed song from its stored
-// features and lyric scores, then rebuilds every user's dailyMoods. Run it from
-// the server folder after changing the rules in services/mood/mood.js (bump
-// MOOD_VERSION) or the table in services/mood/axes.js (bump AXES_VERSION):
-//   node jobs/recompute.js
-// It makes no API calls. A change to the lyric scorer (SCORER_VERSION) needs
-// the lyrics fetched again instead, which jobs/analyse.js does.
+// Recompute stored song moods and daily summaries after mood-rule changes.
+// Run manually with `node jobs/recompute.js` from the server directory.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";

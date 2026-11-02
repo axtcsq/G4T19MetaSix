@@ -1,6 +1,4 @@
-// Maps each music mood onto the daily log's five moods. Each row adds up to 1,
-// so every analysed play counts once. Bump AXES_VERSION when the table changes,
-// then recompute dailyMoods from the stored moodCounts.
+// Map music moods to journal moods. Bump AXES_VERSION after changing this table.
 export const AXES_VERSION = 1;
 
 export const AXES = ["happy", "relaxed", "sad", "angry", "anxious"];

@@ -764,10 +764,7 @@ const showcase = [
 .closing.follow::before {
   display: none;
 }
-/* The words under the glow change colour: the text is filled with a gradient
-   centred on the pointer (set per text block by followPointer), --lit where
-   the glow is and the usual colour beyond it. Light mode darkens them, dark
-   mode turns them white. */
+/* Highlight text beneath the pointer glow. */
 .glow-text {
   --tx: 50%;
   --ty: 50%;
@@ -798,9 +795,7 @@ const showcase = [
   background-clip: text;
   text-shadow: none;
 }
-/* A thin outline in the lit colour makes the hovered headings bolder without
-   changing the font weight, which would re-wrap the text and make it jump.
-   The body text only changes colour. */
+/* Outline headings on hover without changing their layout. */
 .mirror-card.follow:hover h3.glow-text {
   -webkit-text-stroke: 0.45px color-mix(in srgb, var(--lit) 60%, transparent);
 }

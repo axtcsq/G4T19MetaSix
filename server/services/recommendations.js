@@ -1,7 +1,4 @@
-// Songs the mood calendar suggests to shift a month's listening mood. They come
-// from artists similar to the ones the user played most (Last.fm), and are kept
-// only when their sound reads as the mood being suggested, by the same rules
-// that tag every other song.
+// Find mood-matched songs by artists similar to the user's top artists.
 import Track from "../models/Track.js";
 import { fetchFeatures } from "./analysis.js";
 import { MOOD_VERSION, trackMoods } from "./mood/index.js";
@@ -26,9 +23,7 @@ const defaultDeps = { similarArtists, searchTracks, fetchFeatures, saveSongs };
 
 const sameName = (a, b) => a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0;
 
-// Artists to search, taking each top artist's next most similar artist in turn
-// so all of them are represented. The user's own artists aren't suggested back,
-// unless Last.fm has nothing, when they're all there is.
+// Build a balanced list of similar artists, excluding the user's artists when possible.
 async function artistQueue(seeds, deps) {
   const lists = await Promise.all(seeds.map((seed) => deps.similarArtists(seed.name)));
   const seen = new Set(seeds.map((seed) => seed.name.toLowerCase()));
@@ -124,11 +119,7 @@ async function saveSongs(picks) {
   );
 }
 
-/**
- * Up to four songs whose sound matches `target`, by artists similar to `artists`
- * ([{ name, plays }], the month's most played). `mix` is { vocal, instrumental };
- * `exclude` lists track IDs not to suggest; `page` moves on to other artists.
- */
+/** Recommend up to four mood-matched songs. */
 export async function recommendSongs({ target, artists, mix, exclude = [], page = 0 }, deps = defaultDeps) {
   const queue = await artistQueue(artists, deps);
   if (!queue.length) return [];

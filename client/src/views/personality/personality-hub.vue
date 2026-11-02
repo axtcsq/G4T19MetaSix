@@ -733,9 +733,7 @@ onMounted(loadPage)
   box-shadow: 0 4px 4px var(--pq-shadow);
 }
 
-/* Cards on the band are frosted glass, so the moving waves glow softly through
-   them: milky white in light mode, warm espresso in dark mode (plum clashed with
-   the waves). The tokens are set on the card so its trait bars and chips follow. */
+/* Frosted cards let the animated background show through. */
 .patterns .pattern-card {
   --pq-surface: rgba(255, 255, 255, 0.74);
   --pq-tint: rgba(102, 95, 120, 0.1);

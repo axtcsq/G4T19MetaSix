@@ -1,9 +1,6 @@
 import { clamp, percent, shareRow, tallyAnswers } from "../../services/quizEngine.js";
 
-// Soundwoods: the "Walk in the Woods" projection test as a journey through a
-// sound-filled forest. Each choice nudges four Spotify audio values up or
-// down. The result is the forest scene matching the user's valence (happiness)
-// and energy, flavoured by their acousticness and instrumentalness.
+// Soundwoods quiz maps answers and audio traits to a forest scene.
 
 // Points needed to move a value from the middle (50%) to the edge (0 or 100%).
 const SCALE = 12;

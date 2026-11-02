@@ -90,10 +90,7 @@ async function flush() {
   if (needsSound.length) await addNewSongs(needsSound, asker)
 }
 
-// Asks for the moods of these songs, in one request with every other tag
-// rendered at the same time. Logged-out visitors have no moods to show.
-// The lyrics reading depends on who's asking and their lyrics setting, so
-// logging out, switching user or changing the setting starts afresh.
+// Fetch moods together and refresh them when the user or lyric setting changes.
 function setOwner(user) {
   const key = ownerKey(user)
   if (owner === key) return

@@ -1,8 +1,6 @@
 import { balance, scaleRow, tallyAnswers } from "../../services/quizEngine.js";
 
-// Aux Alignment: D&D-style moral alignment for who you are with the aux cord.
-// Lawful (L) vs Chaotic (C): playing it safe and planned vs unpredictable.
-// Good (G) vs Evil (E): playing for the crowd vs your own taste at all costs.
+// Aux Alignment scores planned vs spontaneous and crowd vs personal taste.
 
 // How far a score must lean before it counts as Lawful/Chaotic or Good/Evil.
 const NEUTRAL_ZONE = 0.25;

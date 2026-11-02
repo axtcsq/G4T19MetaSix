@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
     <script>
-      // Light unless the user turns on dark mode in their profile. Nuxt UI's
-      // colour mode would otherwise follow the system setting, and older visits
-      // may have saved that as 'auto'.
+      // Default to light mode unless the user chose dark mode.
       try {
         if (localStorage.getItem('vueuse-color-scheme') !== 'dark') localStorage.setItem('vueuse-color-scheme', 'light')
       } catch {}

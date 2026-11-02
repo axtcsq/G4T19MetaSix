@@ -95,9 +95,7 @@ export function refreshAccessToken(refreshToken) {
   });
 }
 
-// Whether the browser can get a token for this user: a real Spotify login that
-// hasn't been revoked and granted every scope the app asks for. Users who logged
-// in before a scope was added have to log in once more.
+// Check whether the user has an active Spotify login with the required scopes.
 export function isSpotifyLinked(user) {
   if (user.isDemo || user.tracking?.status === "revoked" || !user.spotify?.tokenUpdatedAt) {
     return false;
@@ -136,9 +134,7 @@ async function fetchAppToken() {
   return value;
 }
 
-// Recent searches are reused for a while, so people typing the same words don't
-// each cost a Spotify request. After a 429 no search reaches Spotify until its
-// Retry-After has passed: asking again can lengthen the block to hours.
+// Cache searches and pause requests until Spotify's rate limit expires.
 const SEARCH_CACHE_MS = 10 * 60 * 1000;
 const SEARCH_CACHE_SIZE = 200;
 const searchCache = new Map();

@@ -2,11 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { typeIcon } from '@/utils/typeIcons'
 
-// A full-screen, tap-through story, like Spotify Wrapped. The landing page
-// shows a made-up week ("See how it works"); Home passes its own slides for the
-// user's day, and its own button through the trigger slot. Each slide moves on
-// by itself after a few seconds; tap or press the arrow keys to go back and
-// forward, space to pause, Esc to close.
+// Full-screen story viewer used by the landing page and dashboard.
 const SLIDE_MS = 5000
 const EXAMPLE_WEEK = [
   { kicker: 'A preview', title: 'This is what MetaFor could show you.', text: 'An example week, made up for this preview.', colour: '#7d4737' },

@@ -1,9 +1,4 @@
-// Shared helpers for the quizzes in data/quizzes/.
-//
-// Every quiz question has options, and every option adds points to one or
-// more of the quiz's dimensions, e.g. { E: 2 } or { L: 1, G: 2 }. A quiz's
-// evaluate() turns those totals into its fixed result, so retaking a quiz
-// with the same answers always gives the same result, without an LLM.
+// Shared scoring and validation helpers for the quizzes.
 
 export function clamp(value, min = -1, max = 1) {
   return Math.min(max, Math.max(min, value));

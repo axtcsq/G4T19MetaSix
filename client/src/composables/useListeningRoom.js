@@ -132,9 +132,7 @@ function contrastingButtonColor([red, green, blue]) {
   const readableSaturation = saturation < 0.12 ? 0.38 : Math.max(0.52, saturation * 0.9)
   return `hsl(${Math.round(hue)} ${Math.round(readableSaturation * 100)}% 24%)`
 }
-// Spotify plays on one device at a time. When the same account starts playing
-// on a phone or in the Spotify app, this browser stops being the active
-// player and its state comes back empty.
+// Spotify can move playback to another device.
 const MOVED_AWAY =
   'Spotify moved playback to another device, like your phone or the Spotify app. Press play to bring it back here.'
 function applyState(state) {

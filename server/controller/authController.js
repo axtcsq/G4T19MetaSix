@@ -178,10 +178,7 @@ export function getMe(req, res) {
   res.json(publicUser(req.user));
 }
 
-// PATCH /api/me/settings { analyseLyrics?: boolean, savePlays?: boolean,
-//   birthday?: "YYYY-MM-DD" | null, reminderTime?: "HH:MM" | null,
-//   pinnedEntryId?: string | null }
-// The settings on the profile page. Send only the ones that changed.
+// PATCH /api/me/settings: update submitted profile preferences.
 export async function updateSettings(req, res) {
   const { analyseLyrics, savePlays, birthday, reminderTime, pinnedEntryId } = req.body ?? {};
   const changes = {};

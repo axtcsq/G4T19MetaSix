@@ -22,9 +22,7 @@ function countPlay(reading, moodName) {
   }
 }
 
-// Rebuilds one user's dailyMoods from their listens and the tracks' moods.
-// Pass dates ("YYYY-MM-DD") to rebuild only those days; omit them to rebuild
-// every day. Days with no listens left are removed.
+// Rebuild daily mood summaries for one user, optionally for selected dates.
 export async function rebuildDailyMoods(userId, dates) {
   const filter = { userId };
   if (dates) {

@@ -2,9 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { getMoodInsights } from '@/api/listens'
 
-// A month of music moods at a glance: one square per day, coloured by the
-// mood the day's songs leaned towards most, brighter on days with more plays.
-// From the same per-day moods as the mood river, /api/listens/insights.
+// Show each day's leading music mood for the month.
 const AXES = ['happy', 'relaxed', 'sad', 'angry', 'anxious']
 const MOOD_NAME = {
   happy: 'Happy',

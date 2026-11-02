@@ -16,9 +16,7 @@ function parseDate(value) {
   return date && !Number.isNaN(date.getTime()) ? date : undefined;
 }
 
-// The same shape as Spotify's recently-played items, so the client can read
-// either source with the same code. Each item also carries both mood readings,
-// leaving out the lyrics one for users who turned lyrics analysis off.
+// Format saved plays for the client, including available mood readings.
 function toItem(listen, track, useLyrics) {
   const id = listen.trackId;
   return {
@@ -46,9 +44,7 @@ function toItem(listen, track, useLyrics) {
   };
 }
 
-// GET /api/listens?from=<ISO date>&to=<ISO date>&limit=50
-// The user's plays, newest first. "to" is exclusive, so the next page is
-// ?to=<played_at of the last item>.
+// GET /api/listens: return the user's plays, newest first.
 export async function getListens(req, res) {
   const from = parseDate(req.query.from);
   const to = parseDate(req.query.to);
@@ -92,10 +88,7 @@ export async function getListens(req, res) {
 const EMOTIONS = ["joy", "sadness", "anger", "fear", "disgust", "surprise", "neutral"];
 const LOCAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-// GET /api/listens/insights?from=YYYY-MM-DD&to=YYYY-MM-DD
-// The dashboard's mood panels for those days (both included):
-// - days: each day's music moods, on the daily log's five moods
-// - emotions: the average lyric emotions of the songs played, weighted by plays
+// GET /api/listens/insights: daily music moods and lyric emotions for a date range.
 export async function getMoodInsights(req, res) {
   const { from, to } = req.query;
   if (!LOCAL_DATE.test(from ?? "") || !LOCAL_DATE.test(to ?? "")) {

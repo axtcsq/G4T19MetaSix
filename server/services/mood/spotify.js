@@ -33,9 +33,7 @@ async function accessToken() {
   return token.value
 }
 
-// After a 429 Spotify says how long to wait (Retry-After, in seconds), and can
-// block the whole app for hours if it keeps being asked. Until then, calls fail
-// at once without reaching Spotify.
+// Respect Spotify's Retry-After value after a rate limit.
 let blockedUntil = 0
 
 function rateLimited() {
@@ -74,9 +72,7 @@ async function searchTracks(q, { limit = 10, market = 'US' } = {}) {
 /** One track's details. Development-mode apps can't fetch several at once. */
 export const getTrack = (id) => get(`/v1/tracks/${encodeURIComponent(id)}`)
 
-// The analysis job can run this fallback for dozens of songs in a row, and a
-// burst of searches can get the whole app blocked for hours, so the searches
-// go out at most one every SEARCH_GAP_MS.
+// Space fallback searches to avoid Spotify rate limits.
 const SEARCH_GAP_MS = 3000
 let nextSearchAt = 0
 
@@ -87,11 +83,7 @@ async function waitForSearchSlot() {
   if (at > now) await new Promise((resolve) => setTimeout(resolve, at - now))
 }
 
-/**
- * Other Spotify IDs for the same recording (same ISRC), e.g. the single or a compilation.
- * Empty while Spotify has us waiting: this is the last fallback, so the song is
- * marked as having no data rather than retried into a longer block.
- */
+/** Find alternate Spotify IDs for the same recording. */
 export async function sameRecordingIds({ id, isrc }) {
   if (!isrc) return []
   let hits

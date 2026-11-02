@@ -5,9 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 
-// Detailed Three.js models for the Spotify tile and journal. Their textures
-// are drawn here, and their rounded pieces are built from reusable geometry.
-// Each object sways gently and can be dragged around.
+// Three.js models for the Spotify tile and journal.
 const props = defineProps({
   object: {
     type: String,
@@ -295,9 +293,7 @@ function buildJournal() {
     bumpScale: 2,
   })
 
-  // Thicker boards allow a visible rounded edge while keeping the pages snug
-  // between them, like the softly padded journal in the reference.
-  // Faces go right, left, top, bottom, front, back.
+  // Build the journal covers and rounded page block.
   const boardGeometry = new RoundedBoxGeometry(1.8, 2.3, 0.3, 8, 0.13)
   const frontBoard = new THREE.Mesh(boardGeometry, [plain, plain, plain, plain, front, plain])
   frontBoard.position.z = 0.24

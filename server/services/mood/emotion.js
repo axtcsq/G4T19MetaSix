@@ -80,11 +80,7 @@ export function toChunks(text) {
   return chunks.filter((c) => c.length)
 }
 
-/**
- * `translations` maps each verse chunk (lines joined by "\n") to its English, for
- * non-English lyrics. The model reads the English; highlights keep the original.
- * Chunks mapped to null couldn't be translated reliably and are left out.
- */
+/** Score lyrics, using translations for non-English verses when available. */
 export async function scoreLyrics(text, { translations = null } = {}) {
   const classify = await getClassifier()
 
@@ -124,9 +120,7 @@ export async function scoreLyrics(text, { translations = null } = {}) {
   const emoWeight = scored.reduce((a, s) => a + s.weight * s.emotional, 0)
   const valence = emoWeight > 0 ? scored.reduce((a, s) => a + s.valence * s.weight * s.emotional, 0) / emoWeight : null
 
-  // Opening two lines of the most clearly positive and negative verses, as evidence.
-  // Full lyrics are deliberately not sent to the client.
-  // Translated chunks keep their line breaks, so the first two lines line up with the original's.
+  // Return short positive and negative excerpts, not full lyrics.
   const excerpt = (s) => ({
     text: s.lines.slice(0, 2).join(' / '),
     ...(s.english && { translation: s.english.split('\n').filter((l) => l.trim()).slice(0, 2).join(' / ') }),

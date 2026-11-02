@@ -1,12 +1,7 @@
 import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 
-// The LLM looks at the combined traits from every quiz the user has taken,
-// together with their listening and mood patterns, picks the MetaFor
-// personality type that fits best, and writes the Wrapped-style summary. Its
-// choice is limited to the closest types from the scoring so results stay
-// consistent. analysePersonality returns null when the LLM is unavailable or
-// replies with something unusable, and the caller then uses the scoring
-// result and static text instead.
+// Generate a personality summary from quiz, listening, and mood data.
+// The result is limited to scored candidates and falls back to static text.
 
 // The LLM may choose among this many of the best-scoring types.
 const CANDIDATE_COUNT = 3;

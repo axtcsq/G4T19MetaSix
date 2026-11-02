@@ -1,7 +1,4 @@
-// The four MetaFor traits. Every quiz result, and the user's Spotify data,
-// is translated into scores on these traits, from -1 to 1 where a positive
-// number leans towards the first pole. The Patterns section averages them and
-// matches the result against the six MetaFor personality types.
+// Shared traits used to combine quiz and listening results.
 export const METAFOR_TRAITS = [
   {
     id: "energy",

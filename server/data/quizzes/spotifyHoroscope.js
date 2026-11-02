@@ -1,9 +1,7 @@
 import { genreWord } from "../genreWords.js";
 import { clamp, percent } from "../../services/quizEngine.js";
 
-// Spotify Horoscope: star sign (from the birthday) + top genre + average
-// energy of the user's top tracks, e.g. "Jazzy Easygoing Libra".
-// It has no questions; the user only gives their birthday.
+// Spotify Horoscope combines birthday, top genre, and track energy.
 
 // [sign, element, start month, start day]; each sign runs until the next starts.
 const SIGNS = [

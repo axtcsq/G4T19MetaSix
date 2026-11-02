@@ -47,10 +47,7 @@ function nameForms(text = '') {
   return [lower, lower.normalize('NFD').replace(/\p{M}/gu, '').normalize('NFC')]
 }
 
-/**
- * Opens a LRCLIB dump and returns a lookup with the same result as findLyrics,
- * or null when the file isn't the shape this code expects.
- */
+/** Open a local LRCLIB dump for lyric lookups. */
 export async function openLyricsDump(path) {
   // Loaded here so the server and the GitHub job never need node:sqlite.
   const { DatabaseSync } = await import('node:sqlite')
@@ -108,10 +105,7 @@ function localDump() {
   return dump
 }
 
-/**
- * Finds lyrics for a Spotify track object.
- * Returns { instrumental, text } or null when nothing matches.
- */
+/** Find lyrics for a Spotify track. */
 export async function findLyrics(track) {
   const local = (await localDump())?.(track)
   if (local) return local

@@ -1,10 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-// Wavy lines with music notes drifting up them, drawn in the empty space
-// either side of the landing page. The notes jolt away from the mouse and the
-// lines twang when it sweeps across them. Clicking a note, or plucking a line
-// once sound is on, plays a soft tone.
+// Draw the animated margin lines and notes on the landing page.
 const canvas = ref(null)
 
 const GLYPHS = ['♪', '♫', '♩', '♬']

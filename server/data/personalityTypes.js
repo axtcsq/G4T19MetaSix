@@ -1,11 +1,4 @@
-// The six MetaFor personality types. These are drafts: rename them, rewrite
-// them or change their profiles freely. The rest of the quiz reads from here.
-//
-// `description` is shown on the Patterns card as what the type means.
-// `closing` is the line under the Patterns section, a send-off for that type.
-// `profile` says where each type sits on the MetaFor traits (metaforTraits.js),
-// from -1 to 1, where a positive number leans towards the first pole
-// (Amped, Explorer, Wordsmith, Crowd). Traits left out don't matter for the type.
+// Personality type copy and trait profiles used by quiz results.
 export const PERSONALITY_TYPES = [
   {
     id: "storm-chaser",

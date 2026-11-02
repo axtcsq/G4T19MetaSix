@@ -2,12 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { getMoodInsights } from '@/api/listens'
 
-// Your Music's Moods as a river: one coloured stream per mood across the
-// days. Each day the streams share the river's full width, so a stream's
-// width is that mood's share of the day's plays. Specks of water keep flowing
-// through each stream, faster on days with more plays of that mood. Drawn
-// with p5, like the listening garden, from the per-day moods in
-// /api/listens/insights.
+// Draw daily music moods as animated streams with p5.
 const props = defineProps({
   // The first and last dates shown, like 2026-10-19.
   from: { type: String, required: true },
@@ -107,10 +102,7 @@ const readout = computed(() =>
     : describeDay(days.value[selectedIndex.value]),
 )
 
-// The river's shape: for each thin column across the canvas, where each
-// stream's top and bottom edges sit. Every day with plays fills the same
-// height, split by share, and days are joined with smooth curves. Days
-// without plays carry the nearest day's mix, so the river doesn't pinch shut.
+// Calculate the stream boundaries for each canvas column.
 let shape = null
 function buildShape(width) {
   const count = days.value.length
@@ -174,9 +166,7 @@ function columnAt(x) {
   return shape.columns[Math.max(0, Math.min(shape.columns.length - 1, index))]
 }
 
-// The water: small specks that drift right through their stream, fading in
-// and out. More appear where a stream is wider, and they move faster where
-// there were more plays of that mood.
+// Animate particles through each mood stream.
 let particles = []
 const MAX_PARTICLES = 650
 function spawn(p) {

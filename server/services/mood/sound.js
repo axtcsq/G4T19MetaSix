@@ -1,6 +1,4 @@
-// The sound-only half of the analysis: audio features and the sound reading.
-// It needs no emotion model, so the web app can run it while someone waits,
-// e.g. for songs in search results. The analysis job adds the lyrics later.
+// Sound-only analysis runs immediately; lyric analysis runs in the background.
 import Track from "../../models/Track.js";
 import { MOOD_VERSION, trackMoods } from "./index.js";
 import { getAudioFeatures, idsForIsrc } from "./reccobeats.js";
@@ -20,9 +18,7 @@ export function sameRecording(track) {
   ).lean();
 }
 
-// Audio features for a stored track, trying other IDs for the same recording
-// when ReccoBeats doesn't know this one. null when it has none at all.
-// ReccoBeats' own catalogue is searched before Spotify's, which rate-limits the app.
+// Fetch audio features, trying matching recording IDs as fallbacks.
 export async function fetchFeatures(track, deps) {
   try {
     const { id: _id, ...features } = await deps.getAudioFeatures(track._id, {
@@ -52,12 +48,7 @@ export function fromSpotify(track) {
   };
 }
 
-// Gives one song its sound reading straight away, so its tag doesn't wait
-// hours for the analysis job. A song nobody has played yet (a search result) is
-// added to tracks first; one the sync saved is filled in. Either way the job
-// adds the lyrics reading (or retries ReccoBeats) on its next run. Spotify's
-// details are fetched here rather than taken from the browser, since tracks is
-// shared by every user.
+// Add a sound-based mood immediately; the background job handles lyrics.
 export async function addSoundMood(trackId, deps = defaultDeps) {
   const stored = await Track.findById(trackId, { name: 1, artists: 1, isrc: 1, features: 1 }).lean();
   if (stored?.features?.valence != null) {

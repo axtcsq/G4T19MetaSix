@@ -1,7 +1,5 @@
 <script setup>
-// Reminds the user to check in, once a day, after the time they set on the
-// profile page. Only while MetaFor is open: a toast, plus a browser
-// notification when the tab is in the background and they allowed those.
+// Remind the user to log a mood at their chosen time.
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'

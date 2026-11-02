@@ -1,9 +1,5 @@
-// Saves every active user's newest Spotify plays, then gives songs still
-// waiting for a mood their sound analysis. GitHub Actions runs it every
-// 15 minutes (.github/workflows/sync.yml); run it by hand from the server folder with
-//   node jobs/sync.js
-// The paused demo user and users who revoked access are skipped. Exits with an
-// error code if any user failed, so GitHub reports the failed run.
+// Sync Spotify plays and analyse pending tracks. Scheduled every 15 minutes.
+// Run manually with `node jobs/sync.js` from the server directory.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";

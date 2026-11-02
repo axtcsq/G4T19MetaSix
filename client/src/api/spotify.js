@@ -2,9 +2,7 @@ import { api } from './http'
 import { spotifyLoginUrl } from './auth'
 import { useAuthStore } from '@/stores/auth'
 
-// Spotify access for the browser goes through our server. Logging in to MetaFor
-// is the only Spotify login: the server keeps the refresh token and hands out
-// short-lived access tokens from /api/spotify/token.
+// Spotify access tokens are issued by our server after MetaFor login.
 let cached = null
 let refreshPromise
 let generation = 0
@@ -91,9 +89,7 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
   }
   if (response.status === 204) return null
 
-  // Spotify normally answers playback commands with 204, but some successful
-  // commands return an empty or plain-text 200 response. Don't try to parse
-  // those response bodies as JSON.
+  // Successful playback responses may be empty or plain text.
   const responseBody = await response.text()
   if (!responseBody.trim()) return null
   try {
@@ -111,9 +107,7 @@ export const searchSpotify = (query, signal, offset = 0) => {
 }
 export const recentSpotify = (signal) =>
   spotifyRequest('/me/player/recently-played?limit=50', { signal })
-// Starts at the first song. Shuffle is a setting on the whole Spotify account,
-// so without the offset a play request with shuffle on starts on a random song.
-// position_ms starts the song at 0:00, or Spotify can resume where it last stopped.
+// Set the start position so Spotify shuffle does not choose a random track.
 export const playSpotify = (device, uris) =>
   spotifyRequest(`/me/player/play?device_id=${encodeURIComponent(device)}`, {
     method: 'PUT',

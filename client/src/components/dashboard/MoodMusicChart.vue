@@ -2,9 +2,7 @@
 import { computed, ref } from 'vue'
 const selected = ref(null)
 
-// Home's Mood × Music: two weeks of how the user felt next to how happy their
-// music sounded, from /api/quiz/mood-music. moodLink is an optional one-line
-// comparison, used when no day has both a mood and plays yet.
+// Compare the user's logged moods with the mood of their music.
 const props = defineProps({
   data: { type: Object, required: true },
   moodLink: { type: Object, default: null },

@@ -16,10 +16,7 @@ const SPOTIFY_ID = /^[0-9A-Za-z]{22}$/;
 const STILL_ANALYSING = ["pending", "failed"];
 const LIKELY_INSTRUMENTAL = 0.5;
 
-// Why a song's mood didn't use its lyrics, for the second tag: "pending" (not
-// read yet, or failed for now), "unavailable" (failed every retry),
-// "instrumental", or "none" (no lyrics found, or in a language we can't read).
-// null when the lyrics counted, or when the user turned lyrics analysis off.
+// Explain why lyrics were not included in a track's mood.
 function lyricsNote(track, useLyrics) {
   if (!useLyrics) return null;
   // Don't label confirmed or audio-classified instrumental tracks as waiting
@@ -41,10 +38,7 @@ function reading(mood) {
   return mood ? { name: mood.name, axis: strongestAxis(mood.name) } : null;
 }
 
-// What the mood tag shows for one track: its moods, { analysing } while the
-// job hasn't reached it, { noMood } when it can never get one ("no-data": no
-// audio features, usually a new release; "failed": out of retries), or null
-// when the song isn't stored.
+// Return stored mood data or its current analysis status.
 export function toMoods(track, useLyrics) {
   const { status, attempts = 0 } = track.analysis ?? {};
   if (track.moods?.sound) {
@@ -99,11 +93,7 @@ async function tagsFor(ids, user) {
   return { moods, needsSound };
 }
 
-// GET /api/tracks/moods?ids=<id>,<id>
-// The stored moods of up to 100 songs, keyed by Spotify track ID. IDs with no
-// tag are left out. `needsSound` lists the ones with no sound reading yet,
-// either not stored (search results) or waiting for the job (just synced),
-// which POST /api/tracks/moods/sound fills in straight away.
+// GET /api/tracks/moods?ids=<id>,<id>: return moods and tracks needing analysis.
 export async function getTrackMoods(req, res) {
   const ids = [...new Set(String(req.query.ids ?? "").split(",").map((id) => id.trim()).filter(Boolean))];
   if (!ids.length || ids.length > MAX_IDS) {
@@ -124,11 +114,7 @@ function newSongAllowance(session, now = Date.now()) {
   return NEW_SONG_LIMIT - session.newSongs.count;
 }
 
-// POST /api/tracks/moods/sound { ids: [<id>, ...] }
-// Works out the sound mood of up to 10 songs from GET's needsSound and saves
-// it, so the analysis job only has the lyrics left. Answers like GET
-// /api/tracks/moods. A song not done by the deadline (or over the user's limit)
-// keeps the tag it had.
+// POST /api/tracks/moods/sound: analyse up to 10 tracks and return their moods.
 export async function addSoundMoods(req, res) {
   const ids = [...new Set(Array.isArray(req.body?.ids) ? req.body.ids : [])];
   if (!ids.length || ids.length > MAX_NEW_SONGS || !ids.every((id) => SPOTIFY_ID.test(id))) {
@@ -165,9 +151,7 @@ function describe(mood) {
 const MAX_EMOTIONS = 3;
 const MIN_EMOTION = 0.05;
 
-// The song page's explanation of a mood, all worked out from the stored
-// features and lyric scores, so it needs no model or outside API. Users who
-// turned lyrics analysis off get the sound reading only.
+// Build the song page's mood explanation from stored analysis.
 export function explainTrack(track, useLyrics) {
   const tag = toMoods(track, useLyrics);
   const explained = { tag, lyricsOff: !useLyrics };
@@ -214,9 +198,7 @@ export function explainTrack(track, useLyrics) {
   return explained;
 }
 
-// GET /api/tracks/:id
-// Everything the song page shows: the song, how often this user played it, and
-// its mood explained. 404 for a song we have never stored.
+// GET /api/tracks/:id: return track details, play count, and mood analysis.
 export async function getTrackDetail(req, res) {
   const { id } = req.params;
   if (!SPOTIFY_ID.test(id)) {

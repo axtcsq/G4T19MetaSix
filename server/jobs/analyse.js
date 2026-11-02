@@ -1,10 +1,5 @@
-// Works out the moods of songs the sync job saved, then rebuilds the days they
-// were played on. GitHub Actions runs it straight after jobs/sync.js
-// (.github/workflows/sync.yml); run it by hand from the server folder with
-//   node jobs/analyse.js
-// Songs are analysed one at a time, at most MAX_TRACKS per run and only until
-// TIME_BUDGET_MS has passed, so a run stays inside the free APIs' limits and the
-// workflow's timeout. Whatever is left is picked up by the next run.
+// Analyse synced tracks and rebuild their daily summaries.
+// Run manually with `node jobs/analyse.js` from the server directory.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";

@@ -38,9 +38,7 @@ async function happinessByDay(userId, dates) {
   return new Map(days.map((day) => [day._id, day]));
 }
 
-// Plays per music mood per day, for songs the mood analysis has read. The
-// lyrics reading is used unless the user turned it off, falling back to the
-// sound reading while a song's lyrics are pending.
+// Count daily moods, using lyric readings when enabled and available.
 async function musicMoodsByDay(userId, dates, useLyrics) {
   const reading = useLyrics
     ? { $ifNull: ["$track.moods.lyrics.name", "$track.moods.sound.name"] }
@@ -56,10 +54,7 @@ async function musicMoodsByDay(userId, dates, useLyrics) {
 
 const TOP_MOODS = 3;
 
-// The moods the user's music had over the two weeks: the music moods played
-// most, how the plays spread over the journal's five moods, and on how many
-// logged days the music's main mood matched the one they logged. null when no
-// played song has been analysed yet.
+// Summarise two weeks of music moods and compare them with journal moods.
 export function summariseMusicMoods(rows, moods, useLyrics) {
   const plays = rows.reduce((sum, row) => sum + row.plays, 0);
   if (!plays) return null;

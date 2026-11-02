@@ -10,9 +10,7 @@ const COOLDOWN_MS = 3000;
 
 const isCount = (value) => Number.isInteger(value) && value >= 0 && value <= PICKS;
 
-// POST /api/recommendations
-// Body: { target: "happy" | "calm", artists: [{ name, plays }], mix: { vocal,
-// instrumental }, exclude: [track IDs], page }. Answers { tracks: [...] }.
+// POST /api/recommendations: return tracks matching the requested mood.
 export async function getRecommendations(req, res) {
   const { target, artists, mix, exclude = [], page = 0 } = req.body ?? {};
   const validArtists =

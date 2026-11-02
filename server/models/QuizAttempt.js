@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-// One finished quiz attempt. Only the answers are stored: results are worked
-// out from them by the quiz's evaluate(), so the same answers always give the
-// same result, and fixing a description updates past results too.
+// Store quiz answers; calculate results from the current quiz definition.
 const quizAttemptSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -44,9 +42,7 @@ const quizSummarySchema = new mongoose.Schema(
   { _id: false },
 );
 
-// The user's MetaFor personality, summarised from all their quiz results.
-// It is rebuilt after each quiz so the Personality page doesn't need to call
-// the LLM on every visit.
+// Cached personality summary, rebuilt after each quiz.
 const personalitySchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

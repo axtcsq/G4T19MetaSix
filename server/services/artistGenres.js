@@ -1,7 +1,4 @@
-// Genres for an artist, from their top Last.fm tags. Spotify no longer returns
-// artist genres to apps like ours, so Last.fm fills the gap. Without
-// LASTFM_API_KEY, or when Last.fm can't be reached, artists have no genres and
-// the quizzes use their "no genre" wording.
+// Get artist genres from Last.fm because Spotify no longer provides them.
 
 const API_URL = "https://ws.audioscrobbler.com/2.0/";
 const MAX_GENRES = 3;

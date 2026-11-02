@@ -1,9 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-// One oversized line near the end of the landing page, the only loud part of
-// it. The words light up one at a time as it scrolls up the screen, over soft
-// blurred colour that takes on the mood picked in the hero.
+// Animate the closing line as it enters the viewport.
 const WORDS = ['Your', 'music.', 'Your', 'words.', 'One', 'mirror.']
 // A line break after each full stop.
 const BREAKS = new Set([1, 3])

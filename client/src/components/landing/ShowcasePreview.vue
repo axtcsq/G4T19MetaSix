@@ -2,9 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 
-// A small, made-up preview of one part of the app for the landing page. It
-// plays a short demo when it scrolls into view, then visitors can try it:
-// pick a mood, look at a day, play a song or see another personality.
+// Interactive landing page previews for the app's main features.
 const props = defineProps({
   kind: { type: String, required: true, validator: (value) => ['mood', 'calendar', 'listen', 'personality'].includes(value) },
   name: { type: String, required: true },

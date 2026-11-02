@@ -3,9 +3,7 @@ import { defineAsyncComponent, onBeforeUnmount, ref } from 'vue'
 import ButterflyMark from '@/components/layout/ButterflyMark.vue'
 const LandingObject3D = defineAsyncComponent(() => import('./LandingObject3D.vue'))
 
-// "Spotify + journal" on the landing page. Dragging the Spotify tile into the
-// journal merges them into the MetaFor butterfly with a burst of notes. The
-// hint under them is a button that does the same, for keyboards.
+// Landing page interaction that combines the Spotify tile and journal.
 const tile = ref(null)
 const journal = ref(null)
 const offset = ref({ x: 0, y: 0 })

@@ -1,7 +1,4 @@
-// The genres MetaFor has a word for, as [keyword, word, meaning]. A genre
-// matches when it contains the keyword, and the first match wins, so more
-// specific genres come first. Spotify Horoscope uses the word, and the
-// listening profile prefers a top genre that has one.
+// Genre keywords and labels used by personality features.
 export const GENRE_WORDS = [
   ["k-pop", "K-Pop", "glossy, high-production pop"],
   ["lo-fi", "Lo-fi", "soft, hazy beats"],

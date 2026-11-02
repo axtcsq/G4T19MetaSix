@@ -2,9 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { createServer } from 'node:http'
 import { createPinia, setActivePinia } from 'pinia'
 
-// Real HTTP stand-in for Spotify; only the destination host changes. Request
-// serialization, timeout signals, status handling and token refresh run for real.
-// The MetaFor server's token endpoint is mocked.
+// Test Spotify request handling with a mocked token endpoint.
 const { getToken } = vi.hoisted(() => ({ getToken: vi.fn() }))
 vi.mock('../api/http', () => ({ api: { get: getToken, defaults: { baseURL: '' } } }))
 

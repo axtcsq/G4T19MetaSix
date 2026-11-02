@@ -116,12 +116,7 @@ export function describeMood(features, contrast = null, lyrics = null) {
 // Lyric failures that a later retry may fix. Until then there is no lyrics reading yet.
 const TEMPORARY_LYRIC_FAILURES = ['unavailable', 'untranslated']
 
-/**
- * Both readings of a song, which are stored side by side and never mixed:
- * `sound` uses the audio features alone; `lyrics` blends in the lyric analysis.
- * Without usable lyrics (instrumental, not found, neutral) the two are the same mood.
- * `lyrics` is null while the lyrics failed temporarily; callers fall back to `sound`.
- */
+/** Return separate sound and lyrics-based mood readings. */
 export function readMoods(features, lyrics = null) {
   const blend = blendValence(features, lyrics)
   const sound = describeMood(features)
@@ -135,12 +130,7 @@ export const contrastLabel = (contrast) => CONTRAST_MOODS[contrast]?.label ?? nu
 const recentre = (v) =>
   v < LYRIC_NEUTRAL ? (0.5 * v) / LYRIC_NEUTRAL : 0.5 + (0.5 * (v - LYRIC_NEUTRAL)) / (1 - LYRIC_NEUTRAL)
 
-/**
- * Blends audio valence with lyric valence.
- * Found lyrics mean the song has vocals, so the audio's instrumentalness is ignored:
- * it often misreads heavily processed vocals as instrumental.
- * The lyric weight only shrinks when the lyrics are mostly emotionally neutral.
- */
+/** Blend audio and lyric valence, reducing the lyric weight for neutral lyrics. */
 export function blendValence(features, lyrics) {
   const audio = features.valence
   if (!hasLyrics(lyrics)) {

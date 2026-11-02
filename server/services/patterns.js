@@ -81,9 +81,7 @@ function trackSignals(track) {
   };
 }
 
-// The user's top track that sounds most like their traits, with a short reason.
-// Ties go to the more played track, since topTracks is ordered by plays. When
-// none of them has audio features yet, it's simply the most played one.
+// Pick the top track matching the user's traits; break ties by play count.
 export function songForType(profile, traits) {
   const scores = Object.fromEntries(traits.map((trait) => [trait.id, trait]));
   let best = null;

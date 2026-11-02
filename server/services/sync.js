@@ -14,9 +14,7 @@ function localDateOf(date, timezone) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: timezone || "UTC" }).format(date);
 }
 
-// Saves a user's newest plays from Spotify. Used by the hourly job and by
-// POST /api/sync. The Spotify calls can be swapped out in tests.
-// Returns { status: "synced", added, dates, gap } or { status: "revoked" }.
+// Save a user's latest Spotify plays. Spotify calls can be replaced in tests.
 export async function syncUser(
   userId,
   { refreshAccessToken = spotify.refreshAccessToken, fetchRecentlyPlayed = spotify.fetchRecentlyPlayed } = {},
