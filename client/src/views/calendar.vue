@@ -79,10 +79,12 @@ const selectedListens = computed(() =>
   ),
 )
 const showAllSelectedListens = ref(false)
-const visibleSelectedListens = computed(() =>
-  showAllSelectedListens.value ? selectedListens.value : selectedListens.value.slice(0, 6),
-)
-watch(selectedKey, () => { showAllSelectedListens.value = false })
+watch(selectedKey, () => {
+  showAllSelectedListens.value = false
+})
+function toggleAllSelectedListens() {
+  showAllSelectedListens.value = !showAllSelectedListens.value
+}
 const selectedListeningMood = computed(() => listeningMoodFor(selectedDate.value))
 const monthMoods = computed(() => {
   const counts = new Map()
@@ -462,24 +464,26 @@ onMounted(loadData)
                 <span class="analyzed-count">{{ selectedListeningMood.count }} / {{ selectedListeningMood.total }} analyzed</span>
               </div>
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
-              <div v-if="selectedListens.length" class="track-list">
-                <!-- The Spotify link and the mood tag (which opens the song's page) sit side by side, since a link can't hold another link. -->
-                <article v-for="(item, index) in visibleSelectedListens" :key="`${item.played_at}-${index}`" class="track-card">
-                  <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
-                    <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
-                    <span v-else class="track-art">♫</span>
-                  </a>
-                  <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="`/song/${item.track.id}`"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
-                  <MoodTag :track-id="item.track?.id" size="sm" />
-                  <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
-                </article>
+              <div v-if="selectedListens.length" class="listening-carousel" role="group" aria-roledescription="carousel" aria-label="Listening history">
+                <div class="track-list" :class="{ 'is-carousel': !showAllSelectedListens, 'is-all-tracks': showAllSelectedListens }" tabindex="0" aria-label="Song cards; scroll horizontally to browse">
+                    <!-- Keep Spotify artwork and song mood links separate. -->
+                    <article v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card">
+                      <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
+                        <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                        <span v-else class="track-art">♫</span>
+                      </a>
+                      <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="`/song/${item.track.id}`"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
+                      <MoodTag :track-id="item.track?.id" size="sm" />
+                      <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
+                    </article>
+                  </div>
               </div>
               <button
-                v-if="selectedListens.length > 6"
+                v-if="selectedListens.length > 4"
                 class="history-toggle"
                 type="button"
                 :aria-expanded="showAllSelectedListens"
-                @click="showAllSelectedListens = !showAllSelectedListens"
+                @click="toggleAllSelectedListens"
               >
                 {{ showAllSelectedListens ? 'Show less' : 'View all' }}
               </button>
@@ -581,7 +585,7 @@ onMounted(loadData)
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .detail-header h3 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: 1.4rem; cursor: pointer; }
-.day-detail-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; }
+.day-detail-grid { display: grid; grid-template-columns: minmax(150px, .55fr) minmax(0, 1.45fr); gap: 20px; }
 .day-detail-column { min-width: 0; padding: 16px; border: 1px solid var(--ui-border); border-radius: 14px; background: color-mix(in srgb, var(--ui-bg), var(--ui-bg-elevated) 55%); }
 .column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: var(--text-subheader); font-weight: 600; }
 .column-title span { color: var(--ui-text-muted); font-size: .76rem; }
@@ -601,6 +605,8 @@ onMounted(loadData)
 .mood-entry .no-journal { font-style: italic; }
 .mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
 .track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-top: 20px; }
+.track-list.is-carousel { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; padding-bottom: 6px; }
+.track-list.is-carousel .track-card { flex: 0 0 calc((100% - 30px) / 4); scroll-snap-align: start; }
 .track-list h4 { grid-column: 1 / -1; }
 .history-toggle { margin-top: 14px; padding: 7px 13px; border: 1px solid var(--ui-border); border-radius: 999px; background: transparent; color: var(--calendar-accent); font-weight: 700; cursor: pointer; }
 .track-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 13px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
@@ -643,5 +649,6 @@ onMounted(loadData)
   .recommendation-actions { margin-top: 10px; }
   .recommendation-mood { display: inline-flex; }
   .recommendation-list { grid-template-columns: 1fr; }
+  .track-list.is-carousel .track-card { flex-basis: calc((100% - 10px) / 2); }
 }
 </style>
