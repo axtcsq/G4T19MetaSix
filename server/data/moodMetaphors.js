@@ -1,0 +1,68 @@
+// Hand-written metaphors for each check-in mood. Used when Groq can't write
+// today's metaphor, so the line still fits how the user feels.
+export const MOOD_METAPHORS = {
+  Happy: [
+    'Joy is a chorus you get to sing a little louder today.',
+    'Today is the song you would put on for someone you love.',
+    'Happiness is a bright hook. Let it stay stuck in your head.',
+    'Good days are the tracks you will press replay on later.',
+    'Your mood is in a major key today. Enjoy every bar.',
+    'Let this one play out. Not every good song needs a reason.',
+  ],
+  Sad: [
+    'Sadness is a slow verse. It is still part of your song.',
+    'A heavy heart is a bass note: it gives the song its depth.',
+    'Tears are the bridge before the last chorus.',
+    'You can sit with a sad song without it becoming your whole album.',
+    'Even minor keys resolve. Give this one time.',
+    'Rainy-day songs exist because everyone has rainy days.',
+  ],
+  Relaxed: [
+    'Calm is a slow song you are allowed to play on repeat.',
+    'A quiet day is an acoustic version of your life.',
+    'Rest is the pause between notes that makes the melody.',
+    'Today moves like vinyl: warm, steady and unhurried.',
+    'Let the song breathe. You do not need to skip ahead.',
+    'Some of the best tracks are the ones with space in them.',
+  ],
+  Anxious: [
+    'Worry is static. Turn the dial slowly and the music comes back.',
+    'Anxiety talks over the song. Listen past it to the bassline.',
+    'Breathe like a long note: in, hold, and let it ring out.',
+    'A racing heart is a fast tempo. You can still find the beat.',
+    'A busy mind is a crowded mix. Mute one track at a time.',
+    'You do not have to know the next song to press play.',
+  ],
+  Angry: [
+    'Anger is a drum fill: loud, short, and better when it lands.',
+    'Turn the volume up on the feeling, then let the song end.',
+    'Even the loudest track has a fade-out.',
+    'Distortion still has a melody underneath it.',
+    'Some songs need to be loud. That does not mean they last forever.',
+    'Let the chorus shout so the verse can be calm.',
+  ],
+  Excited: [
+    'Excitement is the second after the beat drops.',
+    'Today has the energy of a song you cannot sit still to.',
+    'Ride the build-up. The best part is coming.',
+    'Your heart is keeping a faster tempo today. Dance with it.',
+    'This is a turn-it-up kind of day.',
+    'Some days are a festival encore. This is one.',
+  ],
+  Tired: [
+    'Tiredness is the needle asking to rest at the end of the side.',
+    'Your energy has a tempo. Today it is fine to play it slower.',
+    'A slow track still counts as music.',
+    'Even the best albums have an interlude.',
+    'Turn the volume down. The song will still be there tomorrow.',
+    'Rest is not skipping a track. It is part of the playlist.',
+  ],
+  Lonely: [
+    'Loneliness is a solo, and solos are where you find your own sound.',
+    'Somewhere, someone is playing the same song and feeling the same way.',
+    'A song you love is company that always shows up.',
+    'Every lonely verse is waiting for its harmony line.',
+    'The quiet tracks hold the album together.',
+    'Your own voice is worth listening to, even when the room is empty.',
+  ],
+}
