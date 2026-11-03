@@ -110,7 +110,9 @@ export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
         const update = {
           $set: {
             features,
-            moods: trackMoods(features),
+            // No lyrics reading until the analysis job reads them, so the song
+            // shows "Lyrics pending" rather than "No lyrics".
+            moods: { ...trackMoods(features), lyrics: null },
             "analysis.status": "partial",
             "analysis.analysedAt": analysedAt,
           },
