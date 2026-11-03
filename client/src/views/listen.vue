@@ -1,7 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
-import AmbientWave from '@/components/listening/AmbientWave.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import { useListeningRoom } from '@/composables/useListeningRoom'
@@ -32,10 +31,12 @@ const {
   historyError,
 } = room
 const searchInput = ref(null)
+const seekPosition = ref(null)
 const cover = computed(() => track.value.album?.images?.[0]?.url)
 const trackMood = computed(useTrackMood(computed(() => track.value.id)))
-const progress = computed(
-  () => `${duration.value ? Math.min(100, (position.value / duration.value) * 100) : 0}%`,
+const displayedPosition = computed(() => seekPosition.value ?? position.value)
+const seekProgress = computed(
+  () => `${duration.value ? Math.min(100, (displayedPosition.value / duration.value) * 100) : 0}%`,
 )
 const artist = computed(() => track.value.artists?.map((item) => item.name).join(', '))
 const formatTime = (ms) =>
@@ -64,6 +65,11 @@ function clearSearch() {
 }
 function connect() {
   room.connect()
+}
+async function commitSeek(value) {
+  seekPosition.value = Number(value)
+  await room.seek(value)
+  seekPosition.value = null
 }
 // After a refresh the login check is still running when the page opens, so
 // wait for it before deciding whether Spotify is connected.
@@ -228,27 +234,21 @@ onBeforeUnmount(() => {
         </div>
         <div class="timeline">
           <div class="seek-control">
-            <span>{{ formatTime(position) }}</span
+            <span>{{ formatTime(displayedPosition) }}</span
             ><label class="sr-only" for="playback-position">Playback position</label>
             <div class="seek-slider">
-              <AmbientWave
-                :key="track.id"
-                :playing="spinning"
-                :cover="cover"
-                :tempo="trackMood?.tempo"
-                :progress="duration ? (position / duration) * 100 : 0"
-              />
               <input
                 id="playback-position"
                 type="range"
                 min="0"
                 :max="duration || 1"
                 step="1000"
-                :value="position"
-                :style="{ '--fill': progress }"
-                :aria-valuetext="formatTime(position)"
+                :value="displayedPosition"
+                :style="{ '--fill': seekProgress }"
+                :aria-valuetext="formatTime(displayedPosition)"
                 :disabled="!connected || !ready || busy"
-                @change="room.seek($event.target.value)"
+                @input="seekPosition = Number($event.target.value)"
+                @change="commitSeek($event.target.value)"
               />
             </div>
             <span>{{ formatTime(duration) }}</span>
@@ -716,23 +716,12 @@ button:disabled {
   position: relative;
   min-width: 0;
   flex: 1;
-}
-.seek-slider .ambient-wave {
-  position: absolute;
-  inset: 50% 0 auto;
-  transform: translateY(-50%);
+  isolation: isolate;
 }
 .seek-slider input {
   position: relative;
   z-index: 1;
   display: block;
-}
-.seek-control .seek-slider input::-webkit-slider-runnable-track {
-  background: transparent;
-}
-.seek-control .seek-slider input::-moz-range-track,
-.seek-control .seek-slider input::-moz-range-progress {
-  background: transparent;
 }
 @media (forced-colors: active) {
   .seek-slider input {
@@ -782,7 +771,7 @@ input[type='range']::-webkit-slider-runnable-track {
   height: 3px;
   background: linear-gradient(
     to right,
-    var(--room-dark) var(--fill, 0%),
+    var(--button-color) var(--fill, 0%),
     color-mix(in srgb, var(--room-ink) 18%, transparent) var(--fill, 0%)
   );
   border-radius: 2px;
@@ -794,7 +783,7 @@ input[type='range']::-moz-range-track {
 }
 input[type='range']::-moz-range-progress {
   height: 3px;
-  background: var(--room-dark);
+  background: var(--button-color);
   border-radius: 2px;
 }
 input[type='range']::-webkit-slider-thumb {
@@ -802,16 +791,26 @@ input[type='range']::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
   margin-top: -4.5px;
-  background: var(--room-dark);
+  background: var(--button-color);
   border: 2px solid var(--room-paper);
   border-radius: 50%;
 }
 input[type='range']::-moz-range-thumb {
   width: 8px;
   height: 8px;
-  background: var(--room-dark);
+  background: var(--button-color);
   border: 2px solid var(--room-paper);
   border-radius: 50%;
+}
+.seek-slider input::-webkit-slider-thumb {
+  background: var(--button-color);
+  box-shadow: 0 0 5px 2px color-mix(in srgb, var(--record-color) 85%, transparent),
+    0 0 14px 6px color-mix(in srgb, var(--record-color) 68%, transparent);
+}
+.seek-slider input::-moz-range-thumb {
+  background: var(--button-color);
+  box-shadow: 0 0 5px 2px color-mix(in srgb, var(--record-color) 85%, transparent),
+    0 0 14px 6px color-mix(in srgb, var(--record-color) 68%, transparent);
 }
 input:disabled {
   cursor: not-allowed;
