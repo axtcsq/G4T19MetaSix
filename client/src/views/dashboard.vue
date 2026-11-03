@@ -10,6 +10,7 @@ import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
 import ArtistRecords from '@/components/dashboard/ArtistRecords.vue'
 import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
 import MonthMoods from '@/components/dashboard/MonthMoods.vue'
+import DailyMetaphor from '@/components/dashboard/DailyMetaphor.vue'
 import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
@@ -101,6 +102,7 @@ watch(
         </div>
       </div>
       <TodayStory v-if="auth.user" />
+      <DailyMetaphor />
       <p v-if="!connected">
         Connect Spotify to see your music at a glance.
         <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">
