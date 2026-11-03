@@ -20,6 +20,12 @@ export function updateSettings(changes) {
   return api.patch('/api/me/settings', changes)
 }
 
+// Home's metaphor of the day, written for the user's mood and taste.
+// { text, mood, genre, source }, with text null when there's nothing to go on.
+export function getDailyMetaphor() {
+  return api.get('/api/me/metaphor')
+}
+
 // Everything MetaFor keeps about the user, as an object to save as JSON.
 export function exportData() {
   return api.get('/api/me/export')
