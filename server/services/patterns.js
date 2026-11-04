@@ -207,6 +207,21 @@ export function combineTraits(results, profile) {
   });
 }
 
+// The six types as the Personality page describes them, with the trait names
+// each one leans towards, like Amped and Explorer.
+export function describeTypes() {
+  return PERSONALITY_TYPES.map(({ id, name, tagline, description, profile }) => ({
+    id,
+    name,
+    tagline,
+    description,
+    traits: METAFOR_TRAITS.filter((trait) => profile[trait.id]).map((trait) => {
+      const [firstPole, secondPole] = Object.keys(trait.poles);
+      return trait.poles[profile[trait.id] > 0 ? firstPole : secondPole].name;
+    }),
+  }));
+}
+
 // Ranks every personality type by how close its profile is to the user's
 // traits. match is a percentage, 100 being an exact fit.
 export function rankTypes(traits) {

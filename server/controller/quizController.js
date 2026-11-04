@@ -16,6 +16,7 @@ import {
   SPOTIFY_WEIGHT,
   spotifyWeight,
   combineTraits,
+  describeTypes,
   listeningStats,
   moodLink,
   rankTypes,
@@ -244,6 +245,12 @@ export async function getQuizzes(req, res) {
       };
     }),
   );
+}
+
+// GET /api/quiz/types
+// The six MetaFor types, for the Personality page.
+export function getPersonalityTypes(req, res) {
+  res.json(describeTypes());
 }
 
 // GET /api/quiz/personality

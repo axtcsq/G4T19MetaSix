@@ -5,6 +5,7 @@ import {
   getMoodMusic,
   getGenreMix,
   getPersonality,
+  getPersonalityTypes,
   getQuiz,
   getQuizzes,
   submitQuiz,
@@ -14,6 +15,7 @@ const router = Router();
 
 router.get("/", getQuizzes);
 router.get("/personality", getPersonality);
+router.get("/types", getPersonalityTypes);
 router.get("/mood-music", getMoodMusic);
 router.get("/genre-mix", getGenreMix);
 router.get("/:quizId", getQuiz);
