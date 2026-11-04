@@ -39,12 +39,27 @@ describe("summariseMusicMoods", () => {
   it("counts logged days whose music matched the logged mood", () => {
     const rows = [row("2026-10-01", "Melancholic", 3), row("2026-10-02", "Euphoric", 3), row("2026-10-03", "Serene", 1)];
     const moods = new Map([
-      ["2026-10-01", "Sad"],
-      ["2026-10-02", "Angry"],
+      ["2026-10-01", ["Sad"]],
+      ["2026-10-02", ["Angry"]],
     ]);
     const summary = summariseMusicMoods(rows, moods, false);
 
     assert.equal(summary.comparedDays, 2);
     assert.equal(summary.matchedDays, 1);
+  });
+
+  it("weighs every entry of a logged day, and maps moods like Lonely onto the music's moods", () => {
+    const rows = [row("2026-10-01", "Euphoric", 3), row("2026-10-02", "Melancholic", 2), row("2026-10-03", "Melancholic", 1)];
+    const moods = new Map([
+      // Mostly happy, though the last entry was Sad.
+      ["2026-10-01", ["Sad", "Happy", "Happy"]],
+      // Logged Happy last, but mostly sad.
+      ["2026-10-02", ["Happy", "Sad", "Sad"]],
+      ["2026-10-03", ["Lonely"]],
+    ]);
+    const summary = summariseMusicMoods(rows, moods, false);
+
+    assert.equal(summary.comparedDays, 3);
+    assert.equal(summary.matchedDays, 3);
   });
 });

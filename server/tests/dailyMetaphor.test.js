@@ -6,6 +6,7 @@ import {
   localDate,
   mainMood,
   metaphorPrompt,
+  todaysMood,
   writeMetaphor,
 } from '../services/dailyMetaphor.js';
 import { MOOD_METAPHORS } from '../data/moodMetaphors.js';
@@ -25,6 +26,18 @@ test('the main mood is the most common, with ties going to the latest', () => {
   assert.equal(mainMood(['Sad', 'Happy', 'Sad']), 'Sad');
   assert.equal(mainMood(['Tired', 'Happy']), 'Tired');
   assert.equal(mainMood([]), null);
+});
+
+test("today's mood blends check-ins with listening, keeping a check-in's own name when they agree", () => {
+  // Tired and Excited lean sad and happy, so they keep their names.
+  assert.equal(todaysMood(['Tired'], 'sad'), 'Tired');
+  assert.equal(todaysMood(['Excited', 'Sad', 'Excited'], 'happy'), 'Excited');
+  // The listening outweighed the check-in.
+  assert.equal(todaysMood(['Relaxed'], 'sad'), 'Sad');
+  // Listening alone still gives a mood; without either there is none.
+  assert.equal(todaysMood([], 'anxious'), 'Anxious');
+  assert.equal(todaysMood(['Lonely'], null), 'Lonely');
+  assert.equal(todaysMood([], null), null);
 });
 
 test('every mood has fallback lines that stay the same all day', () => {
@@ -49,6 +62,10 @@ test('the prompt lists only what MetaFor knows', () => {
     'Moods checked in today, newest first: Anxious\nGenre they listen to most: indie folk',
   );
   assert.match(metaphorPrompt({ moods: [], genre: null, artist: 'Laufey' }), /No mood checked in yet today/);
+  assert.match(
+    metaphorPrompt({ moods: [], mood: 'Sad', genre: null, artist: null }),
+    /^How they seem today, from check-ins and listening together: Sad\nNo mood checked in yet today$/,
+  );
 });
 
 test('Groq writes the line, and a failure gives null for the fallback', async () => {

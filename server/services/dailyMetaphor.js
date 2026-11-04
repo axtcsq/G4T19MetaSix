@@ -2,9 +2,10 @@ import MoodLog from "../models/MoodLog.js";
 import User from "../models/User.js";
 import { MOOD_METAPHORS } from "../data/moodMetaphors.js";
 import { buildListeningProfile } from "./listeningProfile.js";
+import { journalAxes, mainAxis, mainMood, overallMood } from "./overallMood.js";
 
-// Home's metaphor of the day, written for how the user feels today and what
-// they listen to. Groq writes it once a day (again if they check in with a new
+// Home's metaphor of the day, written for how the user feels today (their
+// check-ins and today's listening together) and what they listen to. Groq writes it once a day (again if they check in with a new
 // mood), and a hand-written line for their mood stands in when it can't.
 
 // Groq, the same provider and key as Patterns and the journal helper.
@@ -22,17 +23,7 @@ export function localDate(date, timezone) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: timezone || "UTC" }).format(date);
 }
 
-// The mood checked in most often, from newest to oldest. Ties go to the
-// latest check-in.
-export function mainMood(moods) {
-  const counts = {};
-  for (const mood of moods) counts[mood] = (counts[mood] ?? 0) + 1;
-  let main = null;
-  for (const mood of moods) {
-    if (!main || counts[mood] > counts[main]) main = mood;
-  }
-  return main;
-}
+export { mainMood };
 
 function shortName(value) {
   if (typeof value !== "string") return null;
@@ -59,8 +50,22 @@ export function cleanMetaphor(text) {
   return line && line.length <= MAX_LENGTH ? line : null;
 }
 
-export function metaphorPrompt({ moods, genre, artist }) {
+// The journal mood each of the music's moods reads as.
+const AXIS_MOOD = { happy: "Happy", relaxed: "Relaxed", sad: "Sad", angry: "Angry", anxious: "Anxious" };
+
+// Today's mood from the check-ins and today's listening together (`overall` is
+// the strongest axis). A check-in that agrees keeps its own name, like Tired or
+// Excited; otherwise the combined mood decides.
+export function todaysMood(moods, overall) {
+  const logged = mainMood(moods);
+  if (!overall) return logged;
+  if (logged && mainAxis(journalAxes([logged])) === overall) return logged;
+  return AXIS_MOOD[overall];
+}
+
+export function metaphorPrompt({ moods, mood = null, genre, artist }) {
   const details = [
+    mood ? `How they seem today, from check-ins and listening together: ${mood}` : null,
     moods.length ? `Moods checked in today, newest first: ${moods.join(", ")}` : "No mood checked in yet today",
     genre ? `Genre they listen to most: ${genre}` : null,
     artist ? `Artist they play most: ${artist}` : null,
@@ -150,18 +155,22 @@ async function listeningTaste(user) {
 // "mood".
 export async function dailyMetaphorFor(user, now = new Date()) {
   const today = localDate(now, user.timezone);
-  const moods = await todaysMoods(user, today);
-  const key = `${today}|${moods.join(",")}`;
+  const [moods, overall] = await Promise.all([
+    todaysMoods(user, today),
+    overallMood(user, { from: today, to: today }).catch(() => null),
+  ]);
+  const mood = todaysMood(moods, overall?.main);
+  // A new line when the check-ins or the day's overall mood change, not with every play.
+  const key = `${today}|${moods.join(",")}|${mood ?? ""}`;
   const cached = user.dailyMetaphor;
   if (cached?.key === key && cached.text) {
     return { text: cached.text, mood: cached.mood, genre: cached.genre, source: "groq" };
   }
 
-  const mood = mainMood(moods);
   const { genre, artist } = await listeningTaste(user);
   if (!mood && !genre && !artist) return { text: null, mood: null, genre: null, source: null };
 
-  const text = await writeMetaphor({ moods, genre, artist });
+  const text = await writeMetaphor({ moods, mood, genre, artist });
   if (!text) {
     // Not saved, so the next visit asks Groq again.
     return { text: fallbackMetaphor(mood, today), mood, genre: null, source: "mood" };

@@ -31,3 +31,9 @@ export function getListens({ from, to, limit } = {}) {
 export function getMoodInsights(from, to) {
   return api.get('/api/listens/insights', { params: { from, to } })
 }
+
+// The user's mood from their journal and listening together, for the days from
+// `from` to `to` ("YYYY-MM-DD", both included).
+export function getOverallMood(from, to) {
+  return api.get('/api/listens/overall-mood', { params: { from, to } })
+}
