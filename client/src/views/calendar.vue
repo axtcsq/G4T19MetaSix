@@ -150,6 +150,20 @@ const songMoodTrend = computed(() => {
 // Uplifting picks after a sad month, calming ones after a tense one. Uses the
 // journal and listening together when the server has them, else plays only.
 const MOOD_NAMES = { happy: 'happy', relaxed: 'calm', sad: 'sad', angry: 'angry', anxious: 'anxious' }
+const AXIS_FACES = { happy: 'Happy', relaxed: 'Relaxed', sad: 'Sad', angry: 'Angry', anxious: 'Anxious' }
+// Each day's journal and music blended, from the server ("YYYY-MM-DD" -> axis).
+const overallByDate = computed(() => new Map((overallMood.value?.days || []).map((day) => [day.date, day.main])))
+// The face a day shows: the blend when there is one, else the journal, else the music.
+function dayFaceFor(date) {
+  if (!date) return null
+  const main = overallByDate.value.get(keyForDate(date))
+  if (main) return { type: AXIS_FACES[main], title: `Overall mood: ${MOOD_NAMES[main]} (journal and music together)` }
+  const journal = moodFor(date)
+  if (journal) return { type: journal, title: `Journal mood: ${journal}` }
+  const listening = listeningMoodFor(date)
+  return listening && { type: moodFaceType(listening.family), title: `Listening mood: ${listening.name}` }
+}
+const selectedOverall = computed(() => selectedDate.value && overallByDate.value.get(selectedKey.value))
 const combinedTarget = computed(() => {
   const mood = overallMood.value
   if (!mood?.main) return null
@@ -370,6 +384,7 @@ onMounted(loadData)
         <section class="month-summary" aria-live="polite">
           <span v-if="monthMoodCount">This month, you logged <strong>{{ monthMoodCount }}</strong> mood{{ monthMoodCount === 1 ? '' : 's' }}<template v-if="monthMoods"> and most often felt <strong>{{ monthMoods.toLowerCase() }}</strong></template>.</span>
           <span v-else>No mood logs for this month yet. Add one in Daily Mood.</span>
+          <span v-if="overallMood?.main">With your music, you've leaned mostly <strong>{{ MOOD_NAMES[overallMood.main] }}</strong>.</span>
           <span class="song-summary">{{ monthSongCount }} {{ storedHistory ? '' : 'recent Spotify ' }}play{{ monthSongCount === 1 ? '' : 's' }} shown</span>
         </section>
         <div v-if="spotifyError" class="spotify-connect-note" role="status">
@@ -444,18 +459,15 @@ onMounted(loadData)
                 class="day-cell"
                 :class="{ 'is-empty': !date, 'is-today': date && isToday(date), 'is-selected': date && selectedKey === keyForDate(date), 'has-content': date && (moodFor(date) || tracksFor(date).length), 'has-listens': date && tracksFor(date).length }"
                 :disabled="!date"
-                :aria-label="date ? `${date.toLocaleDateString('en-SG', { day: 'numeric', month: 'long' })}${moodFor(date) ? `, journal mood ${moodFor(date)}` : ''}${listeningMoodFor(date) ? `, listening mood ${listeningMoodFor(date).name}` : ''}, ${tracksFor(date).length} songs${mostReplayedFor(date) ? `, most replayed ${mostReplayedFor(date).track.name}` : ''}` : undefined"
+                :aria-label="date ? `${date.toLocaleDateString('en-SG', { day: 'numeric', month: 'long' })}${overallByDate.get(keyForDate(date)) ? `, overall mood ${MOOD_NAMES[overallByDate.get(keyForDate(date))]}` : ''}${moodFor(date) ? `, journal mood ${moodFor(date)}` : ''}${listeningMoodFor(date) ? `, listening mood ${listeningMoodFor(date).name}` : ''}, ${tracksFor(date).length} songs${mostReplayedFor(date) ? `, most replayed ${mostReplayedFor(date).track.name}` : ''}` : undefined"
                 @click="date && selectDay(date)"
               >
                 <span v-if="date && mostReplayedFor(date)" class="day-artwork-cover" aria-hidden="true">
                   <img :src="mostReplayedFor(date).cover" alt="" loading="lazy" decoding="async" />
                 </span>
                 <span v-if="date" class="day-number">{{ date.getDate() }}</span>
-                <span v-if="date && moodFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(moodFor(date))" :title="`Journal mood: ${moodFor(date)}`">
-                  <MoodFace :mood="moodFor(date)" class="button-mood-face calendar-face-svg" />
-                </span>
-                <span v-else-if="date && listeningMoodFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(listeningMoodFor(date).family)" :title="`Listening mood: ${listeningMoodFor(date).name}`">
-                  <MoodFace :mood="moodFaceType(listeningMoodFor(date).family)" class="button-mood-face calendar-face-svg" />
+                <span v-if="date && dayFaceFor(date)" class="calendar-face mood-reaction" :class="moodFaceClass(dayFaceFor(date).type)" :title="dayFaceFor(date).title">
+                  <MoodFace :mood="dayFaceFor(date).type" class="button-mood-face calendar-face-svg" />
                 </span>
                 <span v-if="date && moodFor(date) && listeningMoodFor(date)" class="listening-mood-dot" :title="`Listening mood: ${listeningMoodFor(date).name}`">♫</span>
                 <span v-if="date && tracksFor(date).length" class="song-count">♫ {{ tracksFor(date).length }}</span>
@@ -469,7 +481,10 @@ onMounted(loadData)
 
         <section v-if="selectedDate" class="day-detail" aria-live="polite">
           <div class="detail-header">
-            <div><p class="eyebrow">On this day</p><h3>{{ selectedDate.toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'long' }) }}</h3></div>
+            <div>
+              <p class="eyebrow">On this day</p><h3>{{ selectedDate.toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'long' }) }}</h3>
+              <p v-if="selectedOverall" class="day-overall">Overall, with journal and music together: <strong>{{ MOOD_NAMES[selectedOverall] }}</strong></p>
+            </div>
             <button class="close-detail glass-icon" type="button" aria-label="Close day details" @click="selectedDate = null">×</button>
           </div>
           <div class="day-detail-grid">
@@ -548,6 +563,8 @@ onMounted(loadData)
 .calendar-intro > p:last-child { margin: 10px 0 0; color: var(--ui-text-muted); }
 .month-summary { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--ui-text-muted); }
 .month-summary strong { color: var(--ui-text); }
+.day-overall { margin: 4px 0 0; color: var(--ui-text-muted); }
+.day-overall strong { color: var(--ui-text); }
 .song-summary { color: var(--calendar-accent); font-family: var(--font-sans); font-weight: 700; }
 .inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .84rem; }
 .spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }

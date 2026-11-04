@@ -95,8 +95,9 @@ export async function getOverallMood(req, res) {
   if (!LOCAL_DATE.test(from ?? "") || !LOCAL_DATE.test(to ?? "") || from > to) {
     return res.status(400).json({ error: "from and to must be dates like 2026-10-26" });
   }
-  const { days: _days, ...summary } = await overallMood(req.user, { from, to });
-  res.json(summary);
+  const { days, ...summary } = await overallMood(req.user, { from, to });
+  // Each day's own blend, for the calendar's faces.
+  res.json({ ...summary, days: days.map(({ date, main }) => ({ date, main })) });
 }
 
 // GET /api/listens/insights: daily music moods and lyric emotions for a date range.
