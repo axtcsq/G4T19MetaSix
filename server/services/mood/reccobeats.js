@@ -27,10 +27,12 @@ async function lookup(ids) {
 // ReccoBeats search matches titles only (adding the artist finds nothing) and stops at 200 results.
 const SEARCH_PAGE = 50
 const SEARCH_PAGES = 4
+// Search answers 400 for shorter text, e.g. two-character Japanese titles like "灯火".
+const MIN_SEARCH_LENGTH = 3
 
 /** Find ReccoBeats track IDs for an ISRC. */
 export async function idsForIsrc(title, isrc) {
-  if (!title || !isrc) return []
+  if (!title || !isrc || title.trim().length < MIN_SEARCH_LENGTH) return []
   for (let page = 0; page < SEARCH_PAGES; page++) {
     const params = new URLSearchParams({ searchText: title, page, size: SEARCH_PAGE })
     const res = await fetch(`${BASE_URL}/track/search?${params}`, { signal: AbortSignal.timeout(10000) })
