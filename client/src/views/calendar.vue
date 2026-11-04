@@ -372,7 +372,7 @@ onMounted(loadData)
             </article>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
-          <p v-else class="recommendation-status">No songs by similar artists matched the mood this time. Try refreshing for other artists.</p>
+          <p v-else class="recommendation-status">No fully analysed songs by similar artists matched the mood yet. New matches are being analysed, so try refreshing later or for other artists.</p>
         </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">
