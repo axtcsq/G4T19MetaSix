@@ -6,7 +6,7 @@ import MoodFace from '@/components/journal/MoodFace.vue'
 import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
 import { getRecommendations } from '@/api/recommendations'
-import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
+import { getListens, getOverallMood, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 
 defineOptions({ name: "MoodCalendar" })
 
@@ -23,6 +23,10 @@ const spotifyError = ref('')
 const isConnectingSpotify = ref(false)
 const recommendations = ref([])
 const recommendationsLoading = ref(false)
+// The shown month's mood from the journal and listening together, from the server.
+const overallMood = ref(null)
+// True while another month's plays and overall mood load.
+const monthLoading = ref(false)
 const recommendationsError = ref('')
 const recommendationPage = ref(0)
 const shownRecommendationIds = new Set()
@@ -143,7 +147,19 @@ const songMoodTrend = computed(() => {
   }
   return counts
 })
+// Uplifting picks after a sad month, calming ones after a tense one. Uses the
+// journal and listening together when the server has them, else plays only.
+const MOOD_NAMES = { happy: 'happy', relaxed: 'calm', sad: 'sad', angry: 'angry', anxious: 'anxious' }
+const combinedTarget = computed(() => {
+  const mood = overallMood.value
+  if (!mood?.main) return null
+  const { happy, relaxed, sad, angry, anxious } = mood.axes
+  const tense = angry + anxious
+  if (sad + tense === 0) return happy >= relaxed ? 'happy' : 'calm'
+  return sad >= tense ? 'happy' : 'calm'
+})
 const recommendationTarget = computed(() => {
+  if (combinedTarget.value) return combinedTarget.value
   const { happy, calm, sad, tense } = songMoodTrend.value
   const analyzed = happy + calm + sad + tense
   if (!analyzed) return null
@@ -151,13 +167,25 @@ const recommendationTarget = computed(() => {
   return sad >= tense ? 'happy' : 'calm'
 })
 const moodTrendSummary = computed(() => {
+  const picks = recommendationTarget.value === 'happy' ? 'uplifting' : 'calming'
+  const mood = overallMood.value
+  if (combinedTarget.value) {
+    const basis = [
+      mood.journalDays ? `${mood.journalDays} journal day${mood.journalDays === 1 ? '' : 's'}` : null,
+      mood.plays ? `${mood.plays} analyzed plays` : null,
+    ].filter(Boolean).join(' and ')
+    const negative = ['sad', 'angry', 'anxious'].includes(mood.main)
+    return negative
+      ? `Your journal and music this month lean mostly ${MOOD_NAMES[mood.main]} (${basis}). Here are some ${picks} picks to shift the tone.`
+      : `Your journal and music this month lean mostly ${MOOD_NAMES[mood.main]} (${basis}). Here are more ${picks} picks.`
+  }
   const { happy, calm, sad, tense } = songMoodTrend.value
   const negative = sad + tense
   const total = happy + calm + sad + tense
-  if (!total) return 'We need mood-analyzed songs from this month to spot a listening trend.'
-  if (!negative) return `Your analyzed songs have mostly been uplifting or calm (${total} plays). Here are more ${recommendationTarget.value === 'happy' ? 'uplifting' : 'calming'} picks.`
+  if (!total) return 'We need mood-analyzed songs or journal entries from this month to spot a trend.'
+  if (!negative) return `Your analyzed songs have mostly been uplifting or calm (${total} plays). Here are more ${picks} picks.`
   const trend = sad >= tense ? 'sad' : 'intense'
-  return `${negative} of ${total} analyzed plays leaned ${trend}. Here are some ${recommendationTarget.value === 'happy' ? 'uplifting' : 'calming'} picks to shift the tone.`
+  return `${negative} of ${total} analyzed plays leaned ${trend}. Here are some ${picks} picks to shift the tone.`
 })
 
 async function loadData() {
@@ -170,8 +198,20 @@ async function loadData() {
     : hasSpotifySession()
       ? recentSpotify().then((data) => { listens.value = data.items || [] }).catch((error) => { spotifyError.value = error.message })
       : Promise.resolve()
-  await Promise.all([moodsRequest, spotifyRequest])
+  await Promise.all([moodsRequest, spotifyRequest, loadOverallMood()])
   loading.value = false
+  restartRecommendations()
+}
+// Only signed-in users have a stored journal and history to combine.
+function loadOverallMood() {
+  const month = shownMonth.value
+  overallMood.value = null
+  if (!storedHistory) return Promise.resolve()
+  const last = new Date(month.getFullYear(), month.getMonth() + 1, 0)
+  return getOverallMood(keyForDate(month), keyForDate(last))
+    .then((data) => { if (shownMonth.value === month) overallMood.value = data })
+    // The plays-only trend stands in.
+    .catch(() => {})
 }
 function loadStoredMonth() {
   const from = shownMonth.value
@@ -195,7 +235,13 @@ async function connectSpotify() {
 function moveMonth(amount) {
   shownMonth.value = new Date(shownMonth.value.getFullYear(), shownMonth.value.getMonth() + amount, 1)
   selectedDate.value = null
-  if (storedHistory) loadStoredMonth()
+  const month = shownMonth.value
+  monthLoading.value = true
+  Promise.all([storedHistory ? loadStoredMonth() : null, loadOverallMood()]).finally(() => {
+    if (shownMonth.value !== month) return
+    monthLoading.value = false
+    restartRecommendations()
+  })
 }
 function selectDay(date) {
   selectedDate.value = selectedDate.value && keyForDate(selectedDate.value) === keyForDate(date) ? null : date
@@ -284,10 +330,16 @@ function refreshRecommendations() {
   loadRecommendations()
 }
 
-watch([songMoodTrend, recommendationArtists, recommendationTypeMix], () => {
+function restartRecommendations() {
   recommendationPage.value = 0
   shownRecommendationIds.clear()
   loadRecommendations()
+}
+// A month's plays and its overall mood arrive separately; asking for suggestions
+// after each would hit the server's few-second limit, so wait for both.
+watch([recommendationTarget, recommendationArtists, recommendationTypeMix], () => {
+  if (loading.value || monthLoading.value) return
+  restartRecommendations()
 })
 onMounted(loadData)
 </script>

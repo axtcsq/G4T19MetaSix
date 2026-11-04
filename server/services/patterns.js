@@ -1,6 +1,7 @@
 import { METAFOR_TRAITS } from "../data/metaforTraits.js";
 import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 import { clamp } from "./quizEngine.js";
+import { journalAxes, mainAxis } from "./overallMood.js";
 
 // How much the quiz results count versus the user's listening data when
 // working out their MetaFor traits, once there is enough listening to go on.
@@ -131,14 +132,26 @@ const MOOD_VALENCE = {
   Sad: 0.25,
 };
 
-// One line connecting the user's mood logs with their listening.
-export function moodLink(moodPatterns, stats) {
-  if (!moodPatterns) return null;
+const MOOD_NAMES = { happy: "happy", relaxed: "calm", sad: "sad", angry: "angry", anxious: "anxious" };
+
+// One line on how the user has been overall, from their journal and listening
+// together, then how their logged moods compare with how their music sounds.
+// `overall` is overallMood() for the last 30 days.
+export function moodLink(moodPatterns, stats, overall = null) {
+  const lead = overall?.main
+    ? `Over the last 30 days, your journal and music together lean mostly ${MOOD_NAMES[overall.main]}`
+    : null;
+  if (!moodPatterns) return lead ? { overall: overall.main, text: `${lead}.` } : null;
 
   const [topMood, count] = Object.entries(moodPatterns.counts).sort((a, b) => b[1] - a[1])[0];
-  const logged = `You logged ${topMood} most often (${count} of your last ${moodPatterns.total} mood logs)`;
+  // "and" when the logged mood points the same way (Lonely counts as sad), else "though".
+  const agrees = mainAxis(journalAxes([topMood])) === overall?.main;
+  const logged = lead
+    ? `${lead}, ${agrees ? "and" : "though"} you logged ${topMood} most often (${count} of your last ${moodPatterns.total} mood logs)`
+    : `You logged ${topMood} most often (${count} of your last ${moodPatterns.total} mood logs)`;
+  const base = { overall: overall?.main ?? null, topMood, count, total: moodPatterns.total };
 
-  if (stats.averageHappiness === null) return { topMood, count, total: moodPatterns.total, text: `${logged}.` };
+  if (stats.averageHappiness === null) return { ...base, text: `${logged}.` };
 
   const gap = stats.averageHappiness / 100 - MOOD_VALENCE[topMood];
   const comparison =
@@ -149,10 +162,8 @@ export function moodLink(moodPatterns, stats) {
         : "so your music sounds moodier than you feel, maybe it's where you put the heavier stuff";
 
   return {
-    topMood,
-    count,
-    total: moodPatterns.total,
-    text: `${logged}, and your top tracks average ${stats.averageHappiness}% happiness, ${comparison}.`,
+    ...base,
+    text: `${logged}. Your top tracks average ${stats.averageHappiness}% happiness, ${comparison}.`,
   };
 }
 

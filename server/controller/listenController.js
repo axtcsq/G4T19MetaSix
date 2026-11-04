@@ -3,7 +3,7 @@ import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
 import { MOOD_NAMES } from "../services/mood/axes.js";
 import { moodSlug } from "../services/mood/index.js";
-import { moodByDay } from "../services/moodMusic.js";
+import { journalMoodsByDay, overallMood } from "../services/overallMood.js";
 
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 2000;
@@ -88,6 +88,17 @@ export async function getListens(req, res) {
 const EMOTIONS = ["joy", "sadness", "anger", "fear", "disgust", "surprise", "neutral"];
 const LOCAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+// GET /api/listens/overall-mood: the user's mood from their journal and listening
+// together, from `from` to `to` ("YYYY-MM-DD", both included).
+export async function getOverallMood(req, res) {
+  const { from, to } = req.query;
+  if (!LOCAL_DATE.test(from ?? "") || !LOCAL_DATE.test(to ?? "") || from > to) {
+    return res.status(400).json({ error: "from and to must be dates like 2026-10-26" });
+  }
+  const { days: _days, ...summary } = await overallMood(req.user, { from, to });
+  res.json(summary);
+}
+
 // GET /api/listens/insights: daily music moods and lyric emotions for a date range.
 export async function getMoodInsights(req, res) {
   const { from, to } = req.query;
@@ -150,12 +161,14 @@ export async function getMoodInsights(req, res) {
   const analysedPlays = dailyMoods.reduce((sum, day) => sum + analysedIn(day), 0);
 
   // For each mood the user journalled, what they mostly played on those days.
-  const journalMoods = await moodByDay(userId, req.user.timezone);
+  // A day counts for every mood logged on it, not only the last.
+  const journalMoods = await journalMoodsByDay(req.user, from, to);
   const daysByJournalMood = new Map();
   for (const day of dailyMoods) {
-    const mood = journalMoods.get(day.date);
-    if (!mood || !analysedIn(day)) continue;
-    daysByJournalMood.set(mood, [...(daysByJournalMood.get(mood) ?? []), day]);
+    if (!analysedIn(day)) continue;
+    for (const mood of new Set(journalMoods.get(day.date))) {
+      daysByJournalMood.set(mood, [...(daysByJournalMood.get(mood) ?? []), day]);
+    }
   }
   const journal = [...daysByJournalMood].map(([mood, list]) => {
     const [top] = countMoods(list);

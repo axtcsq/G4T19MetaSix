@@ -10,6 +10,7 @@ import {
 } from "../models/QuizAttempt.js";
 import { buildListeningProfile } from "../services/listeningProfile.js";
 import { moodMusic } from "../services/moodMusic.js";
+import { overallMood } from "../services/overallMood.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
   SPOTIFY_WEIGHT,
@@ -34,6 +35,16 @@ async function getMoodPatterns(userId) {
   for (const log of logs) counts[log.mood] += 1;
 
   return { total: logs.length, counts };
+}
+
+// The user's overall mood over the last 30 days, from their journal and listening.
+async function lastMonthMood(user) {
+  const today = new Date();
+  const date = (back) =>
+    new Intl.DateTimeFormat("en-CA", { timeZone: user.timezone || "UTC" }).format(
+      new Date(today.getTime() - back * 24 * 60 * 60 * 1000),
+    );
+  return overallMood(user, { from: date(29), to: date(0) });
 }
 
 // Works out a stored attempt's result. Attempts whose answers no longer fit
@@ -75,7 +86,8 @@ function closingLine(typeId) {
 }
 
 // Summarises every quiz result into one MetaFor personality and saves it.
-async function rebuildPersonality(userId, profile) {
+async function rebuildPersonality(user, profile) {
+  const userId = user._id;
   const results = await latestResults(userId, profile);
   const traits = combineTraits(results, profile);
   const ranking = rankTypes(traits);
@@ -151,7 +163,7 @@ async function rebuildPersonality(userId, profile) {
       name: publicType(id).name,
       match,
     })),
-    moodLink: moodLink(moodPatterns, stats),
+    moodLink: moodLink(moodPatterns, stats, await lastMonthMood(user)),
     stats,
     source: analysis ? "llm" : "scoring",
   });
@@ -250,13 +262,15 @@ export async function getPersonality(req, res) {
     !personality.sources ||
     (await isOutdated(userId, personality, profile))
   ) {
-    personality = await rebuildPersonality(req.user._id, profile);
+    personality = await rebuildPersonality(req.user, profile);
   }
 
-  // Worked out live, so it follows the latest listening without a rebuild.
+  // Worked out live, so they follow the latest listening and journal without a rebuild.
+  const [moodPatterns, lastMonth] = await Promise.all([getMoodPatterns(userId), lastMonthMood(req.user)]);
   res.json({
     ...formatPersonality(personality),
     song: songForType(profile, personality.traits),
+    moodLink: moodLink(moodPatterns, listeningStats(profile), lastMonth),
   });
 }
 
@@ -340,7 +354,7 @@ export async function submitQuiz(req, res) {
     answers: stored,
   });
   const result = evaluateAttempt(attempt, profile);
-  const personality = await rebuildPersonality(req.user._id, profile);
+  const personality = await rebuildPersonality(req.user, profile);
 
   res.status(201).json({ result, personality: formatPersonality(personality) });
 }
