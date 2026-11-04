@@ -193,6 +193,8 @@ Drafts in `server/data/personalityTypes.js`. Each has a name, tagline, longer de
 | The Spark | Hand you the aux and the room lights up. | Amped + Crowd |
 | The Wanderer | No home genre, just the next interesting sound. | Explorer + Soundscaper |
 
+All six are shown in the **MetaFor Types** tab, after the quiz tabs in What You Could Get. The user's own type comes first with a badge.
+
 ### What the section shows
 
 - **Type card:** "You are a", the type's icon, name, tagline and what the type means.
@@ -267,6 +269,7 @@ All under `/api/quiz`. Every request needs MongoDB, and returns `503` if it's un
 |---|---|
 | `GET /api/quiz` | Lists the quizzes, each with its `latestResult` (or `null`) |
 | `GET /api/quiz/personality` | The saved MetaFor personality, or `null` before any quiz is taken |
+| `GET /api/quiz/types` | The six MetaFor types with their copy and trait names, for the MetaFor Types tab. Target profiles stay on the server |
 | `GET /api/quiz/:quizId` | A quiz's questions. Option scores stay on the server |
 | `GET /api/quiz/:quizId/result` | The latest result for that quiz, or `404` if it hasn't been taken |
 | `POST /api/quiz/:quizId/result` | Body `{ answers: { questionId: optionId, birthday? } }`. Saves the attempt, rebuilds Patterns and returns `{ result, personality }`. Returns `400` if a question is unanswered or the birthday is invalid |
