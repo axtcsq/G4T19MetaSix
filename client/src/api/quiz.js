@@ -9,6 +9,11 @@ export function getPersonality() {
   return api.get('/api/quiz/personality')
 }
 
+// The six MetaFor types, for the Personality page.
+export function getPersonalityTypes() {
+  return api.get('/api/quiz/types')
+}
+
 export function getQuiz(quizId) {
   return api.get(quizPath(quizId))
 }

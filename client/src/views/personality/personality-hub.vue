@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, ref } from 'vue'
-import { getPersonality, getQuizzes } from '@/api/quiz'
+import { getPersonality, getPersonalityTypes, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/layout/footer.vue'
@@ -60,6 +60,15 @@ const shownOutcomes = computed(() => {
   const outcomes = [...(quiz?.outcomes ?? [])].sort((a, b) => isMine(quiz, b) - isMine(quiz, a))
   return showAllOutcomes.value ? outcomes : outcomes.slice(0, OUTCOMES_SHOWN)
 })
+// The tab after the quizzes, about the six MetaFor types. The user's own type
+// comes first, like their quiz results.
+const TYPES_TAB = 'metafor-types'
+const types = ref([])
+const showingTypes = computed(() => outcomesQuizId.value === TYPES_TAB)
+const myTypeId = computed(() => personality.value?.type?.id ?? null)
+const sortedTypes = computed(() =>
+  [...types.value].sort((a, b) => (b.id === myTypeId.value) - (a.id === myTypeId.value)),
+)
 function pickOutcomesQuiz(id) {
   outcomesQuizId.value = id
   showAllOutcomes.value = false
@@ -119,6 +128,12 @@ async function loadPage() {
   isLoading.value = true
   loadError.value = ''
   loadPatterns()
+  // Only the types tab needs these, so it just stays hidden if they fail.
+  getPersonalityTypes()
+    .then((list) => {
+      types.value = list
+    })
+    .catch(() => {})
 
   try {
     quizzes.value = await getQuizzes()
@@ -268,46 +283,84 @@ onMounted(loadPage)
             type="button"
             role="tab"
             class="outcome-tab"
-            :aria-selected="quiz.id === outcomesQuiz.id"
+            :aria-selected="!showingTypes && quiz.id === outcomesQuiz.id"
             :aria-controls="`outcomes-panel`"
             @click="pickOutcomesQuiz(quiz.id)"
           >
             {{ quiz.title }}
             <span class="tab-count">{{ quiz.outcomes.length }}</span>
           </button>
+          <button
+            v-if="types.length"
+            :id="`outcomes-tab-${TYPES_TAB}`"
+            type="button"
+            role="tab"
+            class="outcome-tab"
+            :aria-selected="showingTypes"
+            aria-controls="outcomes-panel"
+            @click="pickOutcomesQuiz(TYPES_TAB)"
+          >
+            MetaFor Types
+            <span class="tab-count">{{ types.length }}</span>
+          </button>
         </div>
 
         <div
           id="outcomes-panel"
           role="tabpanel"
-          :aria-labelledby="`outcomes-tab-${outcomesQuiz.id}`"
+          :aria-labelledby="`outcomes-tab-${showingTypes ? TYPES_TAB : outcomesQuiz.id}`"
           class="outcome-panel"
         >
-          <p v-if="outcomesQuiz.outcomeNote" class="outcome-note">{{ outcomesQuiz.outcomeNote }}</p>
-          <ul class="outcome-grid">
-            <li
-              v-for="outcome in shownOutcomes"
-              :key="outcome.name"
-              class="outcome-card"
-              :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
+          <template v-if="showingTypes">
+            <p class="outcome-note">
+              Your quiz answers and Spotify listening add up to one of these six personalities, which you’ll
+              see in Patterns below.
+            </p>
+            <ul class="outcome-grid">
+              <li
+                v-for="type in sortedTypes"
+                :key="type.id"
+                class="outcome-card"
+                :class="{ 'is-mine': type.id === myTypeId }"
+              >
+                <span v-if="type.id === myTypeId" class="mine-badge">Your type</span>
+                <img :src="typeIcon(type.id)" alt="" width="84" height="84" class="type-icon type-card-icon" />
+                <p class="outcome-name">{{ type.name }}</p>
+                <p class="outcome-tag">{{ type.tagline }}</p>
+                <p class="outcome-meaning">{{ type.description }}</p>
+                <ul class="type-traits" :aria-label="`${type.name} leans towards`">
+                  <li v-for="trait in type.traits" :key="trait" class="type-trait">{{ trait }}</li>
+                </ul>
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            <p v-if="outcomesQuiz.outcomeNote" class="outcome-note">{{ outcomesQuiz.outcomeNote }}</p>
+            <ul class="outcome-grid">
+              <li
+                v-for="outcome in shownOutcomes"
+                :key="outcome.name"
+                class="outcome-card"
+                :class="{ 'is-mine': isMine(outcomesQuiz, outcome) }"
+              >
+                <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
+                <p class="outcome-name">{{ outcome.name }}</p>
+                <p v-if="outcome.tag" class="outcome-tag">{{ outcome.tag }}</p>
+                <p class="outcome-meaning">{{ outcome.meaning }}</p>
+              </li>
+            </ul>
+            <button
+              v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
+              type="button"
+              class="peach-button peach-button--quiet show-more"
+              :aria-expanded="showAllOutcomes"
+              aria-controls="outcomes-panel"
+              @click="toggleOutcomes"
             >
-              <span v-if="isMine(outcomesQuiz, outcome)" class="mine-badge">Your result</span>
-              <p class="outcome-name">{{ outcome.name }}</p>
-              <p v-if="outcome.tag" class="outcome-tag">{{ outcome.tag }}</p>
-              <p class="outcome-meaning">{{ outcome.meaning }}</p>
-            </li>
-          </ul>
-          <button
-            v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
-            type="button"
-            class="peach-button peach-button--quiet show-more"
-            :aria-expanded="showAllOutcomes"
-            aria-controls="outcomes-panel"
-            @click="toggleOutcomes"
-          >
-            {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
-            <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-          </button>
+              {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
+              <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+          </template>
         </div>
       </section>
       <!-- Patterns -->
@@ -1112,6 +1165,30 @@ onMounted(loadPage)
   font-family: var(--font-serif);
   font-size: 1.05rem;
   line-height: 1.45;
+}
+
+.type-card-icon {
+  margin-bottom: 0.75rem;
+}
+
+/* Pushed to the bottom, so the chips line up across a row of cards. */
+.type-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  list-style: none;
+}
+
+.type-trait {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  color: var(--pq-on-peach);
+  background: var(--pq-peach);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .show-more {
