@@ -103,10 +103,12 @@ export async function getMoodInsights(req, res) {
   const dailyMoods = await DailyMood.find({ userId, date: dates })
     .sort({ date: 1 })
     .lean();
+  // Plays with a mood in this reading. Songs with no sound data only have a lyrics reading.
+  const analysedIn = (day) => day.analysedCount + (lens === "lyrics" ? (day.lyrics?.lyricsOnlyCount ?? 0) : 0);
   const days = dailyMoods.map((day) => ({
     date: day.date,
     listenCount: day.listenCount,
-    analysedCount: day.analysedCount,
+    analysedCount: analysedIn(day),
     axes: day[lens]?.axes ?? {},
   }));
 
@@ -145,19 +147,19 @@ export async function getMoodInsights(req, res) {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
   };
-  const analysedPlays = dailyMoods.reduce((sum, day) => sum + day.analysedCount, 0);
+  const analysedPlays = dailyMoods.reduce((sum, day) => sum + analysedIn(day), 0);
 
   // For each mood the user journalled, what they mostly played on those days.
   const journalMoods = await moodByDay(userId, req.user.timezone);
   const daysByJournalMood = new Map();
   for (const day of dailyMoods) {
     const mood = journalMoods.get(day.date);
-    if (!mood || !day.analysedCount) continue;
+    if (!mood || !analysedIn(day)) continue;
     daysByJournalMood.set(mood, [...(daysByJournalMood.get(mood) ?? []), day]);
   }
   const journal = [...daysByJournalMood].map(([mood, list]) => {
     const [top] = countMoods(list);
-    const plays = list.reduce((sum, day) => sum + day.analysedCount, 0);
+    const plays = list.reduce((sum, day) => sum + analysedIn(day), 0);
     return { mood, days: list.length, musicMood: top.name, share: top.count / plays };
   });
 

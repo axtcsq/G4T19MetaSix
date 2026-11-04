@@ -45,7 +45,7 @@ export async function rebuildDailyMoods(userId, dates) {
         listenCount: 0,
         analysedCount: 0,
         sound: emptyReading(),
-        lyrics: { ...emptyReading(), fallbackCount: 0 },
+        lyrics: { ...emptyReading(), fallbackCount: 0, lyricsOnlyCount: 0 },
       };
       days.set(listen.localDate, day);
     }
@@ -54,7 +54,15 @@ export async function rebuildDailyMoods(userId, dates) {
 
     const track = tracksById.get(listen.trackId);
     const moods = track?.moods;
-    if (!HAS_MOOD.includes(track?.analysis?.status) || !moods?.sound) {
+    if (!HAS_MOOD.includes(track?.analysis?.status)) {
+      continue;
+    }
+    // No sound data: the song only counts in the lyrics reading.
+    if (!moods?.sound) {
+      if (moods?.lyrics) {
+        countPlay(day.lyrics, moods.lyrics.name);
+        day.lyrics.lyricsOnlyCount += 1;
+      }
       continue;
     }
 

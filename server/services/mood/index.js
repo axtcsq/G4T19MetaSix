@@ -1,4 +1,4 @@
-import { readMoods } from "./mood.js";
+import { lyricsOnlyMood, readMoods } from "./mood.js";
 
 // Bump when the rules in mood.js change, then recompute both readings from the
 // stored features and lyrics.
@@ -19,6 +19,17 @@ export function trackMoods(features, lyrics = null) {
       family: withLyrics.tone,
       contrast: blend.contrast ?? undefined,
     },
+    version: MOOD_VERSION,
+  };
+}
+
+// The tracks.moods shape for a song with no sound data: a lyrics reading only.
+// null when the lyrics can't give a mood either.
+export function lyricsOnlyMoods(lyrics) {
+  const mood = lyricsOnlyMood(lyrics);
+  return mood && {
+    sound: null,
+    lyrics: { name: mood.name, family: mood.tone, lyricsOnly: true },
     version: MOOD_VERSION,
   };
 }

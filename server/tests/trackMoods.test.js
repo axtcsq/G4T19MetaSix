@@ -33,6 +33,21 @@ describe("toMoods", () => {
     });
   });
 
+  it("shows a lyrics-only mood for songs with no sound data, only with lyrics on", () => {
+    const lyricsOnly = {
+      moods: { sound: null, lyrics: { name: "Melancholic", family: "sad", lyricsOnly: true } },
+      lyrics: { status: "found", valence: 0.1, translatedFrom: "ES" },
+      analysis: { status: "done", attempts: 1 },
+    };
+    assert.deepEqual(toMoods(lyricsOnly, true), {
+      sound: null,
+      lyrics: { name: "Melancholic", axis: "sad" },
+      lyricsLanguage: "ES",
+      lyricsNote: "lyrics-only",
+    });
+    assert.deepEqual(toMoods(lyricsOnly, false), { noMood: "no-data" });
+  });
+
   it("leaves the lyrics out, with no note, when the user turned lyrics off", () => {
     const tag = toMoods(analysed, false);
     assert.equal(tag.lyrics, null);

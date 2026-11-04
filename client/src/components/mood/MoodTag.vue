@@ -44,6 +44,10 @@ const LYRICS_NOTES = {
     label: 'Instrumental',
     why: 'This song has no vocals, so its mood is from the sound only.',
   },
+  'lyrics-only': {
+    label: 'Lyrics only',
+    why: 'Our audio data source doesn’t have this song, so this mood is a rough guess from its lyrics alone.',
+  },
   none: {
     label: 'No lyrics',
     why: 'We couldn’t find lyrics we could read for this song, so its mood is from the sound only.',
@@ -63,8 +67,9 @@ const noMood = computed(() => NO_MOOD[tag.value?.noMood] ?? null)
 
 const details = computed(() => {
   const { sound, lyrics, lyricsNote: note } = tag.value ?? {}
-  if (!sound) return ''
+  if (!reading.value) return ''
   const counts = `Counts as ${JOURNAL_MOOD[reading.value.axis] ?? 'no journal mood'}.`
+  if (!sound) return `${lyrics.name}, a rough guess from the lyrics alone. ${counts}`
   if (lyrics && !note) {
     return lyrics.name === sound.name
       ? `${sound.name} from both sound and lyrics. ${counts}`

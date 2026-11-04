@@ -7,7 +7,7 @@ import { connectDB } from "../config/db.js";
 import Track from "../models/Track.js";
 import { rebuildDaysWithTracks } from "../services/dailyMoods.js";
 import { MAX_ATTEMPTS, analyseTrack } from "../services/mood/analyse.js";
-import { loadModel } from "../services/mood/emotion.js";
+import { SCORER_VERSION, loadModel } from "../services/mood/emotion.js";
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
@@ -19,8 +19,14 @@ async function run() {
   await connectDB();
 
   const filter = {
-    "analysis.status": { $in: ["pending", "partial", "failed"] },
-    "analysis.attempts": { $lt: MAX_ATTEMPTS },
+    $or: [
+      {
+        "analysis.status": { $in: ["pending", "partial", "failed"] },
+        "analysis.attempts": { $lt: MAX_ATTEMPTS },
+      },
+      // Songs with no sound data get one lyrics read for a lyrics-only mood.
+      { "analysis.status": "no-data", "lyrics.scorerVersion": { $ne: SCORER_VERSION } },
+    ],
   };
   // Without a DeepL key, songs waiting on a translation would only fail again.
   // They're retried once a key is set.

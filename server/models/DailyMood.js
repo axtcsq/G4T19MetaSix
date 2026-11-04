@@ -36,6 +36,8 @@ const dailyMoodSchema = new mongoose.Schema(
       axes: { type: axesSchema, default: () => ({}) },
       // Plays counted under their sound reading because the lyrics are pending.
       fallbackCount: { type: Number, default: 0 },
+      // Plays of songs with no sound data, counted here only (not in analysedCount).
+      lyricsOnlyCount: { type: Number, default: 0 },
     },
     moodVersion: Number,
     axesVersion: Number,

@@ -57,6 +57,8 @@ const lyricsMoodSchema = new mongoose.Schema(
     name: String,
     family: String,
     contrast: String,
+    // No sound data: the mood is a rough guess from the lyrics alone.
+    lyricsOnly: Boolean,
   },
   { _id: false },
 );
