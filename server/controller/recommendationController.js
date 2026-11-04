@@ -53,6 +53,9 @@ export async function getRecommendations(req, res) {
       mix,
       exclude,
       page,
+      // Match on the reading the user sees: with the lyrics, or the sound alone.
+      useLyrics: req.user.preferences?.moodLens !== "sound",
+      userId: req.user._id,
     });
     res.json({ tracks });
   } catch (error) {

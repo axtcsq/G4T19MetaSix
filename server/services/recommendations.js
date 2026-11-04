@@ -1,4 +1,5 @@
 // Find mood-matched songs by artists similar to the user's top artists.
+import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
 import { fetchFeatures } from "./analysis.js";
 import { MOOD_VERSION, trackMoods } from "./mood/index.js";
@@ -18,8 +19,12 @@ const SONGS_PER_ARTIST = 5;
 // ReccoBeats answers up to 40 songs per request.
 const FEATURES_BATCH = 40;
 const INSTRUMENTAL = 0.5;
+// New sound-matched songs saved for the analysis job per request, to keep its queue small.
+const QUEUED_PER_REQUEST = PICKS * 2;
+// Stored songs considered when the searched ones don't fill the picks.
+const FILL_CANDIDATES = 40;
 
-const defaultDeps = { similarArtists, searchTracks, fetchFeatures, saveSongs };
+export const defaultDeps = { similarArtists, searchTracks, fetchFeatures, storedSongs, analysedSongs, listeningHistory, saveSongs };
 
 const sameName = (a, b) => a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0;
 
@@ -97,8 +102,75 @@ function choose(matches, mix) {
   return picks;
 }
 
-// Saves the picks with their sound mood, as a searched song's would be, so
-// their tags and song pages work straight away. The analysis job adds lyrics.
+// What's already stored about these songs, keyed by ID.
+async function storedSongs(ids) {
+  const tracks = await Track.find(
+    { _id: { $in: ids } },
+    { moods: 1, "analysis.status": 1, "features.instrumentalness": 1, "lyrics.status": 1 },
+  ).lean();
+  return new Map(tracks.map((track) => [track._id, track]));
+}
+
+// The reading the user sees, once both the sound and the lyrics have been read.
+// Songs with no sound data only have a lyrics reading, so they need lyrics on.
+function analysedMood(track, useLyrics) {
+  if (track?.analysis?.status !== "done") return null;
+  return (useLyrics ? track.moods?.lyrics : track.moods?.sound) ?? null;
+}
+
+// Fully analysed songs in this mood by these artists, from the database, in random
+// order so refreshes vary.
+async function analysedSongs({ artists, family, useLyrics, exclude, limit }) {
+  if (!artists.length) return [];
+  const reading = useLyrics ? "moods.lyrics.family" : "moods.sound.family";
+  return Track.aggregate([
+    { $match: { _id: { $nin: exclude }, "analysis.status": "done", [reading]: family, "artists.name": { $in: artists } } },
+    { $sample: { size: limit } },
+    { $project: { name: 1, artists: 1, album: 1, moods: 1, "features.instrumentalness": 1, "lyrics.status": 1, analysis: 1 } },
+  ]);
+}
+
+// Every artist the user has listened to, and every song they've played.
+async function listeningHistory(userId) {
+  const played = await Listen.distinct("trackId", { userId });
+  const artists = await Track.distinct("artists.name", { _id: { $in: played } });
+  return { artists, played: new Set(played) };
+}
+
+// A stored song in the same shape as a Spotify search result, credited to the
+// similar artist it's by, or else to the user's own artist.
+function fromStore(track, queue, played) {
+  const names = new Set(track.artists?.map((artist) => artist.name.toLowerCase()));
+  const own = track.artists?.[0]?.name ?? "";
+  const artist = queue.find((entry) => names.has(entry.name.toLowerCase())) ?? {
+    name: own,
+    because: `From ${own}`,
+    // After every similar artist; songs the user has never played come first.
+    weight: played?.has(track._id) ? -2 : -1,
+  };
+  return {
+    track: {
+      id: track._id,
+      name: track.name,
+      artists: track.artists ?? [],
+      album: { images: track.album?.imageUrl ? [{ url: track.album.imageUrl }] : [] },
+      external_urls: { spotify: `https://open.spotify.com/track/${track._id}` },
+    },
+    artist,
+  };
+}
+
+// A pick with its stored mood, or null unless it's fully analysed and in the target mood.
+function toMatch(song, track, target, useLyrics) {
+  const mood = analysedMood(track, useLyrics);
+  if (mood?.family !== target) return null;
+  const instrumental =
+    track.lyrics?.status === "instrumental" || (track.features?.instrumentalness ?? 0) >= INSTRUMENTAL;
+  return { ...song, mood: { name: mood.name, family: mood.family }, instrumental };
+}
+
+// Saves sound-matched songs that haven't been analysed yet, so the analysis job
+// reads their lyrics and a later refresh can suggest them.
 async function saveSongs(picks) {
   await Track.bulkWrite(
     picks.map(({ track, features }) => ({
@@ -119,8 +191,11 @@ async function saveSongs(picks) {
   );
 }
 
-/** Recommend up to four mood-matched songs. */
-export async function recommendSongs({ target, artists, mix, exclude = [], page = 0 }, deps = defaultDeps) {
+/** Recommend up to four mood-matched songs, all fully analysed (sound and lyrics). */
+export async function recommendSongs(
+  { target, artists, mix, exclude = [], page = 0, useLyrics = true, userId },
+  deps = defaultDeps,
+) {
   const queue = await artistQueue(artists, deps);
   if (!queue.length) return [];
   const start = (page * ARTISTS_PER_PAGE) % queue.length;
@@ -130,33 +205,61 @@ export async function recommendSongs({ target, artists, mix, exclude = [], page 
   );
 
   const songs = await candidateSongs(searched, exclude, deps);
-  const features = new Map();
-  for (let index = 0; index < songs.length; index += FEATURES_BATCH) {
-    const batch = songs.slice(index, index + FEATURES_BATCH).map((song) => song.track.id);
-    for (const [id, songFeatures] of await deps.fetchFeatures(batch)) features.set(id, songFeatures);
+  const stored = await deps.storedSongs(songs.map((song) => song.track.id));
+
+  // Only songs whose analysis is finished are suggested, matched on their stored mood.
+  const matches = songs.map((song) => toMatch(song, stored.get(song.track.id), target, useLyrics)).filter(Boolean);
+  let picks = choose(matches, mix);
+
+  // Too few of the searched songs are analysed: fill up from the database, first
+  // with any similar artist's songs, then with songs by artists the user listens to.
+  const considered = [...exclude, ...songs.map((song) => song.track.id)];
+  const fill = async (fromArtists, played) => {
+    const tracks = await deps.analysedSongs({
+      artists: fromArtists,
+      family: target,
+      useLyrics,
+      exclude: [...new Set([...considered, ...matches.map((song) => song.track.id)])],
+      limit: FILL_CANDIDATES,
+    });
+    matches.push(...tracks.map((track) => toMatch(fromStore(track, queue, played), track, target, useLyrics)).filter(Boolean));
+    picks = choose(matches, mix);
+  };
+  if (picks.length < PICKS) await fill(queue.map((artist) => artist.name));
+  if (picks.length < PICKS && userId) {
+    const history = await deps.listeningHistory(userId);
+    await fill(history.artists, history.played);
   }
 
+  // New songs whose sound fits are queued for analysis, so later refreshes have more to pick from.
+  const unseen = songs.filter((song) => !stored.has(song.track.id));
+  const features = new Map();
+  for (let index = 0; index < unseen.length; index += FEATURES_BATCH) {
+    const batch = unseen.slice(index, index + FEATURES_BATCH).map((song) => song.track.id);
+    try {
+      for (const [id, songFeatures] of await deps.fetchFeatures(batch)) features.set(id, songFeatures);
+    } catch (error) {
+      // Queueing is a bonus; the analysed picks are still worth returning.
+      console.warn("[recommendations] Couldn't fetch features to queue songs:", error.message);
+      break;
+    }
+  }
   // Songs ReccoBeats has no sound data for can't be checked, so they're left out.
-  const matches = songs
+  const toQueue = unseen
     .filter((song) => features.has(song.track.id))
     .map((song) => ({ ...song, features: features.get(song.track.id) }))
     .filter((song) => quadrantOf(song.features) === target)
-    .map((song) => ({ ...song, instrumental: song.features.instrumentalness >= INSTRUMENTAL }));
+    .slice(0, QUEUED_PER_REQUEST);
+  if (toQueue.length) await deps.saveSongs(toQueue);
 
-  const picks = choose(matches, mix);
-  if (picks.length) await deps.saveSongs(picks);
-
-  return picks.map(({ track, artist, features: songFeatures, instrumental }) => {
-    const { name, family } = trackMoods(songFeatures).sound;
-    return {
-      id: track.id,
-      name: track.name,
-      artists: (track.artists ?? []).map((a) => a.name),
-      imageUrl: track.album?.images?.[1]?.url ?? track.album?.images?.[0]?.url ?? null,
-      spotifyUrl: track.external_urls?.spotify ?? `https://open.spotify.com/track/${track.id}`,
-      because: artist.because,
-      instrumental,
-      mood: { name, family },
-    };
-  });
+  return picks.map(({ track, artist, mood, instrumental }) => ({
+    id: track.id,
+    name: track.name,
+    artists: (track.artists ?? []).map((a) => a.name),
+    imageUrl: track.album?.images?.[1]?.url ?? track.album?.images?.[0]?.url ?? null,
+    spotifyUrl: track.external_urls?.spotify ?? `https://open.spotify.com/track/${track.id}`,
+    because: artist.because,
+    instrumental,
+    mood,
+  }));
 }
