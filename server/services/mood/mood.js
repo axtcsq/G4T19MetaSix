@@ -126,6 +126,22 @@ export function readMoods(features, lyrics = null) {
 
 export const contrastLabel = (contrast) => CONTRAST_MOODS[contrast]?.label ?? null
 
+// Songs ReccoBeats has no sound data for get one of the usual names from their lyrics alone.
+// Without energy and danceability there's no telling happy from calm or loud from quiet, so
+// each family gets one default name.
+const LYRICS_ONLY_MOODS = { happy: 'Uplifting', sad: 'Melancholic', tense: 'Aggressive' }
+
+/** A rough mood from the lyrics alone, or null when the lyrics are missing or too neutral. */
+export function lyricsOnlyMood(lyrics) {
+  if (!hasLyrics(lyrics) || (lyrics.emotionalShare ?? 0) < MIN_EMOTIONAL_SHARE / 2) return null
+  const emotions = lyrics.emotions ?? {}
+  const angry = (emotions.anger ?? 0) + (emotions.disgust ?? 0)
+  let tone
+  if (angry >= ANGRY_WORDS && (emotions.joy ?? 0) < JOYFUL) tone = 'tense'
+  else tone = recentre(lyrics.valence) >= MIDPOINT ? 'happy' : 'sad'
+  return { tone, name: LYRICS_ONLY_MOODS[tone] }
+}
+
 // Stretches the lyric score so LYRIC_NEUTRAL lands on 0.5, keeping 0 and 1 in place.
 const recentre = (v) =>
   v < LYRIC_NEUTRAL ? (0.5 * v) / LYRIC_NEUTRAL : 0.5 + (0.5 * (v - LYRIC_NEUTRAL)) / (1 - LYRIC_NEUTRAL)

@@ -41,6 +41,16 @@ function reading(mood) {
 // Return stored mood data or its current analysis status.
 export function toMoods(track, useLyrics) {
   const { status, attempts = 0 } = track.analysis ?? {};
+  // No sound data: a rough mood from the lyrics alone, shown only when lyrics are on.
+  if (!track.moods?.sound && track.moods?.lyrics?.lyricsOnly) {
+    if (!useLyrics) return { noMood: "no-data" };
+    return {
+      sound: null,
+      lyrics: reading(track.moods.lyrics),
+      lyricsLanguage: track.lyrics?.translatedFrom || "EN",
+      lyricsNote: "lyrics-only",
+    };
+  }
   if (track.moods?.sound) {
     return {
       sound: reading(track.moods.sound),
@@ -157,6 +167,8 @@ export function explainTrack(track, useLyrics) {
   const explained = { tag, lyricsOff: !useLyrics };
   const features = track.features;
   if (features?.valence == null) {
+    // No sound data, but the lyrics gave a rough mood.
+    if (tag?.lyricsNote === "lyrics-only") explained.lyricsOnly = tag.lyrics;
     return explained;
   }
 

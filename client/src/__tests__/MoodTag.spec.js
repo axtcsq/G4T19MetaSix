@@ -27,6 +27,11 @@ const MOODS = {
   },
   serene: { sound: { name: 'Serene', axis: 'relaxed' }, lyrics: null, lyricsNote: 'pending' },
   waiting: { analysing: true },
+  lyricsOnly: {
+    sound: null,
+    lyrics: { name: 'Melancholic', axis: 'sad' },
+    lyricsNote: 'lyrics-only',
+  },
 }
 
 function mountTag(trackId) {
@@ -81,6 +86,20 @@ describe('MoodTag', () => {
     )
     expect(note.text()).toBe('Lyrics pending')
     expect(note.attributes('data-axis')).toBe('neutral')
+  })
+
+  it('shows a lyrics-only mood for a song with no sound data, marked as a rough guess', async () => {
+    logIn({ id: 'user-lyrics-only', preferences: { moodLens: 'lyrics' } })
+    const wrapper = mountTag('lyricsOnly')
+    await flushPromises()
+
+    const [mood, note] = wrapper.findAll('.mood-tag')
+    expect(mood.text()).toContain('Melancholic')
+    expect(mood.attributes('data-axis')).toBe('sad')
+    expect(wrapper.find('.tooltip').attributes('data-text')).toBe(
+      'Melancholic, a rough guess from the lyrics alone. Counts as Sad.',
+    )
+    expect(note.text()).toBe('Lyrics only')
   })
 
   it('says when a song has no lyrics, and shows no second tag when the lyrics counted', async () => {

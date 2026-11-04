@@ -133,7 +133,7 @@ describe("analyseSong", () => {
     assert.equal(result.lyrics.status, "found");
   });
 
-  it("marks a song ReccoBeats doesn't have as no-data, without fetching lyrics", async () => {
+  it("gives a song ReccoBeats doesn't have a mood from its lyrics alone", async () => {
     const { deps, calls } = fakes({
       getAudioFeatures: async () => {
         throw new HttpError(404, "No audio features found for this track.");
@@ -141,8 +141,42 @@ describe("analyseSong", () => {
     });
     const result = await analyseSong(track, deps);
 
-    assert.equal(result.status, "no-data");
+    assert.equal(result.status, "done");
+    assert.equal(calls.lyrics, 1);
+    assert.equal(result.features, null);
+    assert.equal(result.moods.sound, null);
+    // Angry words with no joy: the tense family's default name.
+    assert.deepEqual(result.moods.lyrics, { name: "Aggressive", family: "tense", lyricsOnly: true });
+  });
+
+  it("doesn't ask ReccoBeats again for a song it had no data for", async () => {
+    const { deps, calls } = fakes();
+    const result = await analyseSong({ ...track, analysis: { status: "no-data", attempts: 1 } }, deps);
+
+    assert.equal(calls.features, 0);
+    assert.equal(calls.lyrics, 1);
+    assert.equal(result.moods.lyrics.name, "Aggressive");
+  });
+
+  it("stays no-data when the lyrics are missing or too neutral to read", async () => {
+    const noData = { ...track, analysis: { status: "no-data", attempts: 1 } };
+    const missing = await analyseSong(noData, fakes({ findLyrics: async () => null }).deps);
+    assert.equal(missing.status, "no-data");
+    assert.equal(missing.lyrics.status, "not-found");
+
+    const neutral = { ...kicks.lyrics, emotionalShare: 0.1 };
+    const flat = await analyseSong(noData, fakes({ scoreLyrics: async () => neutral }).deps);
+    assert.equal(flat.status, "no-data");
+    assert.equal(flat.moods, null);
+  });
+
+  it("reads a no-data song's lyrics only once", async () => {
+    const { deps, calls } = fakes();
+    const read = { ...kicks.lyrics, scorerVersion: SCORER_VERSION };
+    await analyseSong({ ...track, lyrics: read, analysis: { status: "no-data", attempts: 2 } }, deps);
+
     assert.equal(calls.lyrics, 0);
+    assert.equal(calls.features, 0);
   });
 
   it("lets other ReccoBeats errors through, so the song is retried", async () => {

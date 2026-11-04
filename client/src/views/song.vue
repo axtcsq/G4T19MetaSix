@@ -49,7 +49,9 @@ const pct = (value) => Math.round(value * 100)
 
 const artists = computed(() => song.value?.artists?.join(', ') ?? '')
 // The reading the app counts: sound + lyrics when the lyrics were read.
-const counted = computed(() => song.value?.withLyrics ?? song.value?.sound ?? null)
+const counted = computed(
+  () => song.value?.withLyrics ?? song.value?.sound ?? song.value?.lyricsOnly ?? null,
+)
 const agree = computed(() => song.value?.withLyrics?.name === song.value?.sound?.name)
 const blend = computed(() => song.value?.blend)
 const lyrics = computed(() => song.value?.lyrics ?? null)
@@ -172,6 +174,10 @@ function back() {
           />
           <p class="summary-line">
             Counts as <strong>{{ JOURNAL_MOOD[counted.axis] }}</strong> in your mood history.
+          </p>
+          <p v-if="song.lyricsOnly" class="prose">
+            Our audio data source doesn’t have this song, so this is a rough guess from the lyrics
+            alone. Without how it sounds, we can’t tell upbeat from calm or loud from quiet.
           </p>
         </section>
 

@@ -47,7 +47,11 @@ async function musicMoodsByDay(userId, dates, useLyrics) {
     { $match: { userId, localDate: { $gte: dates[0], $lte: dates.at(-1) } } },
     { $lookup: { from: "tracks", localField: "trackId", foreignField: "_id", as: "track" } },
     { $unwind: "$track" },
-    { $match: { "track.moods.sound.name": { $type: "string" } } },
+    // Songs with no sound data have only a lyrics reading.
+    { $match: { $or: [
+      { "track.moods.sound.name": { $type: "string" } },
+      ...(useLyrics ? [{ "track.moods.lyrics.name": { $type: "string" } }] : []),
+    ] } },
     { $group: { _id: { date: "$localDate", mood: reading }, plays: { $sum: 1 } } },
   ]);
 }

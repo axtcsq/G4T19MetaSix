@@ -1,6 +1,6 @@
 import Track from "../../models/Track.js";
 import { SCORER_VERSION, scoreLyrics, toChunks } from "./emotion.js";
-import { MAX_ATTEMPTS, trackMoods } from "./index.js";
+import { MAX_ATTEMPTS, lyricsOnlyMoods, trackMoods } from "./index.js";
 import { findLyrics } from "./lyrics.js";
 import { getAudioFeatures, idsForIsrc } from "./reccobeats.js";
 import { isTemporary } from "./errors.js";
@@ -83,13 +83,28 @@ function finalLyrics(lyrics) {
   return lyrics?.scorerVersion === SCORER_VERSION && !TEMPORARY_LYRIC_FAILURES.includes(lyrics.status);
 }
 
+// No sound data: read the lyrics once for a rough lyrics-only mood.
+async function analyseLyricsOnly(track, deps) {
+  let lyrics = track.lyrics;
+  let lyricsBusy = false;
+  if (lyrics?.scorerVersion !== SCORER_VERSION) {
+    ({ busy: lyricsBusy = false, ...lyrics } = await analyseLyrics(track, deps));
+  }
+  const moods = lyricsOnlyMoods(lyrics);
+  return { status: moods ? "done" : "no-data", features: null, lyrics, moods, lyricsBusy };
+}
+
 // Analyse a track, reusing saved features and lyrics when possible.
 export async function analyseSong(track, deps = defaultDeps) {
+  // ReccoBeats already had no sound data; asking again would only spend Spotify searches.
+  if (track.analysis?.status === "no-data" && track.features?.valence == null) {
+    return analyseLyricsOnly(track, deps);
+  }
   const stored = track.features?.valence != null;
   const copy = stored && finalLyrics(track.lyrics) ? null : await deps.sameRecording(track);
   const features = stored ? track.features : (copy?.features ?? (await fetchFeatures(track, deps)));
   if (!features) {
-    return { status: "no-data" };
+    return analyseLyricsOnly(track, deps);
   }
 
   let lyrics = track.lyrics;
@@ -143,10 +158,13 @@ export async function analyseTrack(trackId, deps = defaultDeps) {
   const timings = {};
   try {
     const result = await analyseSong(track, timed(deps, timings));
-    const update =
-      result.status === "no-data"
-        ? { "moods.sound": null, "moods.lyrics": null }
-        : { features: result.features, lyrics: result.lyrics, moods: result.moods };
+    // Without features, keep the lyric scores so the lyrics are only read once.
+    const update = result.features
+      ? { features: result.features, lyrics: result.lyrics, moods: result.moods }
+      : {
+          lyrics: result.lyrics ?? null,
+          moods: result.moods ?? { sound: null, lyrics: null, version: track.moods?.version },
+        };
 
     await Track.updateOne(
       { _id: trackId },
@@ -159,7 +177,7 @@ export async function analyseTrack(trackId, deps = defaultDeps) {
     return { status: result.status, moodsChanged: result.status !== "no-data", timings };
   } catch (error) {
     // Temporary service failures do not use up retry attempts.
-    const status = track.moods?.sound ? track.analysis.status : "failed";
+    const status = track.moods?.sound || track.moods?.lyrics ? track.analysis.status : "failed";
     await Track.updateOne(
       { _id: trackId },
       {
