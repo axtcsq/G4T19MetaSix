@@ -105,6 +105,56 @@ function localDump() {
   return dump
 }
 
+const usable = (rec) => rec.instrumental || rec.plainLyrics
+
+// Lowercase words without accents, for comparing names.
+const words = (text = '') =>
+  text.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').match(/[\p{L}\p{N}]+/gu) ?? []
+
+// The title without credits or remaster notes: "I (feat. Enon Kawatani)" is "I".
+const CREDITS = /\s*[([]\s*(?:feat|ft|with)\b[^)\]]*[)\]]|\s+(?:feat\.?|ft\.?)\s.*$|\s+-\s+(?:\d{4}\s+)?remaster.*$/gi
+export const baseTitle = (name = '') => name.replace(CREDITS, '').trim() || name
+
+// LRCLIB's artist name can be shorter or longer than Spotify's: "Ichika" and
+// "Ichika Nito", or "A, B" for two artists.
+function sameArtist(track, hitArtist) {
+  const hit = words(hitArtist)
+  return (track.artists ?? []).some((artist) => {
+    const ours = words(artist.name)
+    const [shorter, longer] = ours.length < hit.length ? [ours, hit] : [hit, ours]
+    return shorter.length > 0 && shorter.every((word) => longer.includes(word))
+  })
+}
+
+// The wider searches ignore the full artist name, so a hit has to agree on the
+// title, an artist and the length, or it could be a different song.
+const WIDE_MAX_SECONDS = 3
+
+function sameSong(track, seconds, hit) {
+  return (
+    usable(hit) &&
+    Math.abs((hit.duration ?? 0) - seconds) <= WIDE_MAX_SECONDS &&
+    words(baseTitle(hit.trackName)).join(' ') === words(baseTitle(track.name)).join(' ') &&
+    sameArtist(track, hit.artistName)
+  )
+}
+
+// For when LRCLIB credits the artist differently, so searching their full name
+// finds nothing. Lyrics win over an instrumental mark on another copy.
+async function wideSearch(track, seconds) {
+  const name = baseTitle(track.name)
+  const firstWord = words(track.artists?.[0]?.name)[0]
+  const searches = [{ track_name: track.name }]
+  if (firstWord) searches.push({ track_name: name, artist_name: firstWord })
+
+  for (const params of searches) {
+    const hits = ((await lrclib('/search', params)) ?? []).filter((hit) => sameSong(track, seconds, hit))
+    const best = hits.find((hit) => hit.plainLyrics) ?? hits[0]
+    if (best) return best
+  }
+  return null
+}
+
 /** Find lyrics for a Spotify track. */
 export async function findLyrics(track) {
   const local = (await localDump())?.(track)
@@ -114,21 +164,22 @@ export async function findLyrics(track) {
   const seconds = Math.round((track.duration_ms ?? 0) / 1000)
 
   // Exact match first: LRCLIB matches on name, artist, album and duration (±2s).
+  // A record with no lyrics and no instrumental mark doesn't count.
   const exact = await lrclib('/get', {
     track_name: track.name,
     artist_name: artist,
     album_name: track.album?.name ?? '',
     duration: seconds,
   })
-  if (exact) return toResult(exact)
+  if (exact && usable(exact)) return toResult(exact)
 
   // Fallback: fuzzy search, then pick the closest duration. Catches remasters,
   // "feat." credits and album-name mismatches.
   const hits = (await lrclib('/search', { track_name: track.name, artist_name: artist })) ?? []
   const best = hits
-    .filter((h) => h.instrumental || h.plainLyrics)
+    .filter(usable)
     .map((h) => ({ h, diff: Math.abs((h.duration ?? 0) - seconds) }))
     .filter(({ diff }) => diff <= 10)
     .sort((a, b) => a.diff - b.diff)[0]
-  return toResult(best?.h ?? null)
+  return toResult(best?.h ?? (await wideSearch(track, seconds)))
 }
