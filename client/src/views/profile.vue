@@ -2,7 +2,7 @@
 // The profile page: who is logged in, their MetaFor personality, a few listening facts and the privacy settings. Editing the profile comes later.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
-import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
+import { clearHistory, exportData, updateSettings } from '@/api/auth'
 import { getMood } from '@/api/moods'
 import { getPersonality } from '@/api/quiz'
 import MoodFace from '@/components/journal/MoodFace.vue'
@@ -35,7 +35,7 @@ onMounted(async () => {
 
 const spotifyStatus = computed(() => {
   if (user.value?.isDemo) return 'Test account, not connected to Spotify'
-  if (!user.value?.spotifyLinked) return 'Log in with Spotify again to reconnect'
+  if (!user.value?.spotifyLinked) return 'Sign out and sign in with Spotify to restore access'
   if (user.value.preferences?.savePlays === false) return 'Connected, not saving new plays'
   return user.value.tracking?.status === 'active' ? 'Connected, saving your plays' : 'Connected'
 })
@@ -196,7 +196,7 @@ function toggleDark() {
   colorMode.preference = isDark.value ? 'light' : 'dark'
 }
 
-// Export, clear history and disconnect Spotify. The last two ask first.
+// Export and clear history; clearing asks first.
 const dataMessage = ref('')
 const dataBusy = ref(false)
 const confirmDialog = ref(null)
@@ -214,15 +214,6 @@ const dangerActions = {
       // Today's check-ins are gone too, so the reminder can show.
       todayMood.load()
       return 'Your history has been cleared.'
-    },
-  },
-  disconnect: {
-    title: 'Disconnect Spotify?',
-    body: 'MetaFor will forget your Spotify login and stop saving your plays. Plays already saved stay. Log in with Spotify again any time to reconnect.',
-    button: 'Disconnect',
-    async run() {
-      auth.user = await disconnectSpotify()
-      return 'Spotify is disconnected.'
     },
   },
 }
@@ -436,26 +427,6 @@ const logOut = useLogOut()
               @click="askToConfirm('clear')"
             >
               Clear
-            </button>
-          </li>
-          <li class="setting">
-            <div>
-              <p class="setting-label">Disconnect Spotify</p>
-              <p class="muted small">
-                {{
-                  user?.spotifyLinked
-                    ? 'Stop MetaFor using your Spotify account.'
-                    : 'Spotify isn’t connected right now.'
-                }}
-              </p>
-            </div>
-            <button
-              type="button"
-              class="glass-secondary data-button danger"
-              :disabled="dataBusy || !user?.spotifyLinked"
-              @click="askToConfirm('disconnect')"
-            >
-              Disconnect
             </button>
           </li>
         </ul>

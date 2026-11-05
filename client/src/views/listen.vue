@@ -35,8 +35,17 @@ const {
 } = room
 const searchInput = ref(null)
 const seekPosition = ref(null)
+const roomInitialising = ref(true)
 const cover = computed(() => track.value.album?.images?.[0]?.url)
 const trackMood = computed(useTrackMood(computed(() => track.value.id)))
+const activityLabel = computed(() => {
+  if (roomInitialising.value) return 'Starting the Listening Room'
+  if (historyLoading.value) return 'Loading recent songs'
+  if (searching.value) return 'Searching Spotify'
+  if (busy.value) return 'Updating playback'
+  if (connected.value && !ready.value && !error.value) return 'Connecting the player'
+  return ''
+})
 const displayedPosition = computed(() => seekPosition.value ?? position.value)
 const seekProgress = computed(
   () => `${duration.value ? Math.min(100, (displayedPosition.value / duration.value) * 100) : 0}%`,
@@ -66,9 +75,6 @@ function clearSearch() {
   room.search()
   searchInput.value?.focus()
 }
-function connect() {
-  room.connect()
-}
 async function commitSeek(value) {
   seekPosition.value = Number(value)
   await room.seek(value)
@@ -96,29 +102,33 @@ function waitForPlayerReady() {
 }
 // After a refresh the login check is still running when the page opens, so wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
-  if (!auth.checked) await auth.load()
-  // /listen?play=<id> plays that song. It's taken out of the address so that refreshing the page doesn't start it again.
-  const song = route.query.play
-  if (typeof song === 'string') {
-    router.replace({ query: {} })
-    room.playById(song)
-    return
-  }
-  await room.initialize()
-  const trackId = typeof route.query.track === 'string' ? route.query.track : ''
-  const uri = typeof route.query.uri === 'string' ? route.query.uri : ''
-  if (trackId && uri) {
-    const record = {
-      id: trackId,
-      uri,
-      name: typeof route.query.title === 'string' ? route.query.title : 'Selected song',
-      artists: typeof route.query.artist === 'string' ? route.query.artist.split(', ').map((name) => ({ name })) : [],
-      album: { images: typeof route.query.image === 'string' ? [{ url: route.query.image }] : [] },
+  try {
+    if (!auth.checked) await auth.load()
+    // /listen?play=<id> plays that song. It's taken out of the address so that refreshing the page doesn't start it again.
+    const song = route.query.play
+    if (typeof song === 'string') {
+      router.replace({ query: {} })
+      await room.playById(song)
+      return
     }
-    const selected = room.records.value.find((item) => item.id === trackId)
-    if (selected) Object.assign(record, selected)
-    if (await waitForPlayerReady()) await room.selectRecord(record)
-    await router.replace({ name: 'listen' })
+    await room.initialize()
+    const trackId = typeof route.query.track === 'string' ? route.query.track : ''
+    const uri = typeof route.query.uri === 'string' ? route.query.uri : ''
+    if (trackId && uri) {
+      const record = {
+        id: trackId,
+        uri,
+        name: typeof route.query.title === 'string' ? route.query.title : 'Selected song',
+        artists: typeof route.query.artist === 'string' ? route.query.artist.split(', ').map((name) => ({ name })) : [],
+        album: { images: typeof route.query.image === 'string' ? [{ url: route.query.image }] : [] },
+      }
+      const selected = room.records.value.find((item) => item.id === trackId)
+      if (selected) Object.assign(record, selected)
+      if (await waitForPlayerReady()) await room.selectRecord(record)
+      await router.replace({ name: 'listen' })
+    }
+  } finally {
+    roomInitialising.value = false
   }
 })
 onBeforeUnmount(() => {
@@ -137,7 +147,7 @@ onBeforeUnmount(() => {
           <h1 class="page-title">Listening Room</h1>
           <p>Put on a record</p>
         </div>
-        <div class="connection" :class="{ 'is-connected': connected }">
+        <div class="connection" :class="{ 'is-connected': connected }" role="status">
           <div class="connection-state" role="status">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="11" fill="currentColor" />
@@ -152,35 +162,27 @@ onBeforeUnmount(() => {
             <span
               ><strong>Spotify</strong
               ><span>{{
-                connected ? (ready ? 'Connected' : 'Player offline') : 'Not connected'
+                connected ? (ready ? 'Ready to play' : 'Player unavailable') : 'Spotify sign-in required'
               }}</span></span
             >
           </div>
-          <template v-if="connected">
-            <button
-              v-if="!ready || error"
-              class="connection-action"
-              :disabled="busy"
-              @click="room.reconnect"
-            >
-              {{ busy ? 'Connecting…' : 'Reconnect player' }}
-            </button>
-            <button
-              class="connection-action disconnect-button"
-              :disabled="busy"
-              @click="room.disconnect"
-            >
-              Disconnect
-            </button>
-          </template>
-          <template v-else>
-            <button class="connection-action" :disabled="busy" @click="connect">
-              {{ busy ? 'Connecting…' : 'Connect Spotify' }}
-            </button>
-            <span class="connection-note">Spotify Premium required</span>
-          </template>
         </div>
       </header>
+
+      <div v-if="activityLabel" class="room-activity" role="status" aria-live="polite" aria-busy="true">
+        <span class="activity-spinner" aria-hidden="true" />
+        <span>{{ activityLabel }}</span>
+        <span class="activity-track" role="progressbar" aria-label="Listening Room activity">
+          <span />
+        </span>
+      </div>
+      <div v-else-if="connected && !ready && error" class="room-retry">
+        <span>Player unavailable</span>
+        <button class="text-button glass-text" :disabled="busy" @click="room.reconnect">Try again</button>
+      </div>
+      <p v-else-if="!connected" class="connection-note">
+        Sign out and sign in with Spotify to use the Listening Room.
+      </p>
 
       <p v-if="error" class="room-error" role="alert">
         {{ error }} <button class="text-button glass-text" @click="error = ''">Dismiss</button>
@@ -377,7 +379,9 @@ onBeforeUnmount(() => {
           aria-live="polite"
           :aria-busy="searching"
         >
-          <p v-if="searching">Looking through Spotify…</p>
+          <p v-if="searching" class="inline-loading" role="status">
+            <span class="activity-spinner" aria-hidden="true" />Looking through Spotify…
+          </p>
           <p v-else-if="!results.length && !error">No songs found. Try another title or artist.</p>
           <button
             v-for="item in results"
@@ -402,8 +406,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <template v-else>
-          <p v-if="!connected">Connect Spotify to load your music and start listening.</p>
-          <p v-else-if="historyLoading" role="status">Loading your recent songs…</p>
+          <p v-if="!connected">Sign in with Spotify to load your music and start listening.</p>
+          <p v-else-if="historyLoading" class="inline-loading" role="status">
+            <span class="activity-spinner" aria-hidden="true" />Loading your recent songs…
+          </p>
           <p v-else-if="historyError" role="alert">
             {{ historyError }}
             <button class="text-button glass-text" @click="room.refreshHistory">
@@ -532,8 +538,9 @@ button:disabled {
   gap: 10px;
 }
 .connection-note {
-  flex-basis: 100%;
-  text-align: right;
+  margin: 8px 0 0 auto;
+  color: var(--room-muted);
+  font: var(--text-caption)/1.5 var(--font-sans);
 }
 .connection.is-connected .connection-state {
   --spotify-mark-ink: #191414;
@@ -556,27 +563,60 @@ button:disabled {
   font-size: var(--text-label);
   font-weight: 600;
 }
-.connection-action {
-  min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid color-mix(in srgb, var(--room-ink) 24%, transparent);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--room-ink);
-  font-size: var(--text-label);
-  font-weight: 600;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease;
+.room-activity,
+.room-retry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 360px;
+  margin: 12px 0 0 auto;
+  color: var(--room-muted);
+  font: var(--text-caption)/1.4 var(--font-sans);
 }
-.connection-action:hover:not(:disabled) {
-  background: var(--room-ground);
-  border-color: var(--room-muted);
+.room-activity {
+  display: grid;
+  grid-template-columns: 16px 1fr;
 }
-.disconnect-button:hover:not(:disabled) {
-  color: var(--room-error-ink);
-  background: var(--room-error);
-  border-color: var(--room-error-ink);
+.room-retry {
+  justify-content: flex-end;
+}
+.activity-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border: 2px solid color-mix(in srgb, var(--room-dark) 22%, transparent);
+  border-top-color: var(--room-dark);
+  border-radius: 50%;
+  animation: activity-spin 700ms linear infinite;
+}
+.activity-track {
+  grid-column: 2;
+  display: block;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--room-ink) 12%, transparent);
+}
+.activity-track > span {
+  display: block;
+  width: 32%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--room-dark);
+  animation: activity-progress 1.2s ease-in-out infinite;
+}
+.inline-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes activity-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes activity-progress {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(320%); }
 }
 .record-room {
   display: grid;
@@ -823,11 +863,13 @@ input[type='range']::-moz-range-track {
   height: 3px;
   background: color-mix(in srgb, var(--room-ink) 18%, transparent);
   border-radius: 2px;
+  transition: background 200ms linear;
 }
 input[type='range']::-moz-range-progress {
   height: 3px;
   background: var(--button-color);
   border-radius: 2px;
+  transition: background-color 200ms linear;
 }
 input[type='range']::-webkit-slider-thumb {
   appearance: none;
@@ -1154,6 +1196,10 @@ input:disabled {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .activity-spinner,
+  .activity-track > span {
+    animation: none;
+  }
   *,
   *::before,
   *::after {
