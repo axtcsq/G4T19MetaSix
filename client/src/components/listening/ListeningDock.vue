@@ -20,7 +20,17 @@ const canPlay = computed(() => ready.value)
 const movedAway = computed(() => room.error.value.includes('another device'))
 // Hidden in the listening room, which has its own player, and on the landing page.
 const HIDDEN_ON = ['/', '/listen']
-const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
+const dismissed = ref(false)
+const visible = computed(() => connected.value && !!track.value.id && !dismissed.value && !HIDDEN_ON.includes(route.path))
+
+watch([track, paused], ([currentTrack, isPaused], [previousTrack, wasPaused]) => {
+  if (currentTrack.id && (currentTrack.id !== previousTrack?.id || (wasPaused && !isPaused)))
+    dismissed.value = false
+})
+
+function closeDock() {
+  dismissed.value = true
+}
 
 // The dock floats over the page, so while it shows, the page keeps space for it at the bottom and it never covers the footer.
 watch(visible, (shown) => document.documentElement.classList.toggle('has-dock', shown), {
@@ -282,6 +292,17 @@ watch([dock, minimised], measure, { flush: 'post' })
       <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true">
         <path v-if="minimised" d="M3 10l5-5 5 5" />
         <path v-else d="M3 6l5 5 5-5" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="dock-icon dock-close"
+      aria-label="Close player"
+      title="Close player"
+      @click="closeDock"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </button>
     <!-- The song's mood, on its own row so a long name is never squeezed. -->
@@ -602,6 +623,11 @@ button {
   border-radius: 10px;
   color: inherit;
   background: transparent;
+}
+.dock-close {
+  width: 36px;
+  min-height: 36px;
+  color: var(--ui-text);
 }
 .dock-icon:hover:not(:disabled) {
   background: rgba(127, 127, 127, 0.16);
