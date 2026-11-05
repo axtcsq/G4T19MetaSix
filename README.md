@@ -31,6 +31,74 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 - **Journal Helper:** Groq suggests a journal starting point from the prompt the user enters. The existing journal draft is not sent.
 - **Listening garden:** Shows recent listening with Singapore weather from Open-Meteo, refreshed every 15 minutes.
 
+## Routes
+
+### App pages
+
+| Path | Access | Description |
+| --- | --- | --- |
+| `/` | Public | Landing page and sign-in entry point. |
+| `/dashboard` | Public | Listening overview, music moods, artists, and listening habits. |
+| `/listen` | Public | Spotify listening room and playback controls. |
+| `/login` | Public | Sign in with Spotify; signed-in users are redirected to their next page or the dashboard. |
+| `/daily-mood` | Signed in | Log today's mood, journal entry, drawing, or song. |
+| `/calendar` | Signed in | Browse and edit mood history and discover mood-matched songs. |
+| `/quiz` | Signed in | Browse personality quizzes and profile results. |
+| `/quiz/:quizId` | Signed in | Take a selected personality quiz. |
+| `/quiz/:quizId/result` | Signed in | View the latest result for a quiz. |
+| `/song/:id` | Signed in | View a song's mood analysis. |
+| `/profile` | Signed in | Manage account, privacy, and listening settings. |
+| `/canvas` | Redirect | Redirects to `/daily-mood` (legacy path). |
+| `/signup` | Redirect | Redirects to `/login`; Spotify login creates the account. |
+| Unknown path | Redirect | Redirects to `/`. |
+
+### API endpoints
+
+All endpoints use the `/api` prefix. Unless noted, endpoints below require a signed-in user.
+
+| Method and path | Access | Description |
+| --- | --- | --- |
+| `GET /health` | Public | Check that the server is responding. |
+| `GET /auth/login` | Public | Start Spotify sign-in. |
+| `GET /auth/callback` | Public | Complete Spotify sign-in. |
+| `GET /auth/demo` | Public | Check whether demo sign-in is enabled. |
+| `POST /auth/demo` | Public | Sign in to the seeded demo account when enabled. |
+| `POST /auth/logout` | Public | End the current session. |
+| `GET /me` | Signed in | Read the current user and preferences. |
+| `PATCH /me/settings` | Signed in | Update account settings. |
+| `GET /me/export` | Signed in | Export account data. |
+| `DELETE /me/history` | Signed in | Clear saved listening history. |
+| `POST /me/spotify/disconnect` | Signed in | Disconnect Spotify. |
+| `GET /me/metaphor` | Signed in | Get the daily personalized metaphor. |
+| `GET /spotify/token` | Signed in | Get a temporary Spotify access token. |
+| `GET /listens` | Signed in | Read saved listening history. |
+| `GET /listens/insights` | Signed in | Read daily music mood insights. |
+| `GET /listens/overall-mood` | Signed in | Read combined journal and music mood history. |
+| `POST /sync` | Signed in | Sync recent Spotify listening history. |
+| `GET /tracks/moods` | Signed in | Read mood tags for tracks. |
+| `POST /tracks/moods/sound` | Signed in | Analyze tracks for sound moods. |
+| `GET /tracks/:id` | Signed in | Read track details and mood information. |
+| `POST /recommendations` | Signed in | Get mood-matched song recommendations. |
+| `GET /songs/search` | Public | Search for songs. |
+| `GET /songs/:id/analysis` | Public | Read a song's mood analysis. |
+| `GET /moods` | Signed in | List the user's mood entries. |
+| `POST /moods` | Signed in | Create a mood entry. |
+| `GET /moods/streak` | Signed in | Read the current check-in streak. |
+| `GET /moods/:id` | Signed in | Read one mood entry. |
+| `PATCH /moods/:id` | Signed in | Edit a mood entry. |
+| `DELETE /moods/:id` | Signed in | Delete a mood entry. |
+| `POST /journal/ideas` | Signed in | Generate a journal writing prompt. |
+| `GET /quiz` | Signed in | List available quizzes. |
+| `GET /quiz/personality` | Signed in | Read the user's personality profile. |
+| `GET /quiz/types` | Signed in | List personality types. |
+| `GET /quiz/mood-music` | Signed in | Read music mood summaries. |
+| `GET /quiz/genre-mix` | Signed in | Read the user's listening genre mix. |
+| `GET /quiz/:quizId` | Signed in | Read a quiz. |
+| `GET /quiz/:quizId/result` | Signed in | Read the latest quiz result. |
+| `POST /quiz/:quizId/result` | Signed in | Submit quiz answers and save a result. |
+
+Unknown API paths return `404`.
+
 ## Design
 
 The interface uses a warm journal-inspired palette, with terracotta and lavender accents. Raleway is used for headings and controls; Crimson Text for prose. Light and dark themes, mobile layouts, and reduced-motion settings are supported. Quiz card images are from Unsplash.
@@ -57,7 +125,7 @@ npm install
 cp .env.example .env
 ```
 
-Set `MONGODB_URI`, `SESSION_SECRET`, and a 64-character hexadecimal `TOKEN_KEY` in `server/.env`. Add Spotify credentials and register the callback URL in `.env.example` with Spotify. Keep `.env` private. `GROQ_API_KEY`, `DEEPL_API_KEY`, `LASTFM_API_KEY`, and `LRCLIB_DB_PATH` are optional.
+Set `MONGODB_URI`, `SESSION_SECRET`, and a 64-character hexadecimal `TOKEN_KEY` in `server/.env`. Local MongoDB must run as a replica set (`mongod --replSet rs0`, then `mongosh --eval "rs.initiate()"`) for atomic history clearing. Add Spotify credentials and register the callback URL in `.env.example` with Spotify. Keep `.env` private. `GROQ_API_KEY`, `DEEPL_API_KEY`, `LASTFM_API_KEY`, and `LRCLIB_DB_PATH` are optional.
 
 ## 3. Initialize the database and start the server
 
