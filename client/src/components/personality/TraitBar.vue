@@ -43,7 +43,7 @@ const fillPercent = computed(() => Math.round(((Math.abs(props.trait.score) + 1)
   gap: 1rem;
   color: var(--pq-on-surface);
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   font-weight: 600;
 }
 
@@ -74,7 +74,7 @@ const fillPercent = computed(() => Math.round(((Math.abs(props.trait.score) + 1)
 }
 
 .is-compact .trait-labels {
-  font-size: 1.05rem;
+  font-size: var(--text-small);
 }
 
 .is-compact .trait-track {
@@ -87,7 +87,7 @@ const fillPercent = computed(() => Math.round(((Math.abs(props.trait.score) + 1)
 
 @media (max-width: 600px) {
   .trait-labels {
-    font-size: 1.05rem;
+    font-size: var(--text-small);
   }
 
   .trait-rail {

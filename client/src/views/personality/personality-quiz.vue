@@ -198,21 +198,21 @@ onMounted(loadQuiz)
 .sub-header {
   color: var(--pq-on-surface);
   font-family: var(--font-sans);
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
   line-height: 1.25;
 }
 
 .body-text {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   line-height: 1.3;
 }
 
 .back-link {
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 600;
   text-decoration: none;
 }
@@ -252,7 +252,7 @@ onMounted(loadQuiz)
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: 1.2rem;
+  font-size: var(--text-body);
   text-align: left;
   cursor: pointer;
   transition:
@@ -290,7 +290,7 @@ onMounted(loadQuiz)
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
-  font-size: 1.375rem;
+  font-size: var(--text-body);
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -323,7 +323,7 @@ onMounted(loadQuiz)
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   color-scheme: light;
 }
 
@@ -364,7 +364,7 @@ onMounted(loadQuiz)
 
 
   .sub-header {
-    font-size: 1.25rem;
+    font-size: var(--text-body);
   }
 
   .next-button {

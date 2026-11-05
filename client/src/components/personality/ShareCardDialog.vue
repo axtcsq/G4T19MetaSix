@@ -188,7 +188,7 @@ onBeforeUnmount(clearImage)
   padding: 1rem;
   color: #fff;
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   text-align: center;
 }
 
@@ -209,7 +209,7 @@ onBeforeUnmount(clearImage)
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
-  font-size: 1.2rem;
+  font-size: var(--text-body);
   text-decoration: none;
   cursor: pointer;
 }
@@ -237,6 +237,6 @@ onBeforeUnmount(clearImage)
 .share-note {
   color: var(--pq-error);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 </style>

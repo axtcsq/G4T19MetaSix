@@ -161,7 +161,7 @@ const rows = computed(() =>
   color: var(--pq-muted);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   font-style: italic;
   font-weight: 700;
   cursor: help;
@@ -184,7 +184,7 @@ const rows = computed(() =>
   background: #3b3446;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   line-height: 1.4;
   opacity: 0;
   pointer-events: none;
@@ -218,7 +218,7 @@ const rows = computed(() =>
 
 .source-name {
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -227,7 +227,7 @@ const rows = computed(() =>
   display: block;
   color: var(--pq-brown);
   font-family: var(--font-serif);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 400;
   text-decoration: none;
 }
@@ -249,7 +249,7 @@ const rows = computed(() =>
   color: var(--pq-brown);
   background: var(--pq-peach);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 600;
 }
 

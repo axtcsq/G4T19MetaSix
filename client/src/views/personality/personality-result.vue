@@ -137,7 +137,7 @@ onMounted(loadResult)
 .back-link {
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 600;
   text-decoration: none;
 }
@@ -149,7 +149,7 @@ onMounted(loadResult)
 .quiz-name {
   color: var(--ui-text);
   font-family: var(--font-sans);
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
 }
 
@@ -172,14 +172,14 @@ onMounted(loadResult)
 
 .sub-header {
   font-family: var(--font-sans);
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   font-weight: 600;
   line-height: 1.25;
 }
 
 .body-text {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   line-height: 1.35;
 }
 
@@ -201,7 +201,7 @@ onMounted(loadResult)
 
 .row-label {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   font-weight: 600;
 }
 
@@ -234,13 +234,13 @@ onMounted(loadResult)
 .tag dt {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   font-weight: 600;
 }
 
 .tag dd {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   font-weight: 700;
 }
 
@@ -256,7 +256,7 @@ onMounted(loadResult)
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
-  font-size: 1.375rem;
+  font-size: var(--text-body);
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -290,12 +290,12 @@ onMounted(loadResult)
 
   .sub-header,
   .quiz-name {
-    font-size: 1.25rem;
+    font-size: var(--text-body);
   }
 
   .body-text,
   .row-label {
-    font-size: 1.1rem;
+    font-size: var(--text-lead);
   }
 }
 </style>

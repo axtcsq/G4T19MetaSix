@@ -583,13 +583,13 @@ onMounted(loadPage)
 
 .body-text {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   line-height: 1.3;
 }
 
 .emphasis-text {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   font-weight: 600;
 }
 
@@ -645,7 +645,7 @@ onMounted(loadPage)
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-serif);
-  font-size: 1.375rem;
+  font-size: var(--text-body);
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -682,7 +682,7 @@ onMounted(loadPage)
 .latest-label {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -690,14 +690,14 @@ onMounted(loadPage)
 
 .latest-title {
   font-family: var(--font-sans);
-  font-size: 1.2rem;
+  font-size: var(--text-body);
   font-weight: 700;
   line-height: 1.25;
 }
 
 .latest-subtitle {
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
 }
 
 .card-actions {
@@ -745,7 +745,7 @@ onMounted(loadPage)
   color: #fff;
   background: rgba(255, 255, 255, 0.14);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(4px);
@@ -901,7 +901,7 @@ onMounted(loadPage)
 .traits-hint {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 
 .trait-details summary {
@@ -936,7 +936,7 @@ onMounted(loadPage)
   margin-top: 0.5rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 
 .trait-sources span {
@@ -950,7 +950,7 @@ onMounted(loadPage)
   color: var(--pq-muted);
   background: var(--pq-tint);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 
 /* The title on the left, and the progress at the bottom right, level with
@@ -970,7 +970,7 @@ onMounted(loadPage)
 .progress-text {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-size: var(--text-label);
   line-height: 1.35;
 }
 
@@ -1012,7 +1012,7 @@ onMounted(loadPage)
 
 .retake-question {
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
 }
 
 /* What You Could Get: quiz tabs, then a card per result. */
@@ -1045,7 +1045,7 @@ onMounted(loadPage)
   color: var(--pq-on-surface);
   background: var(--pq-quiet);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease;
@@ -1068,7 +1068,7 @@ onMounted(loadPage)
 
 .tab-count {
   color: var(--pq-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
 }
 
 .outcome-panel {
@@ -1079,7 +1079,7 @@ onMounted(loadPage)
   margin-bottom: 1rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 
 .outcome-grid {
@@ -1137,7 +1137,7 @@ onMounted(loadPage)
   color: #fff;
   background: var(--pq-accent);
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1145,7 +1145,7 @@ onMounted(loadPage)
 
 .outcome-name {
   font-family: var(--font-sans);
-  font-size: 1.2rem;
+  font-size: var(--text-body);
   font-weight: 700;
   line-height: 1.25;
 }
@@ -1154,7 +1154,7 @@ onMounted(loadPage)
   margin-top: 0.2rem;
   color: var(--pq-accent);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   font-weight: 600;
 }
 
@@ -1163,7 +1163,7 @@ onMounted(loadPage)
   padding-top: 0.75rem;
   border-top: 1px solid var(--pq-line, var(--pq-border));
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
   line-height: 1.45;
 }
 
@@ -1187,7 +1187,7 @@ onMounted(loadPage)
   color: var(--pq-on-peach);
   background: var(--pq-peach);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
 }
 
@@ -1195,7 +1195,7 @@ onMounted(loadPage)
   gap: 0.5rem;
   max-width: 334px;
   margin: 1.75rem auto 0;
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
 }
 
 .show-more-chevron {
@@ -1303,7 +1303,7 @@ onMounted(loadPage)
 .song-heading {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1424,7 +1424,7 @@ onMounted(loadPage)
   .song-actions .peach-button {
     margin-top: 0;
     padding: 0.5rem 0.75rem;
-    font-size: 1.05rem;
+    font-size: var(--text-small);
     line-height: 1.2;
     text-align: center;
   }
