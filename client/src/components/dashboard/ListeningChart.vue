@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 const props = defineProps({
   type: { type: String, required: true },
   data: { type: Object, required: true },
@@ -72,29 +72,6 @@ const clockLabels = [
   return { ...label, x, y }
 })
 
-// The hand points at the time now. It moves a quarter of a degree a minute, so checking once a minute is enough, and it rests while the tab is hidden.
-const now = ref(new Date())
-const handAngle = computed(
-  () => ((now.value.getHours() + now.value.getMinutes() / 60) / 24) * 360,
-)
-let clockTimer
-function tick() {
-  now.value = new Date()
-}
-function startClock() {
-  window.clearInterval(clockTimer)
-  if (!document.hidden) clockTimer = window.setInterval(tick, 60_000)
-  tick()
-}
-onMounted(() => {
-  if (props.type !== 'hours') return
-  startClock()
-  document.addEventListener('visibilitychange', startClock)
-})
-onBeforeUnmount(() => {
-  window.clearInterval(clockTimer)
-  document.removeEventListener('visibilitychange', startClock)
-})
 </script>
 <template>
   <div class="listening-chart" :class="`chart-${type}`">
@@ -183,15 +160,6 @@ onBeforeUnmount(() => {
         >
           {{ label.text }}
         </text>
-        <g class="clock-hand" :style="{ transform: `rotate(${handAngle}deg)` }" aria-hidden="true">
-          <line
-            :x1="CLOCK_CENTRE"
-            :y1="CLOCK_CENTRE - CLOCK_INNER + 4"
-            :x2="CLOCK_CENTRE"
-            :y2="CLOCK_CENTRE - CLOCK_OUTER - 2"
-          />
-          <circle :cx="CLOCK_CENTRE" :cy="CLOCK_CENTRE - CLOCK_OUTER - 2" r="3" />
-        </g>
         <text class="clock-centre-label" :x="CLOCK_CENTRE" :y="CLOCK_CENTRE - 5" aria-hidden="true">
           {{ selectedHour === null ? 'peak' : 'plays' }}
         </text>
@@ -305,20 +273,8 @@ onBeforeUnmount(() => {
   font: var(--text-label)/1.5 var(--font-sans);
   color: var(--dash-muted);
 }
-@keyframes clock-grow {
-  from {
-    transform: scale(0.35);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .day-blocks,
-  .clock-wedges,
-  .clock-hand,
   .hour-wedge {
     animation: none;
     transition: none;
@@ -342,11 +298,6 @@ onBeforeUnmount(() => {
   fill: none;
   stroke: var(--dash-rule);
 }
-.clock-wedges {
-  transform-box: view-box;
-  transform-origin: 120px 120px;
-  animation: clock-grow 600ms cubic-bezier(0.16, 1, 0.3, 1);
-}
 .hour-wedge {
   fill: var(--dash-meter-soft);
   cursor: pointer;
@@ -357,33 +308,31 @@ onBeforeUnmount(() => {
 .hour-wedge.peak {
   fill: var(--dash-strong);
 }
-.hour-wedge:is(:hover, .selected) {
-  filter: brightness(0.82);
-}
-.hour-wedge:focus-visible {
-  outline: none;
+.hour-wedge.selected {
+  fill: var(--dash-strong);
   stroke: var(--dash-accent);
   stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.hour-wedge:hover:not(.selected) {
+  filter: brightness(0.82);
+}
+.hour-wedge:focus {
+  outline: 0 !important;
+}
+.hour-wedge:focus-visible {
+  outline: 0 !important;
+  stroke: var(--dash-accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 .clock-label {
   fill: var(--dash-muted);
   font: var(--text-caption) var(--font-sans);
   text-anchor: middle;
   dominant-baseline: middle;
-}
-.clock-hand {
-  transform-box: view-box;
-  transform-origin: 120px 120px;
-  transition: transform 800ms ease;
-  pointer-events: none;
-}
-.clock-hand line {
-  stroke: var(--dash-ink);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-}
-.clock-hand circle {
-  fill: var(--dash-ink);
 }
 .clock-centre-label {
   fill: var(--dash-muted);

@@ -53,6 +53,47 @@ const kicks = {
   },
 }
 
+test('mood map labels both axes and names its corners', async ({ page, app }) => {
+  void app
+  await page.route('**/api/tracks/7w87IxuO7BDcJ3YUqCyMTT', (route) =>
+    route.fulfill({ json: kicks }),
+  )
+  await page.goto('/song/7w87IxuO7BDcJ3YUqCyMTT')
+  const map = page.locator('.map-grid')
+  const plane = await page.locator('.plane').boundingBox()
+  const energy = page.locator('.axis-labels-y span')
+  await expect(energy).toHaveText(['← Calm', 'Energy', 'Intense →'])
+  // Calm belongs at the bottom of the map and Intense at the top.
+  const calm = await energy.first().boundingBox()
+  const intense = await energy.last().boundingBox()
+  expect(calm.y).toBeGreaterThan(intense.y)
+  expect(calm.y + calm.height).toBeLessThanOrEqual(plane.y + plane.height + 1)
+  expect(intense.y).toBeGreaterThanOrEqual(plane.y - 1)
+  await expect(page.locator('.axis-labels-x span')).toHaveText([
+    '← Negative',
+    'Positivity',
+    'Positive →',
+  ])
+  // The mood names sit outside the map, so a dot can never cover them.
+  const moods = page.locator('.mood-labels span')
+  await expect(moods).toHaveText(['Tense', 'Happy', 'Sad', 'Relaxed'])
+  const [tense, happy, sad, relaxed] = await Promise.all(
+    [0, 1, 2, 3].map((index) => moods.nth(index).boundingBox()),
+  )
+  expect(tense.y + tense.height).toBeLessThanOrEqual(plane.y)
+  expect(happy.y + happy.height).toBeLessThanOrEqual(plane.y)
+  expect(sad.y).toBeGreaterThanOrEqual(plane.y + plane.height)
+  expect(relaxed.y).toBeGreaterThanOrEqual(plane.y + plane.height)
+  expect(tense.x).toBeLessThan(happy.x)
+  expect(sad.x).toBeLessThan(relaxed.x)
+  await map.screenshot({ path: 'test-results/mood-map-desktop.png' })
+
+  await page.setViewportSize({ width: 320, height: 700 })
+  await expect(page.locator('.axis-labels-y')).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await map.screenshot({ path: 'test-results/mood-map-320.png' })
+})
+
 test('song analysis keeps charts visible and reveals listening notes', async ({ page, app }) => {
   void app
   await page.route('**/api/tracks/7w87IxuO7BDcJ3YUqCyMTT', (route) =>

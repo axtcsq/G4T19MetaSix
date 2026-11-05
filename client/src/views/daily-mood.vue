@@ -424,12 +424,12 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
         </details>
         <div class="save-row">
           <UButton
-            form="daily-journal-form"
-            type="submit"
+            type="button"
             color="primary"
             class="glass-action rounded-full font-sans"
             :disabled="!canSave"
             :loading="isSaving"
+            @click="saveEntry"
           >
             Save Entry
           </UButton>
