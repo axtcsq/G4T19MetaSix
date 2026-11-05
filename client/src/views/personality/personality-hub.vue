@@ -832,7 +832,7 @@ onMounted(loadPage)
     border-color 220ms ease;
 }
 
-/* The result cards lift towards the reader on hover, or while something in them has keyboard focus. Loading and empty states stay put. */
+/* Result cards lift on hover or when something in them has keyboard focus. Loading and empty states stay put. */
 .patterns .pattern-card:not(.patterns-loading, .patterns-empty):is(:hover, :focus-within) {
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 16px 32px rgba(58, 31, 25, 0.28);
@@ -1403,7 +1403,7 @@ onMounted(loadPage)
   padding: 1.5rem 1.75rem;
 }
 
-/* The text card stretches to the height of the card beside it. Its text stays together at the top and the match note sits at the bottom. */
+/* Text card stretches to the height of the card beside it. Text stays at the top, match note at the bottom. */
 .insights-card {
   display: flex;
   flex-direction: column;
@@ -1451,7 +1451,7 @@ onMounted(loadPage)
     gap: 0.75rem;
   }
 
-  /* Two buttons side by side: smaller text, centred, with tight line spacing so a wrapped label doesn't make the button tall and lopsided. */
+  /* Two buttons side by side: smaller text, centred, tight line spacing so a wrapped label doesn't make the button tall. */
   .song-actions .peach-button {
     margin-top: 0;
     padding: 0.5rem 0.75rem;
