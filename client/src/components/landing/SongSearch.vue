@@ -329,5 +329,10 @@ onBeforeUnmount(() => {
   .search-form {
     flex-direction: column;
   }
+  /* Stacked, the box would otherwise shrink to the size of its input. */
+  .search-box {
+    flex: none;
+    width: 100%;
+  }
 }
 </style>
