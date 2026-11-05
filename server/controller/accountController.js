@@ -64,7 +64,8 @@ export async function clearHistory(req, res) {
       }
       user = await User.findByIdAndUpdate(
         userId,
-        { $set: { pinnedEntryId: null } },
+        // The metaphor is written from the moods being deleted.
+        { $set: { pinnedEntryId: null }, $unset: { dailyMetaphor: "" } },
         { returnDocument: "after", session },
       );
     });
