@@ -436,7 +436,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   backdrop-filter: blur(20px) saturate(1.5);
-  font-size: 0.98rem;
+  font-size: var(--text-small);
   font-weight: 700;
   white-space: nowrap;
   pointer-events: none;
@@ -501,7 +501,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   min-height: 44px;
   color: var(--ui-primary);
   box-shadow: none !important;
-  font: 600 0.9rem var(--font-sans);
+  font: 600 var(--text-label) var(--font-sans);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -521,9 +521,6 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 .history-toggle:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 4px;
-}
-.journal-column .sub-header {
-  font-size: 1.15rem;
 }
 .writing-extras {
   margin-top: 24px;
@@ -565,7 +562,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 }
 .disclosure-optional {
   color: var(--ui-text-muted);
-  font: 400 0.85rem var(--font-sans);
+  font: 400 var(--text-label) var(--font-sans);
 }
 .disclosure-chevron {
   width: 20px;
@@ -625,7 +622,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -782,7 +779,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   margin-bottom: 12px;
 }
 .helper-header h2 {
-  font: 600 18px var(--font-sans);
+  font: 600 var(--text-lead) var(--font-sans);
 }
 .helper-close.glass-icon {
   --button-ink: #fff;
@@ -809,7 +806,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   border-radius: 8px;
   background: var(--ui-bg);
   color: var(--ui-text);
-  font: 14px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
   resize: vertical;
 }
 .journal-idea-prompt::placeholder {
@@ -826,7 +823,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 }
 .helper-privacy {
   margin-top: 12px;
-  font: 12px/1.5 var(--font-sans);
+  font: var(--text-caption)/1.5 var(--font-sans);
   color: #fff;
 }
 @media (prefers-reduced-motion: reduce) {

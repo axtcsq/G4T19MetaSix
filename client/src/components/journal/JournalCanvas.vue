@@ -371,7 +371,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   border-radius: 9999px;
   color: #514742;
   background: #faf8f6;
-  font: 600 0.85rem var(--font-sans);
+  font: 600 var(--text-label) var(--font-sans);
   cursor: pointer;
   transition:
     background 140ms ease,
@@ -435,7 +435,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   background: #292321;
   box-shadow: 0 4px 10px rgba(41, 35, 33, 0.2);
   content: attr(data-tooltip);
-  font: 600 0.76rem/1.2 var(--font-sans);
+  font: 600 var(--text-caption)/1.2 var(--font-sans);
   white-space: nowrap;
 }
 
@@ -488,7 +488,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .toolbar-label {
   color: var(--ui-text-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 700;
 }
 
@@ -542,7 +542,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
     inset 0 2px 2px rgba(255, 255, 255, 0.98),
     inset 0 -2px 4px rgba(86, 65, 55, 0.12),
     0 3px 8px rgba(59, 43, 35, 0.12);
-  font-size: 1.2rem;
+  font-size: var(--text-body);
   font-weight: 500;
   cursor: pointer;
 }
@@ -561,7 +561,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   align-items: center;
   gap: 8px;
   color: var(--ui-text-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 700;
 }
 
@@ -599,7 +599,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 .canvas-hint {
   margin: 16px 0 12px;
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 
 .drawing-stage {
@@ -637,7 +637,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   border: 0;
   outline: none;
   color: #292321;
-  font: 0.9rem/1.4 var(--font-sans);
+  font: var(--text-label)/1.4 var(--font-sans);
 }
 
 .text-editor-actions {
@@ -650,7 +650,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 .text-editor-actions button {
   min-height: 32px;
   padding-inline: 10px;
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
 }
 
 .text-editor-actions button[type='submit'] {

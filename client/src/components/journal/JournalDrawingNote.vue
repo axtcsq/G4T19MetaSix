@@ -84,7 +84,7 @@ onBeforeUnmount(() => observer?.disconnect())
   min-height: 32px;
   margin: 0;
   padding-left: 32px;
-  font: 600 12px var(--font-sans);
+  font: 600 var(--text-caption) var(--font-sans);
 }
 canvas {
   display: block;

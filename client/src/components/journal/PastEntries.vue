@@ -223,7 +223,7 @@ function formatDate(date) {
   border-radius: 999px;
   background: var(--ui-bg-elevated);
   color: var(--ui-text);
-  font: 400 0.95rem var(--font-sans);
+  font: 400 var(--text-small) var(--font-sans);
 }
 
 .history-search input::placeholder {
@@ -274,7 +274,7 @@ function formatDate(date) {
 .clear-search {
   margin-top: 8px;
   color: var(--ui-primary);
-  font: 600 0.9rem var(--font-sans);
+  font: 600 var(--text-label) var(--font-sans);
   text-decoration: underline;
 }
 
@@ -319,7 +319,7 @@ function formatDate(date) {
   border-radius: 999px;
   color: #687181;
   background: rgb(255 255 255 / 70%);
-  font: 600 0.8rem/1.8 var(--font-sans);
+  font: 600 var(--text-caption)/1.8 var(--font-sans);
   cursor: pointer;
 }
 
@@ -389,7 +389,7 @@ function formatDate(date) {
 }
 .entry-song-label {
   color: #b0573f;
-  font-size: 0.7rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -397,7 +397,7 @@ function formatDate(date) {
 .entry-song-title {
   overflow: hidden;
   color: #313c50;
-  font-size: 1rem;
+  font-size: var(--text-small);
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -412,7 +412,7 @@ function formatDate(date) {
 .entry-song-artists {
   overflow: hidden;
   color: #687181;
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -473,7 +473,7 @@ function formatDate(date) {
   border-radius: 999px;
   color: #687181;
   background: rgb(255 255 255 / 70%);
-  font: 600 0.8rem/1.8 var(--font-sans);
+  font: 600 var(--text-caption)/1.8 var(--font-sans);
   cursor: pointer;
 }
 

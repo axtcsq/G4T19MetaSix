@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   color: var(--ui-text);
   background: var(--ui-bg-elevated);
-  font: 400 0.95rem var(--font-sans);
+  font: 400 var(--text-small) var(--font-sans);
 }
 .song-search::placeholder {
   color: var(--ui-text-muted);
@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
 .song-status {
   margin: 10px 4px 0;
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 .song-results {
   display: grid;
@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
   place-items: center;
   color: var(--ui-primary);
   background: color-mix(in srgb, var(--ui-primary) 14%, transparent);
-  font-size: 1.6rem;
+  font-size: var(--text-subheader);
 }
 .song-text {
   display: grid;
@@ -212,7 +212,7 @@ onBeforeUnmount(() => {
 }
 .song-text span {
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 .remove-song {
   flex: none;
@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--ui-border);
   border-radius: 999px;
   color: var(--ui-text-muted);
-  font: 600 0.85rem var(--font-sans);
+  font: 600 var(--text-label) var(--font-sans);
   cursor: pointer;
   transition:
     border-color 160ms ease,
