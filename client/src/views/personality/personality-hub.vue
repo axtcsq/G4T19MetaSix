@@ -454,8 +454,8 @@ onMounted(loadPage)
                   <img
                     :src="typeIcon(personality.type.id)"
                     alt=""
-                    width="136"
-                    height="136"
+                    width="96"
+                    height="96"
                     class="type-icon"
                   />
                   <div>
@@ -859,21 +859,24 @@ onMounted(loadPage)
 }
 
 .type-intro {
+  color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: var(--text-subheader);
+  font-size: var(--text-label);
   font-weight: 600;
 }
 
 .type-name {
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
   font-family: var(--font-sans);
-  font-size: var(--text-header);
+  font-size: var(--text-subheader);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .type-tagline {
-  margin-top: 0.6rem;
+  margin-top: 0.35rem;
+  font-size: var(--text-lead);
+  line-height: 1.4;
 }
 
 .type-meaning {
@@ -895,8 +898,8 @@ onMounted(loadPage)
 
 .insight-text {
   font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.4;
+  font-size: var(--text-lead);
+  line-height: 1.45;
 }
 
 /* Explanation under each trait bar, opened by tapping the bar. */
@@ -1255,6 +1258,12 @@ onMounted(loadPage)
   max-width: 560px;
 }
 
+.patterns-loading .body-text,
+.patterns-empty .body-text {
+  font-size: var(--text-lead);
+  line-height: 1.45;
+}
+
 .empty-icon {
   color: var(--pq-accent);
 }
@@ -1346,7 +1355,7 @@ onMounted(loadPage)
 
 .song-name {
   font-family: var(--font-sans);
-  font-size: var(--text-subheader);
+  font-size: var(--text-body);
   font-weight: 600;
   line-height: 1.25;
 }
@@ -1354,7 +1363,7 @@ onMounted(loadPage)
 .song-artist {
   color: var(--pq-muted);
   font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-size: var(--text-small);
 }
 
 .song-actions {
