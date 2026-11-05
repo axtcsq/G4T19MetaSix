@@ -47,8 +47,7 @@ describe('Artist records', () => {
     const records = mount(ArtistRecords, { props: { artists, period: 'weekly' } })
     await nextTick()
 
-    // Each artist's record and the name under it. jsdom can't measure text,
-    // so names are sized the way the component estimates them there.
+    // Each artist's record and the name under it. jsdom can't measure text, so names are sized the way the component estimates them there.
     const areas = records.findAll('.record-item').map((item, index) => {
       const style = item.element.style
       const size = px(item.attributes('style').match(/--record-size: ([\d.]+)px/)[1])

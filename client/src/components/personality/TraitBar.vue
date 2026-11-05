@@ -8,8 +8,7 @@ const props = defineProps({
   compact: { type: Boolean, default: false },
 })
 
-// The fill grows from the side the user leans towards, so a 100% lean either
-// way is a full bar.
+// The fill grows from the side the user leans towards, so a 100% lean either way is a full bar.
 const leansSecond = computed(() => props.trait.score < 0)
 const leanName = computed(() => (leansSecond.value ? props.trait.secondPoleName : props.trait.firstPoleName))
 const fillPercent = computed(() => Math.round(((Math.abs(props.trait.score) + 1) / 2) * 100))

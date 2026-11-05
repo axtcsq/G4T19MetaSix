@@ -1,6 +1,4 @@
-// One metaphor about music and feelings for each day, shown on Home. The list
-// is written for MetaFor, so there are no authors to credit. Add new lines
-// anywhere; the day's pick just moves along the list.
+// Daily music and mood metaphors for Home.
 export const METAPHORS = [
   'Your mood is a playlist on shuffle: trust the next track.',
   'Some days are B-sides. They still deserve a full listen.',
@@ -64,8 +62,7 @@ export const METAPHORS = [
   'Tomorrow is the next track. Let this one finish first.',
 ]
 
-// The same line all day, changing at local midnight. Counting whole days
-// from a fixed date keeps the order steady across reloads and devices.
+// The same line all day, changing at local midnight. Counting whole days from a fixed date keeps the order steady across reloads and devices.
 export function metaphorFor(date = new Date()) {
   const localDay = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000
   return METAPHORS[localDay % METAPHORS.length]

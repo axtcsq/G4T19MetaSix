@@ -12,8 +12,7 @@ const props = defineProps({
 const root = ref(null)
 const width = ref(0)
 const height = ref(0)
-// The narrowest a name may wrap to, and the heights of a name line and the
-// play count line, with the 6px gaps between them and the record.
+// The narrowest a name may wrap to, and the heights of a name line and the play count line, with the 6px gaps between them and the record.
 const TEXT_WIDTH = 88
 const NAME_LINE = 20.4
 const PLAYS_LINE = 18
@@ -43,15 +42,12 @@ const STAGGER = [0, 0.3, 0.75]
 // The records grow until they fill the height beside them, up to this much.
 const MAX_GROW = 1.8
 
-// Positions for each artist, worked out from the space available, with every
-// record grown by grow and the ones below the top three by lowerGrow too.
-// spread drops the 2nd and 3rd records further down the panel.
+// Place records without overlap as they grow to fill the panel.
 function arrange(space, grow, lowerGrow = 1, spread = 0) {
   const most = Math.max(1, ...props.artists.map(plays))
   const largest = Math.min(150, space * 0.38) * grow
   const smallest = Math.max(52, largest * 0.4)
-  // On a narrow panel every record shrinks a little so the top three still
-  // fit side by side.
+  // On a narrow panel every record shrinks a little so the top three still fit side by side.
   const sizeOf = (artist) => smallest + (largest - smallest) * (plays(artist) / most)
   const topThree = props.artists.slice(0, 3)
   const topWidth = (scale) =>
@@ -78,8 +74,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
       textHeight,
     }
   })
-  // The record and the name under it, as two separate areas, so another
-  // record can sit beside a short name.
+  // The record and the name under it, as two separate areas, so another record can sit beside a short name.
   const areas = (box) => [
     {
       left: box.left + (box.width - box.size) / 2,
@@ -107,8 +102,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
         ),
     )
 
-  // The top three, 1, 2, 3 from left to right, spread across the panel with
-  // any spare room shared between the gaps.
+  // The top three, 1, 2, 3 from left to right, spread across the panel with any spare room shared between the gaps.
   const top = boxes.slice(0, 3)
   const rowWidth = top.reduce((sum, box) => sum + box.width, 0) + GAP * (top.length - 1)
   const spare = Math.max(0, space - rowWidth)
@@ -120,8 +114,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
     left += box.width + gap
   })
 
-  // The rest sit under the gaps between the records above, as high as they
-  // go without touching a record or a name.
+  // The rest sit under the gaps between the records above, as high as they go without touching a record or a name.
   const middle = (box) => box.left + box.width / 2
   const below = boxes.slice(3)
   below.forEach((box, index) => {
@@ -148,8 +141,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
   }
 }
 
-// The records' natural size sets the list's least height. Beside a taller
-// Top Tracks list, the list stretches, and the records grow to fill it.
+// The records' natural size sets the list's least height. Beside a taller Top Tracks list, the list stretches, and the records grow to fill it.
 const layout = computed(() => {
   const space = width.value
   if (!space || !props.artists.length) return { items: [], height: 0, minHeight: 0 }
@@ -163,8 +155,7 @@ const layout = computed(() => {
     best = tried
     grow = next
   }
-  // The top three run out of width first, so the records below them keep
-  // growing into the height that's left.
+  // The top three run out of width first, so the records below them keep growing into the height that's left.
   let lower = 1
   for (let next = 1.05; next <= MAX_GROW * 1.5; next += 0.05) {
     const tried = arrange(space, grow, next)
@@ -172,8 +163,7 @@ const layout = computed(() => {
     best = tried
     lower = next
   }
-  // Then the 2nd and 3rd records step down the panel, and the rest follow
-  // them, so the records spread over the whole height.
+  // Then the 2nd and 3rd records step down the panel, and the rest follow them, so the records spread over the whole height.
   for (let spread = 8; spread <= height.value; spread += 8) {
     const tried = arrange(space, grow, lower, spread)
     if (!fits(tried)) break

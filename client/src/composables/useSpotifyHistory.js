@@ -65,8 +65,7 @@ export function useSpotifyHistory() {
     error.value = ''
     const version = requestVersion
     try {
-      // The router no longer waits for the login check on public pages, and
-      // whether to read stored plays depends on it.
+      // The router no longer waits for the login check on public pages, and whether to read stored plays depends on it.
       const auth = useAuthStore()
       if (!auth.checked) await auth.load()
       if (version !== requestVersion) return

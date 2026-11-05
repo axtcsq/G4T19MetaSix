@@ -43,8 +43,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => window.clearInterval(typingTimer))
 
-// The cards and the closing banner light up where the mouse is and tilt a
-// little towards it. Touch doesn't hover, so only the mouse drives it.
+// The cards and the closing banner light up where the mouse is and tilt a little towards it. Touch doesn't hover, so only the mouse drives it.
 const MAX_TILT = 5
 
 function followPointer(event) {
@@ -57,8 +56,7 @@ function followPointer(event) {
   card.style.setProperty('--my', `${y * 100}%`)
   card.style.setProperty('--ry', `${(x - 0.5) * 2 * MAX_TILT}deg`)
   card.style.setProperty('--rx', `${(0.5 - y) * 2 * MAX_TILT}deg`)
-  // Each text block needs the pointer in its own coordinates, so the words
-  // under the glow can change colour.
+  // Each text block needs the pointer in its own coordinates, so the words under the glow can change colour.
   for (const text of card.querySelectorAll('.glow-text')) {
     const box = text.getBoundingClientRect()
     text.style.setProperty('--tx', `${event.clientX - box.left}px`)
@@ -140,8 +138,7 @@ function releaseButton(event) {
   event.currentTarget.querySelector('.get-started, .spotify-login').style.translate = ''
 }
 
-// Picking a mood in the hero tints the page, recolours the margin notes and
-// says what MetaFor would play. Picking it again clears it.
+// Picking a mood in the hero tints the page, recolours the margin notes and says what MetaFor would play. Picking it again clears it.
 const HERO_MOODS = {
   Happy: { colour: '#f2c335', line: 'Bright and upbeat. MetaFor would keep the good mood going.' },
   Sad: { colour: '#4389d1', line: 'Gentle and slow. Songs to sit with you, then lift you up.' },
@@ -261,8 +258,7 @@ const showcase = [
       class="showcase landing-shell"
       aria-labelledby="showcase-title"
     >
-      <!-- A soft band of colour that slowly pans sideways. The margin lines
-           and notes start inside it, so the top of the page stays clear. -->
+      <!-- A soft band of colour that slowly pans sideways. The margin lines and notes start inside it, so the top of the page stays clear. -->
       <div class="pan-band" aria-hidden="true" />
       <h2 id="showcase-title">Everything in One Place.</h2>
       <div class="mirror-grid">
@@ -319,8 +315,7 @@ const showcase = [
       @pointermove="pullButton"
       @pointerleave="releaseButton"
     >
-      <!-- Mesh Gradient from motion.page/backgrounds (free, no attribution
-           needed), recoloured to the sunset palette and shrunk for the web. -->
+      <!-- Mesh Gradient from motion.page/backgrounds (free, no attribution needed), recoloured to the sunset palette and shrunk for the web. -->
       <video
         ref="bannerVideo"
         class="liquid"
@@ -333,8 +328,7 @@ const showcase = [
         aria-hidden="true"
       />
       <div class="liquid-scrim" aria-hidden="true" />
-      <!-- A faint sound wave drifting sideways behind the text. It's two
-           repeats wide, so sliding it by half loops without a jump. -->
+      <!-- A faint sound wave drifting sideways behind the text. It's two repeats wide, so sliding it by half loops without a jump. -->
       <svg
         class="closing-wave"
         viewBox="0 0 2400 120"
@@ -372,8 +366,7 @@ const showcase = [
   background: var(--ui-bg);
 }
 
-/* The picked mood's colour glows softly across the top of the page, under
-   everything else, and the margin notes take it on too. */
+/* The picked mood's colour glows softly across the top of the page, under everything else, and the margin notes take it on too. */
 .landing-page::before {
   position: absolute;
   z-index: -1;
@@ -410,8 +403,7 @@ const showcase = [
   flex-wrap: wrap;
   gap: 6px;
 }
-/* Compact chips keep the mood picker readable as it wraps across rows. The
-   shared glossy button style is roomier, hence the !important. */
+/* Compact chips keep the mood picker readable as it wraps across rows. The shared glossy button style is roomier, hence the !important. */
 .hero-mood-options .mood-reaction.glass-secondary {
   gap: 5px;
   min-height: 36px !important;
@@ -451,8 +443,7 @@ const showcase = [
   border-color: var(--chip);
   transform: translateY(-1px);
 }
-/* The faces are drawn for bigger buttons, so their lines are thickened here
-   to stay clear at chip size. */
+/* The faces are drawn for bigger buttons, so their lines are thickened here to stay clear at chip size. */
 .hero-mood-options .button-mood-face {
   width: 28px;
   height: 28px;
@@ -565,8 +556,7 @@ const showcase = [
 }
 
 /* Buttons */
-/* Spotify's own green and black, like the "Continue with Spotify" buttons in
-   other apps. */
+/* Spotify's own green and black, like the "Continue with Spotify" buttons in other apps. */
 .spotify-login {
   transition: translate 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
   min-height: 48px;
@@ -733,13 +723,11 @@ const showcase = [
 .follow:hover::before {
   opacity: 1;
 }
-/* Peach looks grey on the dark cards, so dark mode uses a warmer orange to
-   match how the glow looks in light mode. */
+/* Peach looks grey on the dark cards, so dark mode uses a warmer orange to match how the glow looks in light mode. */
 :global(.dark .landing-page .mirror-card.follow) {
   --glow: rgba(255, 135, 60, 0.42);
 }
-/* With a mood picked in the hero, the cards' glow, the light on their words
-   and their hover edge all take the mood's colour. */
+/* With a mood picked in the hero, the cards' glow, the light on their words and their hover edge all take the mood's colour. */
 .landing-page.has-mood .mirror-card.follow {
   --glow: color-mix(in srgb, var(--mood-colour) 45%, transparent);
 }
@@ -831,8 +819,7 @@ const showcase = [
   line-height: 1.55;
 }
 
-/* Each row is the words on one side and the preview on the other, swapping
-   sides every row. */
+/* Each row is the words on one side and the preview on the other, swapping sides every row. */
 .showcase {
   position: relative;
   padding-block: 24px 80px;
@@ -914,8 +901,7 @@ const showcase = [
   overflow: hidden;
   border: 1px solid #763e32;
   border-radius: 20px;
-  /* The same warm mauve-to-terracotta blend as the Patterns card. Shows until
-     the video loads. */
+  /* The same warm mauve-to-terracotta blend as the Patterns card. Shows until the video loads. */
   background:
     linear-gradient(117.92deg, rgba(102, 95, 120, 0.2) 2.94%, rgba(118, 62, 50, 0.2) 100%),
     linear-gradient(225.44deg, rgba(102, 95, 120, 0.4) 18.89%, rgba(206, 91, 75, 0.4) 81.12%),
@@ -961,8 +947,7 @@ const showcase = [
   opacity: 0.88;
   text-shadow: 0 1px 4px rgba(40, 20, 30, 0.35);
 }
-/* The site's heading font, white fading into peach. drop-shadow (unlike
-   text-shadow) works with transparent text. */
+/* The site's heading font, white fading into peach. drop-shadow (unlike text-shadow) works with transparent text. */
 .closing-accent {
   padding-bottom: 0.08em;
   background: linear-gradient(100deg, #fff 20%, #ffe1c9 55%, #ffc9a3 90%);

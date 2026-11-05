@@ -142,8 +142,7 @@ const songMoodTrend = computed(() => {
   }
   return counts
 })
-// Uplifting picks after a sad month, calming ones after a tense one. Uses the
-// journal and listening together when the server has them, else plays only.
+// Uplifting picks after a sad month, calming ones after a tense one. Uses the journal and listening together when the server has them, else plays only.
 const MOOD_NAMES = { happy: 'happy', relaxed: 'calm', sad: 'sad', angry: 'angry', anxious: 'anxious' }
 const AXIS_FACES = { happy: 'Happy', relaxed: 'Relaxed', sad: 'Sad', angry: 'Angry', anxious: 'Anxious' }
 // Each day's journal and music blended, from the server ("YYYY-MM-DD" -> axis).
@@ -322,8 +321,7 @@ function restartRecommendations() {
   shownRecommendationIds.clear()
   loadRecommendations()
 }
-// A month's plays and its overall mood arrive separately; asking for suggestions
-// after each would hit the server's few-second limit, so wait for both.
+// A month's plays and its overall mood arrive separately; asking for suggestions after each would hit the server's few-second limit, so wait for both.
 watch([recommendationTarget, recommendationArtists, recommendationTypeMix], () => {
   if (loading.value || monthLoading.value) return
   restartRecommendations()

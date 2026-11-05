@@ -180,8 +180,7 @@ function formatDate(date) {
               </button>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
-            <!-- The Song of the Day and the drawing share one row under the
-                 writing, so the entry stays short. -->
+            <!-- The Song of the Day and the drawing share one row under the writing, so the entry stays short. -->
             <div v-if="entry.song || entry.drawing?.items?.length" class="entry-extras">
               <!-- The Song of the Day, clipped to the page like a ticket stub. -->
               <div v-if="entry.song" class="entry-song">

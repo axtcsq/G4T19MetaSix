@@ -15,8 +15,7 @@ import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.webp'
 import soundwoodsImage from '@/assets/images/personality/soundwoods.webp'
 import musicalNeedsImage from '@/assets/images/personality/musical-needs.webp'
 
-// Quiz card images are from Unsplash; see the README for attribution.
-// Quizzes without one show the lilac placeholder.
+// Quiz card images are from Unsplash; see the README for attribution. Quizzes without one show the lilac placeholder.
 const quizImages = {
   'music-mbti': musicMbtiImage,
   'spotify-horoscope': spotifyHoroscopeImage,
@@ -30,8 +29,7 @@ const quizzes = ref([])
 const personality = ref(null)
 const isLoading = ref(true)
 const loadError = ref('')
-// Patterns loads on its own, since its AI write-up can take a few seconds and
-// the quizzes shouldn't wait for it.
+// Patterns loads on its own, since its AI write-up can take a few seconds and the quizzes shouldn't wait for it.
 const patternsLoading = ref(true)
 const patternsError = ref('')
 const shareDialog = ref(null)
@@ -50,8 +48,7 @@ const outcomesQuizId = ref('')
 const outcomesQuiz = computed(
   () => quizzes.value.find((quiz) => quiz.id === outcomesQuizId.value) ?? quizzes.value[0],
 )
-// The list starts short, so the page isn't a wall of text; Show all opens the
-// rest. Picking another quiz closes it again.
+// The list starts short, so the page isn't a wall of text; Show all opens the rest. Picking another quiz closes it again.
 const OUTCOMES_SHOWN = 3
 const showAllOutcomes = ref(false)
 // The user's own result comes first, so it's never hidden.
@@ -60,8 +57,7 @@ const shownOutcomes = computed(() => {
   const outcomes = [...(quiz?.outcomes ?? [])].sort((a, b) => isMine(quiz, b) - isMine(quiz, a))
   return showAllOutcomes.value ? outcomes : outcomes.slice(0, OUTCOMES_SHOWN)
 })
-// The tab after the quizzes, about the six MetaFor types. The user's own type
-// comes first, like their quiz results.
+// The tab after the quizzes, about the six MetaFor types. The user's own type comes first, like their quiz results.
 const TYPES_TAB = 'metafor-types'
 const types = ref([])
 const showingTypes = computed(() => outcomesQuizId.value === TYPES_TAB)
@@ -77,8 +73,7 @@ function pickOutcomesQuiz(id) {
   outcomesQuizId.value = id
   showAllOutcomes.value = false
 }
-// Show fewer takes the page back up to the first three cards, so it doesn't
-// leave the reader below the shortened list.
+// Show fewer takes the page back up to the first three cards, so it doesn't leave the reader below the shortened list.
 const outcomesSection = ref(null)
 async function toggleOutcomes() {
   showAllOutcomes.value = !showAllOutcomes.value
@@ -90,8 +85,7 @@ async function toggleOutcomes() {
   outcomesSection.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
 }
 
-// The user's own result in the list. Horoscope titles put words in front of
-// the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
+// The user's own result in the list. Horoscope titles put words in front of the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
 function isMine(quiz, outcome) {
   const title = quiz.latestResult?.title
   return Boolean(title) && (title === outcome.name || title.endsWith(` ${outcome.name}`))
@@ -735,10 +729,8 @@ onMounted(loadPage)
   z-index: 1;
 }
 
-/* Taken out of the flow and lined up with the heading, so adding it doesn't
-   change the section's height. */
-/* In the card's top corner, above the heading, so it stays clear of the
-   title and intro text at every width. */
+/* Taken out of the flow and lined up with the heading, so adding it doesn't change the section's height. */
+/* In the card's top corner, above the heading, so it stays clear of the title and intro text at every width. */
 .share-trigger {
   position: absolute;
   top: 1rem;
@@ -807,8 +799,7 @@ onMounted(loadPage)
     border-color 220ms ease;
 }
 
-/* The result cards lift towards the reader on hover, or while something in
-   them has keyboard focus. Loading and empty states stay put. */
+/* The result cards lift towards the reader on hover, or while something in them has keyboard focus. Loading and empty states stay put. */
 .patterns .pattern-card:not(.patterns-loading, .patterns-empty):is(:hover, :focus-within) {
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 16px 32px rgba(58, 31, 25, 0.28);
@@ -964,8 +955,7 @@ onMounted(loadPage)
   font-size: var(--text-label);
 }
 
-/* The title on the left, and the progress at the bottom right, level with
-   the subtext. */
+/* The title on the left, and the progress at the bottom right, level with the subtext. */
 .hub-header {
   display: flex;
   align-items: flex-end;
@@ -1090,8 +1080,7 @@ onMounted(loadPage)
   gap: 1.25rem;
 }
 
-/* A soft card with a thin accent line along the top; the user's own result
-   is peach with a badge. */
+/* A soft card with a thin accent line along the top; the user's own result is peach with a badge. */
 .outcome-card {
   position: relative;
   display: flex;
@@ -1381,8 +1370,7 @@ onMounted(loadPage)
   padding: 1.5rem 1.75rem;
 }
 
-/* The text card stretches to the height of the card beside it. Its text
-   stays together at the top and the match note sits at the bottom. */
+/* The text card stretches to the height of the card beside it. Its text stays together at the top and the match note sits at the bottom. */
 .insights-card {
   display: flex;
   flex-direction: column;
@@ -1430,8 +1418,7 @@ onMounted(loadPage)
     gap: 0.75rem;
   }
 
-  /* Two buttons side by side: smaller text, centred, with tight line spacing so
-     a wrapped label doesn't make the button tall and lopsided. */
+  /* Two buttons side by side: smaller text, centred, with tight line spacing so a wrapped label doesn't make the button tall and lopsided. */
   .song-actions .peach-button {
     margin-top: 0;
     padding: 0.5rem 0.75rem;

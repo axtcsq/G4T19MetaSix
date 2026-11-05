@@ -2,8 +2,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { drawItem } from './drawItem'
 
-// A saved drawing on a sticky note, clipped to a past entry beside its Song
-// of the Day, right after the writing.
+// A saved drawing on a sticky note, clipped to a past entry beside its Song of the Day, right after the writing.
 const props = defineProps({
   drawing: { type: Object, required: true },
   label: { type: String, required: true },

@@ -1,7 +1,6 @@
 import { api } from './http'
 
-// Login is a full page visit, not an API call: the browser goes to Spotify and
-// comes back through the server, which then sets the session cookie.
+// Login is a full page visit, not an API call: the browser goes to Spotify and comes back through the server, which then sets the session cookie.
 export function spotifyLoginUrl(next) {
   const params = new URLSearchParams({
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -20,8 +19,7 @@ export function updateSettings(changes) {
   return api.patch('/api/me/settings', changes)
 }
 
-// Home's metaphor of the day, written for the user's mood and taste.
-// { text, mood, genre, source }, with text null when there's nothing to go on.
+// Home's metaphor of the day, written for the user's mood and taste. { text, mood, genre, source }, with text null when there's nothing to go on.
 export function getDailyMetaphor() {
   return api.get('/api/me/metaphor')
 }

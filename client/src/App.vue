@@ -6,8 +6,7 @@ import { watch } from "vue"
 import { useAuthStore } from "./stores/auth"
 import { useTodayMoodStore } from "./stores/todayMood"
 
-// Today's check-ins decide whether the reminder shows, so load them once
-// someone logs in.
+// Today's check-ins decide whether the reminder shows, so load them once someone logs in.
 const auth = useAuthStore()
 const todayMood = useTodayMoodStore()
 watch(

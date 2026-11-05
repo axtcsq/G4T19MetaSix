@@ -26,8 +26,7 @@ const EXAMPLE_SONGS = [
 
 const songLabel = (song) => `${song.name} · ${song.artists.join(', ')}`
 
-// Looks the words up 300 ms after the visitor stops typing, so every key press
-// doesn't send a request.
+// Looks the words up 300 ms after the visitor stops typing, so every key press doesn't send a request.
 let searchTimer
 let latestSearch = 0
 

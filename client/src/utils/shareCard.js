@@ -1,5 +1,4 @@
-// Draws a story-sized (9:16) summary of the user's MetaFor personality on a
-// canvas, so it can be saved or shared like a year-in-review card.
+// Draws a story-sized (9:16) summary of the user's MetaFor personality on a canvas, so it can be saved or shared like a year-in-review card.
 
 export const CARD_WIDTH = 1080
 export const CARD_HEIGHT = 1920
@@ -103,8 +102,7 @@ function wrapLines(ctx, text, maxWidth, maxLines) {
   return lines
 }
 
-// The MetaFor butterfly, with the same wing paths as ButterflyMark.vue: one
-// side drawn, then mirrored for the other.
+// The MetaFor butterfly, with the same wing paths as ButterflyMark.vue: one side drawn, then mirrored for the other.
 const UPPER_WING =
   'M30.5 27.5C27.5 17 19 5 6 3C1 2.5 -1 7 0 13C1.5 21 8 29 17 31C23 32 28 31.5 30.5 30.5Z'
 const LOWER_WING =

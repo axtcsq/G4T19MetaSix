@@ -10,8 +10,7 @@ const results = ref([])
 const isSearching = ref(false)
 const searchError = ref('')
 
-// Looks the words up 300 ms after typing stops, so every key press doesn't
-// send a request. Only the newest search may fill the list.
+// Looks the words up 300 ms after typing stops, so every key press doesn't send a request. Only the newest search may fill the list.
 let searchTimer
 let latestSearch = 0
 

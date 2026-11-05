@@ -1,8 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
-// A compact summary of what each quiz and the Spotify data said about the
-// four MetaFor traits, and what they add up to.
+// A compact summary of what each quiz and the Spotify data said about the four MetaFor traits, and what they add up to.
 const props = defineProps({
   personality: { type: Object, required: true },
 })
@@ -13,8 +12,7 @@ const BALANCED = 0.05
 const showInfo = ref(false)
 const info = ref(null)
 
-// A tap fires hover, focus and click together, so only a real mouse opens it
-// on hover, and a tap or click toggles it.
+// A tap fires hover, focus and click together, so only a real mouse opens it on hover, and a tap or click toggles it.
 function onPointerEnter(event) {
   if (event.pointerType === 'mouse') showInfo.value = true
 }
@@ -268,8 +266,7 @@ const rows = computed(() =>
     grid-template-columns: 1fr;
   }
 
-  /* Pinned under the heading instead of centred on the small button, so it
-     stays inside the card. */
+  /* Pinned under the heading instead of centred on the small button, so it stays inside the card. */
   .breakdown-heading {
     position: relative;
   }

@@ -13,8 +13,7 @@ const env = loadEnv('development', process.cwd(), '')
 export default defineConfig({
   plugins: [
     ui({
-      // Nuxt UI's own colours plus the five music mood tags
-      // (<UBadge color="sad">). Their shades are in assets/css/main.css.
+      // Nuxt UI's own colours plus the five music mood tags (<UBadge color="sad">). Their shades are in assets/css/main.css.
       theme: {
         colors: [
           'primary',
@@ -51,8 +50,7 @@ export default defineConfig({
     },
   },
   server: {
-    // Spotify only accepts 127.0.0.1 redirects, and the login cookie only
-    // works if the app is opened on that same address.
+    // Spotify only accepts 127.0.0.1 redirects, and the login cookie only works if the app is opened on that same address.
     host: '127.0.0.1',
     proxy: {
       '/api': {

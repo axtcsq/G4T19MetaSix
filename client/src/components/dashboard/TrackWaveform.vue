@@ -1,8 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 
-// The top tracks as one pulsing sound wave. Each song is a stretch of it, as
-// wide as its share of the plays and coloured from its own cover.
+// The top tracks as one pulsing sound wave. Each song is a stretch of it, as wide as its share of the plays and coloured from its own cover.
 const props = defineProps({
   songs: { type: Array, required: true },
   period: { type: String, required: true },
@@ -11,8 +10,7 @@ const props = defineProps({
 // Each song's colour by id, so the list below can use the same colours.
 const emit = defineEmits(['colors'])
 
-// Used until a cover's colour is read, or when it can't be, or when two
-// covers come out too alike to tell apart.
+// Used until a cover's colour is read, or when it can't be, or when two covers come out too alike to tell apart.
 const FALLBACK_COLORS = ['#8a7fd1', '#e0533f', '#2fa38f', '#e2a93b', '#3f8fd6']
 // About this many bars across the whole wave.
 const TOTAL_BARS = 90

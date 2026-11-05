@@ -2,8 +2,7 @@
 import { onBeforeUnmount, ref } from 'vue'
 import { canvasToBlob, drawShareCard } from '@/utils/shareCard'
 
-// A pop-up that draws the user's personality as a story-sized card they can
-// save or share. It floats over the page, so it never changes the layout.
+// A pop-up that draws the user's personality as a story-sized card they can save or share. It floats over the page, so it never changes the layout.
 const props = defineProps({
   personality: { type: Object, required: true },
   icon: { type: String, required: true },

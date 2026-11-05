@@ -4,8 +4,7 @@ import { getStreak } from '@/api/moods'
 import { useAuthStore } from '@/stores/auth'
 import { useTodayMoodStore } from '@/stores/todayMood'
 
-// Home's daily check-in streak. Every 7 days in a row earns a streak saver,
-// which covers one missed day so the streak carries on. The server counts it.
+// Home's daily check-in streak. Every 7 days in a row earns a streak saver, which covers one missed day so the streak carries on. The server counts it.
 const auth = useAuthStore()
 const todayMood = useTodayMoodStore()
 const streak = ref(null)
@@ -46,8 +45,7 @@ const note = computed(() => {
     :class="{ 'is-lit': streak.days, 'is-waiting': streak.days && !streak.checkedInToday }"
     aria-label="Check-in streak"
   >
-    <!-- A campfire while the streak is going, burnt-out logs without one. It
-         burns lower until today's check-in. -->
+    <!-- A campfire while the streak is going, burnt-out logs without one. It burns lower until today's check-in. -->
     <svg class="campfire" viewBox="0 0 64 64" aria-hidden="true">
       <g v-if="streak.days" class="flames">
         <path
@@ -127,8 +125,7 @@ const note = computed(() => {
 .flames {
   transform-origin: 32px 50px;
 }
-/* The two flames sway at different speeds, so the fire never looks looped,
-   and sparks float up out of it. */
+/* The two flames sway at different speeds, so the fire never looks looped, and sparks float up out of it. */
 .flame-outer,
 .flame-inner {
   transform-box: fill-box;

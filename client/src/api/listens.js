@@ -16,8 +16,7 @@ export async function syncBeforeReading() {
   }
 }
 
-// Plays stored in our database, newest first, in the same shape as Spotify's
-// recently-played items. `to` is exclusive.
+// Plays stored in our database, newest first, in the same shape as Spotify's recently-played items. `to` is exclusive.
 export function getListens({ from, to, limit } = {}) {
   const params = {}
   if (from) params.from = from.toISOString()
@@ -26,14 +25,12 @@ export function getListens({ from, to, limit } = {}) {
   return api.get('/api/listens', { params })
 }
 
-// The dashboard's mood panels for the days from `from` to `to` ("YYYY-MM-DD",
-// both included): each day's music moods and the lyric emotion profile.
+// The dashboard's mood panels for the days from `from` to `to` ("YYYY-MM-DD", both included): each day's music moods and the lyric emotion profile.
 export function getMoodInsights(from, to) {
   return api.get('/api/listens/insights', { params: { from, to } })
 }
 
-// The user's mood from their journal and listening together, for the days from
-// `from` to `to` ("YYYY-MM-DD", both included).
+// The user's mood from their journal and listening together, for the days from `from` to `to` ("YYYY-MM-DD", both included).
 export function getOverallMood(from, to) {
   return api.get('/api/listens/overall-mood', { params: { from, to } })
 }

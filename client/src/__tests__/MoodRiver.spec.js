@@ -4,8 +4,7 @@ import MoodRiver from '../components/dashboard/MoodRiver.vue'
 import { getMoodInsights } from '@/api/listens'
 
 vi.mock('@/api/listens', () => ({ getMoodInsights: vi.fn() }))
-// The drawing itself needs a real canvas; these tests cover the data and
-// controls around it.
+// The drawing itself needs a real canvas; these tests cover the data and controls around it.
 vi.mock('p5', () => ({
   default: class {
     constructor() {}

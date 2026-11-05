@@ -1,15 +1,13 @@
 import axios from 'axios'
 
-// Use the same /api paths locally and in Vercel Services. Vite proxies them
-// during development; the top-level Vercel rewrite routes them in deployments.
+// Use the same /api paths locally and in Vercel Services. Vite proxies them during development; the top-level Vercel rewrite routes them in deployments.
 export const api = axios.create({
   baseURL: '',
   timeout: 30000,
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Callers get the response body directly, and every failure becomes an Error
-// whose message is safe to show the user.
+// Callers get the response body directly, and every failure becomes an Error whose message is safe to show the user.
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {

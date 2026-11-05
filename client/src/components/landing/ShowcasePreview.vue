@@ -43,8 +43,7 @@ watch(pickedMood, (mood) => {
   }, 28)
 })
 
-// Mood Calendar: the faces pop in, and each day says what was played. The
-// faces are the same drawn ones as the Mood Calendar page.
+// Mood Calendar: the faces pop in, and each day says what was played. The faces are the same drawn ones as the Mood Calendar page.
 const DAYS = {
   2: ['Happy', 'Sunlit Window'],
   3: ['Relaxed', 'Slow Tide'],

@@ -13,8 +13,7 @@ let reduceMotion = false
 function onScroll() {
   const top = section.value.getBoundingClientRect().top
   const view = window.innerHeight
-  // All dim with its top at the bottom of the screen, all lit by the time it's
-  // a fifth of the way down.
+  // All dim with its top at the bottom of the screen, all lit by the time it's a fifth of the way down.
   const progress = Math.min(1, Math.max(0, (view * 0.85 - top) / (view * 0.65)))
   shown.value = Math.round(progress * WORDS.length)
 }
@@ -77,8 +76,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   transform: none;
 }
 
-/* Three soft blobs: the picked mood (or the brand colour), lilac and blue,
-   drifting slowly. */
+/* Three soft blobs: the picked mood (or the brand colour), lilac and blue, drifting slowly. */
 .mood-light {
   position: absolute;
   z-index: -1;

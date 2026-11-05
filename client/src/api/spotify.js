@@ -7,8 +7,7 @@ let cached = null
 let refreshPromise
 let generation = 0
 
-// True when the logged-in user can get a Spotify token. False when logged out,
-// for the demo account, and when the user has to log in again.
+// True when the logged-in user can get a Spotify token. False when logged out, for the demo account, and when the user has to log in again.
 export function hasSpotifySession() {
   return Boolean(useAuthStore().user?.spotifyLinked)
 }

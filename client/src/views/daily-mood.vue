@@ -528,8 +528,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 .drawing-disclosure {
   margin-top: 40px;
 }
-/* Song of the Day folds open like the drawing, with its own class so the two
-   can be told apart. */
+/* Song of the Day folds open like the drawing, with its own class so the two can be told apart. */
 .song-disclosure {
   margin-top: 8px;
 }

@@ -80,8 +80,7 @@ const details = computed(() => {
 </script>
 
 <template>
-  <!-- A plain wrapper as the root, so a page's scoped styles (like a bare
-       "span" rule) only reach it and never the badge inside. -->
+  <!-- A plain wrapper as the root, so a page's scoped styles (like a bare "span" rule) only reach it and never the badge inside. -->
   <span v-if="reading || tag?.analysing || noMood" class="mood-tag-root">
     <template v-if="reading">
       <UTooltip :text="details">

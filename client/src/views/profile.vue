@@ -1,6 +1,5 @@
 <script setup>
-// The profile page: who is logged in, their MetaFor personality, a few
-// listening facts and the privacy settings. Editing the profile comes later.
+// The profile page: who is logged in, their MetaFor personality, a few listening facts and the privacy settings. Editing the profile comes later.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
@@ -150,8 +149,7 @@ const birthdayLabel = computed(() =>
     : '',
 )
 
-// The daily check-in reminder. It shows while MetaFor is open, so browser
-// notifications are asked for too, for when the tab is in the background.
+// The daily check-in reminder. It shows while MetaFor is open, so browser notifications are asked for too, for when the tab is in the background.
 const reminderTime = ref('')
 watch(
   () => user.value?.preferences?.reminderTime,
@@ -191,8 +189,7 @@ const pinnedDate = computed(() =>
     : '',
 )
 
-// Dark mode is kept in this browser, not the account. index.html makes light
-// the default.
+// Dark mode is kept in this browser, not the account. index.html makes light the default.
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 function toggleDark() {
@@ -777,8 +774,7 @@ dd {
   margin-top: 1rem;
 }
 
-/* An on/off switch: a pill with a thumb that slides right and fills with the
-   accent colour when on. */
+/* An on/off switch: a pill with a thumb that slides right and fills with the accent colour when on. */
 .switch {
   position: relative;
   width: 46px;

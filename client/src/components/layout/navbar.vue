@@ -21,8 +21,7 @@ const links = [
   { to: '/quiz', label: 'Personality' },
 ]
 
-// The links fold into a menu as soon as they no longer fit on one row. The nav
-// stays in the page (hidden) while folded, so its full width can still be measured.
+// Keep the hidden menu measurable so it can reopen without layout shifts.
 const header = ref(null)
 const headerInner = ref(null)
 const brandGroup = ref(null)
@@ -138,8 +137,7 @@ watch(
       </nav>
 
       <nav v-else-if="isLogin" class="header-nav" aria-label="Main navigation">
-        <!-- Always the landing page: going back in history can land on a page
-             that only sends you straight back here. -->
+        <!-- Always the landing page: going back in history can land on a page that only sends you straight back here. -->
         <RouterLink class="header-cta header-back glass-secondary" to="/">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
           Back
@@ -181,8 +179,7 @@ watch(
         <span class="menu-bars" aria-hidden="true" />
       </button>
 
-      <!-- A plain <a> inside, so the fold measurement can read its width. The
-           landing page leaves it out; its button already leads into the app. -->
+      <!-- A plain <a> inside, so the fold measurement can read its width. The landing page leaves it out; its button already leads into the app. -->
       <RouterLink v-if="!isLanding && !isLogin" v-slot="{ href, navigate, isActive }" to="/profile" custom>
         <a
           ref="profile"
@@ -226,15 +223,13 @@ watch(
 </template>
 
 <style scoped>
-/* Sticks to the top of the window as frosted, slightly see-through glass; a
-   shadow joins in once you scroll. */
+/* Sticks to the top of the window as frosted, slightly see-through glass; a shadow joins in once you scroll. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 40;
   width: 100%;
-  /* The folded nav stays in the header at full width to be measured. Clipping
-     stops it widening the page, which made phones zoom out. */
+  /* The folded nav stays in the header at full width to be measured. Clipping stops it widening the page, which made phones zoom out. */
   overflow-x: clip;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   /* A thin bright line along the bottom edge, like the edge of a glass pane. */
@@ -243,8 +238,7 @@ watch(
     box-shadow 220ms ease,
     border-color 220ms ease;
 }
-/* The glass sits on its own layer behind the content. A blur on the header
-   itself would stop the mobile menu inside it from blurring the page. */
+/* The glass sits on its own layer behind the content. A blur on the header itself would stop the mobile menu inside it from blurring the page. */
 .site-header::before {
   content: '';
   position: absolute;
@@ -490,8 +484,7 @@ watch(
   /* Lines up with the header content above it. */
   padding: 10px max(32px, calc((100% - 1180px) / 2)) 18px;
   border-bottom: 1px solid #998ba155;
-  /* The same frosted glass as the bar, a little more solid so the links stay
-     easy to read over busy pages. */
+  /* The same frosted glass as the bar, a little more solid so the links stay easy to read over busy pages. */
   background: rgba(250, 248, 246, 0.72);
   -webkit-backdrop-filter: blur(22px) saturate(1.7);
   backdrop-filter: blur(22px) saturate(1.7);

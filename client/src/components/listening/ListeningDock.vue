@@ -14,18 +14,15 @@ const formatTime = (ms) =>
 const progress = computed(() =>
   duration.value ? `${Math.min(100, (playPosition.value / duration.value) * 100)}%` : '0%',
 )
-// Without Spotify Premium the player never becomes ready, so the dock keeps to
-// the simple version: the song, a link back to the room, and Disconnect.
+// Without Spotify Premium the player never becomes ready, so the dock keeps to the simple version: the song, a link back to the room, and Disconnect.
 const canPlay = computed(() => ready.value)
-// A short version of the room's message when the phone or Spotify app takes
-// over playback, since the dock is the only player on other pages.
+// A short version of the room's message when the phone or Spotify app takes over playback, since the dock is the only player on other pages.
 const movedAway = computed(() => room.error.value.includes('another device'))
 // Hidden in the listening room, which has its own player, and on the landing page.
 const HIDDEN_ON = ['/', '/listen']
 const visible = computed(() => connected.value && !HIDDEN_ON.includes(route.path))
 
-// The dock floats over the page, so while it shows, the page keeps space for
-// it at the bottom and it never covers the footer.
+// The dock floats over the page, so while it shows, the page keeps space for it at the bottom and it never covers the footer.
 watch(visible, (shown) => document.documentElement.classList.toggle('has-dock', shown), {
   immediate: true,
 })
@@ -65,8 +62,7 @@ function savePosition() {
   }
 }
 
-// Turns a top-left point into a distance from the nearest corner, keeping the
-// whole dock on screen.
+// Turns a top-left point into a distance from the nearest corner, keeping the whole dock on screen.
 function anchorAt(left, top) {
   const { width, height } = dock.value.getBoundingClientRect()
   const screenWidth = document.documentElement.clientWidth
@@ -117,8 +113,7 @@ function resetPosition() {
   savePosition()
 }
 
-// The browser keeps the dock on screen as the window resizes: never further
-// from its corner than the window has room for.
+// The browser keeps the dock on screen as the window resizes: never further from its corner than the window has room for.
 const dockStyle = computed(() => {
   if (!position.value) return {}
   const { h, x, v, y } = position.value
@@ -137,8 +132,7 @@ function measure() {
   const { width, height } = dock.value.getBoundingClientRect()
   size.value = { width: Math.round(width), height: Math.round(height) }
 }
-// Measured straight after it appears or is minimised, and again whenever its
-// size changes for any other reason.
+// Measured straight after it appears or is minimised, and again whenever its size changes for any other reason.
 const sizeObserver = new ResizeObserver(measure)
 watch(dock, (element, old) => {
   if (old) sizeObserver.unobserve(old)
@@ -146,8 +140,7 @@ watch(dock, (element, old) => {
 })
 onBeforeUnmount(() => sizeObserver.disconnect())
 
-// Minimised, the dock shrinks to the grip, the album art and play/pause. It
-// shrinks towards the corner it is kept in, so it stays on the nearer side.
+// Minimised, the dock shrinks to the grip, the album art and play/pause. It shrinks towards the corner it is kept in, so it stays on the nearer side.
 const MINIMISED_KEY = 'metafor-dock-minimised'
 const minimised = ref(loadMinimised())
 
@@ -324,8 +317,7 @@ watch([dock, minimised], measure, { flush: 'post' })
   </aside>
 </template>
 <style>
-/* The dock's height plus its gap from the edge. The footer, or the page when
-   it has no footer, adds this much space at the bottom. */
+/* The dock's height plus its gap from the edge. The footer, or the page when it has no footer, adds this much space at the bottom. */
 html.has-dock {
   --dock-space: 96px;
   scroll-padding-bottom: var(--dock-space);
@@ -400,8 +392,7 @@ html.has-dock body:not(:has(.site-footer)) {
 }
 :global(.dark .listening-dock) {
   border-color: rgba(255, 205, 166, 0.2);
-  /* Smoked glass: dark enough for the cream text, clear enough that the page
-     blurs through and the song's colours stay vivid. */
+  /* Smoked glass: dark enough for the cream text, clear enough that the page blurs through and the song's colours stay vivid. */
   background: rgba(22, 18, 16, 0.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
@@ -410,8 +401,7 @@ html.has-dock body:not(:has(.site-footer)) {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 :global(.dark .listening-dock::before) {
-  /* Deepen the colours without dulling them, so the light ones (peach, pale
-     album art) don't turn the glass white. */
+  /* Deepen the colours without dulling them, so the light ones (peach, pale album art) don't turn the glass white. */
   filter: blur(30px) saturate(2.2) brightness(0.7);
 }
 :global(.dark .listening-dock::after) {
@@ -476,8 +466,7 @@ span {
 .dock-mood:empty {
   display: none;
 }
-/* The dock's text rules (one line, clipped with "...") reach the tag's wrapper
-   too. Undo them here so a long mood name wraps, never cut. */
+/* The dock's text rules (one line, clipped with "...") reach the tag's wrapper too. Undo them here so a long mood name wraps, never cut. */
 :global(.listening-dock .dock-mood .mood-tag-root) {
   gap: 6px;
   margin-top: 0;
@@ -485,8 +474,7 @@ span {
   white-space: normal;
   text-overflow: clip;
 }
-/* Soft pills: a near-white (or near-black) fill keeps the mood's colour
-   readable on any album art, without a heavy outline. */
+/* Soft pills: a near-white (or near-black) fill keeps the mood's colour readable on any album art, without a heavy outline. */
 :global(.listening-dock .dock-mood .mood-tag) {
   gap: 5px;
   height: auto;
@@ -535,8 +523,7 @@ button {
 .dock-text:hover:not(:disabled) {
   background: rgba(127, 127, 127, 0.16);
 }
-/* On phones the song title needs the room; Disconnect stays in the
-   Listening Room, which the title links to. */
+/* On phones the song title needs the room; Disconnect stays in the Listening Room, which the title links to. */
 @media (max-width: 600px) {
   .dock-text:not(.is-kept) {
     display: none;
@@ -554,8 +541,7 @@ button {
   margin: 0;
   opacity: 0.75;
 }
-/* A thin rounded track, filled in terracotta up to where the song is, with a
-   small white thumb that grows while you hover or drag. */
+/* A thin rounded track, filled in terracotta up to where the song is, with a small white thumb that grows while you hover or drag. */
 .dock-seek input {
   --track: rgba(127, 127, 127, 0.3);
   --fill: var(--color-brand-500);

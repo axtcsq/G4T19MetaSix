@@ -88,8 +88,7 @@ const topMood = computed(() => {
   return mostCommon(readings.map((reading) => ({ key: reading.name, name: reading.name })))
 })
 
-// The journal mood the top music mood counts towards, from the mood tags
-// endpoint (listens only carry the music mood's name).
+// The journal mood the top music mood counts towards, from the mood tags endpoint (listens only carry the music mood's name).
 const topMoodJournal = ref('')
 watch(topMood, async (mood) => {
   topMoodJournal.value = ''
@@ -292,8 +291,7 @@ onMounted(async () => {
   box-shadow: 0 6px 18px rgba(125, 71, 55, 0.08);
 }
 
-/* An Instagram-style ring: brand gradient while there's something new to do
-   (today's mood isn't logged), a quiet ring once it is. */
+/* An Instagram-style ring: brand gradient while there's something new to do (today's mood isn't logged), a quiet ring once it is. */
 .today-ring {
   display: grid;
   width: 76px;
