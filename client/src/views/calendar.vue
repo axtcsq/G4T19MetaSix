@@ -8,6 +8,7 @@ import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
 import { getRecommendations } from '@/api/recommendations'
 import { getListens, getOverallMood, syncBeforeReading, usesStoredHistory } from '@/api/listens'
+import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: "MoodCalendar" })
 
@@ -35,6 +36,7 @@ let recommendationRequest = 0
 // The test account's plays come from our database, one month at a time.
 const storedHistory = usesStoredHistory()
 const router = useRouter()
+const listeningRoom = useListeningRoom()
 
 function playRecommendation(track) {
   router.push({ name: 'listen', query: { track: track.id, uri: track.uri, title: track.name, artist: track.artists.join(', '), image: track.imageUrl || undefined } })
@@ -326,7 +328,10 @@ watch([recommendationTarget, recommendationArtists, recommendationTypeMix], () =
   if (loading.value || monthLoading.value) return
   restartRecommendations()
 })
-onMounted(loadData)
+onMounted(() => {
+  loadData()
+  listeningRoom.initialize()
+})
 </script>
 
 <template>
