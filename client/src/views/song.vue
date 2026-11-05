@@ -207,10 +207,17 @@ function back() {
           <div class="panels">
             <section class="card" aria-labelledby="map-title">
               <h2 id="map-title" class="sub-header">Mood map</h2>
+              <div class="map-grid">
+              <div class="mood-labels" aria-hidden="true">
+                <span>Tense</span><span>Happy</span>
+              </div>
+              <div class="axis-labels axis-labels-y" aria-hidden="true">
+                <span>← Calm</span><span>Energy</span><span>Intense →</span>
+              </div>
               <figure
                 class="plane"
                 role="img"
-                :aria-label="`Mood map. Positivity ${pct(blend.valence)} out of 100, energy ${pct(song.energy)} out of 100. Left is negative, right is positive, bottom is calm, and top is intense.`"
+                :aria-label="`Mood map. Positivity ${pct(blend.valence)} out of 100, energy ${pct(song.energy)} out of 100. Left is negative, right is positive, bottom is calm, and top is intense. The usual mood is tense at the top left, happy at the top right, sad at the bottom left, and relaxed at the bottom right.`"
               >
                 <!-- Positions, not verdicts: a loud sad song sits top-left but isn't tense. -->
                 <span class="quadrant quadrant-negative-intense" />
@@ -233,12 +240,13 @@ function back() {
                   :style="{ left: `${blend.valence * 100}%`, bottom: `${song.energy * 100}%` }"
                 />
               </figure>
-              <div class="axis-labels" aria-hidden="true">
+              <div class="mood-labels" aria-hidden="true">
+                <span>Sad</span><span>Relaxed</span>
+              </div>
+              <div class="axis-labels axis-labels-x" aria-hidden="true">
                 <span>← Negative</span><span>Positivity</span><span>Positive →</span>
               </div>
-              <p class="caption">
-                Tinted regions show mood families; marker styles distinguish sound, lyrics and the combined mood.
-              </p>
+              </div>
               <p v-if="blend.lyrics != null" class="caption legend">
                 <span v-if="showSoundDot"><span class="key dot-sound" /> sound only</span>
                 <span><span class="key dot-words" /> lyrics</span>
@@ -538,12 +546,18 @@ function back() {
 }
 
 /* Mood map: positivity across, energy up */
+.map-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
 .plane {
   position: relative;
   display: grid;
   grid-template: 1fr 1fr / 1fr 1fr;
   aspect-ratio: 1;
-  margin: 12px 0 0;
+  margin: 0;
   overflow: hidden;
   border-radius: 2px;
 }
@@ -552,16 +566,25 @@ function back() {
   min-height: 0;
 }
 .quadrant-negative-intense {
-  background: color-mix(in srgb, var(--color-mood-angry-500) 8%, var(--ui-bg-elevated));
+  background: color-mix(in srgb, var(--color-mood-angry-500) 24%, var(--ui-bg-elevated));
 }
 .quadrant-positive-intense {
-  background: color-mix(in srgb, var(--color-mood-happy-500) 8%, var(--ui-bg-elevated));
+  background: color-mix(in srgb, var(--color-mood-happy-500) 24%, var(--ui-bg-elevated));
 }
 .quadrant-negative-calm {
-  background: color-mix(in srgb, var(--color-mood-sad-500) 8%, var(--ui-bg-elevated));
+  background: color-mix(in srgb, var(--color-mood-sad-500) 24%, var(--ui-bg-elevated));
 }
 .quadrant-positive-calm {
-  background: color-mix(in srgb, var(--color-mood-relaxed-500) 8%, var(--ui-bg-elevated));
+  background: color-mix(in srgb, var(--color-mood-relaxed-500) 24%, var(--ui-bg-elevated));
+}
+/* Sit outside the map, centred over or under their half, so dots can't cover them. */
+.mood-labels {
+  display: grid;
+  grid-column: 2;
+  grid-template-columns: 1fr 1fr;
+  color: var(--ui-text);
+  font: 600 var(--text-caption) / 1.2 var(--font-sans);
+  text-align: center;
 }
 .dot {
   position: absolute;
@@ -591,9 +614,16 @@ function back() {
 .axis-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 6px;
   color: var(--ui-text-muted);
   font: var(--text-caption) / 1.2 var(--font-sans);
+}
+/* Reads bottom to top, so Calm sits at the bottom and Intense at the top. */
+.axis-labels-y {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.axis-labels-x {
+  grid-column: 2;
 }
 .legend {
   display: flex;
