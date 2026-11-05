@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { genreMix } from '../services/listeningProfile.js';
+import { genreMix, rankArtists } from '../services/listeningProfile.js';
 
 test('genre shares weight plays without inflating artists with multiple tags', () => {
   const result = genreMix([['A', 6], ['B', 2], ['Unknown', 2]], {
@@ -18,4 +18,13 @@ test('long tails are grouped without losing shares', () => {
   assert.equal(result.genres.length, 6);
   assert.equal(result.genres.at(-1).name, 'Other genres');
   assert.equal(result.genres.reduce((sum, genre) => sum + genre.share, 0), 100);
+});
+
+test('rankArtists counts every credited artist, most played first', () => {
+  const tracks = new Map([
+    ['a', { artists: [{ name: 'Solo' }] }],
+    ['b', { artists: [{ name: 'Solo' }, { name: 'Guest' }] }],
+  ]);
+  const plays = [{ _id: 'a', plays: 3 }, { _id: 'b', plays: 2 }, { _id: 'missing', plays: 9 }];
+  assert.deepEqual(rankArtists(plays, tracks), [['Solo', 5], ['Guest', 2]]);
 });

@@ -1,9 +1,35 @@
 // Run with: npm test The music-mood summary on the Personality page.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { summariseMusicMoods } from "../services/moodMusic.js";
+import { PERIOD_DAYS, recentDates, summariseMusicMoods } from "../services/moodMusic.js";
 
 const row = (date, mood, plays) => ({ _id: { date, mood }, plays });
+
+describe("recentDates", () => {
+  const now = Date.parse("2026-11-05T04:00:00Z");
+
+  it("covers each filter period, oldest first and ending today", () => {
+    assert.deepEqual(PERIOD_DAYS, [1, 7, 30]);
+    assert.deepEqual(recentDates("Asia/Singapore", 1, now), ["2026-11-05"]);
+    const week = recentDates("Asia/Singapore", 7, now);
+    assert.equal(week.length, 7);
+    assert.equal(week[0], "2026-10-30");
+    assert.equal(week.at(-1), "2026-11-05");
+    const month = recentDates("Asia/Singapore", 30, now);
+    assert.equal(month.length, 30);
+    assert.equal(month[0], "2026-10-07");
+  });
+
+  it("keeps two weeks as the default", () => {
+    assert.equal(recentDates("Asia/Singapore", undefined, now).length, 14);
+  });
+
+  it("uses the user's own date", () => {
+    const lateInSingapore = Date.parse("2026-11-05T20:00:00Z");
+    assert.deepEqual(recentDates("Asia/Singapore", 1, lateInSingapore), ["2026-11-06"]);
+    assert.deepEqual(recentDates("America/New_York", 1, lateInSingapore), ["2026-11-05"]);
+  });
+});
 
 describe("summariseMusicMoods", () => {
   it("is null before any played song has a mood", () => {

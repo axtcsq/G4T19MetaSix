@@ -90,6 +90,101 @@ test('dashboard loads and shows the last 30 days', async ({ page, app }) => {
   await page.screenshot({ path: 'test-results/dashboard-30-days.png', fullPage: true })
 })
 
+test("your music's moods follow the period filter", async ({ page, app }) => {
+  await dashboardHistory(page, app)
+  const asked = []
+  await page.route('**/api/quiz/mood-music?**', (route) => {
+    const days = Number(new URL(route.request().url()).searchParams.get('days'))
+    asked.push(days)
+    route.fulfill({
+      json: {
+        byMood: [],
+        // Only the number of dates matters here.
+        days: Array.from({ length: days }, (_, index) => ({
+          date: new Date(Date.UTC(2026, 9, 1 + index)).toISOString().slice(0, 10),
+        })),
+        musicMoods: {
+          lens: 'lyrics',
+          plays: days * 2,
+          axes: [{ axis: 'happy', share: 100 }],
+          moods: [{ name: 'Euphoric', axis: 'happy', plays: days * 2, share: 100, mixed: false }],
+        },
+      },
+    })
+  })
+  await page.route('**/api/listens/insights?**', (route) =>
+    route.fulfill({
+      json: { days: [{ date: '2026-10-01', axes: { happy: 3 } }], emotions: null },
+    }),
+  )
+  await page.goto('/dashboard')
+  const note = page.locator('.source-note')
+  await expect(note).toHaveText('From sound and lyrics · last 7 days · 14 plays')
+  await expect(page.locator('.river-day')).toHaveCount(7)
+
+  await page.getByRole('button', { name: 'Today', exact: true }).click()
+  await expect(note).toHaveText('From sound and lyrics · today · 2 plays')
+  await expect(page.locator('.moods-visual')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
+  await expect(note).toHaveText('From sound and lyrics · last 30 days · 60 plays')
+  await expect(page.locator('.river-day')).toHaveCount(30)
+  await page.locator('.mood-insights').screenshot({
+    path: `test-results/moods-30-days-${test.info().project.name}.png`,
+  })
+
+  // Coming back to a period reuses what was already fetched.
+  await page.getByRole('button', { name: 'Last 7 days', exact: true }).click()
+  await expect(note).toHaveText('From sound and lyrics · last 7 days · 14 plays')
+  expect(asked).toEqual([7, 1, 30])
+
+  await page.getByRole('button', { name: 'Today', exact: true }).click()
+  await page.locator('.mood-insights').screenshot({
+    path: `test-results/moods-today-${test.info().project.name}.png`,
+  })
+  await page.setViewportSize({ width: 320, height: 700 })
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
+  await expect(page.locator('.river-day')).toHaveCount(30)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+test('genre mix follows the period filter and the track panels drop their labels', async ({
+  page,
+  app,
+}) => {
+  await dashboardHistory(page, app)
+  const asked = []
+  await page.route('**/api/quiz/genre-mix?**', (route) => {
+    const days = Number(new URL(route.request().url()).searchParams.get('days'))
+    asked.push(days)
+    route.fulfill({
+      json: {
+        days,
+        artistPlays: 10,
+        taggedArtistPlays: 10,
+        genres: [{ name: days === 1 ? 'rock' : 'pop', share: 100 }],
+      },
+    })
+  })
+  await page.goto('/dashboard')
+  const genre = page.locator('.genre-panel')
+  await expect(genre.locator('.genre-period')).toHaveText('Last 7 days')
+  await expect(genre.getByRole('button', { name: 'pop 100%' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Today', exact: true }).click()
+  await expect(genre.locator('.genre-period')).toHaveText('Today')
+  await expect(genre.getByRole('button', { name: 'rock 100%' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
+  await expect(genre.locator('.genre-period')).toHaveText('Last 30 days')
+  await page.getByRole('button', { name: 'Last 7 days', exact: true }).click()
+  await expect(genre.locator('.genre-period')).toHaveText('Last 7 days')
+  expect(asked).toEqual([7, 1, 30])
+
+  await expect(page.locator('.artists-panel .panel-heading')).toHaveText('Top Artists')
+  await expect(page.locator('.songs-panel .panel-heading')).toHaveText('Top Tracks')
+})
+
 test('dashboard can show only today', async ({ page, app }) => {
   await dashboardHistory(page, app)
   const track = (id) => ({
@@ -134,7 +229,7 @@ test('dashboard can show only today', async ({ page, app }) => {
 test('genre mix highlights real shares and fits desktop and mobile', async ({ page, app }) => {
   await dashboardHistory(page, app)
   expect(app.signedIn).toBe(true)
-  await page.route('**/api/quiz/genre-mix', (route) =>
+  await page.route('**/api/quiz/genre-mix?**', (route) =>
     route.fulfill({
       json: {
         artistPlays: 10,
