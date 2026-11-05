@@ -144,10 +144,6 @@ onBeforeUnmount(() => {
       </p>
     </template>
     <template v-else-if="type === 'hours'">
-      <p class="hours-summary">
-        Most recorded plays were around <strong>{{ formatHour(peakHour) }}</strong
-        >.
-      </p>
       <svg
         class="hour-clock"
         viewBox="0 0 240 240"
@@ -335,11 +331,6 @@ onBeforeUnmount(() => {
 .listening-chart .chart-explanation {
   margin: 0 0 18px;
   color: var(--dash-muted);
-}
-.listening-chart .hours-summary {
-  font-size: var(--text-quote);
-  font-style: italic;
-  margin: 0 0 22px;
 }
 /* The wedges grow out from the middle when the chart appears or the period
    changes; the hand turns round the same centre. */

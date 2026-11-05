@@ -11,6 +11,7 @@ const props = defineProps({
 
 const root = ref(null)
 const width = ref(0)
+const height = ref(0)
 // The narrowest a name may wrap to, and the heights of a name line and the
 // play count line, with the 6px gaps between them and the record.
 const TEXT_WIDTH = 88
@@ -39,12 +40,15 @@ const plays = (artist) => artist[props.period] || 0
 // Stagger the top records vertically.
 const STAGGER = [0, 0.3, 0.75]
 
-// Positions for each artist, worked out from the space available.
-const layout = computed(() => {
-  const space = width.value
-  if (!space || !props.artists.length) return { items: [], height: 0 }
+// The records grow until they fill the height beside them, up to this much.
+const MAX_GROW = 1.8
+
+// Positions for each artist, worked out from the space available, with every
+// record grown by grow and the ones below the top three by lowerGrow too.
+// spread drops the 2nd and 3rd records further down the panel.
+function arrange(space, grow, lowerGrow = 1, spread = 0) {
   const most = Math.max(1, ...props.artists.map(plays))
-  const largest = Math.min(150, space * 0.38)
+  const largest = Math.min(150, space * 0.38) * grow
   const smallest = Math.max(52, largest * 0.4)
   // On a narrow panel every record shrinks a little so the top three still
   // fit side by side.
@@ -55,8 +59,12 @@ const layout = computed(() => {
     GAP * (topThree.length - 1)
   let shrink = 1
   while (shrink > 0.5 && topWidth(shrink) > space) shrink -= 0.02
-  const boxes = props.artists.map((artist) => {
-    const size = Math.round(sizeOf(artist) * shrink)
+  // A record below the top three never outgrows the second.
+  const second = sizeOf(topThree[1] ?? topThree[0]) * shrink
+  const boxes = props.artists.map((artist, index) => {
+    const size = Math.round(
+      index < 3 ? sizeOf(artist) * shrink : Math.min(sizeOf(artist) * shrink * lowerGrow, second),
+    )
     const width = Math.max(size, TEXT_WIDTH)
     const name = nameWidth(artist.name)
     const lines = name > width ? 2 : 1
@@ -73,7 +81,12 @@ const layout = computed(() => {
   // The record and the name under it, as two separate areas, so another
   // record can sit beside a short name.
   const areas = (box) => [
-    { left: box.left + (box.width - box.size) / 2, top: box.top, width: box.size, height: box.size },
+    {
+      left: box.left + (box.width - box.size) / 2,
+      top: box.top,
+      width: box.size,
+      height: box.size,
+    },
     {
       left: box.left + (box.width - box.textWidth) / 2,
       top: box.top + box.size,
@@ -83,13 +96,15 @@ const layout = computed(() => {
   ]
   const clear = (box, others) =>
     areas(box).every((area) =>
-      others.flatMap(areas).every(
-        (other) =>
-          area.left + area.width + GAP <= other.left ||
-          other.left + other.width + GAP <= area.left ||
-          area.top + area.height + GAP <= other.top ||
-          other.top + other.height + GAP <= area.top,
-      ),
+      others
+        .flatMap(areas)
+        .every(
+          (other) =>
+            area.left + area.width + GAP <= other.left ||
+            other.left + other.width + GAP <= area.left ||
+            area.top + area.height + GAP <= other.top ||
+            other.top + other.height + GAP <= area.top,
+        ),
     )
 
   // The top three, 1, 2, 3 from left to right, spread across the panel with
@@ -101,7 +116,7 @@ const layout = computed(() => {
   let left = Math.max(0, (space - rowWidth - (gap - GAP) * (top.length - 1)) / 2)
   top.forEach((box, index) => {
     box.left = left
-    box.top = Math.round((top[0].size - box.size) * STAGGER[index])
+    box.top = Math.round((top[0].size - box.size) * STAGGER[index] + (spread * index) / 2)
     left += box.width + gap
   })
 
@@ -129,14 +144,54 @@ const layout = computed(() => {
   return {
     items: boxes,
     height: Math.max(...boxes.map((box) => box.top + box.height)),
+    width: Math.max(...boxes.map((box) => box.left + box.width)),
   }
+}
+
+// The records' natural size sets the list's least height. Beside a taller
+// Top Tracks list, the list stretches, and the records grow to fill it.
+const layout = computed(() => {
+  const space = width.value
+  if (!space || !props.artists.length) return { items: [], height: 0, minHeight: 0 }
+  const natural = arrange(space, 1)
+  const fits = (next) => next.height <= height.value && next.width <= space
+  let best = natural
+  let grow = 1
+  for (let next = 1.05; next <= MAX_GROW; next += 0.05) {
+    const tried = arrange(space, next)
+    if (!fits(tried)) break
+    best = tried
+    grow = next
+  }
+  // The top three run out of width first, so the records below them keep
+  // growing into the height that's left.
+  let lower = 1
+  for (let next = 1.05; next <= MAX_GROW * 1.5; next += 0.05) {
+    const tried = arrange(space, grow, next)
+    if (!fits(tried)) break
+    best = tried
+    lower = next
+  }
+  // Then the 2nd and 3rd records step down the panel, and the rest follow
+  // them, so the records spread over the whole height.
+  for (let spread = 8; spread <= height.value; spread += 8) {
+    const tried = arrange(space, grow, lower, spread)
+    if (!fits(tried)) break
+    best = tried
+  }
+  // Any height still left over goes between the two rows.
+  const spare = Math.max(0, height.value - best.height)
+  best.items.slice(3).forEach((box) => (box.top += spare * 0.5))
+  return { ...best, minHeight: natural.height }
 })
 
 let observer
 onMounted(() => {
   width.value = root.value.clientWidth
+  height.value = root.value.clientHeight
   observer = new ResizeObserver(([entry]) => {
     width.value = Math.floor(entry.contentRect.width)
+    height.value = Math.floor(entry.contentRect.height)
   })
   observer.observe(root.value)
 })
@@ -148,7 +203,7 @@ onBeforeUnmount(() => observer?.disconnect())
     ref="root"
     class="artist-list artist-records"
     :class="{ paused }"
-    :style="{ height: `${layout.height}px` }"
+    :style="{ minHeight: `${layout.minHeight}px` }"
   >
     <li
       v-for="(item, index) in layout.items"
@@ -197,6 +252,7 @@ onBeforeUnmount(() => observer?.disconnect())
 <style scoped>
 .artist-records {
   position: relative;
+  flex: 1;
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
@@ -264,7 +320,7 @@ onBeforeUnmount(() => observer?.disconnect())
 .record-label {
   position: relative;
   display: grid;
-  width: 40%;
+  width: 55%;
   aspect-ratio: 1;
   place-items: center;
   border-radius: 50%;
@@ -275,7 +331,7 @@ onBeforeUnmount(() => observer?.disconnect())
 /* The spindle hole, on labels showing album art. */
 .record-label.has-art::after {
   content: '';
-  width: 12%;
+  width: 9%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: #1d1719;

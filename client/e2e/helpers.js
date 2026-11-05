@@ -62,6 +62,15 @@ export const test = base.extend({
             return reply(entry, 201)
           }
         }
+        if (path === '/api/moods/streak')
+          return reply({
+            days: state.moods.length ? 1 : 0,
+            checkedInToday: state.moods.length > 0,
+            savers: 0,
+            maxSavers: 2,
+            nextSaverIn: state.moods.length ? 6 : 7,
+            savedYesterday: false,
+          })
         if (path === '/api/listens') return reply({ items: [] })
         if (path === '/api/listens/insights') return reply({ days: [], emotions: null })
         if (path === '/api/listens/overall-mood')

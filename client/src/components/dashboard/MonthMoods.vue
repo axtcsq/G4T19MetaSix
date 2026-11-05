@@ -69,21 +69,6 @@ const busiest = computed(() => Math.max(1, ...days.value.map((day) => day.plays)
 // Quiet days stay visible at a third of the colour.
 const strength = (day) => 0.35 + (0.65 * day.plays) / busiest.value
 
-// "Mostly Sad: 9 of 20 listening days, then Happy (6)."
-const summary = computed(() => {
-  const counts = AXES.map((axis) => ({
-    axis,
-    days: days.value.filter((day) => day.mood === axis).length,
-  }))
-    .filter((entry) => entry.days > 0)
-    .sort((a, b) => b.days - a.days)
-  if (!counts.length) return `No analysed plays in ${monthName.value} yet.`
-  const listened = counts.reduce((sum, entry) => sum + entry.days, 0)
-  const [top, next] = counts
-  const then = next ? `, then ${MOOD_NAME[next.axis]} (${next.days})` : ''
-  return `Mostly ${MOOD_NAME[top.axis]}: ${top.days} of ${listened} listening ${listened === 1 ? 'day' : 'days'}${then}.`
-})
-
 const dayLabel = (date) =>
   new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 function describe(day) {
@@ -152,7 +137,6 @@ const readout = computed(() => {
         </ol>
       </div>
       <div class="month-copy">
-        <p class="month-summary">{{ loading ? 'Reading your month…' : summary }}</p>
         <p class="month-readout" aria-live="polite">{{ readout }}</p>
         <RouterLink class="month-link" to="/calendar">Open the Mood Calendar →</RouterLink>
       </div>
@@ -274,10 +258,6 @@ const readout = computed(() => {
 .month-link:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
-}
-.month-summary {
-  margin: 0;
-  font: italic var(--text-body) / 1.5 var(--font-serif);
 }
 .month-readout,
 .month-status {

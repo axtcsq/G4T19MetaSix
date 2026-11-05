@@ -5,11 +5,12 @@ import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import TodayStory from '@/components/dashboard/TodayStory.vue'
-import MoodMusicChart from '@/components/dashboard/MoodMusicChart.vue'
 import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
 import ArtistRecords from '@/components/dashboard/ArtistRecords.vue'
+import TrackWaveform from '@/components/dashboard/TrackWaveform.vue'
 import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
 import MonthMoods from '@/components/dashboard/MonthMoods.vue'
+import CheckInStreak from '@/components/dashboard/CheckInStreak.vue'
 import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
@@ -29,6 +30,8 @@ const historyLabel = computed(() =>
 )
 const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
+// Each top track's colour from the waveform, for its play bar in the list.
+const songColors = ref({})
 // The last two weeks of logged moods and music moods, for the mood insights.
 const moodMusic = ref(null)
 const genreMix = ref(null)
@@ -101,6 +104,7 @@ watch(
         </div>
       </div>
       <TodayStory v-if="auth.user" />
+      <CheckInStreak />
       <p v-if="!connected">
         Connect Spotify to see your music at a glance.
         <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">
@@ -153,22 +157,14 @@ watch(
                 ><span>artists heard</span>
               </div>
             </div>
-            <p v-if="data.peak" class="peak-note">
-              Most recorded plays were around <strong>{{ data.peak }}</strong
-              >.
-            </p>
           </aside>
         </section>
-        <!-- Two wide rows: how the music sounded next to the logged moods, then
-             the moods the analysis heard. Always the last 14 days. -->
+        <!-- The moods the analysis heard. Always the last 14 days. -->
         <section class="restored-charts mood-insights" aria-label="Mood insights">
           <p v-if="moodMusicError" class="unavailable-note">
             Your mood insights couldn’t load right now.
           </p>
           <template v-else-if="moodMusic">
-            <article class="chart-panel">
-              <MoodMusicChart :data="moodMusic" />
-            </article>
             <article class="chart-panel">
               <MusicMoodsCard
                 v-if="moodMusic.musicMoods"
@@ -209,6 +205,12 @@ watch(
                 <h3>Top Tracks</h3>
                 <span>Plays</span>
               </div>
+              <TrackWaveform
+                :songs="data.songs"
+                :period="period"
+                :paused="motionPaused"
+                @colors="songColors = $event"
+              />
               <ol class="song-list">
                 <li v-for="(song, index) in data.songs" :key="song.title">
                   <span class="rank">{{ index + 1 }}</span
@@ -233,10 +235,20 @@ watch(
                       >{{ song.title }}<span class="sr-only">, see its mood</span></RouterLink
                     ><a v-else :href="song.url" target="_blank" rel="noopener noreferrer"
                       >{{ song.title }}<span class="sr-only"> on Spotify (opens new tab)</span></a
-                    ><span>{{ song.artist }}</span>
+                    ><span
+                      class="play-bar"
+                      :style="{
+                        width: `${(song[period] / data.songs[0][period]) * 100}%`,
+                        background: songColors[song.id],
+                      }"
+                      aria-hidden="true"
+                    /><span>{{ song.artist }}</span>
                     <div class="song-mood"><MoodTag :track-id="song.id" size="sm" /></div>
                   </div>
-                  <strong>{{ song[period] }}</strong>
+                  <strong class="play-count" :style="{ '--song': songColors[song.id] }"
+                    >{{ song[period]
+                    }}<span>{{ song[period] === 1 ? 'play' : 'plays' }}</span></strong
+                  >
                 </li>
               </ol>
             </article>
@@ -476,14 +488,6 @@ watch(
   color: var(--dash-muted);
   margin-top: 5px;
 }
-.peak-note {
-  margin-top: 24px !important;
-  font-size: var(--text-small);
-  max-width: 24ch !important;
-}
-.peak-note strong {
-  font-weight: 500;
-}
 .mood-layout {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -538,6 +542,11 @@ watch(
   grid-template-columns: 1fr 1fr;
   gap: 48px;
 }
+/* The records stretch down to the bottom of the Top Tracks list beside them. */
+.artists-panel {
+  display: flex;
+  flex-direction: column;
+}
 .artist-list,
 .song-list {
   list-style: none;
@@ -558,6 +567,12 @@ watch(
   color: var(--dash-muted);
   font-variant-numeric: tabular-nums;
 }
+.song-list .rank {
+  width: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
 .song-detail a {
   display: block;
   color: var(--dash-ink);
@@ -570,10 +585,25 @@ watch(
   text-decoration: underline;
   text-underline-offset: 5px;
 }
-.song-list strong {
-  font-size: var(--text-small);
-  font-weight: 500;
+/* Each song's plays in a pill tinted with its colour from the waveform. */
+.song-list .play-count {
+  display: grid;
+  flex-shrink: 0;
+  justify-items: center;
+  min-width: 64px;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--song, var(--dash-meter)) 55%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--song, var(--dash-meter)) 18%, transparent);
+  color: var(--dash-ink);
+  font: 600 24px/1 var(--font-serif);
   font-variant-numeric: tabular-nums;
+}
+.play-count span {
+  margin-top: 3px;
+  color: var(--dash-muted);
+  font: 500 11px var(--font-sans);
+  letter-spacing: 0.04em;
 }
 .song-art {
   display: block;
@@ -597,6 +627,27 @@ watch(
   display: block;
   font-size: var(--text-label);
   color: var(--dash-muted);
+}
+/* Plays against the top song, in the song's colour from the waveform. */
+.song-detail > .play-bar {
+  min-width: 8px;
+  max-width: 100%;
+  height: 6px;
+  margin: 5px 0 6px;
+  border-radius: 999px;
+  background: var(--dash-meter);
+  transform-origin: left;
+  animation: play-bar-grow 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes play-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .song-detail > .play-bar {
+    animation: none;
+  }
 }
 .song-mood {
   display: flex;
@@ -687,10 +738,6 @@ watch(
     gap: 14px;
     margin-top: 18px;
   }
-  .peak-note {
-    margin-top: 18px !important;
-    max-width: 35ch !important;
-  }
   .mood-layout {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -749,10 +796,6 @@ watch(
   font: 700 var(--text-header)/1.2 var(--font-sans);
   font-style: normal;
   margin-bottom: 8px;
-}
-.portrait-notes .peak-note {
-  font-size: var(--text-body);
-  max-width: 30ch !important;
 }
 .mood-layout,
 .habits-layout,

@@ -4,6 +4,11 @@ export function getMoods() {
   return api.get('/api/moods')
 }
 
+// The daily check-in streak and its streak savers.
+export function getStreak() {
+  return api.get('/api/moods/streak')
+}
+
 export function getMood(id) {
   return api.get(`/api/moods/${encodeURIComponent(id)}`)
 }

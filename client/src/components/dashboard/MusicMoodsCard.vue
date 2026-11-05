@@ -40,21 +40,6 @@ const mixedSongs = computed(() =>
   songMoods.value.filter((mood) => mood.mixed).map((mood) => mood.name),
 )
 
-const lead = computed(() => {
-  const [biggest] = groups.value
-  if (!biggest) return ''
-  const [song] = biggest.songs
-  return song
-    ? `Mostly ${biggest.name} (${biggest.share}%), led by ${song.name} songs.`
-    : `Mostly ${biggest.name} (${biggest.share}%).`
-})
-
-const match = computed(() => {
-  const { comparedDays, matchedDays } = props.data
-  if (!comparedDays) return 'Log your mood to compare it with your music.'
-  return `Matched your mood on ${matchedDays} of ${comparedDays} logged days.`
-})
-
 const source = computed(() =>
   props.data.lens === 'lyrics' ? 'From sound and lyrics' : 'From sound',
 )
@@ -64,7 +49,6 @@ const source = computed(() =>
   <div class="music-moods">
     <div class="moods-copy">
       <h3 class="sub-header">Your Music’s Moods</h3>
-      <p class="insight-text mt-2">{{ lead }} {{ match }}</p>
       <p class="source-note">{{ source }} · last 14 days · {{ data.plays }} plays</p>
 
       <!-- Beside the river, so the card stays short. -->
@@ -79,7 +63,9 @@ const source = computed(() =>
                   group.name
                 }}</strong
               >
-              <span class="group-share">{{ group.share }}%</span>
+              <span class="group-share" :style="{ '--mood': colour(group.axis) }"
+                >{{ group.share }}%</span
+              >
             </span>
             <span class="group-bar" aria-hidden="true">
               <span :style="{ width: `${group.share}%`, background: colour(group.axis) }" />
@@ -97,6 +83,22 @@ const source = computed(() =>
 
     <div class="moods-visual">
       <MoodRiver v-if="dates.length" :from="dates[0]" :to="dates.at(-1)" />
+      <!-- The same shares as the breakdown, as dials. -->
+      <ul class="mood-dials" aria-label="Your music's moods as dials">
+        <li v-for="group in groups" :key="group.axis" class="mood-dial">
+          <svg class="dial-gauge" viewBox="0 0 100 56" aria-hidden="true">
+            <path class="dial-track" d="M8 50 A42 42 0 0 1 92 50" pathLength="100" />
+            <path
+              class="dial-fill"
+              d="M8 50 A42 42 0 0 1 92 50"
+              pathLength="100"
+              :style="{ stroke: colour(group.axis), strokeDasharray: `${group.share} 100` }"
+            />
+          </svg>
+          <strong>{{ group.share }}%</strong>
+          <span>{{ group.name }}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -113,12 +115,6 @@ const source = computed(() =>
   font-family: var(--font-sans);
   font-size: var(--text-subheader);
   font-weight: 600;
-}
-
-.insight-text {
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.4;
 }
 
 .source-note {
@@ -157,7 +153,7 @@ const source = computed(() =>
    with the song moods inside it on a small line underneath. */
 .mood-group {
   display: grid;
-  grid-template-columns: 6.5rem minmax(0, 1fr) 2.75rem;
+  grid-template-columns: 6.5rem minmax(0, 1fr) 4rem;
   align-items: center;
   column-gap: 0.75rem;
   row-gap: 0;
@@ -180,11 +176,18 @@ const source = computed(() =>
   gap: 0.45rem;
 }
 
+/* Each share in a pill tinted with its mood, like Top Tracks' play counts. */
 .group-share {
   grid-column: 3;
-  font-weight: 700;
+  justify-self: end;
+  min-width: 3.5rem;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--mood) 55%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--mood) 18%, transparent);
+  font: 600 1.15rem/1 var(--font-serif);
   font-variant-numeric: tabular-nums;
-  text-align: right;
+  text-align: center;
 }
 
 .group-bar {
@@ -234,8 +237,65 @@ const source = computed(() =>
   }
 }
 
+.mood-dials {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-sans);
+  text-align: center;
+}
+
+.mood-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.dial-gauge {
+  width: 100%;
+  max-width: 90px;
+  overflow: visible;
+}
+
+.dial-gauge path {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.dial-track {
+  stroke: color-mix(in srgb, var(--ui-text) 10%, transparent);
+}
+
+/* Each dial fills from empty to its share. */
+.dial-fill {
+  animation: dial-fill 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mood-dial strong {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mood-dial span {
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+}
+
+@keyframes dial-fill {
+  from {
+    stroke-dasharray: 0 100;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .group-bar span {
+  .group-bar span,
+  .dial-fill {
     animation: none;
   }
 }

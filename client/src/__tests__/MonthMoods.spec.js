@@ -35,7 +35,6 @@ describe('Month at a glance', () => {
     expect(days.at(0).attributes('aria-label')).toContain('mostly Sad · 8 plays')
     expect(days.at(1).attributes('aria-label')).toContain('3 plays, not analysed yet')
     expect(days.at(3).attributes('disabled')).toBeDefined()
-    expect(month.find('.month-summary').text()).toBe('Mostly Sad: 2 of 2 listening days.')
 
     await days.at(2).trigger('click')
     expect(month.find('.month-readout').text()).toContain('mostly Sad · 4 plays')
@@ -48,7 +47,6 @@ describe('Month at a glance', () => {
     await flushPromises()
 
     expect(month.find('[aria-label="Next month"]').attributes('disabled')).toBeDefined()
-    expect(month.find('.month-summary').text()).toContain('No analysed plays')
     await month.find('[aria-label="Previous month"]').trigger('click')
     await flushPromises()
     expect(getMoodInsights).toHaveBeenLastCalledWith('2026-09-01', '2026-09-30')

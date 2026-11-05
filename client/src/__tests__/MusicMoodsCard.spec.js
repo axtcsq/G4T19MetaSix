@@ -32,12 +32,11 @@ describe("Your Music's Moods", () => {
     expect(card.text()).toContain('* Also counts partly as another mood.')
   })
 
-  it('says the biggest mood in plain words', () => {
+  it('notes where the moods come from', () => {
     const card = mount(MusicMoodsCard, { props: { data } })
 
-    expect(card.find('.insight-text').text()).toBe(
-      'Mostly Sad (56%), led by Melancholic songs. Matched your mood on 2 of 8 logged days.',
+    expect(card.find('.source-note').text()).toBe(
+      'From sound and lyrics · last 14 days · 100 plays',
     )
-    expect(card.find('.source-note').text()).toBe('From sound and lyrics · last 14 days · 100 plays')
   })
 })

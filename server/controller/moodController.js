@@ -8,6 +8,7 @@ import {
   removeMoodLog,
   retrieveMoodLogs,
 } from "../models/MoodLog.js";
+import { checkInStreak } from "../services/streak.js";
 
 function validId(id) {
   return mongoose.isObjectIdOrHexString(id);
@@ -178,6 +179,12 @@ export async function getMoods(req, res) {
   const logs = await retrieveMoodLogs(req.user._id);
 
   res.json(logs);
+}
+
+// READ STREAK
+// The daily check-in streak and its streak savers, for Home.
+export async function getStreak(req, res) {
+  res.json(await checkInStreak(req.user));
 }
 
 // READ ONE

@@ -107,7 +107,7 @@ describe('Spotify listening portrait', () => {
     const chart = mount(ListeningChart, { props: { type: 'hours', data } })
     const wedges = chart.findAll('.hour-wedge')
     expect(wedges).toHaveLength(24)
-    expect(chart.find('.hours-summary').text()).toContain('1 pm')
+    expect(chart.find('.hour-clock').attributes('aria-label')).toContain('Busiest at 1 pm')
     expect(wedges.at(13).classes()).toContain('peak')
     expect(chart.find('.clock-hand').exists()).toBe(true)
     await wedges.at(23).trigger('click')
