@@ -15,6 +15,8 @@ defineOptions({ name: "MoodCalendar" })
 
 const musicMoodLabel = { happy: 'Uplifting', calm: 'Calm', sad: 'Melancholic', tense: 'Intense' }
 const musicMoodType = { happy: 'Happy', calm: 'Relaxed', sad: 'Sad', tense: 'Anxious' }
+// Moods whose face differs from their group's, matching the server's mood axes.
+const SONG_MOOD_FACES = { Aggressive: 'Angry', 'Hope in the dark': 'Happy' }
 const today = new Date()
 const shownMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 const selectedDate = ref(null)
@@ -151,7 +153,7 @@ function dayFaceFor(date) {
   const journal = moodFor(date)
   if (journal) return { type: journal, title: `Journal mood: ${journal}` }
   const listening = listeningMoodFor(date)
-  return listening && { type: moodFaceType(listening.family), title: `Listening mood: ${listening.name}` }
+  return listening && { type: listening.face, title: `Listening mood: ${listening.name}` }
 }
 const selectedOverall = computed(() => selectedDate.value && overallByDate.value.get(selectedKey.value))
 const combinedTarget = computed(() => {
@@ -259,7 +261,11 @@ function listeningMoodFor(date) {
   }
   const winner = [...counts.values()].sort((a, b) => b.count - a.count)[0]
   const songMoodName = [...winner.names].sort((a, b) => b[1] - a[1])[0]?.[0]
-  return { family: winner.family, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
+  return {
+    family: winner.family,
+    name: songMoodName || musicMoodLabel[winner.family] || 'Mixed',
+    face: SONG_MOOD_FACES[songMoodName] || moodFaceType(winner.family),
+  }
 }
 function moodFaceType(mood) { return musicMoodType[mood] || mood }
 function moodFaceClass(mood) {
@@ -452,8 +458,8 @@ onMounted(() => {
             <section class="day-detail-column listening-column" aria-labelledby="listening-history-title">
               <h4 id="listening-history-title" class="column-title">Songs You Played <span>{{ selectedListens.length }}</span></h4>
               <div v-if="selectedListeningMood" class="listening-mood-summary">
-                <span class="listening-mood-icon mood-reaction" :class="moodFaceClass(selectedListeningMood.family)">
-                  <MoodFace :mood="moodFaceType(selectedListeningMood.family)" class="button-mood-face listening-face-svg" />
+                <span class="listening-mood-icon mood-reaction" :class="moodFaceClass(selectedListeningMood.face)">
+                  <MoodFace :mood="selectedListeningMood.face" class="button-mood-face listening-face-svg" />
                 </span>
                 <span class="listening-mood-copy"><small>Most common music mood</small><strong>{{ selectedListeningMood.name }}</strong></span>
               </div>
