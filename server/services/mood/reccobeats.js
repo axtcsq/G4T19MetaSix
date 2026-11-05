@@ -1,7 +1,5 @@
-/* ------------------------------------------------------------------ */
-/* Audio features from ReccoBeats (https://reccobeats.com). Free, no */
-/* key. Same 0–1 values as Spotify's retired audio-features endpoint. */
-/* ------------------------------------------------------------------ */
+// Audio features from ReccoBeats (https://reccobeats.com). Free, no
+// key. Same 0–1 values as Spotify's retired audio-features endpoint.
 import { HttpError, busyStatus } from './errors.js'
 
 const BASE_URL = 'https://api.reccobeats.com/v1'
@@ -12,7 +10,7 @@ function failed(res) {
   return error
 }
 
-/** Features for whichever of these Spotify IDs ReccoBeats knows, in the order given. */
+// * Features for whichever of these Spotify IDs ReccoBeats knows, in the order given.
 async function lookup(ids) {
   if (!ids.length) return []
   const res = await fetch(`${BASE_URL}/audio-features?${new URLSearchParams({ ids: ids.join(',') })}`, { signal: AbortSignal.timeout(10000) })
@@ -29,7 +27,7 @@ const SEARCH_PAGES = 4
 // Search answers 400 for shorter text, e.g. two-character Japanese titles like "灯火".
 const MIN_SEARCH_LENGTH = 3
 
-/** Find ReccoBeats track IDs for an ISRC. */
+// * Find ReccoBeats track IDs for an ISRC.
 export async function idsForIsrc(title, isrc) {
   if (!title || !isrc || title.trim().length < MIN_SEARCH_LENGTH) return []
   for (let page = 0; page < SEARCH_PAGES; page++) {
@@ -44,7 +42,7 @@ export async function idsForIsrc(title, isrc) {
   return []
 }
 
-/** Fetch audio features, trying alternate IDs when needed. */
+// * Fetch audio features, trying alternate IDs when needed.
 export async function getAudioFeatures(id, { fallbacks = [] } = {}) {
   let [match] = await lookup([id])
   for (const otherIds of fallbacks) {

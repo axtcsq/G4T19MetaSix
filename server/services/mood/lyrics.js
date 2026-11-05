@@ -1,6 +1,4 @@
-/* ------------------------------------------------------------------ */
-/* Lyrics from LRCLIB (https://lrclib.net). Free, no key. */
-/* ------------------------------------------------------------------ */
+// Lyrics from LRCLIB (https://lrclib.net). Free, no key.
 import { existsSync } from 'node:fs'
 import { busyStatus } from './errors.js'
 
@@ -30,12 +28,10 @@ async function lrclib(path, params) {
 
 const toResult = (rec) => (rec ? { instrumental: Boolean(rec.instrumental), text: rec.plainLyrics ?? '' } : null)
 
-/* ------------------------------------------------------------------ */
-/* Optional local copy of LRCLIB's database (lrclib.net/db-dumps), */
-/* for running the analysis job on a laptop while the live API is */
-/* overloaded. Set LRCLIB_DB_PATH in .env to the downloaded SQLite */
-/* file. It's only read; songs it doesn't have go to the live API. */
-/* ------------------------------------------------------------------ */
+// Optional local copy of LRCLIB's database (lrclib.net/db-dumps),
+// for running the analysis job on a laptop while the live API is
+// overloaded. Set LRCLIB_DB_PATH in .env to the downloaded SQLite
+// file. It's only read; songs it doesn't have go to the live API.
 const DUMP_COLUMNS = {
   tracks: ['name_lower', 'artist_name_lower', 'album_name_lower', 'duration', 'last_lyrics_id'],
   lyrics: ['id', 'plain_lyrics', 'instrumental'],
@@ -47,7 +43,7 @@ function nameForms(text = '') {
   return [lower, lower.normalize('NFD').replace(/\p{M}/gu, '').normalize('NFC')]
 }
 
-/** Open a local LRCLIB dump for lyric lookups. */
+// * Open a local LRCLIB dump for lyric lookups.
 export async function openLyricsDump(path) {
   // Loaded here so the server and the GitHub job never need node:sqlite.
   const { DatabaseSync } = await import('node:sqlite')
@@ -151,7 +147,7 @@ async function wideSearch(track, seconds) {
   return null
 }
 
-/** Find lyrics for a Spotify track. */
+// * Find lyrics for a Spotify track.
 export async function findLyrics(track) {
   const local = (await localDump())?.(track)
   if (local) return local

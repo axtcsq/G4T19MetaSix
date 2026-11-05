@@ -1,9 +1,7 @@
-/* ------------------------------------------------------------------ */
-/* Lyric translation with DeepL (https://www.deepl.com/pro-api). */
-/* The emotion model only reads English, so other languages are */
-/* translated first. English lyrics never reach DeepL, so they cost */
-/* no quota and score exactly as before. */
-/* ------------------------------------------------------------------ */
+// Lyric translation with DeepL (https://www.deepl.com/pro-api).
+// The emotion model only reads English, so other languages are
+// translated first. English lyrics never reach DeepL, so they cost
+// no quota and score exactly as before.
 import { busyStatus } from './errors.js'
 
 // Free-plan keys end in ":fx" and use a separate host.
@@ -31,7 +29,7 @@ export function isEnglish(text) {
   return latin / words.length >= MIN_LATIN && common / words.length >= MIN_COMMON
 }
 
-/** Translate lyric chunks to English for emotion scoring. */
+// * Translate lyric chunks to English for emotion scoring.
 export async function translateToEnglish(chunks) {
   const key = process.env.DEEPL_API_KEY?.trim()
   if (!key) throw new Error('DEEPL_API_KEY is not set')

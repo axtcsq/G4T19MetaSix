@@ -1,7 +1,5 @@
-/* ------------------------------------------------------------------ */
-/* Track details and search for the ISRC fallback. App-only login */
-/* (client credentials), so it needs no user. */
-/* ------------------------------------------------------------------ */
+// Track details and search for the ISRC fallback. App-only login
+// (client credentials), so it needs no user.
 import { HttpError, busyStatus } from './errors.js'
 
 const BASE_URL = 'https://api.spotify.com'
@@ -69,7 +67,7 @@ async function searchTracks(q, { limit = 10, market = 'US' } = {}) {
   return body?.tracks?.items ?? []
 }
 
-/** One track's details. Development-mode apps can't fetch several at once. */
+// * One track's details. Development-mode apps can't fetch several at once.
 export const getTrack = (id) => get(`/v1/tracks/${encodeURIComponent(id)}`)
 
 // Space fallback searches to avoid Spotify rate limits.
@@ -83,7 +81,7 @@ async function waitForSearchSlot() {
   if (at > now) await new Promise((resolve) => setTimeout(resolve, at - now))
 }
 
-/** Find alternate Spotify IDs for the same recording. */
+// * Find alternate Spotify IDs for the same recording.
 export async function sameRecordingIds({ id, isrc }) {
   if (!isrc) return []
   let hits

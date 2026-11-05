@@ -1,11 +1,9 @@
-/* ------------------------------------------------------------------ */
-/* Lyric emotion with a local transformer model (Transformers.js). */
-/* The model (~83 MB) downloads once into server/.models; after that */
-/* it runs offline with no API and no limits. */
-/*  */
-/* Unlike a word list, the model reads a whole verse in context, so */
-/* "outrun my gun" reads as anger rather than "better" = positive. */
-/* ------------------------------------------------------------------ */
+// Lyric emotion with a local transformer model (Transformers.js).
+// The model (~83 MB) downloads once into server/.models; after that
+// it runs offline with no API and no limits.
+//
+// Unlike a word list, the model reads a whole verse in context, so
+// "outrun my gun" reads as anger rather than "better" = positive.
 import { env, pipeline } from '@huggingface/transformers'
 import { fileURLToPath } from 'node:url'
 
@@ -35,7 +33,7 @@ corpse coffin cocaine heroin`.split(/\s+/))
 const MIN_DARK_WORDS = 2
 const MIN_DARK_RATE = 0.005
 
-/** The dark-theme words in the text, or [] when they don't amount to a theme. */
+// * The dark-theme words in the text, or [] when they don't amount to a theme.
 export function darkThemes(text) {
   const words = text.toLowerCase().match(/[a-z']+/g) ?? []
   const hits = words.filter((w) => DARK_WORDS.has(w))
@@ -57,7 +55,7 @@ function getClassifier() {
   return classifier
 }
 
-/** Loads the model, rejecting if it can't. The job calls this before analysing anything. */
+// * Loads the model, rejecting if it can't. The job calls this before analysing anything.
 export const loadModel = getClassifier
 
 // Start loading at boot so the first song doesn't wait for it.
@@ -67,7 +65,7 @@ export function warmUp() {
     .catch((err) => console.warn('Emotion model failed to load:', err.message))
 }
 
-/** Splits lyrics into verses (blank-line separated), capping very long ones. */
+// * Splits lyrics into verses (blank-line separated), capping very long ones.
 export function toChunks(text) {
   const chunks = []
   for (const verse of text.split(/\n\s*\n/)) {
@@ -78,7 +76,7 @@ export function toChunks(text) {
   return chunks.filter((c) => c.length)
 }
 
-/** Score lyrics, using translations for non-English verses when available. */
+// * Score lyrics, using translations for non-English verses when available.
 export async function scoreLyrics(text, { translations = null } = {}) {
   const classify = await getClassifier()
 
