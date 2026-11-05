@@ -200,16 +200,16 @@ onBeforeUnmount(clearImage)
 .share-button {
   display: flex;
   flex: 1;
-  min-height: 48px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--pq-border);
-  border-radius: 10px;
+  border-radius: 999px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
 }

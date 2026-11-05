@@ -240,9 +240,9 @@ onMounted(loadQuiz)
 
 .quiz-option {
   min-height: 55px;
-  padding: 0.75rem 1.1rem;
+  padding: 0.75rem 1.5rem;
   border: 1px solid var(--pq-border);
-  border-radius: 10px;
+  border-radius: 28px;
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
@@ -274,18 +274,17 @@ onMounted(loadQuiz)
 
 .peach-button {
   display: flex;
-  min-height: 55px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   padding-inline: 1.5rem;
   border: 1px solid var(--pq-border);
-  border-radius: 10px;
+  border-radius: 999px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-sans);
-  font-size: var(--text-small);
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -333,12 +332,14 @@ onMounted(loadQuiz)
 }
 
 .back-button {
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
   color: var(--pq-brown);
   background: transparent;
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: 700;
   cursor: pointer;
 }
 

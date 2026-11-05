@@ -635,18 +635,17 @@ onMounted(loadPage)
 .peach-button {
   display: flex;
   width: 100%;
-  min-height: 55px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   margin-top: 0.75rem;
   border: 1px solid var(--pq-border);
-  border-radius: 10px;
+  border-radius: 999px;
   color: var(--pq-on-peach);
   background: var(--pq-peach);
-  box-shadow: 0 4px 4px var(--pq-shadow);
   font-family: var(--font-sans);
-  font-size: var(--text-small);
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -699,11 +698,12 @@ onMounted(loadPage)
 
 /* View result takes the room, and Retake is a square icon button beside it. */
 .card-actions.card-actions--retry {
-  grid-template-columns: 1fr 55px;
+  grid-template-columns: 1fr 44px;
 }
 
 .retry-button {
   padding: 0;
+  border-radius: 50%;
 }
 
 .card-actions {
@@ -742,7 +742,7 @@ onMounted(loadPage)
   top: 1rem;
   right: 0;
   display: flex;
-  height: 42px;
+  height: 44px;
   align-items: center;
   gap: 0.5rem;
   padding-inline: 1rem;
@@ -751,8 +751,8 @@ onMounted(loadPage)
   color: #fff;
   background: rgba(255, 255, 255, 0.14);
   font-family: var(--font-sans);
-  font-size: var(--text-small);
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: 700;
   cursor: pointer;
   backdrop-filter: blur(4px);
   transition:
@@ -1362,7 +1362,11 @@ onMounted(loadPage)
 
 .song-actions {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.5rem;
+}
+
+.song-actions .peach-button {
+  margin-top: 0;
 }
 
 .insights-row {
@@ -1429,7 +1433,6 @@ onMounted(loadPage)
   .song-actions .peach-button {
     margin-top: 0;
     padding: 0.5rem 0.75rem;
-    font-size: var(--text-small);
     line-height: 1.2;
     text-align: center;
   }
