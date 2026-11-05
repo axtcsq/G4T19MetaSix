@@ -5,6 +5,7 @@ import { getPersonality, getPersonalityTypes, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
 import SiteFooter from '@/components/layout/footer.vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import PersonalityBreakdown from '@/components/personality/PersonalityBreakdown.vue'
 import ShareCardDialog from '@/components/personality/ShareCardDialog.vue'
 import TraitBar from '@/components/personality/TraitBar.vue'
@@ -194,9 +195,7 @@ onMounted(loadPage)
           </div>
         </div>
 
-        <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-10 text-muted">
-          Loading quizzes...
-        </p>
+        <RecordLoader v-if="isLoading" label="Loading quizzes…" />
 
         <div v-else-if="loadError" role="alert" class="mt-10">
           <p class="text-sm text-error">{{ loadError }}</p>

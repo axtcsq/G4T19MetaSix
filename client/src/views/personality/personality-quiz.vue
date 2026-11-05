@@ -93,9 +93,7 @@ onMounted(loadQuiz)
     <main class="mx-auto w-[min(48rem,var(--page-width))] flex-1 pt-(--page-top) pb-(--page-bottom)">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
-      <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-8 text-muted">
-        Preparing your quiz...
-      </p>
+      <RecordLoader v-if="isLoading" label="Preparing your quiz…" />
 
       <div v-else-if="loadError" role="alert" class="mt-8">
         <p class="text-sm text-error">{{ loadError }}</p>

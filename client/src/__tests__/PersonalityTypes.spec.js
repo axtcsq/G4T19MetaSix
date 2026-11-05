@@ -131,6 +131,22 @@ describe('A Song for You', () => {
   })
 })
 
+describe('Loading the quizzes', () => {
+  it('shows the spinning record until they arrive', async () => {
+    vi.clearAllMocks()
+    getPersonalityTypes.mockResolvedValue(TYPES)
+    getPersonality.mockResolvedValue(null)
+    let finish
+    getQuizzes.mockReturnValue(new Promise((resolve) => { finish = resolve }))
+    const hub = await mountHub()
+    expect(hub.find('.record-loader').text()).toBe('Loading quizzes…')
+
+    finish(QUIZZES)
+    await flushPromises()
+    expect(hub.find('.record-loader').exists()).toBe(false)
+  })
+})
+
 describe('A quiz not taken yet', () => {
   it('has the same parts as a taken one', async () => {
     vi.clearAllMocks()
