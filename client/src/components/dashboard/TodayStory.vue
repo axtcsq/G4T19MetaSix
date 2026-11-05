@@ -5,6 +5,7 @@ import ButterflyMark from '@/components/layout/ButterflyMark.vue'
 import { getListens } from '@/api/listens'
 import { getMoods } from '@/api/moods'
 import { getTrackMoods } from '@/api/tracks'
+import { useDailyMetaphor } from '@/composables/useDailyMetaphor'
 
 // Show a story summary of today's mood and listening activity.
 const MOOD_COLOURS = {
@@ -37,6 +38,7 @@ const AXIS_MOOD = {
 const DAYS_BACK = 7
 const SNIPPET = 140
 
+const metaphor = useDailyMetaphor()
 const loaded = ref(false)
 const listens = ref([])
 const todayLog = ref(null)
@@ -196,6 +198,15 @@ const slides = computed(() => {
       colour: '#4389d1',
     })
   }
+
+  list.push({
+    kicker: 'Today’s metaphor',
+    quote: metaphor.line.value,
+    text: metaphor.basis.value,
+    colour: '#7d4737',
+    // A whole sentence to read, so it stays up a little longer.
+    ms: 8000,
+  })
 
   list.push(
     log

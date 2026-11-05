@@ -14,7 +14,7 @@ const EXAMPLE_WEEK = [
 ]
 
 const props = defineProps({
-  // { kicker, big, image, title, text, colour, type, link: { to, text }, last }
+  // { kicker, big, image, title, quote, text, colour, type, link: { to, text }, ms, last }
   // Leave out for the landing page's example week.
   slides: { type: Array, default: null },
   label: { type: String, default: 'How MetaFor works, an example week' },
@@ -38,7 +38,7 @@ function tick(time) {
   if (lastTime === undefined) lastTime = time
   if (!paused.value) elapsed.value += time - lastTime
   lastTime = time
-  if (elapsed.value >= SLIDE_MS && !slide.value.last) go(1)
+  if (elapsed.value >= (slide.value.ms ?? SLIDE_MS) && !slide.value.last) go(1)
 }
 
 function go(step) {
@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
 const fill = (position) => {
   if (position < index.value) return '100%'
   if (position > index.value) return '0%'
-  return `${Math.min(100, (elapsed.value / SLIDE_MS) * 100)}%`
+  return `${Math.min(100, (elapsed.value / (slide.value.ms ?? SLIDE_MS)) * 100)}%`
 }
 </script>
 
@@ -149,8 +149,9 @@ const fill = (position) => {
             <img v-else-if="slide.image" class="story-art" :src="slide.image" alt="" width="160" height="160" />
             <p class="story-kicker">{{ slide.kicker }}</p>
             <p v-if="slide.big" class="story-big">{{ slide.big }}</p>
-            <h2>{{ slide.title }}</h2>
-            <p class="story-text">{{ slide.text }}</p>
+            <h2 v-if="slide.title">{{ slide.title }}</h2>
+            <blockquote v-if="slide.quote" class="story-quote">{{ slide.quote }}</blockquote>
+            <p v-if="slide.text" class="story-text">{{ slide.text }}</p>
             <div v-if="slide.link && !slide.last" class="story-actions">
               <RouterLink class="story-cta glass-action" :to="slide.link.to" @click="close">{{ slide.link.text }}</RouterLink>
             </div>
@@ -349,6 +350,13 @@ const fill = (position) => {
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.05;
+}
+.story-quote {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-style: italic;
+  line-height: 1.25;
 }
 .story-text {
   margin: 0;
