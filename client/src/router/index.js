@@ -19,13 +19,13 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
-    meta: { title: 'Home' },
+    meta: { requiresAuth: true, title: 'Home' },
   },
   {
     path: '/listen',
     name: 'listen',
     component: () => import('../views/listen.vue'),
-    meta: { title: 'Listening Room' },
+    meta: { requiresAuth: true, title: 'Listening Room' },
   },
   {
     path: '/',
