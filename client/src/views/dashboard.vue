@@ -17,6 +17,11 @@ import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
 import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'ListeningDashboard' })
 
+const periods = [
+  { value: 'daily', label: 'Today' },
+  { value: 'weekly', label: 'Last 7 days' },
+  { value: 'monthly', label: 'Last 30 days' },
+]
 const period = ref('weekly')
 const spotify = useSpotifyHistory()
 const { connected, source, busy, history, historyLoading, historyError, error } = spotify
@@ -91,14 +96,14 @@ watch(
         <div class="dashboard-toolbar" data-ui>
           <div class="period-control" role="group" aria-label="Listening period">
             <button
-              v-for="option in ['weekly', 'monthly']"
-              :key="option"
+              v-for="option in periods"
+              :key="option.value"
               type="button"
               class="glass-secondary"
-              :aria-pressed="period === option"
-              @click="period = option"
+              :aria-pressed="period === option.value"
+              @click="period = option.value"
             >
-              {{ option === 'weekly' ? 'Last 7 days' : 'This month' }}
+              {{ option.label }}
             </button>
           </div>
         </div>
@@ -294,7 +299,8 @@ watch(
             <div class="panel-heading"><h3>Month at a Glance</h3></div>
             <MonthMoods />
           </article>
-          <article class="chart-panel">
+          <!-- A single day would be one lone bar, so Today leaves this chart out. -->
+          <article v-if="period !== 'daily'" class="chart-panel">
             <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart
               :key="`days-${period}`"
@@ -409,6 +415,7 @@ watch(
 }
 .period-control {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .period-control button {

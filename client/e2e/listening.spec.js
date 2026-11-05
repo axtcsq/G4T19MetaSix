@@ -31,8 +31,8 @@ test('dashboard switches listening periods', async ({ page, app }) => {
     'aria-pressed',
     'true',
   )
-  await page.getByRole('button', { name: 'This month', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'This month', exact: true })).toHaveAttribute(
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Last 30 days', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   )
@@ -43,6 +43,92 @@ test('dashboard switches listening periods', async ({ page, app }) => {
   await expect(page.locator('.play-equaliser')).toBeVisible()
   await page.locator('.play-equaliser button').first().click()
   await expect(page.locator('.chart-days .calendar-readout')).toContainText('recorded plays')
+})
+
+test('dashboard loads and shows the last 30 days', async ({ page, app }) => {
+  await dashboardHistory(page, app)
+  const day = 24 * 60 * 60 * 1000
+  await page.route('**/api/listens?**', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            played_at: new Date(Date.now() - 25 * day).toISOString(),
+            track: {
+              id: 'older',
+              name: 'Played weeks ago',
+              artists: [{ id: 'artist', name: 'Test artist' }],
+              album: { images: [] },
+            },
+          },
+        ],
+      },
+    }),
+  )
+  // Today's story asks for plays too, with its own smaller limit.
+  const request = page.waitForRequest(
+    (sent) => sent.url().includes('/api/listens?') && sent.url().includes('limit=2000'),
+  )
+  await page.goto('/dashboard')
+  const from = new URL((await request).url()).searchParams.get('from')
+  // Midnight 29 days ago in the browser's time zone, which can differ from this test's.
+  const earliest = await page.evaluate(() => {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    date.setDate(date.getDate() - 29)
+    return date.getTime()
+  })
+  expect(new Date(from).getTime()).toBe(earliest)
+
+  const songs = page.locator('.song-list li')
+  await expect(songs).toHaveCount(0)
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
+  await expect(songs).toHaveCount(1)
+  await expect(songs.first()).toContainText('Played weeks ago')
+  await expect(page.locator('.play-equaliser button')).toHaveCount(30)
+  await page.locator('.play-equaliser').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: 'test-results/dashboard-30-days.png', fullPage: true })
+})
+
+test('dashboard can show only today', async ({ page, app }) => {
+  await dashboardHistory(page, app)
+  const track = (id) => ({
+    id,
+    name: id,
+    artists: [{ id: 'artist', name: 'Test artist' }],
+    album: { images: [] },
+  })
+  await page.route('**/api/listens?**', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          { played_at: new Date().toISOString(), track: track('Played today') },
+          {
+            played_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            track: track('Played earlier'),
+          },
+        ],
+      },
+    }),
+  )
+  await page.goto('/dashboard')
+  const songs = page.locator('.song-list li')
+  await expect(songs).toHaveCount(2)
+  await expect(page.locator('.play-equaliser')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Today', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Today', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(songs).toHaveCount(1)
+  await expect(songs.first()).toContainText('Played today')
+  await expect(page.locator('.play-equaliser')).toHaveCount(0)
+  await page.screenshot({ path: 'test-results/dashboard-today.png', fullPage: true })
+
+  await page.setViewportSize({ width: 320, height: 700 })
+  const controls = await page.locator('.period-control').boundingBox()
+  expect(controls.x + controls.width).toBeLessThanOrEqual(320)
 })
 
 test('genre mix highlights real shares and fits desktop and mobile', async ({ page, app }) => {
@@ -65,7 +151,7 @@ test('genre mix highlights real shares and fits desktop and mobile', async ({ pa
   await expect(genre).toBeVisible()
   await genre.getByRole('button', { name: 'rock 63%' }).focus()
   await expect(genre.locator('.disc-label')).toContainText('63%')
-  await page.getByRole('button', { name: 'This month', exact: true }).click()
+  await page.getByRole('button', { name: 'Last 30 days', exact: true }).click()
   await page.locator('.play-equaliser').scrollIntoViewIfNeeded()
   await page.screenshot({ path: 'test-results/dashboard-desktop.png', fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })

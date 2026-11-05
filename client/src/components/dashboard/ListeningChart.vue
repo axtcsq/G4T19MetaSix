@@ -13,7 +13,7 @@ const selectedHour = ref(null)
 const dayReadout = computed(() => props.data.daily.find((day) => day.date === selectedDay.value))
 
 // The days equaliser: one column of blocks per day, the busiest day full.
-// A month only labels every fifth date, so thirty columns still fit a phone.
+// Thirty days only label every fifth column, so they still fit a phone.
 const EQUALISER_BLOCKS = 10
 const busiestDay = computed(() =>
   props.data.daily.findIndex((day) => day.value === dailyMaximum.value),
@@ -22,7 +22,11 @@ const isMonth = computed(() => props.data.period === 'monthly')
 const litBlocks = (value) =>
   value ? Math.max(1, Math.round((value / dailyMaximum.value) * EQUALISER_BLOCKS)) : 0
 const dayLabel = (point, index) =>
-  isMonth.value ? (index === 0 || (index + 1) % 5 === 0 ? index + 1 : '') : point.label
+  isMonth.value
+    ? index === 0 || (index + 1) % 5 === 0
+      ? Number(point.date.slice(8))
+      : ''
+    : point.label
 // Each column bounces at its own pace, so the bars never move in step. The
 // bounce waits for the rise-in to finish.
 const bounceStyle = (index) => ({

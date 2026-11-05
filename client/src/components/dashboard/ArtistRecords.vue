@@ -4,7 +4,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 // Display top artists as records sized by play count.
 const props = defineProps({
   artists: { type: Array, required: true },
-  // 'weekly' or 'monthly', the key that holds each artist's plays.
+  // 'daily', 'weekly' or 'monthly', the key that holds each artist's plays.
   period: { type: String, required: true },
   paused: Boolean,
 })

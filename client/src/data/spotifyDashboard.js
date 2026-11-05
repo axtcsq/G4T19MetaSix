@@ -2,8 +2,10 @@
 export function getDashboard(period, history = [], now = new Date()) {
   const start = new Date(now)
   start.setHours(0, 0, 0, 0)
+  // 'daily' is today, so it keeps the midnight set above. The other periods count
+  // today too: 'weekly' is the last 7 days and 'monthly' the last 30.
   if (period === 'weekly') start.setDate(start.getDate() - 6)
-  else start.setDate(1)
+  else if (period === 'monthly') start.setDate(start.getDate() - 29)
   const items = history.filter(({ track, played_at }) => {
     const time = new Date(played_at).getTime()
     return track?.id && time >= start.getTime() && time <= now.getTime()
@@ -52,7 +54,10 @@ export function getDashboard(period, history = [], now = new Date()) {
   const formatDate = (date) => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
   return {
     period,
-    date: `${formatDate(start)} to ${formatDate(now)}`,
+    date:
+      formatDate(start) === formatDate(now)
+        ? formatDate(now)
+        : `${formatDate(start)} to ${formatDate(now)}`,
     tracks: songs.size,
     plays: items.length,
     artistsCount: artists.size,
