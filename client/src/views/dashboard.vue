@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import ListeningChart from '@/components/dashboard/ListeningChart.vue'
 import ListeningArtwork from '@/components/dashboard/ListeningArtwork.vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import TodayStory from '@/components/dashboard/TodayStory.vue'
 import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
@@ -114,7 +115,7 @@ watch(
         </button>
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
-      <p v-if="historyLoading" role="status">Loading your listening history…</p>
+      <RecordLoader v-if="historyLoading" label="Loading your listening history…" />
       <p v-else-if="historyError" role="alert">
         {{ historyError }}
         <button class="art-pause glass-secondary" @click="spotify.refreshHistory">

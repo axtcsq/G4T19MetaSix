@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { getMoodInsights } from '@/api/listens'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 
 // Draw daily music moods as animated streams with p5.
 const props = defineProps({
@@ -373,7 +374,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="mood-river">
-    <p v-if="loading" class="river-status" role="status">Filling the river…</p>
+    <RecordLoader v-if="loading" label="Filling the river…" />
     <p v-else-if="error" class="river-status" role="alert">
       {{ error }}
       <button type="button" class="river-retry" @click="load().then(draw)">Try again</button>
