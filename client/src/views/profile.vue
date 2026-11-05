@@ -1,5 +1,5 @@
 <script setup>
-// The profile page: who is logged in, their MetaFor personality, a few listening facts and the privacy settings. Editing the profile comes later.
+// Profile page: who's logged in, their MetaFor personality, a few listening facts and the privacy settings.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import InlineLoader from '@/components/layout/InlineLoader.vue'
@@ -152,7 +152,7 @@ const birthdayLabel = computed(() =>
     : '',
 )
 
-// The daily check-in reminder. It shows while MetaFor is open, so browser notifications are asked for too, for when the tab is in the background.
+// Daily check-in reminder. It shows while MetaFor is open, so we also ask for browser notifications for when the tab's in the background.
 const reminderTime = ref('')
 watch(
   () => user.value?.preferences?.reminderTime,

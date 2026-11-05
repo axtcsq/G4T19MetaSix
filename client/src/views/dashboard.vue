@@ -277,7 +277,7 @@ watch(
             </p>
             <RecordLoader v-else label="Loading genre mix…" />
           </article>
-          <!-- A single day would be one lone bar, so Today leaves this chart out. It spans the full width so each day's column has room. -->
+          <!-- One day would be a single lone bar, so Today leaves this chart out. Full width so each day's column has room. -->
           <article v-if="period !== 'daily'" class="chart-panel days-panel">
             <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart
@@ -341,7 +341,7 @@ watch(
   min-height: 100svh;
   font: var(--text-body)/1.5 var(--font-serif);
 }
-/* The shared tokens switch for dark mode; only the accents need lightening. The garden draws its own sky. */
+/* Shared tokens switch for dark mode, only the accents need lightening. The garden draws its own sky. */
 :global(.dark .dashboard) {
   --dash-accent: var(--color-brand-300);
   --dash-meter: var(--color-brand-400);

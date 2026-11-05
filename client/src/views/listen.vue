@@ -101,11 +101,11 @@ function waitForPlayerReady() {
     settle()
   })
 }
-// After a refresh the login check is still running when the page opens, so wait for it before deciding whether Spotify is connected.
+// After a refresh the login check is still running, so wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
   try {
     if (!auth.checked) await auth.load()
-    // /listen?play=<id> plays that song. It's taken out of the address so that refreshing the page doesn't start it again.
+    // /listen?play=<id> plays that song. It's removed from the address so a refresh doesn't start it again.
     const song = route.query.play
     if (typeof song === 'string') {
       router.replace({ query: {} })
@@ -487,7 +487,7 @@ onBeforeUnmount(() => {
 .room-heading {
   display: flex;
   justify-content: space-between;
-  /* Top-aligned, so the title stays at the same height as on other pages however tall the Spotify controls get. */
+  /* Top-aligned so the title stays at the same height as other pages, however tall the Spotify controls get. */
   align-items: flex-start;
   gap: 28px;
 }

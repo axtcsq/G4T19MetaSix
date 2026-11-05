@@ -51,7 +51,7 @@ const outcomesQuizId = ref('')
 const outcomesQuiz = computed(
   () => quizzes.value.find((quiz) => quiz.id === outcomesQuizId.value) ?? quizzes.value[0],
 )
-// The list starts short, so the page isn't a wall of text; Show all opens the rest. Picking another quiz closes it again.
+// List starts short so the page isn't a wall of text. Show all opens the rest, picking another quiz closes it again.
 const OUTCOMES_SHOWN = 3
 const showAllOutcomes = ref(false)
 // The user's own result comes first, so it's never hidden.
@@ -60,7 +60,7 @@ const shownOutcomes = computed(() => {
   const outcomes = [...(quiz?.outcomes ?? [])].sort((a, b) => isMine(quiz, b) - isMine(quiz, a))
   return showAllOutcomes.value ? outcomes : outcomes.slice(0, OUTCOMES_SHOWN)
 })
-// The tab after the quizzes, about the six MetaFor types. The user's own type comes first, like their quiz results.
+// Tab after the quizzes, about the six MetaFor types. The user's own type comes first, like their quiz results.
 const TYPES_TAB = 'metafor-types'
 const types = ref([])
 const showingTypes = computed(() => outcomesQuizId.value === TYPES_TAB)
@@ -76,7 +76,7 @@ function pickOutcomesQuiz(id) {
   outcomesQuizId.value = id
   showAllOutcomes.value = false
 }
-// Show fewer takes the page back up to the first three cards, so it doesn't leave the reader below the shortened list.
+// Show fewer goes back up to the first three cards so the reader isn't left below the shortened list.
 const outcomesSection = ref(null)
 async function toggleOutcomes() {
   showAllOutcomes.value = !showAllOutcomes.value
@@ -88,7 +88,7 @@ async function toggleOutcomes() {
   outcomesSection.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
 }
 
-// The user's own result in the list. Horoscope titles put words in front of the sign ("Jazzy Easygoing Libra"), so the end of the title is matched too.
+// The user's own result in the list. Horoscope titles put words before the sign ("Jazzy Easygoing Libra"), so match the end of the title too.
 function isMine(quiz, outcome) {
   const title = quiz.latestResult?.title
   return Boolean(title) && (title === outcome.name || title.endsWith(` ${outcome.name}`))
