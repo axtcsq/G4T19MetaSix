@@ -9,6 +9,9 @@ defineOptions({ name: 'SiteNavbar' })
 const route = useRoute()
 const auth = useAuthStore()
 const isLanding = computed(() => route.path === '/')
+const isCalendarContext = computed(
+  () => route.path === '/calendar' || (route.name === 'song' && route.query.from === 'calendar'),
+)
 // The sign-in page shows just the logo: nothing past it works until you log in.
 const isLogin = computed(() => route.path === '/login')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
@@ -22,7 +25,10 @@ const links = [
 ]
 
 // A link stays highlighted on the pages under it, like a quiz under Personality.
-const isCurrent = (link) => route.path === link.to || route.path.startsWith(`${link.to}/`)
+const isCurrent = (link) =>
+  route.path === link.to ||
+  route.path.startsWith(`${link.to}/`) ||
+  (link.to === '/calendar' && isCalendarContext.value)
 
 // Keep the hidden menu measurable so it can reopen without layout shifts.
 const header = ref(null)
