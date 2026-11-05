@@ -13,6 +13,7 @@ defineOptions({ name: 'SongMood' })
 
 const route = useRoute()
 const router = useRouter()
+const fromCalendar = computed(() => route.query.from === 'calendar')
 const song = ref(null)
 const loading = ref(true)
 const error = ref('')
@@ -120,6 +121,10 @@ const lyricsWhy = computed(() => {
 })
 
 function back() {
+  if (fromCalendar.value) {
+    router.push('/calendar')
+    return
+  }
   if (window.history.state?.back) router.back()
   else router.push('/dashboard')
 }
@@ -128,7 +133,9 @@ function back() {
 <template>
   <div class="song-page">
     <main class="song-shell">
-      <button type="button" class="back glass-text" @click="back">← Back</button>
+      <button type="button" class="back glass-text" @click="back">
+        {{ fromCalendar ? '← Back to calendar' : '← Back' }}
+      </button>
 
       <p v-if="loading" class="status" role="status">Reading the song…</p>
       <p v-else-if="error" class="status" role="alert">{{ error }}</p>

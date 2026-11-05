@@ -9,6 +9,9 @@ defineOptions({ name: 'SiteNavbar' })
 const route = useRoute()
 const auth = useAuthStore()
 const isLanding = computed(() => route.path === '/')
+const isCalendarContext = computed(
+  () => route.path === '/calendar' || (route.name === 'song' && route.query.from === 'calendar'),
+)
 // The sign-in page shows just the logo: nothing past it works until you log in.
 const isLogin = computed(() => route.path === '/login')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
@@ -155,7 +158,13 @@ watch(
         :aria-hidden="isCollapsed || undefined"
         :inert="isCollapsed"
       >
-        <RouterLink v-for="link in links" :key="link.to" class="header-link" :to="link.to">
+        <RouterLink
+          v-for="link in links"
+          :key="link.to"
+          class="header-link"
+          :class="{ 'calendar-context-active': link.to === '/calendar' && isCalendarContext }"
+          :to="link.to"
+        >
           {{ link.label }}
         </RouterLink>
         <!-- Log out lives on the profile page. -->
@@ -217,7 +226,13 @@ watch(
       class="site-menu"
       aria-label="Main navigation"
     >
-      <RouterLink v-for="link in links" :key="link.to" class="menu-link" :to="link.to">
+      <RouterLink
+        v-for="link in links"
+        :key="link.to"
+        class="menu-link"
+        :class="{ 'calendar-context-active': link.to === '/calendar' && isCalendarContext }"
+        :to="link.to"
+      >
         {{ link.label }}
       </RouterLink>
       <RouterLink v-if="!auth.user" class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
@@ -362,7 +377,8 @@ watch(
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.header-link.router-link-exact-active {
+.header-link.router-link-exact-active,
+.header-link.calendar-context-active {
   color: #a54b3b;
   text-decoration: underline;
   text-underline-offset: 7px;
@@ -509,7 +525,8 @@ watch(
   color: #cd6651;
   background: #f0eae6;
 }
-.menu-link.router-link-exact-active {
+.menu-link.router-link-exact-active,
+.menu-link.calendar-context-active {
   color: #a54b3b;
   background: #f5e6e0;
 }
@@ -563,7 +580,9 @@ watch(
   color: #eaa596;
 }
 .dark .header-link.router-link-exact-active,
-.dark .menu-link.router-link-exact-active {
+.dark .header-link.calendar-context-active,
+.dark .menu-link.router-link-exact-active,
+.dark .menu-link.calendar-context-active {
   color: #eaa596;
 }
 .dark .profile-button,
@@ -586,7 +605,8 @@ watch(
 .dark .menu-link:hover {
   background: rgba(255, 255, 255, 0.06);
 }
-.dark .menu-link.router-link-exact-active {
+.dark .menu-link.router-link-exact-active,
+.dark .menu-link.calendar-context-active {
   background: rgba(219, 128, 109, 0.16);
 }
 @media (prefers-reduced-transparency: reduce) {

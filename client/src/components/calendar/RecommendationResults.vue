@@ -26,7 +26,10 @@ defineEmits(['play'])
         <span v-else class="track-art">♫</span>
       </span>
       <span class="track-copy">
-        <RouterLink class="recommendation-title" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong></RouterLink>
+        <RouterLink
+          class="recommendation-title"
+          :to="{ name: 'song', params: { id: track.id }, query: { from: 'calendar' } }"
+        ><strong>{{ track.name }}</strong></RouterLink>
         <small>{{ track.artists.join(', ') }}</small>
         <small class="recommendation-source">{{ track.because }}</small>
         <MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" />
