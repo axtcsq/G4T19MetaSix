@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeUnmount, ref } from 'vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import { canvasToBlob, drawShareCard } from '@/utils/shareCard'
 
 // A pop-up that draws the user's personality as a story-sized card they can save or share. It floats over the page, so it never changes the layout.
@@ -82,7 +83,7 @@ onBeforeUnmount(clearImage)
       </div>
 
       <div class="share-preview">
-        <p v-if="isDrawing" role="status" class="share-status">Making your card...</p>
+        <RecordLoader v-if="isDrawing" label="Making your card…" />
         <p v-else-if="error" role="alert" class="share-status">{{ error }}</p>
         <img
           v-else-if="imageUrl"

@@ -177,6 +177,9 @@ watch(
               </p>
             </article>
           </template>
+          <article v-else class="chart-panel">
+            <RecordLoader label="Reading your songs’ moods…" />
+          </article>
         </section>
         <section class="music-section" aria-labelledby="music-heading">
           <div class="section-intro">
@@ -277,11 +280,10 @@ watch(
               <span>Last 30 days</span>
             </div>
             <GenreMixChart v-if="genreMix" :data="genreMix" :paused="motionPaused" />
-            <p v-else class="unavailable-note" :role="genreError ? 'alert' : 'status'">
-              {{
-                genreError ? 'Genre mix could not load. Reload to try again.' : 'Loading genre mix…'
-              }}
+            <p v-else-if="genreError" class="unavailable-note" role="alert">
+              Genre mix could not load. Reload to try again.
             </p>
+            <RecordLoader v-else label="Loading genre mix…" />
           </article>
           <!-- A single day would be one lone bar, so Today leaves this chart out. It spans the full width so each day's column has room. -->
           <article v-if="period !== 'daily'" class="chart-panel days-panel">

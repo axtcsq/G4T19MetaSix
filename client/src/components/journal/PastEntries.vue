@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
 import { moodPhotoUrl } from '@/api/moods'
@@ -113,14 +114,7 @@ function formatDate(date) {
         </button>
       </form>
 
-      <p
-        v-if="isLoading"
-        role="status"
-        aria-live="polite"
-        class="py-10 text-center text-sm text-muted"
-      >
-        Loading your entries...
-      </p>
+      <RecordLoader v-if="isLoading" label="Loading your entries…" />
 
       <div v-else-if="loadError" role="alert" class="py-8 text-center">
         <p class="text-sm text-error">{{ loadError }}</p>

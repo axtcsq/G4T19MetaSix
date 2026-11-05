@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import { gardenParameters } from './artworkModel'
 import { drawWeather } from './gardenWeather'
 import { useGardenWeather } from '@/composables/useGardenWeather'
@@ -207,7 +208,9 @@ onBeforeUnmount(() => {
 <template>
   <div class="listening-artwork">
     <div ref="host" class="artwork-canvas">
-      <p v-if="!ready && !error" class="artwork-status" role="status">Growing your garden…</p>
+      <div v-if="!ready && !error" class="artwork-status">
+        <RecordLoader label="Growing your garden…" />
+      </div>
       <div v-if="error" class="artwork-status" role="alert">
         <p>{{ error }}</p>
         <button type="button" class="glass-secondary" @click="initialise">Try again</button>
