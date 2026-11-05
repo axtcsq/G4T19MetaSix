@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed } from 'vue'
 
 // A compact summary of what each quiz and the Spotify data said about the four MetaFor traits, and what they add up to.
 const props = defineProps({
@@ -9,37 +9,6 @@ const props = defineProps({
 // Scores this close to 0 don't lean either way, so they aren't shown.
 const BALANCED = 0.05
 
-const showInfo = ref(false)
-const info = ref(null)
-
-// A tap fires hover, focus and click together, so only a real mouse opens it on hover, and a tap or click toggles it.
-function onPointerEnter(event) {
-  if (event.pointerType === 'mouse') showInfo.value = true
-}
-function onPointerLeave(event) {
-  if (event.pointerType === 'mouse') showInfo.value = false
-}
-// Keyboard focus opens it; a tap's focus is left to the click.
-function onFocus(event) {
-  if (event.target.matches(':focus-visible')) showInfo.value = true
-}
-
-// A tap anywhere else, or Esc, closes it.
-function closeOnOutside(event) {
-  if (!info.value?.contains(event.target)) showInfo.value = false
-}
-function closeOnEscape(event) {
-  if (event.key === 'Escape') showInfo.value = false
-}
-watch(showInfo, (open) => {
-  const method = open ? 'addEventListener' : 'removeEventListener'
-  document[method]('pointerdown', closeOnOutside)
-  document[method]('keydown', closeOnEscape)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('pointerdown', closeOnOutside)
-  document.removeEventListener('keydown', closeOnEscape)
-})
 const quizPercent = computed(() => Math.round((props.personality.weights?.quizzes ?? 0.7) * 100))
 // Listening counts for less while there's only a little of it.
 const listeningIsNew = computed(() => {
@@ -57,6 +26,11 @@ function leanings(scores) {
     }))
 }
 
+// The blended result follows the same rules as the rows above it.
+const totalLeanings = computed(() =>
+  leanings(Object.fromEntries(props.personality.traits.map((trait) => [trait.id, trait.score]))),
+)
+
 const rows = computed(() =>
   props.personality.sources.map((source) => ({ ...source, leanings: leanings(source.traits) })),
 )
@@ -64,31 +38,19 @@ const rows = computed(() =>
 
 <template>
   <div class="breakdown">
-    <div class="breakdown-heading">
-      <h3 class="breakdown-title">How It Adds Up</h3>
-      <span ref="info" class="info" @pointerenter="onPointerEnter" @pointerleave="onPointerLeave">
-        <button
-          type="button"
-          class="info-button"
-          aria-label="How your personality is worked out"
-          aria-describedby="breakdown-info"
-          :aria-expanded="showInfo"
-          @click="showInfo = !showInfo"
-          @focus="onFocus"
-          @blur="showInfo = false"
-        >
-          i
-        </button>
-        <span id="breakdown-info" role="tooltip" class="info-tip" :class="{ 'is-open': showInfo }">
-          Each quiz nudges you along the four MetaFor traits. We blend your quizzes
-          ({{ quizPercent }}%) with your Spotify listening ({{ 100 - quizPercent }}%) and match you
-          to the closest MetaFor type.
-          <template v-if="listeningIsNew">
-            Your listening counts for less until MetaFor has about two weeks of it.
-          </template>
-        </span>
-      </span>
-    </div>
+    <h3 class="breakdown-title">How It Adds Up</h3>
+    <p class="breakdown-intro">
+      Each row shows which traits that quiz or your listening points to. We blend them, with quizzes
+      counting for {{ quizPercent }}% and listening for {{ 100 - quizPercent }}%, then match you to
+      the closest MetaFor type.
+      <template v-if="listeningIsNew">
+        Your listening counts for less until MetaFor has about two weeks of it.
+      </template>
+    </p>
+    <p class="legend">
+      <span class="chip is-strong">Strong lean</span>
+      <span class="chip">Slight lean</span>
+    </p>
 
     <ul class="source-list">
       <li v-for="row in rows" :key="row.id" class="source-row">
@@ -115,15 +77,20 @@ const rows = computed(() =>
         </p>
       </li>
       <li class="source-row is-total">
-        <p class="source-name">All together</p>
+        <p class="source-name">
+          All together
+          <span class="source-total">You're closest to {{ personality.type.name }}</span>
+        </p>
         <p class="chips">
           <span
-            v-for="trait in personality.traits"
-            :key="trait.id"
-            class="chip is-strong"
+            v-for="lean in totalLeanings"
+            :key="lean.id"
+            class="chip"
+            :class="{ 'is-strong': lean.strong }"
           >
-            {{ trait.poleName }}
+            {{ lean.name }}
           </span>
+          <span v-if="totalLeanings.length === 0" class="chip is-empty">No strong lean</span>
         </p>
       </li>
     </ul>
@@ -131,70 +98,25 @@ const rows = computed(() =>
 </template>
 
 <style scoped>
-.breakdown-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .breakdown-title {
   font-family: var(--font-sans);
   font-size: var(--text-lead);
   font-weight: 600;
 }
 
-.info {
-  position: relative;
-  display: inline-flex;
-}
-
-.info-button {
-  display: inline-flex;
-  width: 22px;
-  height: 22px;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid var(--pq-muted);
-  border-radius: 50%;
+.breakdown-intro {
+  margin-top: 0.25rem;
   color: var(--pq-muted);
-  background: var(--pq-surface);
-  font-family: var(--font-serif);
-  font-size: var(--text-label);
-  font-style: italic;
-  font-weight: 700;
-  cursor: help;
-}
-
-.info-button:focus-visible {
-  outline: 3px solid var(--pq-focus);
-  outline-offset: 2px;
-}
-
-.info-tip {
-  position: absolute;
-  z-index: 5;
-  top: calc(100% + 8px);
-  left: 50%;
-  width: min(280px, 70vw);
-  padding: 0.75rem 0.9rem;
-  border-radius: 10px;
-  color: #fff;
-  background: #3b3446;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   font-family: var(--font-sans);
   font-size: var(--text-label);
   line-height: 1.4;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -4px);
-  transition:
-    opacity 140ms ease,
-    transform 140ms ease;
 }
 
-.info-tip.is-open {
-  opacity: 1;
-  transform: translate(-50%, 0);
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
 }
 
 .source-list {
@@ -228,6 +150,14 @@ const rows = computed(() =>
   font-size: var(--text-label);
   font-weight: 400;
   text-decoration: none;
+}
+
+.source-total {
+  display: block;
+  color: var(--pq-brown);
+  font-family: var(--font-serif);
+  font-size: var(--text-label);
+  font-weight: 400;
 }
 
 .source-result:hover {
@@ -264,25 +194,6 @@ const rows = computed(() =>
 @media (max-width: 600px) {
   .source-row {
     grid-template-columns: 1fr;
-  }
-
-  /* Pinned under the heading instead of centred on the small button, so it stays inside the card. */
-  .breakdown-heading {
-    position: relative;
-  }
-
-  .info {
-    position: static;
-  }
-
-  .info-tip {
-    left: 0;
-    width: 100%;
-    transform: translateY(-4px);
-  }
-
-  .info-tip.is-open {
-    transform: none;
   }
 }
 </style>
