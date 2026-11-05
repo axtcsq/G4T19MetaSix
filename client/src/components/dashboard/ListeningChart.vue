@@ -12,7 +12,7 @@ const selectedDay = ref(null)
 const selectedHour = ref(null)
 const dayReadout = computed(() => props.data.daily.find((day) => day.date === selectedDay.value))
 
-// The days equaliser: one column of blocks per day, the busiest day full. A month only labels every fifth date, so thirty columns still fit a phone.
+// Days equaliser: one column of blocks per day, busiest day full. A month only labels every fifth date so thirty columns fit a phone.
 const EQUALISER_BLOCKS = 10
 const busiestDay = computed(() =>
   props.data.daily.findIndex((day) => day.value === dailyMaximum.value),
@@ -27,13 +27,13 @@ const dayLabel = (point, index) =>
       ? Number(point.date.slice(8))
       : ''
     : point.label
-// Each column bounces at its own pace, so the bars never move in step. The bounce waits for the rise-in to finish.
+// Each column bounces at its own pace so the bars don't move in step. Bounce waits for the rise-in to finish.
 const bounceStyle = (index) => ({
   '--bounce-time': `${1.6 + ((index * 7) % 5) * 0.22}s`,
   '--bounce-delay': `${0.6 + ((index * 3) % 7) * 0.15}s`,
 })
 
-// The listening clock: one wedge per hour around a 24-hour dial, midnight at the top and noon at the bottom. Longer wedges mean more recorded plays.
+// Listening clock: one wedge per hour on a 24-hour dial, midnight at the top, noon at the bottom. Longer wedge = more plays.
 const CLOCK_CENTRE = 120
 const CLOCK_INNER = 34
 const CLOCK_OUTER = 104
@@ -46,7 +46,7 @@ function clockPoint(radius, hour) {
   return `${x.toFixed(2)} ${y.toFixed(2)}`
 }
 
-// A small gap either side keeps neighbouring hours apart. Hours with no plays keep a thin sliver so the dial still reads as a full day.
+// Small gap on each side keeps hours apart. Empty hours keep a thin sliver so it still reads as a full day.
 function hourWedge(hour, value) {
   const length = Math.max(3, (value / hourlyMaximum.value) * (CLOCK_OUTER - CLOCK_INNER))
   const outer = CLOCK_INNER + length
@@ -164,7 +164,7 @@ function hourWedge(hour, value) {
   </div>
 </template>
 <style scoped>
-/* Each day is a column of ten block slots, lit from the bottom. The lit blocks rise in when the chart appears, then bounce gently. */
+/* Each day is a column of ten block slots, lit from the bottom. Lit blocks rise in when the chart appears, then bounce gently. */
 .play-equaliser {
   display: grid;
   grid-template-columns: repeat(var(--days), minmax(0, 1fr));
@@ -273,7 +273,7 @@ function hourWedge(hour, value) {
   margin: 0 0 18px;
   color: var(--dash-muted);
 }
-/* The wedges grow out from the middle when the chart appears or the period changes; the hand turns round the same centre. */
+/* Wedges grow out from the middle when the chart appears or the period changes. The hand turns round the same centre. */
 .hour-clock {
   display: block;
   width: 100%;

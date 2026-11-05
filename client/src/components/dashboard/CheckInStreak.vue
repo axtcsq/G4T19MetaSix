@@ -4,7 +4,7 @@ import { getStreak } from '@/api/moods'
 import { useAuthStore } from '@/stores/auth'
 import { useTodayMoodStore } from '@/stores/todayMood'
 
-// Home's daily check-in streak. Every 7 days in a row earns a streak saver, which covers one missed day so the streak carries on. The server counts it.
+// Home's check-in streak. Every 7 days in a row earns a saver, which covers one missed day. The server does the counting.
 const auth = useAuthStore()
 const todayMood = useTodayMoodStore()
 const streak = ref(null)

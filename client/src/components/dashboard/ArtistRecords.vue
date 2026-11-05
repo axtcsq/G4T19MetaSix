@@ -12,7 +12,7 @@ const props = defineProps({
 const root = ref(null)
 const width = ref(0)
 const height = ref(0)
-// The narrowest a name may wrap to, and the heights of a name line and the play count line, with the 6px gaps between them and the record.
+// Narrowest a name can wrap to, plus the heights of the name and play count lines, with the 6px gaps to the record.
 const TEXT_WIDTH = 88
 const NAME_LINE = 20.4
 const PLAYS_LINE = 18
@@ -74,7 +74,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
       textHeight,
     }
   })
-  // The record and the name under it, as two separate areas, so another record can sit beside a short name.
+  // The record and its name as two separate areas, so another record can sit beside a short name.
   const areas = (box) => [
     {
       left: box.left + (box.width - box.size) / 2,
@@ -102,7 +102,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
         ),
     )
 
-  // The top three, 1, 2, 3 from left to right, spread across the panel with any spare room shared between the gaps.
+  // Top three, 1 2 3 left to right, spread across the panel with spare room shared between the gaps.
   const top = boxes.slice(0, 3)
   const rowWidth = top.reduce((sum, box) => sum + box.width, 0) + GAP * (top.length - 1)
   const spare = Math.max(0, space - rowWidth)
@@ -114,7 +114,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
     left += box.width + gap
   })
 
-  // The rest sit under the gaps between the records above, as high as they go without touching a record or a name.
+  // The rest sit under the gaps between the records above, as high as they can without touching a record or name.
   const middle = (box) => box.left + box.width / 2
   const below = boxes.slice(3)
   below.forEach((box, index) => {
@@ -141,7 +141,7 @@ function arrange(space, grow, lowerGrow = 1, spread = 0) {
   }
 }
 
-// The records' natural size sets the list's least height. Beside a taller Top Tracks list, the list stretches, and the records grow to fill it.
+// The records' natural size sets the list's min height. Next to a taller Top Tracks list it stretches and the records grow to fill it.
 const layout = computed(() => {
   const space = width.value
   if (!space || !props.artists.length) return { items: [], height: 0, minHeight: 0 }
@@ -155,7 +155,7 @@ const layout = computed(() => {
     best = tried
     grow = next
   }
-  // The top three run out of width first, so the records below them keep growing into the height that's left.
+  // Top three run out of width first, so the records below keep growing into the height that's left.
   let lower = 1
   for (let next = 1.05; next <= MAX_GROW * 1.5; next += 0.05) {
     const tried = arrange(space, grow, next)
@@ -163,7 +163,7 @@ const layout = computed(() => {
     best = tried
     lower = next
   }
-  // Then the 2nd and 3rd records step down the panel, and the rest follow them, so the records spread over the whole height.
+  // Then the 2nd and 3rd step down the panel and the rest follow, so the records spread over the whole height.
   for (let spread = 8; spread <= height.value; spread += 8) {
     const tried = arrange(space, grow, lower, spread)
     if (!fits(tried)) break

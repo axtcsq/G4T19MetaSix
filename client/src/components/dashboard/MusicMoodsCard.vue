@@ -33,7 +33,7 @@ const groups = computed(() =>
     })),
 )
 
-// Song moods like Bittersweet count towards two big moods, so the numbers under a big mood don't always add up to it exactly.
+// Song moods like Bittersweet count towards two big moods, so the numbers under a big mood don't always add up exactly.
 const mixedSongs = computed(() =>
   songMoods.value.filter((mood) => mood.mixed).map((mood) => mood.name),
 )

@@ -64,7 +64,7 @@ async function load() {
 
 const hasPlays = computed(() => days.value.some((day) => day.total > 0))
 
-// The river starts at the middle of the first day's column, so the text under it is indented by half a column to line up with the river's edge.
+// The river starts mid-way through the first day's column, so the text under it is indented half a column to line up.
 const edgeInset = computed(() => ({
   paddingLeft: `calc(100% / ${Math.max(1, days.value.length) * 2})`,
 }))
@@ -132,7 +132,7 @@ function buildShape(width) {
     })
     columns.push({ x, bands, water })
   }
-  // Running totals of each stream's thickness, to place new water where the stream is widest. Days without plays get none.
+  // Running totals of each stream's thickness, to place new water where it's widest. Days without plays get none.
   const weights = AXES.map((_, stream) => {
     let sum = 0
     return columns.map((column) => (sum += column.bands[stream].thickness * column.water))
