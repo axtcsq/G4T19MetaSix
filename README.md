@@ -37,6 +37,8 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 - **Creative features:** AI assisted development of the 3D models and piano note strings, and generation of dashboard flowers.
 - **Spotify API:** Spotify supplies account, track, and listening data. It does not generate music or analysis.
 - **Personality quizzes:** Quiz content and scoring are predefined. Groq can generate profile summaries from quiz results and listening patterns.
+- **Journal Drawing:** Users create drawings themselves with the in-app drawing canvas. The drawing is then saved as part of their journal entry
+
 
 ## Routes
 
