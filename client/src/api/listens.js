@@ -25,12 +25,12 @@ export function getListens({ from, to, limit } = {}) {
   return api.get('/api/listens', { params })
 }
 
-// The dashboard's mood panels for the days from `from` to `to` ("YYYY-MM-DD", both included): each day's music moods and the lyric emotion profile.
+// Dashboard mood panels from `from` to `to` (YYYY-MM-DD, inclusive): each day's music moods and the lyric emotion profile.
 export function getMoodInsights(from, to) {
   return api.get('/api/listens/insights', { params: { from, to } })
 }
 
-// The user's mood from their journal and listening together, for the days from `from` to `to` ("YYYY-MM-DD", both included).
+// Mood from journal and listening together, from `from` to `to` (YYYY-MM-DD, inclusive).
 export function getOverallMood(from, to) {
   return api.get('/api/listens/overall-mood', { params: { from, to } })
 }

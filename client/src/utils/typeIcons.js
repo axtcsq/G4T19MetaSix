@@ -1,4 +1,4 @@
-// The line-art icon for each MetaFor personality type, with the star for any type that doesn't have one yet.
+// Line-art icon for each MetaFor type, with a star for any type that doesn't have one yet.
 import starIcon from '@/assets/images/personality/star.svg'
 import daydreamerIcon from '@/assets/images/personality/types/daydreamer.png'
 import poetIcon from '@/assets/images/personality/types/poet.png'

@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getMe, logout as logoutRequest } from '@/api/auth'
 
-// Who is logged in, as the server sees it. The session itself lives in an httpOnly cookie, so the browser can only find out by asking /api/me.
+// Who's logged in, as the server sees it. The session is an httpOnly cookie, so the browser can only find out by asking /api/me.
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const checked = ref(false)

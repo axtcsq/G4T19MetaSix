@@ -62,7 +62,7 @@ export const METAPHORS = [
   'Tomorrow is the next track. Let this one finish first.',
 ]
 
-// The same line all day, changing at local midnight. Counting whole days from a fixed date keeps the order steady across reloads and devices.
+// Same line all day, changes at local midnight. Counting whole days from a fixed date keeps the order the same across devices.
 export function metaphorFor(date = new Date()) {
   const localDay = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000
   return METAPHORS[localDay % METAPHORS.length]

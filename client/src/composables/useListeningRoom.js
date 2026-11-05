@@ -117,7 +117,7 @@ function updateArtwork(next) {
   image.src = next.album?.images?.[0]?.url || ''
 }
 
-// Keep button text white and readable while carrying the album's hue into a dark, saturated control color.
+// Keep button text white and readable, with the album's hue in a dark, saturated control colour.
 function contrastingButtonColor([red, green, blue]) {
   const channels = [red, green, blue].map((value) => value / 255)
   const high = Math.max(...channels)
@@ -417,7 +417,7 @@ async function skip(direction) {
   if (!connected.value || !ready.value) return
   await action(async (isCurrent) => {
     if (direction > 0) return player.nextTrack()
-    // Past the first few seconds, Spotify's player ignores Previous instead of restarting the song, so the song restarts here.
+    // Past the first few seconds Spotify's player ignores Previous instead of restarting the song, so restart it here.
     if (position.value <= 3000) return player.previousTrack()
     await player.seek(0)
     if (isCurrent()) position.value = 0

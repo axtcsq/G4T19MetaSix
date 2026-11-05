@@ -6,7 +6,7 @@ import { useTodayMoodStore } from '@/stores/todayMood'
 
 const withArticle = (word) => `${/^[aeiou]/i.test(word) ? 'an' : 'a'} ${word}`
 
-// Today's metaphor: the general line of the day, swapped for one written for the user's mood and music taste once it arrives. { line, basis }
+// Today's metaphor: the general line of the day, swapped for a personal one once it arrives. { line, basis }
 export function useDailyMetaphor() {
   const auth = useAuthStore()
   const todayMood = useTodayMoodStore()
@@ -35,7 +35,7 @@ export function useDailyMetaphor() {
   // A new check-in means a new mood, so ask again.
   watch([() => auth.user?.id, () => todayMood.entries.length], load, { immediate: true })
 
-  // If the page is left open past midnight, the new day's line shows the next time the tab comes back into view.
+  // If the page is left open past midnight, the new line shows next time the tab comes back into view.
   const refresh = () => {
     if (document.hidden || day.value === today()) return
     day.value = today()

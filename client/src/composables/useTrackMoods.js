@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 const MAX_IDS = 100
 // How many unplayed songs the server works out at once.
 const MAX_NEW_SONGS = 10
-// A song still being analysed is asked about again after this long, up to MAX_RECHECKS times while the page stays open.
+// A song still being analysed gets asked about again after this long, up to MAX_RECHECKS times while the page is open.
 const ANALYSING_TTL_MS = 2 * 60 * 1000
 const MAX_RECHECKS = 10
 
@@ -27,7 +27,7 @@ function queue(id) {
   if (!flushing) flushing = Promise.resolve().then(flush)
 }
 
-// Asks about a song again later while it's still waiting for the analysis job, so its tag updates without reloading the page.
+// Asks about a song again later while it's waiting on the analysis job, so its tag updates without a reload.
 function scheduleRecheck(id) {
   const count = rechecks.get(id) ?? 0
   if (count >= MAX_RECHECKS) return
@@ -47,7 +47,7 @@ function store(ids, moods) {
   }
 }
 
-// Songs with no sound reading yet (search results, or plays the sync only just saved) get it worked out by the server while they show "Analysing…".
+// Songs with no sound reading yet (search results, freshly synced plays) get it from the server while they show "Analysing…".
 async function addNewSongs(ids, asker) {
   const at = Date.now()
   for (const id of ids) cache.set(id, { tag: { analysing: true }, at })
@@ -105,7 +105,7 @@ function request(ids) {
   }
 }
 
-// The mood tag for one song: { sound, lyrics, lyricsPending }, { analysing }, or null for no tag (unknown song, no mood possible, or still loading).
+// Mood tag for one song: { sound, lyrics, lyricsPending }, { analysing }, or null for no tag (unknown song, no mood, still loading).
 export function useTrackMood(trackId) {
   const auth = useAuthStore()
   watch(

@@ -104,7 +104,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
   if (!auth.checked) {
-    // Public pages can render while the session check runs. Protected pages still wait so they never flash content the user cannot access.
+    // Public pages can render while the session check runs. Protected pages wait so they never flash content the user can't access.
     if (to.meta.requiresAuth || to.name === 'login') {
       await auth.load()
     } else {
