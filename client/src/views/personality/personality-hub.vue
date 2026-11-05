@@ -763,8 +763,7 @@ onMounted(loadPage)
   z-index: 1;
 }
 
-/* Taken out of the flow and lined up with the heading, so adding it doesn't change the section's height. */
-/* In the card's top corner, above the heading, so it stays clear of the title and intro text at every width. */
+/* Out of the flow in the card's top corner, so it doesn't change the section's height or sit on the title. */
 .share-trigger {
   position: absolute;
   top: 1rem;
