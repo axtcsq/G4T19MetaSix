@@ -19,6 +19,7 @@ watch(query, (text) => {
   window.clearTimeout(searchTimer)
   latestSearch += 1
   searchError.value = ''
+  results.value = []
   if (text.trim().length < 2) {
     latestSearch += 1
     results.value = []
@@ -35,7 +36,10 @@ async function findSongs(text) {
     const songs = await searchSongs(text)
     if (search === latestSearch) results.value = songs
   } catch (error) {
-    if (search === latestSearch) searchError.value = error.message
+    if (search === latestSearch) {
+      results.value = []
+      searchError.value = error.message
+    }
   } finally {
     if (search === latestSearch) isSearching.value = false
   }

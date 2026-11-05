@@ -29,6 +29,7 @@ const connected = ref(false)
 const ready = ref(false)
 const busy = ref(false)
 const error = ref('')
+const searchError = ref('')
 const paused = ref(true)
 const position = ref(0)
 const duration = ref(track.value.duration_ms)
@@ -427,6 +428,7 @@ async function search() {
   const version = ++searchVersion
   results.value = []
   searching.value = false
+  searchError.value = ''
   error.value = ''
   if (!query.value.trim() || !connected.value) return
   searchController = new AbortController()
@@ -435,7 +437,10 @@ async function search() {
     const found = await searchSpotify(query.value.trim(), searchController.signal)
     if (version === searchVersion) results.value = found.tracks?.items || []
   } catch (e) {
-    if (version === searchVersion && e.name !== 'AbortError') error.value = e.message
+    if (version === searchVersion && e.name !== 'AbortError') {
+      searchError.value = e.message
+      error.value = e.message
+    }
   } finally {
     if (version === searchVersion) searching.value = false
   }
@@ -445,6 +450,7 @@ function cancelSearch() {
   searchController?.abort()
   results.value = []
   searching.value = false
+  searchError.value = ''
 }
 function disconnect() {
   pendingSong = null
@@ -480,6 +486,7 @@ export function useListeningRoom() {
     ready,
     busy,
     error,
+    searchError,
     paused,
     position,
     duration,

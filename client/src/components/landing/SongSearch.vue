@@ -36,6 +36,7 @@ watch(query, (text) => {
   window.clearTimeout(searchTimer)
   latestSearch += 1
   isSearching.value = false
+  suggestions.value = []
   // Typing again after picking a song starts a new search.
   if (chosen.value && text === songLabel(chosen.value)) return
   chosen.value = null
@@ -63,7 +64,10 @@ async function findSuggestions(text) {
       searchError.value = ''
     }
   } catch (error) {
-    if (search === latestSearch) searchError.value = error.message
+    if (search === latestSearch) {
+      suggestions.value = []
+      searchError.value = error.message
+    }
   } finally {
     if (search === latestSearch) isSearching.value = false
   }

@@ -74,7 +74,7 @@ export async function spotifyRequest(path, { method = 'GET', body, signal } = {}
       401: 'Spotify sign-in expired. Log in again.',
       403: 'Spotify denied access. Check your Premium subscription and that your account is on the app’s allowed users.',
       404: 'The player is unavailable. Reconnect the player and try again.',
-      429: `Spotify needs a short break. Try again in ${response.headers.get('Retry-After') || 'a few'} seconds.`,
+      429: `Spotify is rate limiting song searches, so no results could be returned. Please try again in ${response.headers.get('Retry-After') || 'a few'} seconds.`,
     }
     throw Object.assign(
       new Error(

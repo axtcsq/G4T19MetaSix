@@ -27,6 +27,7 @@ const {
   accent,
   buttonAccent,
   results,
+  searchError,
   query,
   searching,
   records,
@@ -181,10 +182,13 @@ onBeforeUnmount(() => {
         <button class="text-button glass-text" :disabled="busy" @click="room.reconnect">Try again</button>
       </div>
       <p v-else-if="!connected" class="connection-note">
-        Sign out and sign in with Spotify to use the Listening Room.
+        Sign in with Spotify to use the Listening Room.
+        <button class="text-button glass-text" :disabled="busy" @click="room.connect">
+          Connect Spotify
+        </button>
       </p>
 
-      <p v-if="error" class="room-error" role="alert">
+      <p v-if="error && !searchError" class="room-error" role="alert">
         {{ error }} <button class="text-button glass-text" @click="error = ''">Dismiss</button>
       </p>
 
@@ -382,7 +386,8 @@ onBeforeUnmount(() => {
           <p v-if="searching" class="inline-loading" role="status">
             <span class="activity-spinner" aria-hidden="true" />Looking through Spotify…
           </p>
-          <p v-else-if="!results.length && !error">No songs found. Try another title or artist.</p>
+          <p v-else-if="searchError" class="room-error" role="alert">{{ searchError }}</p>
+          <p v-else-if="!results.length">No songs found. Try another title or artist.</p>
           <button
             v-for="item in results"
             :key="item.id"
