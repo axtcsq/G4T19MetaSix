@@ -113,7 +113,7 @@ const result = computed(() => {
   margin: 0 0 8px;
   color: var(--ui-primary);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -154,7 +154,7 @@ const result = computed(() => {
   color: var(--ui-text);
   background: var(--ui-bg);
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
   cursor: pointer;
   transition:
     border-color 160ms ease,
@@ -182,7 +182,7 @@ const result = computed(() => {
 }
 .taste-result h3 {
   margin-bottom: 8px;
-  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-size: var(--text-header);
   font-weight: 800;
 }
 .taste-tagline {
@@ -204,7 +204,7 @@ const result = computed(() => {
   color: #fff;
   background: var(--ui-primary);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 700;
   text-decoration: none;
 }

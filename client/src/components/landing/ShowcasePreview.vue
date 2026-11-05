@@ -259,7 +259,7 @@ onBeforeUnmount(() => {
 .preview-label {
   margin: 0;
   color: var(--ui-text-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
 }
 
@@ -276,7 +276,7 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   color: var(--ui-text);
   background: transparent;
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
   opacity: 0;
   transform: translateY(6px);
@@ -320,7 +320,7 @@ onBeforeUnmount(() => {
   /* Starts under the top padding so each line sits under a row of text. */
   background-position: 0 10px, 0 0;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-small);
   line-height: 26px;
 }
 .caret {
@@ -340,7 +340,7 @@ onBeforeUnmount(() => {
 }
 .calendar-grid .weekday {
   color: var(--ui-text-muted);
-  font-size: 0.7rem;
+  font-size: var(--text-caption);
   font-weight: 700;
 }
 .calendar-grid .day {
@@ -359,7 +359,7 @@ onBeforeUnmount(() => {
 }
 .calendar-grid small {
   color: var(--ui-text-muted);
-  font-size: 0.6rem;
+  font-size: var(--text-caption);
 }
 .calendar-grid .is-today {
   box-shadow: inset 0 0 0 2px #cd6651;
@@ -398,7 +398,7 @@ onBeforeUnmount(() => {
   min-height: 1.3em;
   margin: 0;
   color: var(--ui-text-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
 }
 
 .preview-listen {
@@ -437,17 +437,17 @@ onBeforeUnmount(() => {
 }
 .preview-player strong {
   color: var(--ui-text);
-  font-size: 1rem;
+  font-size: var(--text-small);
 }
 .preview-player small,
 .preview-times {
   color: var(--ui-text-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
 }
 .preview-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   font-variant-numeric: tabular-nums;
 }
 .preview-bar {
@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
 .preview-type {
   margin-top: -8px;
   color: var(--ui-text);
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -511,7 +511,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   color: var(--ui-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 600;
 }
 .preview-trait span:last-child {

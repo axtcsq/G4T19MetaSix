@@ -402,7 +402,7 @@ const showcase = [
   margin: 0 0 10px;
   color: var(--ui-text);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 600;
 }
 .hero-mood-options {
@@ -416,7 +416,7 @@ const showcase = [
   gap: 5px;
   min-height: 36px !important;
   padding: 0.3rem 0.65rem 0.3rem 0.35rem !important;
-  font-size: 0.8rem !important;
+  font-size: var(--text-label) !important;
 }
 /* The title's blinking caret, like the typewriter-style intro. */
 .typing-cursor {
@@ -439,7 +439,7 @@ const showcase = [
   color: var(--ui-text);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -477,7 +477,7 @@ const showcase = [
   margin: 10px 0 0;
   color: var(--ui-text-muted);
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
 }
 
 .landing-shell {
@@ -501,7 +501,7 @@ const showcase = [
   margin: 0 0 12px;
   color: var(--brand);
   font-family: var(--font-sans);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -544,7 +544,7 @@ const showcase = [
   margin: 16px 0 0;
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 .login-error {
   color: var(--color-error-500, #d14343);
@@ -560,7 +560,7 @@ const showcase = [
   margin: 0;
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   text-align: center;
 }
 
@@ -632,14 +632,14 @@ const showcase = [
   background: var(--ui-bg-elevated);
 }
 .card-title {
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   line-height: 1.2;
 }
 .card-text {
   margin: 10px 0 24px;
   color: var(--ui-text-muted);
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   line-height: 1.5;
 }
 
@@ -811,7 +811,7 @@ const showcase = [
   /* A soft tint of the theme colour, so it works in light and dark mode. */
   background: color-mix(in srgb, var(--ui-primary) 18%, transparent);
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: var(--text-body);
   font-weight: 800;
   letter-spacing: 0.02em;
 }
@@ -865,7 +865,7 @@ const showcase = [
   margin: 0 0 8px;
   color: var(--brand);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -888,7 +888,7 @@ const showcase = [
 .showcase-link {
   color: var(--brand);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   font-weight: 600;
   text-decoration: none;
   transition: text-shadow 200ms ease;
@@ -954,7 +954,7 @@ const showcase = [
 /* A small, spaced-out lead-in, then the question in large type. */
 .closing-lead {
   font-family: var(--font-sans);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: var(--text-body);
   font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -999,7 +999,7 @@ const showcase = [
   position: absolute;
   z-index: 3;
   color: var(--note-colour, var(--ui-primary));
-  font-size: 1.1rem;
+  font-size: var(--text-lead);
   pointer-events: none;
   animation: trail 900ms ease-out forwards;
 }

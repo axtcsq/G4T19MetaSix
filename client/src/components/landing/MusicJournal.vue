@@ -196,7 +196,7 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
 }
 .burst span {
   position: absolute;
-  font-size: 1.6rem;
+  font-size: var(--text-subheader);
   opacity: 0;
   animation: burst 1100ms ease-out forwards;
 }
@@ -208,7 +208,7 @@ onBeforeUnmount(() => window.clearTimeout(mergeTimer))
   color: var(--ui-text-muted);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;

@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
   gap: 8px;
   margin: 12px 0 0;
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 .example {
   padding: 4px 12px;
@@ -257,7 +257,7 @@ onBeforeUnmount(() => {
 .suggestion-artist {
   display: block;
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 
 .analysis {
@@ -297,7 +297,7 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--ui-primary) 12%, transparent);
 }
 .song-feeling-label {
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -309,7 +309,7 @@ onBeforeUnmount(() => {
 .login-note {
   margin: -8px 0 0;
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 /* Glows on hover like the other landing page links. */
 .login-note a {

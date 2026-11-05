@@ -186,7 +186,7 @@ const fill = (position) => {
   background: var(--ui-primary);
   box-shadow: 0 6px 16px rgba(118, 62, 50, 0.22);
   font-family: var(--font-sans);
-  font-size: 1.1rem !important;
+  font-size: var(--text-lead) !important;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease;
@@ -329,7 +329,7 @@ const fill = (position) => {
 .story-kicker {
   margin: 0 0 12px;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -380,7 +380,7 @@ const fill = (position) => {
   bottom: 20px;
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   opacity: 0.6;
 }
 
