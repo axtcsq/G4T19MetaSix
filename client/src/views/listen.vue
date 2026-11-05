@@ -415,7 +415,7 @@ onBeforeUnmount(() => {
   background: var(--room-paper);
   color: var(--room-ink);
   padding: var(--page-top) 0 var(--page-bottom);
-  font: 20px/1.5 var(--font-serif);
+  font: var(--text-body)/1.5 var(--font-serif);
 }
 .room-inner {
   position: relative;
@@ -450,7 +450,7 @@ h1 {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
-  font: 12px/1.5 var(--font-sans);
+  font: var(--text-caption)/1.5 var(--font-sans);
   color: var(--room-muted);
 }
 button,
@@ -478,7 +478,7 @@ button:disabled {
   background: none;
   border: 0;
   color: inherit;
-  font-size: 13px;
+  font-size: var(--text-label);
   min-height: 44px;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -510,7 +510,7 @@ button:disabled {
 }
 .connection-state strong {
   color: var(--room-ink);
-  font-size: 14px;
+  font-size: var(--text-label);
   font-weight: 600;
 }
 .connection-action {
@@ -520,7 +520,7 @@ button:disabled {
   border-radius: 8px;
   background: transparent;
   color: var(--room-ink);
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 600;
   transition:
     background-color 160ms ease,
@@ -706,7 +706,7 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
-  font: 13px var(--font-sans);
+  font: var(--text-label) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .seek-control > span {
@@ -737,7 +737,7 @@ button:disabled {
   grid-template-columns: 1fr auto;
   gap: 6px 8px;
   align-items: center;
-  font: 12px var(--font-sans);
+  font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .volume-control label {
@@ -862,7 +862,7 @@ input:disabled {
   text-underline-offset: 5px;
 }
 .shelf-artist {
-  font: 18px var(--font-serif);
+  font: var(--text-lead) var(--font-serif);
   margin-top: 4px;
 }
 .search-form {
@@ -901,7 +901,7 @@ input:disabled {
   min-height: 44px;
   background: none;
   border: 0;
-  font-size: 16px;
+  font-size: var(--text-small);
   color: var(--room-ink);
   outline: none;
   box-shadow: none;
@@ -966,13 +966,13 @@ input:disabled {
   min-width: 0;
 }
 .result-row strong {
-  font: 600 16px var(--font-sans);
+  font: 600 var(--text-small) var(--font-sans);
   display: block;
   overflow-wrap: anywhere;
 }
 .result-row .result-artist {
   display: block;
-  font: 18px var(--font-serif);
+  font: var(--text-lead) var(--font-serif);
   margin-top: 4px;
 }
 .result-mood,
@@ -988,7 +988,7 @@ input:disabled {
   display: none;
 }
 .result-row > span {
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .room-error {
   display: flex;
@@ -1077,14 +1077,14 @@ input:disabled {
     gap: 24px 18px;
   }
   .shelf-record > strong {
-    font-size: 21px;
+    font-size: var(--text-body);
   }
   .search-form {
     gap: 6px;
     padding-inline: 12px 6px;
   }
   .search-form input {
-    font-size: 14px;
+    font-size: var(--text-label);
   }
 }
 @media (forced-colors: active) {
