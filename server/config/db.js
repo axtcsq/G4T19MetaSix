@@ -11,8 +11,6 @@ export async function connectDB() {
     return connectionPromise;
   }
 
-  console.log("[MongoDB] Attempting connection...");
-
   if (!process.env.MONGODB_URI) {
     throw new Error("MONGODB_URI is missing from environment variables");
   }
@@ -24,9 +22,7 @@ export async function connectDB() {
       autoIndex: false,
     })
     .then(() => {
-      console.log("[MongoDB] Connected successfully!");
-      console.log("[MongoDB] Database:", mongoose.connection.name);
-      console.log("[MongoDB] Host:", mongoose.connection.host);
+      console.log(`[MongoDB] Connected to ${mongoose.connection.name} on ${mongoose.connection.host}`);
       return mongoose.connection;
     })
     .catch((error) => {
