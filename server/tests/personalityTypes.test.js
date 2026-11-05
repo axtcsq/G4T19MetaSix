@@ -1,4 +1,4 @@
-// Run with: npm test The six types as the Personality page shows them.
+// The six types as the Personality page shows them.
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { describeTypes } from "../services/patterns.js";

@@ -1,4 +1,4 @@
-// Run with: npm test recommendSongs with fake Last.fm, Spotify, ReccoBeats and database answers.
+// recommendSongs with fake Last.fm, Spotify, ReccoBeats and database answers.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { recommendSongs } from "../services/recommendations.js";
@@ -171,7 +171,7 @@ describe("recommendSongs", () => {
     });
     const tracks = await recommendSongs({ ...request, exclude: ["x".repeat(22)], userId: "user-1" }, deps);
 
-    // Similar artists first, then the user's artists, songs they've never played before ones they have.
+    // Similar artists first, then the user's artists. Never-played songs go before played ones.
     assert.deepEqual(tracks.map((track) => track.name), ["Ready", "By HYBS", "Never Played", "Also New"]);
     assert.equal(tracks[1].because, "Similar to keshi");
     assert.equal(tracks[1].imageUrl, "cover-byhybs");

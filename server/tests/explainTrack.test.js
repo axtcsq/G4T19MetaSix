@@ -1,4 +1,4 @@
-// Run with: npm test What the song page explains for each kind of stored song.
+// What the song page explains for each kind of stored song.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";

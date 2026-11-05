@@ -1,4 +1,4 @@
-// Run with: npm test Which mood tag each kind of stored song gets.
+// Which mood tag each kind of stored song gets.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { toMoods } from "../controller/trackController.js";

@@ -1,4 +1,4 @@
-// Run with: npm test analyseSong with fake ReccoBeats, LRCLIB, DeepL and emotion-model responses, so no network or model download is needed.
+// analyseSong with fake ReccoBeats, LRCLIB, DeepL and emotion-model responses, so no network or model download is needed.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";

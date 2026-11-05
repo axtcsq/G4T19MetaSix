@@ -1,4 +1,4 @@
-// Run with: npm test The Patterns page's line on how the user has been, journal and music together.
+// The Patterns page's line on how the user has been, journal and music together.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { moodLink } from "../services/patterns.js";

@@ -1,4 +1,4 @@
-// Run with: npm test The music-mood summary on the Personality page.
+// The music-mood summary on the Personality page.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { summariseMusicMoods } from "../services/moodMusic.js";

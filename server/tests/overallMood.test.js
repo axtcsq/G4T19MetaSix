@@ -1,4 +1,4 @@
-// Run with: npm test The overall mood from journal entries and listening together.
+// The overall mood from journal entries and listening together.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { combineDays, dayAxes, journalAxes, mainAxis, musicAxes } from "../services/overallMood.js";
@@ -43,7 +43,7 @@ describe("overall mood", () => {
       { date: "2026-11-03", moods: ["Sad"], music: musicAxes({ sad: 1 }), plays: 4 },
       { date: "2026-11-04", moods: [], music: null },
     ]);
-    // Day 1 happy, days 2 and 3 fully sad: four entries on one day don't outweigh the others.
+    // Day 1 happy, days 2 and 3 fully sad. Four entries on one day shouldn't outweigh the others.
     close(result.axes, { happy: 1 / 3, sad: 2 / 3 });
     assert.equal(result.main, "sad");
     assert.equal(result.days.length, 3);
