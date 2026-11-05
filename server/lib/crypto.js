@@ -1,6 +1,6 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
-// Encrypts Spotify refresh tokens before they are stored. TOKEN_KEY is 32 bytes as hex (openssl rand -hex 32). Losing it makes stored tokens unreadable.
+// Encrypts Spotify refresh tokens before storing them. TOKEN_KEY is 32 bytes of hex (openssl rand -hex 32). Lose it and stored tokens are unreadable.
 const ALGORITHM = "aes-256-gcm";
 const VERSION = "v1";
 

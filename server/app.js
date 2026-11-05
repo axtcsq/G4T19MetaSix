@@ -135,7 +135,7 @@ app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// Centralized error handler
+// Catch-all error handler
 app.use((error, req, res, next) => {
   console.error(error);
 

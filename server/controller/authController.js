@@ -34,7 +34,7 @@ function validTimezone(timezone) {
   }
 }
 
-// Swaps in a new session ID before storing the user, so a session ID set before login can't be reused afterwards.
+// New session ID before storing the user, so one set before login can't be reused
 function startSession(req, userId) {
   return new Promise((resolve, reject) => {
     req.session.regenerate((error) => {
@@ -47,7 +47,7 @@ function startSession(req, userId) {
   });
 }
 
-// The star sign for a "YYYY-MM-DD" birthday, with what it says about how the user listens. null without a birthday.
+// Star sign for a YYYY-MM-DD birthday and what it says about their listening. null if no birthday.
 function horoscope(birthday) {
   const date = parseBirthday(birthday);
   if (!date) return null;

@@ -57,7 +57,7 @@ export async function exportData(req, res) {
   }
 }
 
-// DELETE /api/me/history Clear saved history while keeping the account and Spotify link.
+// DELETE /api/me/history - wipes saved history, keeps the account and Spotify link
 export async function clearHistory(req, res) {
   const userId = req.user._id;
   const session = await mongoose.startSession();
@@ -80,7 +80,7 @@ export async function clearHistory(req, res) {
   res.json(publicUser(user));
 }
 
-// POST /api/me/spotify/disconnect Forgets the Spotify token and stops saving plays. Logging in with Spotify again reconnects.
+// POST /api/me/spotify/disconnect - forgets the token and stops saving plays. Logging in again reconnects.
 export async function disconnectSpotify(req, res) {
   if (req.user.isDemo) {
     return res.status(400).json({ error: "The test account isn't connected to Spotify" });

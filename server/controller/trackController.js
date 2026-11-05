@@ -19,7 +19,7 @@ const LIKELY_INSTRUMENTAL = 0.5;
 // Explain why lyrics were not included in a track's mood.
 function lyricsNote(track, useLyrics) {
   if (!useLyrics) return null;
-  // Don't label confirmed or audio-classified instrumental tracks as waiting for lyrics. ReccoBeats uses the same 0–1 instrumentalness scale as Spotify.
+  // Don't say "waiting for lyrics" on instrumental tracks. ReccoBeats uses the same 0–1 instrumentalness scale as Spotify.
   if (
     ["not-found", "instrumental"].includes(track.lyrics?.status) ||
     track.features?.instrumentalness >= LIKELY_INSTRUMENTAL
@@ -113,7 +113,7 @@ export async function getTrackMoods(req, res) {
   res.json({ moods, needsSound });
 }
 
-// Counts new songs per login, so one user can't send ReccoBeats and Spotify thousands of requests. Returns how many more are allowed right now.
+// Counts new songs per login so one user can't fire off thousands of ReccoBeats/Spotify requests. Returns how many are left right now.
 function newSongAllowance(session, now = Date.now()) {
   const window = session.newSongs;
   if (!window || now - window.startedAt > NEW_SONG_WINDOW_MS) {

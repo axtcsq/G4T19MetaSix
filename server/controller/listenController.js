@@ -88,7 +88,7 @@ export async function getListens(req, res) {
 const EMOTIONS = ["joy", "sadness", "anger", "fear", "disgust", "surprise", "neutral"];
 const LOCAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-// GET /api/listens/overall-mood: the user's mood from their journal and listening together, from `from` to `to` ("YYYY-MM-DD", both included).
+// GET /api/listens/overall-mood - journal + listening mood from `from` to `to` (YYYY-MM-DD, inclusive)
 export async function getOverallMood(req, res) {
   const { from, to } = req.query;
   if (!LOCAL_DATE.test(from ?? "") || !LOCAL_DATE.test(to ?? "") || from > to) {
@@ -114,7 +114,7 @@ export async function getMoodInsights(req, res) {
   const dailyMoods = await DailyMood.find({ userId, date: dates })
     .sort({ date: 1 })
     .lean();
-  // Plays with a mood in this reading. Songs with no sound data only have a lyrics reading.
+  // Plays with a mood in this reading. No sound data means lyrics reading only.
   const analysedIn = (day) => day.analysedCount + (lens === "lyrics" ? (day.lyrics?.lyricsOnlyCount ?? 0) : 0);
   const days = dailyMoods.map((day) => ({
     date: day.date,
@@ -160,7 +160,7 @@ export async function getMoodInsights(req, res) {
   };
   const analysedPlays = dailyMoods.reduce((sum, day) => sum + analysedIn(day), 0);
 
-  // For each mood the user journalled, what they mostly played on those days. A day counts for every mood logged on it, not only the last.
+  // What they mostly played on days they journalled each mood. A day counts for every mood logged, not just the last.
   const journalMoods = await journalMoodsByDay(req.user, from, to);
   const daysByJournalMood = new Map();
   for (const day of dailyMoods) {

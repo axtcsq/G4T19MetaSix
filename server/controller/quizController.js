@@ -48,7 +48,7 @@ async function lastMonthMood(user) {
   return overallMood(user, { from: date(29), to: date(0) });
 }
 
-// Works out a stored attempt's result. Attempts whose answers no longer fit the quiz (for example after its questions changed) are skipped.
+// Works out a stored attempt's result. Skips attempts that don't fit the quiz anymore (e.g. the questions changed).
 function evaluateAttempt(attempt, profile) {
   const quiz = findQuiz(attempt.quizId);
   if (!quiz || validateAnswers(quiz, attempt.answers)) return null;
@@ -79,7 +79,7 @@ function publicType(id) {
   return { id, name, tagline, description };
 }
 
-// The line under the Patterns section when no LLM summary is available: a send-off written for the type, since the cards above already explain the result.
+// Line under Patterns when there's no LLM summary. Just a send-off for the type, the cards above already explain the result.
 function closingLine(typeId) {
   return PERSONALITY_TYPES.find((type) => type.id === typeId).closing;
 }
@@ -202,7 +202,7 @@ function formatPersonality(personality) {
     traits: personality.traits,
     quizResults: personality.quizResults,
     sources: personality.sources,
-    // full is what listening counts for once there's enough of it. Added here rather than saved, so personalities saved before it existed have it too.
+    // What listening counts for once there's enough of it. Added here, not saved, so older personalities get it too.
     weights: personality.weights && {
       ...personality.weights,
       full: SPOTIFY_WEIGHT,
@@ -252,7 +252,7 @@ export async function getPersonality(req, res) {
   const userId = req.user._id;
   let personality = await findPersonality(userId);
 
-  // Rebuild personalities saved before the "how it adds up" data existed, or whose quiz results have since changed (a rename, or new listening).
+  // Rebuild if it was saved before the "how it adds up" data, or the quiz results changed (rename, new listening).
   if (!personality?.quizResults?.length) {
     return res.json(formatPersonality(personality));
   }

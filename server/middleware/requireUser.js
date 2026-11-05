@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 
-// Loads the logged-in user into req.user, or responds with 401. Put it on every route that reads or writes a user's data.
+// Puts the logged-in user on req.user or sends a 401. Use on every route that touches a user's data.
 export async function requireUser(req, res, next) {
   const userId = req.session?.userId;
   if (!userId) {

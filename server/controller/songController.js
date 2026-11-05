@@ -21,7 +21,7 @@ function toSong(track) {
   };
 }
 
-// The song analysis the landing page shows: the sound, the lyrics, and the mood they add up to. lyrics is null when they haven't been analysed.
+// Song analysis for the landing page: sound, lyrics, and the mood they add up to. lyrics is null if not analysed yet.
 function toAnalysis(features, lyrics) {
   const { sound, lyrics: withLyrics } = readMoods(features, lyrics);
   const blend = blendValence(features, lyrics);
@@ -48,7 +48,7 @@ function toAnalysis(features, lyrics) {
   };
 }
 
-// GET /api/songs/search?q=<words> Spotify songs matching the words, for the search suggestions.
+// GET /api/songs/search?q=<words> - search suggestions from Spotify
 export async function searchSongs(req, res) {
   const query = typeof req.query.q === "string" ? req.query.q.trim() : "";
 
