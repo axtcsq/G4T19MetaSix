@@ -34,11 +34,6 @@ export const test = base.extend({
           )
         if (path === '/api/me/metaphor')
           return reply({ text: null, mood: null, genre: null, source: null })
-        if (path === '/api/auth/demo') {
-          if (method === 'GET') return reply({ enabled: true })
-          state.signedIn = true
-          return reply(state.user)
-        }
         if (path === '/api/auth/logout') {
           state.signedIn = false
           return reply({ ok: true })

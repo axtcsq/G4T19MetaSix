@@ -39,14 +39,6 @@ export function disconnectSpotify() {
   return api.post('/api/me/spotify/disconnect')
 }
 
-// The seeded test account, for teammates and graders without a Spotify login.
-export function getDemoStatus() {
-  return api.get('/api/auth/demo')
-}
-
-export function demoLogin() {
-  return api.post('/api/auth/demo')
-}
 
 export function logout() {
   return api.post('/api/auth/logout')

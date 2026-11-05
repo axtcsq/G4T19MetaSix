@@ -21,7 +21,7 @@ MetaFor connects Spotify listening with mood tracking and journaling, helping us
 
 [Open MetaFor](https://g4-t19-meta-six.vercel.app/)
 
-Spotify sign-in may be limited to accounts approved in the Spotify Developer app. A seeded test account can be enabled for local development.
+Spotify sign-in may be limited to accounts approved in the Spotify Developer app.
 
 ## What MetaFor does
 
@@ -61,8 +61,6 @@ All endpoints use the `/api` prefix. Unless noted, endpoints below require a sig
 | `GET /health` | Public | Check that the server is responding. |
 | `GET /auth/login` | Public | Start Spotify sign-in. |
 | `GET /auth/callback` | Public | Complete Spotify sign-in. |
-| `GET /auth/demo` | Public | Check whether demo sign-in is enabled. |
-| `POST /auth/demo` | Public | Sign in to the seeded demo account when enabled. |
 | `POST /auth/logout` | Public | End the current session. |
 | `GET /me` | Signed in | Read the current user and preferences. |
 | `PATCH /me/settings` | Signed in | Update account settings. |
@@ -133,8 +131,6 @@ Set `MONGODB_URI`, `SESSION_SECRET`, and a 64-character hexadecimal `TOKEN_KEY` 
 npm run db:init
 npm run dev
 ```
-
-For a local test account, set `DEMO_LOGIN=true` and run `npm run db:seed` against a development database.
 
 ## 4. Start the client
 

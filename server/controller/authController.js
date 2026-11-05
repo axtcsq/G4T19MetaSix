@@ -66,7 +66,7 @@ export function publicUser(user) {
     birthday: user.birthday ?? null,
     starSign: horoscope(user.birthday),
     pinnedEntryId: user.pinnedEntryId ?? null,
-    // False for the demo user, and for users who need to log in again.
+    // False for users who need to log in again.
     spotifyLinked: isSpotifyLinked(user),
     preferences: user.preferences,
     tracking: {
@@ -138,26 +138,6 @@ export async function callback(req, res) {
     const reason = error.status === 403 ? "not-allowed" : "spotify";
     res.redirect(clientUrl(`/login?error=${reason}`));
   }
-}
-
-// GET /api/auth/demo, so the login page knows whether to offer the test account
-export function demoStatus(req, res) {
-  res.json({ enabled: process.env.DEMO_LOGIN === "true" });
-}
-
-// POST /api/auth/demo, only when DEMO_LOGIN=true
-export async function demoLogin(req, res) {
-  if (process.env.DEMO_LOGIN !== "true") {
-    return res.status(404).json({ error: "Route not found" });
-  }
-
-  const user = await User.findOne({ isDemo: true });
-  if (!user) {
-    return res.status(503).json({ error: "Demo user not found. Run npm run db:seed first." });
-  }
-
-  await startSession(req, user._id);
-  res.json(publicUser(user));
 }
 
 // POST /api/auth/logout

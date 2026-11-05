@@ -1,20 +1,14 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getDemoStatus, spotifyLoginUrl } from '@/api/auth'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
-import { returnPath } from '@/utils/returnPath'
 import SiteFooter from '@/components/layout/footer.vue'
 defineOptions({ name: 'LoginPage' })
 
 const route = useRoute()
-const router = useRouter()
 const auth = useAuthStore()
 const isRedirecting = ref(false)
-// The test account is offered only when the server has DEMO_LOGIN=true.
-const demoEnabled = ref(false)
-const isDemoLoading = ref(false)
-const demoError = ref('')
 
 // The server sends people back here with ?error= when a login doesn't finish.
 const errorMessages = {
@@ -26,7 +20,7 @@ const errorMessages = {
 }
 
 const errorMessage = computed(
-  () => demoError.value || errorMessages[route.query.error] || auth.error,
+  () => errorMessages[route.query.error] || auth.error,
 )
 const next = computed(() => (typeof route.query.next === 'string' ? route.query.next : undefined))
 
@@ -35,26 +29,6 @@ function continueWithSpotify() {
   window.location.assign(spotifyLoginUrl(next.value))
 }
 
-async function useTestAccount() {
-  isDemoLoading.value = true
-  demoError.value = ''
-  try {
-    await auth.demoLogin()
-    await router.replace(returnPath(next.value))
-  } catch (error) {
-    demoError.value = error.message
-  } finally {
-    isDemoLoading.value = false
-  }
-}
-
-onMounted(async () => {
-  try {
-    demoEnabled.value = (await getDemoStatus()).enabled
-  } catch {
-    demoEnabled.value = false
-  }
-})
 </script>
 
 <template>
@@ -83,23 +57,6 @@ onMounted(async () => {
       >
         Continue with Spotify
       </UButton>
-
-      <UButton
-        v-if="demoEnabled"
-        class="mt-3 justify-center rounded-full font-sans"
-        color="neutral"
-        variant="outline"
-        size="lg"
-        block
-        :loading="isDemoLoading"
-        @click="useTestAccount"
-      >
-        Use the test account
-      </UButton>
-      <p v-if="demoEnabled" class="mt-2 font-sans text-sm text-muted">
-        A shared account with a year of sample listening history. It has no Spotify connection, so
-        the dashboard and Listening room stay empty.
-      </p>
 
       <p class="mt-6 font-sans text-sm text-muted">
         MetaFor reads your recently played tracks to follow your mood, and uses Spotify’s player in
