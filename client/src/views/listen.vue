@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import AmbientWave from '@/components/listening/AmbientWave.vue'
@@ -68,6 +68,26 @@ function clearSearch() {
 function connect() {
   room.connect()
 }
+function waitForPlayerReady() {
+  if (ready.value) return Promise.resolve(true)
+  if (!connected.value || error.value) return Promise.resolve(false)
+  return new Promise((resolve) => {
+    let timer
+    let stop = () => {}
+    const settle = () => {
+      if (!ready.value && !error.value) return
+      clearTimeout(timer)
+      stop()
+      resolve(ready.value)
+    }
+    stop = watch([ready, error], settle)
+    timer = setTimeout(() => {
+      stop()
+      resolve(ready.value)
+    }, 20000)
+    settle()
+  })
+}
 // After a refresh the login check is still running when the page opens, so
 // wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
@@ -85,7 +105,7 @@ onMounted(async () => {
     }
     const selected = room.records.value.find((item) => item.id === trackId)
     if (selected) Object.assign(record, selected)
-    await room.selectRecord(record)
+    if (await waitForPlayerReady()) await room.selectRecord(record)
     await router.replace({ name: 'listen' })
   }
 })
