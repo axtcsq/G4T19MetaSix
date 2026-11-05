@@ -705,7 +705,7 @@ onMounted(loadPage)
 .card-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .patterns {
@@ -1037,7 +1037,7 @@ onMounted(loadPage)
   color: var(--pq-on-surface);
   background: var(--pq-quiet);
   font-family: var(--font-sans);
-  font-size: var(--text-small);
+  font-size: var(--text-label);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease;

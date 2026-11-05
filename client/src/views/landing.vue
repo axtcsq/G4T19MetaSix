@@ -406,8 +406,8 @@ const showcase = [
 /* Compact chips keep the mood picker readable as it wraps across rows. The shared glossy button style is roomier, hence the !important. */
 .hero-mood-options .mood-reaction.glass-secondary {
   gap: 5px;
-  min-height: 36px !important;
-  padding: 0.3rem 0.65rem 0.3rem 0.35rem !important;
+  min-height: 40px !important;
+  padding: 0.25rem 0.75rem 0.25rem 0.35rem !important;
   font-size: var(--text-label) !important;
 }
 /* The title's blinking caret, like the typewriter-style intro. */
@@ -525,7 +525,7 @@ const showcase = [
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 .hero-story {
   display: none;

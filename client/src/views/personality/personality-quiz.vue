@@ -239,14 +239,14 @@ onMounted(loadQuiz)
 }
 
 .quiz-option {
-  min-height: 55px;
-  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
   border: 1px solid var(--pq-border);
-  border-radius: 28px;
+  border-radius: 22px;
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: var(--text-lead);
+  font-size: var(--text-small);
   text-align: left;
   cursor: pointer;
   transition:

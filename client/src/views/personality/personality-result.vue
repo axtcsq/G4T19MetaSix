@@ -108,7 +108,7 @@ onMounted(loadResult)
             </dl>
           </div>
 
-          <div class="mt-10 grid gap-4 sm:grid-cols-2">
+          <div class="mt-10 grid gap-2 sm:grid-cols-2">
             <RouterLink class="peach-button" :to="{ name: 'personality', hash: '#patterns' }">
               See your patterns
             </RouterLink>

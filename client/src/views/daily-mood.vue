@@ -217,7 +217,7 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
           <form id="daily-journal-form" class="journal-form" novalidate @submit.prevent="saveEntry">
             <fieldset>
               <legend class="sub-header">How are you feeling?</legend>
-              <div class="mt-4 flex flex-wrap gap-3" role="group" aria-label="Choose a mood">
+              <div class="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Choose a mood">
                 <button
                   v-for="mood in moods"
                   :key="mood"
@@ -640,9 +640,9 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 0.55rem 1rem;
+  gap: 5px;
+  min-height: 40px;
+  padding: 0.25rem 0.75rem 0.25rem 0.35rem;
   border: 1px solid rgba(255, 255, 255, 0.94);
   border-radius: 9999px;
   color: #292321;
@@ -668,8 +668,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 }
 
 .button-mood-face {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   flex: none;
   transform-origin: center;
 }
@@ -738,8 +738,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
 .helper-launcher {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--ui-bg-elevated);
   color: #ed8a35;

@@ -465,7 +465,7 @@ onBeforeUnmount(() => {
 }
 .preview-controls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   margin-top: 6px;
   color: var(--ui-text);

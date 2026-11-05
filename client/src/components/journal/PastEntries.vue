@@ -333,8 +333,8 @@ function formatDate(date) {
 
 .pin-button {
   display: inline-grid;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   flex: none;
   place-items: center;
   border: 1px solid #d9cdbb;
