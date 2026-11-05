@@ -481,7 +481,7 @@ onMounted(loadPage)
               </div>
 
               <div class="pattern-card traits-card">
-                <p class="traits-hint">Tap a trait to see what shaped it.</p>
+                <p class="traits-hint">Each bar grows from the middle towards your side. Tap one to see what shaped it.</p>
                 <details v-for="trait in personality.traits" :key="trait.id" class="trait-details">
                   <summary>
                     <TraitBar :trait="trait" compact />
