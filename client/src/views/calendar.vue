@@ -566,32 +566,32 @@ onMounted(loadData)
 .day-overall { margin: 4px 0 0; color: var(--ui-text-muted); }
 .day-overall strong { color: var(--ui-text); }
 .song-summary { color: var(--calendar-accent); font-family: var(--font-sans); font-weight: 700; }
-.inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .84rem; }
+.inline-note { margin: 12px 0 0; color: var(--ui-text-muted); font-size: var(--text-label); }
 .spotify-connect-note { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--ui-text-muted); }
-.spotify-connect-note p { margin: 0; font-size: .9rem; }
+.spotify-connect-note p { margin: 0; font-size: var(--text-label); }
 
 .recommendation-panel { width: 100%; margin: 24px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
-.recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: .94rem; }
+.recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: var(--text-small); }
 .recommendation-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
-.refresh-recommendations { min-height: 34px !important; padding: 5px 11px !important; font-size: .72rem !important; }
+.refresh-recommendations { min-height: 34px !important; padding: 5px 11px !important; font-size: var(--text-label) !important; }
 .refresh-recommendations:disabled { opacity: .65; cursor: wait; }
-.recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .74rem; }
+.recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .fallback-explainer { flex-basis: 100%; }
 .artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
-.recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 800; }
+.recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: var(--text-caption); font-weight: 800; }
 .recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
 .recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: border-color .16s ease, transform .16s ease; }
 .recommendation-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); }
 .recommendation-card img, .recommendation-card .track-art { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 8px; object-fit: cover; }
 .recommendation-card .track-copy { display: grid; min-width: 0; gap: 3px; }
 .recommendation-card .track-copy strong, .recommendation-card .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.recommendation-card .track-copy strong { font-size: .8rem; }
-.recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
-.recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: .65rem; font-weight: 700; }
-.recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
-.recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
+.recommendation-card .track-copy strong { font-size: var(--text-caption); }
+.recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: var(--text-caption); }
+.recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: var(--text-caption); font-weight: 700; }
+.recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: var(--text-lead); }
+.recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: var(--text-label); }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
@@ -601,7 +601,7 @@ onMounted(loadData)
 .month-arrow:hover { transform: scale(1.12); }
 .month-arrow:focus-visible, .month-step:focus-visible, .day-cell:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--ui-border); border-left: 1px solid var(--ui-border); }
-.weekday { padding: 10px 4px; color: var(--ui-text-muted); font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+.weekday { padding: 10px 4px; color: var(--ui-text-muted); font-size: var(--text-caption); font-weight: 800; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
 .day-cell { position: relative; display: flex; min-width: 0; min-height: clamp(74px, 10vw, 116px); flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 4px 7px; border: 0; border-right: 1px solid var(--ui-border); border-bottom: 1px solid var(--ui-border); color: var(--ui-text); background: var(--ui-bg-elevated); cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
 .day-cell > :not(.day-artwork-cover) { z-index: 1; }
 .day-artwork-cover { position: absolute; inset: 0; overflow: hidden; opacity: .38; pointer-events: none; }
@@ -613,7 +613,7 @@ onMounted(loadData)
 .day-cell.is-empty { background: color-mix(in srgb, var(--ui-bg-accented), transparent 35%); cursor: default; }
 .day-cell.is-selected { z-index: 1; box-shadow: inset 0 0 0 2px #cd6651; }
 .day-cell.is-today .day-number { color: var(--calendar-accent); background: var(--calendar-accent-soft); }
-.day-number { position: absolute; top: 6px; left: 7px; display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; color: var(--ui-text-muted); font-size: .76rem; font-weight: 700; }
+.day-number { position: absolute; top: 6px; left: 7px; display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; color: var(--ui-text-muted); font-size: var(--text-caption); font-weight: 700; }
 .calendar-face, .detail-mood-face, .listening-mood-icon { display: grid; flex: none; place-items: center; border: 1px solid color-mix(in srgb, var(--mood-color), transparent 68%); border-radius: 50%; color: var(--mood-color); background: color-mix(in srgb, var(--mood-color) 16%, var(--ui-bg-elevated)); }
 .calendar-face { width: 46px; height: 46px; box-shadow: 0 2px 5px color-mix(in srgb, var(--mood-color), transparent 88%); }
 .detail-mood-face { width: 40px; height: 40px; }
@@ -628,10 +628,10 @@ onMounted(loadData)
 .mood-color--excited { --mood-color: #d96f9f; }
 .mood-color--tired { --mood-color: #7e8ca6; }
 .mood-color--lonely { --mood-color: #4f8f95; }
-.listening-mood-dot { position: absolute; top: 8px; right: 8px; color: var(--calendar-accent); font-family: var(--font-sans); font-size: .7rem; font-weight: 800; }
-.song-count { color: var(--calendar-accent); font-size: .68rem; font-weight: 800; }
+.listening-mood-dot { position: absolute; top: 8px; right: 8px; color: var(--calendar-accent); font-family: var(--font-sans); font-size: var(--text-caption); font-weight: 800; }
+.song-count { color: var(--calendar-accent); font-size: var(--text-caption); font-weight: 800; }
 .empty-day { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
-.calendar-hint { margin: 12px 0 0; color: var(--ui-text-muted); font-size: .78rem; }
+.calendar-hint { margin: 12px 0 0; color: var(--ui-text-muted); font-size: var(--text-caption); }
 .calendar-message { padding: 52px 20px; color: var(--ui-text-muted); text-align: center; }
 .calendar-skeleton { opacity: .55; cursor: progress; }
 .calendar-skeleton .skeleton-cell { cursor: progress; animation: skeleton-pulse 1.4s ease-in-out infinite; }
@@ -643,17 +643,17 @@ onMounted(loadData)
 .day-detail { width: 100%; margin: 28px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .detail-header h3 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
-.close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: 1.4rem; cursor: pointer; }
+.close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: var(--text-subheader); cursor: pointer; }
 .day-detail-grid { display: grid; grid-template-columns: minmax(150px, .55fr) minmax(0, 1.45fr); gap: 20px; }
 .day-detail-column { min-width: 0; padding: 16px; border: 1px solid var(--ui-border); border-radius: 14px; background: color-mix(in srgb, var(--ui-bg), var(--ui-bg-elevated) 55%); }
 .column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: var(--text-subheader); font-weight: 600; }
-.column-title span { color: var(--ui-text-muted); font-size: .76rem; }
+.column-title span { color: var(--ui-text-muted); font-size: var(--text-caption); }
 .listening-mood-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; border: 1px solid var(--ui-border); border-radius: 11px; background: var(--ui-bg-elevated); }
 .listening-mood-copy { display: grid; gap: 2px; }
-.listening-mood-copy small { color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .68rem; }
-.listening-mood-copy strong { font-family: var(--font-sans); font-size: .86rem; }
-.analyzed-count { margin-left: auto; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .68rem; text-align: right; }
-.analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .78rem; }
+.listening-mood-copy small { color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
+.listening-mood-copy strong { font-family: var(--font-sans); font-size: var(--text-label); }
+.analyzed-count { margin-left: auto; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); text-align: right; }
+.analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
 .mood-entry-link { display: block; border-radius: 12px; color: inherit; text-decoration: none; }
@@ -662,7 +662,7 @@ onMounted(loadData)
 .mood-entry > div { min-width: 0; overflow-wrap: anywhere; }
 .mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
-.mood-entry time { color: var(--ui-text-muted); font-size: .72rem; }
+.mood-entry time { color: var(--ui-text-muted); font-size: var(--text-caption); }
 .track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-top: 20px; }
 .track-list.is-carousel { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; padding-bottom: 6px; }
 .track-list.is-carousel .track-card { flex: 0 0 calc((100% - 30px) / 4); scroll-snap-align: start; }
@@ -680,26 +680,26 @@ onMounted(loadData)
 .art-link { display: block; flex: 0 0 auto; line-height: 0; }
 .recommendation-open { text-decoration: none; }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
-.track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
+.track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: var(--text-subheader); }
 .track-copy { display: grid; min-width: 0; gap: 3px; }
 .track-card .track-copy { width: 100%; }
 .track-copy strong, .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.track-copy strong { font-size: .87rem; }
-.track-copy small { color: var(--ui-text-muted); font-size: .75rem; }
-.play-time { margin: auto 0 0; color: var(--ui-text-muted); font-size: .72rem; white-space: nowrap; }
-.empty-note { margin: 10px 0; color: var(--ui-text-muted); font-size: .86rem; }
+.track-copy strong { font-size: var(--text-label); }
+.track-copy small { color: var(--ui-text-muted); font-size: var(--text-caption); }
+.play-time { margin: auto 0 0; color: var(--ui-text-muted); font-size: var(--text-caption); white-space: nowrap; }
+.empty-note { margin: 10px 0; color: var(--ui-text-muted); font-size: var(--text-label); }
 .mood-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.mood-tags span { padding: 6px 13px; border-radius: 999px; color: var(--ui-text); background: var(--ui-bg-accented); font-size: .72rem; font-weight: 700; }
+.mood-tags span { padding: 6px 13px; border-radius: 999px; color: var(--ui-text); background: var(--ui-bg-accented); font-size: var(--text-caption); font-weight: 700; }
 @media (max-width: 768px) {
   .calendar-shell { display: block; margin-top: 18px; }
   .month-heading { justify-content: space-between; gap: 8px; margin-bottom: 10px; }
   .month-heading h2 { min-width: 0; }
-  .month-step { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--ui-border); border-radius: 50%; color: var(--calendar-accent); background: var(--ui-bg-elevated); font-size: 1.7rem; line-height: 1; }
+  .month-step { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--ui-border); border-radius: 50%; color: var(--calendar-accent); background: var(--ui-bg-elevated); font-size: var(--text-subheader); line-height: 1; }
   .month-arrow { display: none; }
-  .weekday { padding: 8px 1px; font-size: .58rem; }
+  .weekday { padding: 8px 1px; font-size: var(--text-caption); }
   .day-cell { min-height: clamp(57px, 14vw, 78px); padding: 11px 2px 4px; }
-  .day-number { top: 3px; left: 3px; width: 19px; height: 19px; font-size: .65rem; }
-  .song-count { font-size: .6rem; }
+  .day-number { top: 3px; left: 3px; width: 19px; height: 19px; font-size: var(--text-caption); }
+  .song-count { font-size: var(--text-caption); }
   .day-detail { padding: 17px; }
   .day-detail-grid { grid-template-columns: 1fr; gap: 12px; }
   .day-detail-column { padding: 13px; }
