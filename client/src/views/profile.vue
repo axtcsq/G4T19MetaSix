@@ -633,7 +633,7 @@ const logOut = useLogOut()
   align-items: center;
   gap: 0.6rem;
   font-family: var(--font-serif);
-  font-size: 1.6rem;
+  font-size: var(--text-subheader);
   font-weight: 700;
 }
 
@@ -643,7 +643,7 @@ const logOut = useLogOut()
   color: var(--pq-brown);
   background: var(--pq-peach);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 700;
 }
 
@@ -664,7 +664,7 @@ const logOut = useLogOut()
 dt {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -673,7 +673,7 @@ dt {
 dd {
   overflow-wrap: anywhere;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-small);
 }
 
 .grid {
@@ -718,19 +718,19 @@ dd {
 .muted {
   color: var(--pq-muted);
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-small);
   line-height: 1.45;
 }
 
 .small {
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 
 .text-link {
   margin-top: auto;
   color: var(--pq-accent);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 700;
   text-decoration: none;
 }
@@ -769,7 +769,7 @@ dd {
 .setting-label {
   margin-bottom: 0.2rem;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--text-small);
   font-weight: 700;
 }
 
@@ -852,7 +852,7 @@ dd {
   border-radius: 12px;
   color: var(--pq-on-surface);
   background: var(--ui-bg-elevated);
-  font: 400 1rem var(--font-sans);
+  font: 400 var(--text-small) var(--font-sans);
   color-scheme: light dark;
 }
 
@@ -887,7 +887,7 @@ dd {
   gap: 0.5rem 1rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
   font-weight: 700;
 }
 
@@ -913,7 +913,7 @@ dd {
 
 .pinned-text {
   font-family: var(--font-journal);
-  font-size: 1.5rem;
+  font-size: var(--text-subheader);
   line-height: 1.4;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -939,7 +939,7 @@ dd {
 .data-title {
   margin-top: 1.75rem;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--text-small);
   font-weight: 700;
 }
 
