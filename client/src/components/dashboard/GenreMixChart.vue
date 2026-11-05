@@ -54,10 +54,6 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
         </button>
       </li>
     </ul>
-    <p class="genre-note">
-      Play-weighted Last.fm tags for your top 15 artists over the last 30 days. Tagged artist plays:
-      {{ data.taggedArtistPlays }} of {{ data.artistPlays }}. Untagged artists are excluded.
-    </p>
   </div>
   <p v-else class="genre-note">
     No genre tags available yet. Genres appear when your stored listening history has tagged
@@ -66,15 +62,34 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
 </template>
 <style scoped>
 .genre-mix {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  grid-template-columns: minmax(140px, 220px) minmax(0, 1fr);
   gap: 16px;
   align-items: center;
 }
 .genre-disc {
   position: relative;
 }
+.genre-disc::before {
+  content: '';
+  position: absolute;
+  inset: 2%;
+  border: 2px solid #4b3d32;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 0deg, transparent 0deg, rgb(238 218 194 / 12%) 22deg, transparent 48deg, transparent 190deg, rgb(238 218 194 / 7%) 215deg, transparent 250deg),
+    repeating-radial-gradient(circle, rgb(197 176 152 / 13%) 0 1px, rgb(16 13 12 / 35%) 1px 3px, transparent 3px 4px),
+    radial-gradient(circle, #171310 0 7%, #24201d 9% 52%, #342b24 54% 72%, #201b18 74% 94%, #4b3d32 96% 100%);
+  box-shadow: inset 0 0 9px rgb(0 0 0 / 55%), 0 1px 3px rgb(0 0 0 / 30%);
+  animation: genre-record-turn 36s linear infinite;
+}
+@keyframes genre-record-turn {
+  to { transform: rotate(360deg); }
+}
 svg {
+  position: relative;
+  z-index: 1;
   width: 100%;
   transform: rotate(-90deg);
 }
@@ -94,6 +109,7 @@ circle {
 }
 .disc-label {
   position: absolute;
+  z-index: 2;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -133,7 +149,7 @@ button[aria-pressed='true'] {
   background: var(--dash-hover);
 }
 button strong {
-  margin-left: auto;
+  flex: 0 0 auto;
 }
 .genre-dot {
   width: 10px;
@@ -147,6 +163,9 @@ button strong {
   font: 14px/1.5 var(--font-sans);
 }
 @media (prefers-reduced-motion: reduce) {
+  .genre-disc::before {
+    animation: none;
+  }
   circle {
     transition: none;
     animation: none;
