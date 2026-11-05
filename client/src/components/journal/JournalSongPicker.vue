@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeUnmount, ref, watch } from 'vue'
+import InlineLoader from '@/components/layout/InlineLoader.vue'
 import { searchSongs } from '@/api/songs'
 
 // Search Spotify and select an optional song for the journal entry.
@@ -83,7 +84,7 @@ onBeforeUnmount(() => {
         placeholder="Search for a song or artist…"
         autocomplete="off"
       />
-      <p v-if="isSearching" role="status" class="song-status">Searching…</p>
+      <InlineLoader v-if="isSearching" class="song-status" label="Searching…" />
       <p v-else-if="searchError" role="alert" class="song-status text-error">{{ searchError }}</p>
       <p
         v-else-if="query.trim().length >= 2 && !results.length"

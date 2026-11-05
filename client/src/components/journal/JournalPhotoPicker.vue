@@ -84,7 +84,8 @@ function remove() {
 
     <label v-else class="photo-drop" :class="{ 'is-reading': reading }">
       <input class="sr-only" type="file" accept="image/*" :disabled="reading" @change="choose" />
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      <span v-if="reading" class="spin-ring" aria-hidden="true" />
+      <svg v-else viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
         <circle cx="12" cy="13" r="3.5" />
       </svg>

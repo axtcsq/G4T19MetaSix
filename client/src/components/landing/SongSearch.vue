@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeUnmount, ref, watch } from 'vue'
+import InlineLoader from '@/components/layout/InlineLoader.vue'
 import { getSongAnalysis, searchSongs } from '@/api/songs'
 import { useAuthStore } from '@/stores/auth'
 
@@ -29,10 +30,12 @@ const songLabel = (song) => `${song.name} · ${song.artists.join(', ')}`
 // Looks the words up 300 ms after the visitor stops typing, so every key press doesn't send a request.
 let searchTimer
 let latestSearch = 0
+const isSearching = ref(false)
 
 watch(query, (text) => {
   window.clearTimeout(searchTimer)
   latestSearch += 1
+  isSearching.value = false
   // Typing again after picking a song starts a new search.
   if (chosen.value && text === songLabel(chosen.value)) return
   chosen.value = null
@@ -46,6 +49,7 @@ watch(query, (text) => {
     suggestions.value = []
     return
   }
+  isSearching.value = true
   searchTimer = window.setTimeout(() => findSuggestions(text.trim()), 300)
 })
 
@@ -60,6 +64,8 @@ async function findSuggestions(text) {
     }
   } catch (error) {
     if (search === latestSearch) searchError.value = error.message
+  } finally {
+    if (search === latestSearch) isSearching.value = false
   }
 }
 
@@ -108,6 +114,11 @@ onBeforeUnmount(() => {
           placeholder="Type a song or artist, then pick one"
           aria-label="Song or artist"
           autocomplete="off"
+        />
+        <InlineLoader
+          v-if="isSearching && !suggestions.length"
+          class="search-status"
+          label="Looking for songs…"
         />
         <!-- The songs that match, shown under the box while typing. -->
         <ul v-if="suggestions.length" class="suggestions" aria-label="Matching songs">
@@ -202,6 +213,11 @@ onBeforeUnmount(() => {
 }
 .search-input {
   width: 100%;
+}
+.search-status {
+  margin-top: 8px;
+  color: var(--ui-text-muted);
+  font-size: var(--text-label);
 }
 /* In the page flow, not floating, so the page's overflow: hidden can't cut it off. */
 .suggestions {

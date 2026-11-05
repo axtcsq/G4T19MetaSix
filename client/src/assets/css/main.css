@@ -433,3 +433,25 @@ body {
 :is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction):is(:disabled, [aria-disabled='true']) {
   box-shadow: none !important;
 }
+
+/* The small loading spinner. It takes the colour of the text around it. */
+.spin-ring {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  border: 2px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin-ring 700ms linear infinite;
+}
+@keyframes spin-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spin-ring {
+    animation: none;
+  }
+}

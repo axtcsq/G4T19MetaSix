@@ -2,6 +2,7 @@
 // The profile page: who is logged in, their MetaFor personality, a few listening facts and the privacy settings. Editing the profile comes later.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
+import InlineLoader from '@/components/layout/InlineLoader.vue'
 import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
 import { getQuizzes } from '@/api/quiz'
 import { downloadDataPdf } from '@/utils/dataExportPdf'
@@ -172,15 +173,19 @@ async function saveReminder(time = reminderTime.value || null) {
 
 // The journal entry pinned from Past Entries.
 const pinnedEntry = ref(null)
+const pinnedLoading = ref(false)
 watch(
   () => user.value?.pinnedEntryId,
   async (id) => {
     pinnedEntry.value = null
     if (!id) return
+    pinnedLoading.value = true
     try {
       pinnedEntry.value = await getMood(id)
     } catch (error) {
       messages.pinned = `Couldn’t load your pinned entry: ${error.message}`
+    } finally {
+      pinnedLoading.value = false
     }
   },
   { immediate: true },
@@ -290,7 +295,7 @@ const logOut = useLogOut()
       <div class="grid">
         <section class="card" aria-labelledby="personality-title">
           <h2 id="personality-title" class="card-title">Your MetaFor Personality</h2>
-          <p v-if="loading" class="muted">Loading…</p>
+          <InlineLoader v-if="loading" class="muted" label="Loading your personality…" />
           <p v-else-if="loadError" class="muted">{{ loadError }}</p>
           <template v-else-if="personality">
             <div class="type-row">
@@ -366,6 +371,7 @@ const logOut = useLogOut()
             </button>
           </div>
         </article>
+        <InlineLoader v-else-if="pinnedLoading" class="muted" label="Loading your pinned entry…" />
         <template v-else-if="!user?.pinnedEntryId">
           <p class="muted">Pin a favourite journal entry to keep it here.</p>
           <RouterLink class="text-link" :to="{ name: 'daily-mood', hash: '#past-entries' }">
@@ -428,7 +434,8 @@ const logOut = useLogOut()
             </button>
           </li>
         </ul>
-        <p class="muted small" role="status" aria-live="polite">{{ dataMessage }}</p>
+        <InlineLoader v-if="dataBusy" class="muted small" :label="dataMessage || 'Working…'" />
+        <p v-else class="muted small" role="status" aria-live="polite">{{ dataMessage }}</p>
 
         <dialog ref="confirmDialog" class="confirm-dialog" aria-labelledby="confirm-title">
           <template v-if="confirming">

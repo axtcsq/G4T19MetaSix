@@ -122,6 +122,7 @@ const details = computed(() => {
       :size="size"
       class="mood-tag text-muted"
     >
+      <span class="spin-ring" aria-hidden="true" />
       <span class="sr-only">Song mood: </span>Analysing…
     </UBadge>
     <UTooltip v-else-if="noMood" :text="noMood">

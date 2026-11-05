@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import InlineLoader from '@/components/layout/InlineLoader.vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -140,7 +141,7 @@ function disposeModel(model) {
 <template>
   <div class="cassette-viewer">
     <canvas ref="canvas" aria-label="3D cassette tape. Drag to rotate." role="img"></canvas>
-    <span v-if="loading" class="viewer-status">Loading the tape…</span>
+    <InlineLoader v-if="loading" class="viewer-status" label="Loading the tape…" />
     <span v-else-if="loadError" class="viewer-status">Cassette preview unavailable</span>
   </div>
 </template>
