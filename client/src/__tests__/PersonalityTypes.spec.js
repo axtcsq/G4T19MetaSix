@@ -1,7 +1,10 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PersonalityHub from '../views/personality/personality-hub.vue'
 import { getPersonality, getPersonalityTypes, getQuizzes } from '@/api/quiz'
+
+const { route } = vi.hoisted(() => ({ route: { hash: '' } }))
+vi.mock('vue-router', () => ({ useRoute: () => route }))
 
 vi.mock('@/api/quiz', () => ({
   getPersonality: vi.fn(),
@@ -128,6 +131,46 @@ describe('A Song for You', () => {
   })
 })
 
+describe('A quiz not taken yet', () => {
+  it('has the same parts as a taken one', async () => {
+    vi.clearAllMocks()
+    getPersonalityTypes.mockResolvedValue(TYPES)
+    getPersonality.mockResolvedValue(null)
+    getQuizzes.mockResolvedValue([{ ...QUIZZES[0], questionCount: 12, latestResult: null }])
+    const hub = await mountHub()
+    expect(hub.find('.quiz-result').text()).toContain('Not taken yet')
+    expect(hub.find('.quiz-result').text()).toContain('12 questions')
+    expect(hub.find('.card-actions').text()).toBe('Get started')
+  })
+})
+
+describe('Arriving at Patterns', () => {
+  const scrollIntoView = vi.fn()
+  beforeEach(() => {
+    vi.clearAllMocks()
+    getPersonalityTypes.mockResolvedValue(TYPES)
+    getPersonality.mockResolvedValue(null)
+    getQuizzes.mockResolvedValue(QUIZZES)
+    vi.spyOn(document, 'getElementById').mockReturnValue({ scrollIntoView })
+  })
+  afterEach(() => {
+    route.hash = ''
+    vi.restoreAllMocks()
+  })
+
+  it('goes to Patterns once the quizzes above it have loaded', async () => {
+    route.hash = '#patterns'
+    await mountHub()
+    expect(document.getElementById).toHaveBeenCalledWith('patterns')
+    expect(scrollIntoView).toHaveBeenCalledOnce()
+  })
+
+  it('stays at the top without the link', async () => {
+    await mountHub()
+    expect(scrollIntoView).not.toHaveBeenCalled()
+  })
+})
+
 describe('Your result on a quiz card', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -141,7 +184,7 @@ describe('Your result on a quiz card', () => {
     expect(hub.find('.quiz-result').text()).toContain('You got INFP')
     expect(hub.find('.quiz-result').text()).toContain('The Dreamer')
     expect(hub.find('.card-actions--retry').text()).toContain('View result')
-    expect(hub.text()).not.toContain('Get Started')
+    expect(hub.text()).not.toContain('Get started')
   })
 
   it('asks before retaking', async () => {

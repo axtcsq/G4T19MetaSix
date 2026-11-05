@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { getPersonality, getPersonalityTypes, getQuizzes } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import { typeIcon } from '@/utils/typeIcons'
@@ -25,6 +26,7 @@ const quizImages = {
   'musical-needs': musicalNeedsImage,
 }
 
+const route = useRoute()
 const quizzes = ref([])
 const personality = ref(null)
 const isLoading = ref(true)
@@ -145,6 +147,12 @@ async function loadPage() {
     loadError.value = error.message
   } finally {
     isLoading.value = false
+  }
+  // The quizzes above Patterns have just pushed it down the page, so a link or
+  // a refresh at /quiz#patterns has to find it again.
+  if (route.hash === '#patterns') {
+    await nextTick()
+    document.getElementById('patterns')?.scrollIntoView({ block: 'start' })
   }
 }
 
@@ -736,6 +744,8 @@ onMounted(loadPage)
 .patterns {
   position: relative;
   isolation: isolate;
+  /* Room for the sticky header when a link lands here. */
+  scroll-margin-top: 96px;
   width: min(1320px, calc(100% - 32px));
   margin-inline: auto;
   border: 1px solid #763e32;
