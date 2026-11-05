@@ -14,7 +14,7 @@ const EXAMPLE_WEEK = [
 ]
 
 const props = defineProps({
-  // { kicker, big, image, title, quote, text, colour, type, link: { to, text }, ms, last } Leave out for the landing page's example week.
+  // { kicker, big, image, title, quote, text, colour, type, link: { to, text }, ms, last }. Leave out for the landing page's example week.
   slides: { type: Array, default: null },
   label: { type: String, default: 'How MetaFor works, an example week' },
   // The main button on the last slide.

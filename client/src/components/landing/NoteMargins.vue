@@ -9,7 +9,7 @@ const LINE_SPOTS = [0.2, 0.4, 0.6] // across each side's empty space, kept clear
 const NOTES_PER_LINE = 3
 const MIN_GUTTER = 70 // narrower than this and the notes would crowd the page
 const REACH = 80 // how close the mouse has to be to bump a note
-// Notes loop through a little more than the visible height, so they slide in and out past the edges. All move at one speed, so the gaps never close.
+// Notes loop through a bit more than the visible height so they slide past the edges. All move at one speed so the gaps never close.
 const LOOP = 1.08
 const SPEED = 0.03
 const HIT = 24 // how close a click has to be to play a note
@@ -27,10 +27,10 @@ const notes = []
 let audio
 let nextNote = 0
 let pointerShown = false
-// Where the lines become clear enough to see, set each frame. The mouse does nothing above it, so hidden notes and lines can't be bumped or played.
+// Where the lines become visible, set each frame. The mouse does nothing above it so hidden notes can't be bumped or played.
 let shownFrom = Infinity
 
-// Browsers only allow sound after a click or tap, so the audio starts on the first one anywhere on the page.
+// Browsers only allow sound after a click or tap, so audio starts on the first one anywhere on the page.
 function startAudio() {
   if (audio) return audio.resume()
   const AudioContext = window.AudioContext || window.webkitAudioContext
@@ -38,7 +38,7 @@ function startAudio() {
   audio = new AudioContext()
 }
 
-// A short bell-like tone: a triangle wave with a quiet octave above it, fading out over about a second.
+// Short bell-like tone: a triangle wave with a quiet octave above, fading out over about a second.
 function playTone(frequency, volume = 0.12) {
   if (!audio || audio.state !== 'running') return
   const now = audio.currentTime
@@ -82,7 +82,7 @@ function setUp() {
       for (let n = 0; n < NOTES_PER_LINE; n += 1) {
         notes.push({
           line,
-          // Evenly spaced along the line, and staggered from the lines beside it, so no two notes sit on top of each other.
+          // Evenly spaced along the line and staggered from the lines beside it, so no two notes overlap.
           y: ((n + (index + side * 0.5) / LINE_SPOTS.length) / NOTES_PER_LINE) * LOOP - 0.04,
           glyph: GLYPHS[(index + n + side) % GLYPHS.length],
           size: 26 + Math.random() * 10,
@@ -109,7 +109,7 @@ function resize() {
   if (reduceMotion) draw()
 }
 
-// The empty space beside the page, and the part of the screen between the nav and the footer, worked out fresh each frame since both move on scroll.
+// The empty space beside the page and the part of the screen between nav and footer. Worked out each frame since both move on scroll.
 function layout() {
   const shell = document.querySelector('.landing-shell')
   if (!shell) return null
@@ -121,7 +121,7 @@ function layout() {
     document.querySelector('.site-footer')?.getBoundingClientRect().top ?? height,
   )
   if (bottom <= top) return null
-  // The lines start in the colour band under the hero and fade in across it, so nothing crowds the top of the page.
+  // Lines start in the colour band under the hero and fade in across it, so nothing crowds the top of the page.
   const band = document.querySelector('.pan-band')?.getBoundingClientRect()
   const fadeFrom = band ? band.top + band.height * 0.3 : -Infinity
   const fadeTo = band ? band.top + band.height * 0.7 : -Infinity
@@ -327,7 +327,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* Fixed behind everything and ignoring the mouse, so the page works as normal. The canvas reads its colours from here, so they follow the theme. */
+/* Fixed behind everything and ignores the mouse so the page works as normal. The canvas reads its colours from here so they follow the theme. */
 .note-margins {
   position: fixed;
   z-index: 0;

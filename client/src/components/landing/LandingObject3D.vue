@@ -17,7 +17,7 @@ const props = defineProps({
 })
 
 const canvas = ref(null)
-// How far back the camera sits, and the box shape that distance was set for. A narrower box moves the camera back so nothing is cut off.
+// How far back the camera sits and the box shape that was set for. A narrower box moves it back so nothing gets cut off.
 const FRAMING = {
   spotify: { distance: 5.2, aspect: 1 },
   journal: { distance: 6.4, aspect: 300 / 230 },
@@ -49,7 +49,7 @@ function seeded(seed) {
   }
 }
 
-// Draws a texture on a canvas. Colour maps are sRGB; roughness and bump maps are plain data, so they're left linear.
+// Draws a texture on a canvas. Colour maps are sRGB. Roughness and bump maps are plain data so they stay linear.
 function paint(width, height, drawTexture, { colour = true } = {}) {
   const board = document.createElement('canvas')
   board.width = width
@@ -134,7 +134,7 @@ function greyGrain(seed, level, speckle, size = 256) {
   )
 }
 
-// The icon's three sound waves, in units of the disc's width (y runs down): where each starts, the point it bows towards, where it ends, and how thick.
+// The icon's three sound waves, in disc widths (y runs down): start, the point it bows towards, end, and thickness.
 const WAVES = [
   [0.225, 0.37, 0.5, 0.2, 0.78, 0.405, 0.092],
   [0.265, 0.525, 0.5, 0.4, 0.745, 0.555, 0.074],
@@ -158,10 +158,10 @@ function buildSpotify() {
     clearcoat: 0.25,
     clearcoatRoughness: 0.45,
   })
-  // Give the soft-touch shell a deeper profile so it can have the larger, pillowy corners of the reference icon.
+  // Deeper shell so it can have the bigger, pillowy corners.
   group.add(new THREE.Mesh(new RoundedBoxGeometry(2, 2, 0.98, 12, 0.46), shell))
 
-  // The green disc: a short open tube, a rounded rim and a printed face. The face is its own circle so nothing sits on top of the tube's ends.
+  // Green disc: short open tube, rounded rim and a printed face. The face is its own circle so nothing sits on the tube's ends.
   const green = new THREE.MeshPhysicalMaterial({
     color: 0x1ed760,
     roughness: 0.35,
@@ -186,7 +186,7 @@ function buildSpotify() {
   front.position.z = 0.5
   group.add(front)
 
-  // Raised, rounded black bars give the Spotify mark the sculpted look of the reference icon instead of leaving it printed flat on the disc.
+  // Raised, rounded black bars so the Spotify mark looks sculpted and not printed flat on the disc.
   const waveMaterial = new THREE.MeshPhysicalMaterial({
     color: 0x101012,
     roughness: 0.2,
@@ -310,7 +310,7 @@ function buildJournal() {
   pages.position.x = 0.03
   group.add(pages)
 
-  // A loose, striped paper bundle sits diagonally across the blue journal, with rounded rolls at each end, as in the reference illustration.
+  // Loose striped paper bundle sitting diagonally across the blue journal, with rounded rolls at each end.
   const scroll = new THREE.Group()
   const parchment = new THREE.MeshPhysicalMaterial({
     color: 0xf4ead5,
@@ -389,7 +389,7 @@ function buildJournal() {
   ribbon.rotation.set(-0.15, 0, 0.18)
   group.add(ribbon)
 
-  // A painted yellow pencil lying across the bottom of the cover, below the label, with its tip just past the edge.
+  // Yellow pencil across the bottom of the cover, below the label, with its tip just past the edge.
   const pencil = new THREE.Group()
   const painted = new THREE.MeshPhysicalMaterial({
     map: paint(128, 128, (draw, size) => {
@@ -504,7 +504,7 @@ onMounted(() => {
   renderer.toneMapping = THREE.NeutralToneMapping
   renderer.toneMappingExposure = 0.9
 
-  // The same warm sky, key and cool fill lights as the cassette, plus soft studio reflections for the shiny parts.
+  // Same warm sky, key and cool fill lights as the cassette, plus soft studio reflections for the shiny parts.
   const pmrem = new THREE.PMREMGenerator(renderer)
   environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
   scene.environment = environment

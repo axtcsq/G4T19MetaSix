@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
-// A compact summary of what each quiz and the Spotify data said about the four MetaFor traits, and what they add up to.
+// Compact summary of what each quiz and Spotify said about the four MetaFor traits, and what they add up to.
 const props = defineProps({
   personality: { type: Object, required: true },
 })
@@ -12,7 +12,7 @@ const BALANCED = 0.05
 const showInfo = ref(false)
 const info = ref(null)
 
-// A tap fires hover, focus and click together, so only a real mouse opens it on hover, and a tap or click toggles it.
+// A tap fires hover, focus and click together, so only a real mouse opens it on hover. Tap or click toggles it.
 function onPointerEnter(event) {
   if (event.pointerType === 'mouse') showInfo.value = true
 }

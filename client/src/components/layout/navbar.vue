@@ -146,7 +146,7 @@ watch(
       </nav>
 
       <nav v-else-if="isLogin" class="header-nav" aria-label="Main navigation">
-        <!-- Always the landing page: going back in history can land on a page that only sends you straight back here. -->
+        <!-- Always the landing page. Going back in history can land on a page that just sends you straight back here. -->
         <RouterLink class="header-cta header-back glass-secondary" to="/">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
           Back
@@ -195,7 +195,7 @@ watch(
         <span class="menu-bars" aria-hidden="true" />
       </button>
 
-      <!-- A plain <a> inside, so the fold measurement can read its width. The landing page leaves it out; its button already leads into the app. -->
+      <!-- Plain <a> inside so the fold measurement can read its width. The landing page leaves it out, its button already goes into the app. -->
       <RouterLink v-if="!isLanding && !isLogin" v-slot="{ href, navigate, isActive }" to="/profile" custom>
         <a
           ref="profile"
@@ -261,7 +261,7 @@ watch(
     box-shadow 220ms ease,
     border-color 220ms ease;
 }
-/* The glass sits on its own layer behind the content. A blur on the header itself would stop the mobile menu inside it from blurring the page. */
+/* Glass is on its own layer behind the content. A blur on the header itself would stop the mobile menu from blurring the page. */
 .site-header::before {
   content: '';
   position: absolute;
