@@ -170,7 +170,7 @@ const clockLabels = [
       <p class="calendar-readout" aria-live="polite">
         {{
           selectedHour === null
-            ? 'Select an hour to explore. The hand shows the time now.'
+            ? 'Select an hour to explore.'
             : `${formatHour(selectedHour)}: ${data.hourly[selectedHour]} recorded plays`
         }}
       </p>

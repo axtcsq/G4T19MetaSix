@@ -531,7 +531,7 @@ watch(
 }
 .music-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 48px;
 }
 /* The records stretch down to the bottom of the Top Tracks list beside them. */
@@ -784,7 +784,7 @@ watch(
   }
   .music-layout,
   .habits-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
   .genre-panel {

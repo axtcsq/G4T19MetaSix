@@ -166,7 +166,8 @@ const readout = computed(() => {
   flex-basis: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 2px;
+  /* Small minimums, so all the bars still fit on the narrowest phones. */
+  gap: 1px;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -180,7 +181,7 @@ const readout = computed(() => {
 }
 .bar {
   flex: 0 1 4px;
-  min-width: 2px;
+  min-width: 1px;
   border-radius: 999px;
   background: var(--song);
   animation: wave-pulse ease-in-out infinite alternate;
