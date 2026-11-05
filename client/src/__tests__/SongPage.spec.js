@@ -6,7 +6,7 @@ import { getTrack } from '@/api/tracks'
 
 vi.mock('@/api/tracks', () => ({ getTrack: vi.fn() }))
 vi.mock('vue-router', () => ({
-  useRoute: () => ({ params: { id: '7w87IxuO7BDcJ3YUqCyMTT' } }),
+  useRoute: () => ({ params: { id: '7w87IxuO7BDcJ3YUqCyMTT' }, query: {} }),
   useRouter: () => ({ back: vi.fn(), push: vi.fn() }),
 }))
 
