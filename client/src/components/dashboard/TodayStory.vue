@@ -331,7 +331,7 @@ onMounted(async () => {
   margin: 0;
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -340,7 +340,7 @@ onMounted(async () => {
   margin: 4px 0 0;
   color: var(--ui-text);
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   line-height: 1.35;
 }
 
@@ -355,7 +355,7 @@ onMounted(async () => {
   color: var(--ui-text);
   background: color-mix(in srgb, var(--ui-primary) 12%, transparent);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 .reminder-dot {
   width: 8px;

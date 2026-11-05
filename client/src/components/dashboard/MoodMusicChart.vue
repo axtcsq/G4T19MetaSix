@@ -108,7 +108,7 @@ function describe(day) {
 .day-readout {
   grid-column: 1/-1;
   min-height: 24px;
-  font: 13px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
   color: var(--ui-text-muted);
 }
 .chart-day {
@@ -197,7 +197,7 @@ function describe(day) {
 .day-number {
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
 }
 
 .legend {
@@ -207,7 +207,7 @@ function describe(day) {
   margin-top: 1rem;
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
 }
 
 .legend-item {

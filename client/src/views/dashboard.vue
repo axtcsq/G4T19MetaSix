@@ -315,7 +315,7 @@ watch(
 }
 .unavailable-note {
   color: var(--dash-muted);
-  font: 20px/1.5 var(--font-serif);
+  font: var(--text-body)/1.5 var(--font-serif);
   max-width: 48ch;
 }
 .dashboard-toolbar {
@@ -345,7 +345,7 @@ watch(
   background: var(--dash-ground);
   color: var(--dash-ink);
   min-height: 100svh;
-  font: 20px/1.5 var(--font-serif);
+  font: var(--text-body)/1.5 var(--font-serif);
 }
 /* The shared tokens switch for dark mode; only the accents need lightening.
    The garden draws its own sky. */
@@ -407,7 +407,7 @@ watch(
   border-radius: 30px;
   cursor: pointer;
   color: var(--dash-muted);
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .period-control button[aria-pressed='true'] {
   background: var(--dash-strong);
@@ -435,7 +435,7 @@ watch(
 }
 .art-pause {
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--text-label);
   min-height: 44px;
   text-decoration: underline;
   text-underline-offset: 5px;
@@ -461,24 +461,24 @@ watch(
   display: flex;
   align-items: baseline;
   gap: 5px;
-  font-size: clamp(44px, 4.5vw, 56px);
+  font-size: var(--text-title);
   font-weight: 600;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 .sleeve-totals strong small {
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 400;
 }
 .sleeve-totals div > span {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
   margin-top: 5px;
 }
 .peak-note {
   margin-top: 24px !important;
-  font-size: 16px;
+  font-size: var(--text-small);
   max-width: 24ch !important;
 }
 .peak-note strong {
@@ -502,14 +502,14 @@ watch(
 }
 .panel-heading :is(h2, h3) {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: var(--text-small);
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.4;
 }
 .panel-heading > span {
   color: var(--dash-muted);
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .section-intro {
   display: flex;
@@ -525,7 +525,7 @@ watch(
   align-items: center;
   gap: 8px;
   color: var(--dash-ink);
-  font-size: 13px;
+  font-size: var(--text-label);
   white-space: nowrap;
   min-height: 44px;
   text-decoration: none;
@@ -554,14 +554,14 @@ watch(
 .rank {
   flex-shrink: 0;
   width: 14px;
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
   font-variant-numeric: tabular-nums;
 }
 .song-detail a {
   display: block;
   color: var(--dash-ink);
-  font-size: 16px;
+  font-size: var(--text-small);
   font-weight: 500;
   text-decoration: none;
   width: fit-content;
@@ -571,7 +571,7 @@ watch(
   text-underline-offset: 5px;
 }
 .song-list strong {
-  font-size: 16px;
+  font-size: var(--text-small);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -595,7 +595,7 @@ watch(
 }
 .song-detail > span {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
 }
 .song-mood {
@@ -606,7 +606,7 @@ watch(
   display: none;
 }
 .artwork-credit {
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
   margin-top: 14px;
 }
@@ -618,7 +618,7 @@ watch(
 }
 .artwork-note {
   max-width: 65ch;
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .artwork-note a {
   color: inherit;
@@ -751,7 +751,7 @@ watch(
   margin-bottom: 8px;
 }
 .portrait-notes .peak-note {
-  font-size: 20px;
+  font-size: var(--text-body);
   max-width: 30ch !important;
 }
 .mood-layout,
@@ -766,10 +766,10 @@ watch(
 }
 .song-detail a {
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: var(--text-body);
 }
 .song-detail > span {
-  font-size: 17px;
+  font-size: var(--text-lead);
 }
 
 .period-control button[aria-pressed='true']:hover {
@@ -810,7 +810,7 @@ watch(
 }
 @media (max-width: 768px) {
   .mood-summary strong {
-    font-size: 30px;
+    font-size: var(--text-header);
   }
   .portrait-notes {
     padding-top: 0;

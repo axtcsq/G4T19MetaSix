@@ -169,7 +169,7 @@ const readout = computed(() => {
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
-  font-size: 14px;
+  font-size: var(--text-label);
 }
 .month-nav strong {
   min-width: 96px;
@@ -185,7 +185,7 @@ const readout = computed(() => {
   border: 1px solid var(--ui-border);
   border-radius: 999px;
   color: var(--ui-text-muted);
-  font-size: 18px;
+  font-size: var(--text-lead);
   line-height: 1;
   cursor: pointer;
   transition:
@@ -195,7 +195,7 @@ const readout = computed(() => {
 .month-retry {
   display: inline-grid;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 600;
 }
 .month-nav button:hover:not(:disabled),
@@ -229,7 +229,7 @@ const readout = computed(() => {
 .month-weekdays {
   margin-bottom: 6px;
   color: var(--ui-text-muted);
-  font-size: 11px;
+  font-size: var(--text-caption);
   text-align: center;
 }
 /* Each square pops in a moment after the one before. */
@@ -284,14 +284,14 @@ const readout = computed(() => {
   min-height: 24px;
   margin: 10px 0 0;
   color: var(--ui-text-muted);
-  font-size: 13px;
+  font-size: var(--text-label);
   line-height: 1.5;
 }
 .month-link {
   display: inline-block;
   margin-top: 10px;
   color: var(--ui-text-muted);
-  font-size: 13px;
+  font-size: var(--text-label);
   text-decoration: none;
 }
 .month-link:hover {

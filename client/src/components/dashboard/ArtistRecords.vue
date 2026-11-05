@@ -270,7 +270,7 @@ onBeforeUnmount(() => observer?.disconnect())
   border-radius: 50%;
   color: #fff;
   background: var(--dash-meter) center / cover;
-  font: 700 18px var(--font-sans);
+  font: 700 var(--text-lead) var(--font-sans);
 }
 /* The spindle hole, on labels showing album art. */
 .record-label.has-art::after {
@@ -286,7 +286,7 @@ onBeforeUnmount(() => observer?.disconnect())
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font: 500 17px/1.2 var(--font-serif);
+  font: 500 var(--text-lead)/1.2 var(--font-serif);
   overflow-wrap: anywhere;
 }
 .record-link:hover .record-name {
@@ -300,7 +300,7 @@ onBeforeUnmount(() => observer?.disconnect())
 }
 .record-plays {
   color: var(--dash-muted);
-  font: 13px var(--font-sans);
+  font: var(--text-label) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 @keyframes record-spin {

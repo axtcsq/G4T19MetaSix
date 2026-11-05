@@ -247,7 +247,7 @@ onBeforeUnmount(() => {
   align-content: center;
   padding: 24px;
   color: var(--dash-ink);
-  font-size: 16px;
+  font-size: var(--text-small);
   text-align: center;
 }
 .garden-caption {
@@ -256,11 +256,11 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 20px;
   margin-top: 14px;
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
 }
 .garden-caption p {
-  font-size: 16px;
+  font-size: var(--text-small);
   color: var(--dash-ink);
   margin: 0;
   max-width: 45ch;
@@ -287,7 +287,7 @@ button:disabled {
 }
 .garden-key {
   margin-top: 4px;
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--dash-muted);
 }
 .garden-key ul {
@@ -322,13 +322,13 @@ button:disabled {
     gap: 12px;
   }
   .garden-caption p {
-    font-size: 16px;
+    font-size: var(--text-small);
     color: var(--dash-ink);
     max-width: 26ch;
   }
 }
 .garden-key {
-  font: 14px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
   margin-top: 12px;
 }
 .garden-key-title {

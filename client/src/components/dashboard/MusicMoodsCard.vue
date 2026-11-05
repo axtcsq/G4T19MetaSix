@@ -125,7 +125,7 @@ const source = computed(() =>
   margin-top: 0.75rem;
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 
 .mood-breakdown {
@@ -134,14 +134,14 @@ const source = computed(() =>
 }
 
 .breakdown-title {
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   font-weight: 700;
 }
 
 .breakdown-note {
   margin-top: 0.25rem;
   color: var(--ui-text-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   line-height: 1.45;
 }
 
@@ -163,7 +163,7 @@ const source = computed(() =>
   row-gap: 0;
   padding: 0.25rem 0;
   border-bottom: 1px solid var(--ui-border);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 
 .mood-group:last-child {
@@ -210,7 +210,7 @@ const source = computed(() =>
   flex-wrap: wrap;
   grid-column: 1 / -1;
   gap: 0 0.8rem;
-  font-size: 0.76rem;
+  font-size: var(--text-caption);
 }
 
 .song-mood span {

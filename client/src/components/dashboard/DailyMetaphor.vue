@@ -77,7 +77,7 @@ const basis = computed(() => {
 .metaphor-kicker {
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -96,7 +96,7 @@ const basis = computed(() => {
 }
 @media (max-width: 600px) {
   .metaphor-line {
-    font-size: 1.25rem;
+    font-size: var(--text-body);
   }
 }
 </style>

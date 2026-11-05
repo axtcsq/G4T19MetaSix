@@ -457,7 +457,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--ui-border);
   border-radius: 999px;
   color: var(--ui-text-muted);
-  font: 600 0.78rem var(--font-sans);
+  font: 600 var(--text-caption) var(--font-sans);
   cursor: pointer;
   transition:
     border-color 160ms ease,
@@ -488,7 +488,7 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 0.35rem 1rem;
   margin-top: 10px;
-  font-size: 0.85rem;
+  font-size: var(--text-label);
 }
 .legend-item {
   display: inline-flex;
@@ -505,7 +505,7 @@ onBeforeUnmount(() => {
   padding: 2px 0;
   border-radius: 6px;
   color: var(--ui-text-muted);
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   font-variant-numeric: tabular-nums;
   text-align: center;
   cursor: pointer;
@@ -526,7 +526,7 @@ onBeforeUnmount(() => {
   min-height: 24px;
   margin-top: 8px;
   color: var(--ui-text-muted);
-  font: 13px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
 }
 /* The river runs in from the left when it first appears. */
 @keyframes river-fill {

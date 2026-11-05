@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: 0;
   list-style: none;
-  font: 12px var(--font-sans);
+  font: var(--text-caption) var(--font-sans);
 }
 .play-equaliser.is-month {
   gap: 3px;
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
 /* Fixed rows, so a month's columns without a number still line up. */
 .day-value {
   grid-row: 1;
-  font: 600 13px var(--font-sans);
+  font: 600 var(--text-label) var(--font-sans);
   color: var(--dash-ink);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -307,7 +307,7 @@ onBeforeUnmount(() => {
 .calendar-readout {
   min-height: 24px;
   margin-top: 12px;
-  font: 13px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
   color: var(--dash-muted);
 }
 @keyframes clock-grow {
@@ -378,7 +378,7 @@ onBeforeUnmount(() => {
 }
 .clock-label {
   fill: var(--dash-muted);
-  font: 11px var(--font-sans);
+  font: var(--text-caption) var(--font-sans);
   text-anchor: middle;
   dominant-baseline: middle;
 }
@@ -398,12 +398,12 @@ onBeforeUnmount(() => {
 }
 .clock-centre-label {
   fill: var(--dash-muted);
-  font: 11px var(--font-sans);
+  font: var(--text-caption) var(--font-sans);
   text-anchor: middle;
 }
 .clock-centre-value {
   fill: var(--dash-strong);
-  font: 700 15px var(--font-sans);
+  font: 700 var(--text-small) var(--font-sans);
   text-anchor: middle;
 }
 </style>

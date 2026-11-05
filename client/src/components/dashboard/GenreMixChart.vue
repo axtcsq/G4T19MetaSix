@@ -103,10 +103,10 @@ circle {
   pointer-events: none;
 }
 .disc-label strong {
-  font: 600 28px var(--font-serif);
+  font: 600 var(--text-subheader) var(--font-serif);
 }
 .disc-label span {
-  font: 12px var(--font-sans);
+  font: var(--text-caption) var(--font-sans);
   max-width: 85px;
   overflow-wrap: anywhere;
 }
@@ -123,7 +123,7 @@ button {
   min-height: 44px;
   padding: 6px;
   text-align: left;
-  font: 14px var(--font-sans);
+  font: var(--text-label) var(--font-sans);
   cursor: pointer;
   border-radius: 6px;
 }
@@ -144,7 +144,7 @@ button strong {
 .genre-note {
   grid-column: 1/-1;
   color: var(--dash-muted);
-  font: 14px/1.5 var(--font-sans);
+  font: var(--text-label)/1.5 var(--font-sans);
 }
 @media (prefers-reduced-motion: reduce) {
   circle {
