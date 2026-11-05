@@ -90,7 +90,6 @@ All endpoints use the `/api` prefix. Unless noted, endpoints below require a sig
 | `GET /songs/:id/analysis` | Public | Read a song's mood analysis. |
 | `GET /moods` | Signed in | List the user's mood entries. |
 | `POST /moods` | Signed in | Create a mood entry. |
-| `GET /moods/streak` | Signed in | Read the current check-in streak. |
 | `GET /moods/:id` | Signed in | Read one mood entry. |
 | `PATCH /moods/:id` | Signed in | Edit a mood entry. |
 | `DELETE /moods/:id` | Signed in | Delete a mood entry. |
