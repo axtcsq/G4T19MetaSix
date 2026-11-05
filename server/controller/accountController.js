@@ -21,7 +21,12 @@ async function* exportRows(user) {
   const userId = user._id;
   const exportedAt = new Date().toISOString();
   yield `{"exportedAt":${JSON.stringify(exportedAt)},"account":${JSON.stringify(publicUser(user))},"journal":[`;
-  yield* rows(MoodLog.find({ userId }).sort({ createdAt: -1 }).select("-userId -__v").lean().cursor());
+  // A photo's bytes and a drawing's strokes would make the response too big for
+  // Vercel, so the export only says which entries have them.
+  yield* rows(
+    MoodLog.find({ userId }).sort({ createdAt: -1 }).select("-userId -__v -photo").lean().cursor(),
+    ({ drawing, ...entry }) => ({ ...entry, hasDrawing: Boolean(drawing) }),
+  );
   yield `],"listens":[`;
   yield* rows(
     Listen.find({ userId })
