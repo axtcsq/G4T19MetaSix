@@ -35,7 +35,7 @@
   --color-lavender: #998ba1;
   --color-brown: #7d4737;
 
-  /* Music mood tags use the original five reflection categories. The extra journal-only moods have their own 500 colour below. */
+  /* Music mood tags use the original five categories. The extra journal-only moods have their own 500 colour below. */
   --color-mood-sad-50: #f0f6fb;
   --color-mood-sad-100: #e1ecf8;
   --color-mood-sad-200: #c3d9f0;
@@ -108,12 +108,12 @@
   --text-label: 0.875rem; /* 14px: buttons, notes, metadata */
   --text-caption: 0.75rem; /* 12px: the smallest size, for chart labels and badges */
 
-  /* One content width for the nav and every page, so they line up. The gutter is the space between the screen edge and the content. */
+  /* One content width for the nav and every page so they line up. Gutter is the space between screen edge and content. */
   --page-gutter: 32px;
   --page-width: min(1180px, calc(100% - 2 * var(--page-gutter)));
-  /* The landing page's width. On wide screens it leaves wider sides for the margin notes and strings, so they don't crowd the content. */
+  /* Landing page width. Wider sides on big screens so the margin notes and strings don't crowd the content. */
   --landing-width: var(--page-width);
-  /* The space between the nav and each page's title, and between the end of a page and the footer. */
+  /* Space between the nav and each page's title, and between the end of a page and the footer. */
   --page-top: clamp(32px, 4vw, 48px);
   --page-bottom: clamp(48px, 6vw, 64px);
 }
@@ -136,7 +136,7 @@
   }
 }
 
-/* Keep room for the scrollbar, so the header doesn't jump sideways when a page grows tall enough to scroll. */
+/* Keep room for the scrollbar so the header doesn't jump sideways when a page gets long enough to scroll. */
 html {
   scrollbar-gutter: stable;
 }
@@ -156,7 +156,7 @@ main {
   --ui-primary: var(--color-brand-500);
   --ui-radius: 0.5rem;
 
-  /* The Personality pages' palette: white cards with warm brown borders, peach wells and plum-grey muted text. */
+  /* Personality pages palette: white cards, warm brown borders, peach wells, plum-grey muted text. */
   --ui-bg: #faf8f6;
   --ui-bg-elevated: #ffffff;
   --ui-bg-accented: #ffe6d2;
@@ -196,7 +196,7 @@ main {
   --scroll-thumb: #5a4840;
   --scroll-track: #1d1714;
 
-  /* Espresso: a warm brown-black page with slightly lighter cards, cream text and peach-tinted borders, so the terracotta brand sits naturally on it. */
+  /* Espresso: warm brown-black page, slightly lighter cards, cream text and peach-tinted borders so the terracotta brand fits. */
   --ui-bg: #161210;
   --ui-bg-elevated: #211a17;
   --ui-bg-accented: #33241e;
@@ -420,7 +420,7 @@ body {
   --button-base: #cd6651;
 }
 
-/* The flat buttons above get a soft drop shadow, so they sit just off the page; the glossy mood chips keep their own. Disabled buttons stay flat. */
+/* Soft drop shadow on the flat buttons above. Glossy mood chips keep their own, disabled buttons stay flat. */
 :is(.glass-action, .glass-secondary, .glass-icon):not(.mood-reaction) {
   box-shadow: 0 4px 10px rgba(125, 71, 55, 0.2) !important;
 }
