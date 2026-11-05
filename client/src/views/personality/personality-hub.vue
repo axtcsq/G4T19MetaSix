@@ -585,16 +585,11 @@ onMounted(loadPage)
 }
 
 
-.body-text {
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.3;
-}
-
 .emphasis-text {
   font-family: var(--font-serif);
   font-size: var(--text-body);
   font-weight: 600;
+  line-height: 1.35;
 }
 
 .quiz-grid {
@@ -634,6 +629,8 @@ onMounted(loadPage)
 .quiz-description {
   flex: 1;
   margin-top: 0.25rem;
+  font-size: var(--text-lead);
+  line-height: 1.45;
 }
 
 .peach-button {
@@ -648,8 +645,9 @@ onMounted(loadPage)
   color: var(--pq-on-peach);
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition:

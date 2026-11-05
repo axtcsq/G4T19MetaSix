@@ -179,8 +179,8 @@ onMounted(loadResult)
 
 .body-text {
   font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.35;
+  font-size: var(--text-lead);
+  line-height: 1.45;
 }
 
 .reason {
@@ -201,7 +201,7 @@ onMounted(loadResult)
 
 .row-label {
   font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   font-weight: 600;
 }
 
@@ -255,8 +255,9 @@ onMounted(loadResult)
   color: var(--pq-on-peach);
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition:

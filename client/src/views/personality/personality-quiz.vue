@@ -203,12 +203,6 @@ onMounted(loadQuiz)
   line-height: 1.25;
 }
 
-.body-text {
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.3;
-}
-
 .back-link {
   color: var(--ui-text-muted);
   font-family: var(--font-sans);
@@ -252,7 +246,7 @@ onMounted(loadQuiz)
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   text-align: left;
   cursor: pointer;
   transition:
@@ -289,8 +283,9 @@ onMounted(loadQuiz)
   color: var(--pq-on-peach);
   background: var(--pq-peach);
   box-shadow: 0 4px 4px var(--pq-shadow);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -323,7 +318,7 @@ onMounted(loadQuiz)
   color: var(--pq-on-surface);
   background: var(--pq-surface);
   font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   color-scheme: light;
 }
 
