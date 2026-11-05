@@ -285,12 +285,8 @@ watch(
               }}
             </p>
           </article>
-          <article class="chart-panel">
-            <div class="panel-heading"><h3>Month at a Glance</h3></div>
-            <MonthMoods />
-          </article>
-          <!-- A single day would be one lone bar, so Today leaves this chart out. -->
-          <article v-if="period !== 'daily'" class="chart-panel">
+          <!-- A single day would be one lone bar, so Today leaves this chart out. It spans the full width so each day's column has room. -->
+          <article v-if="period !== 'daily'" class="chart-panel days-panel">
             <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart
               :key="`days-${period}`"
@@ -671,6 +667,9 @@ watch(
   grid-template-columns: 1.2fr 1fr;
   gap: 48px;
   margin-top: 32px;
+}
+.days-panel {
+  grid-column: 1 / -1;
 }
 .genre-panel {
   border-left: 1px solid var(--dash-rule);
