@@ -9,6 +9,7 @@ import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotif
 import { getRecommendations } from '@/api/recommendations'
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 import { useListeningRoom } from '@/composables/useListeningRoom'
+import RecommendationResults from '@/components/calendar/RecommendationResults.vue'
 
 defineOptions({ name: "MoodCalendar" })
 
@@ -24,7 +25,8 @@ const moodError = ref('')
 const spotifyError = ref('')
 const isConnectingSpotify = ref(false)
 const recommendations = ref([])
-const recommendationsLoading = ref(false)
+const recommendationsLoading = ref(true)
+const recommendationInputsReady = ref(false)
 const recommendationsError = ref('')
 const recommendationPage = ref(0)
 const shownRecommendationIds = new Set()
@@ -36,11 +38,6 @@ const listeningRoom = useListeningRoom()
 
 function playRecommendation(track) {
   router.push({ name: 'listen', query: { track: track.id, uri: track.uri, title: track.name, artist: track.artists.join(', '), image: track.imageUrl || undefined } })
-}
-
-function openRecommendationSong(event, track) {
-  event.stopPropagation()
-  router.push(`/song/${track.id}`)
 }
 
 const monthLabel = computed(() => shownMonth.value.toLocaleDateString('en-SG', { month: 'long', year: 'numeric' }))
@@ -173,6 +170,10 @@ async function loadData() {
     : hasSpotifySession()
       ? recentSpotify().then((data) => { listens.value = data.items || [] }).catch((error) => { spotifyError.value = error.message })
       : Promise.resolve()
+  const recommendationsCanLoad = () => {
+    recommendationInputsReady.value = true
+  }
+  spotifyRequest.then(recommendationsCanLoad, recommendationsCanLoad)
   await Promise.all([moodsRequest, spotifyRequest])
   loading.value = false
 }
@@ -287,7 +288,8 @@ function refreshRecommendations() {
   loadRecommendations()
 }
 
-watch([songMoodTrend, recommendationArtists, recommendationTypeMix], () => {
+watch([songMoodTrend, recommendationArtists, recommendationTypeMix, recommendationInputsReady], () => {
+  if (!recommendationInputsReady.value) return
   recommendationPage.value = 0
   shownRecommendationIds.clear()
   loadRecommendations()
@@ -304,6 +306,38 @@ onMounted(() => {
       <header class="calendar-intro">
         <h1 class="page-title">Mood Calendar</h1>
       </header>
+
+      <section class="recommendation-panel" aria-labelledby="recommendations-title" aria-live="polite">
+        <div class="recommendation-heading">
+          <div>
+            <p class="eyebrow">A small listening nudge</p>
+            <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
+            <div v-if="recommendationArtists.length" class="recommendation-personalization">
+              <span>Artists similar to the ones you played most:</span>
+              <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
+            </div>
+          </div>
+          <div class="recommendation-actions">
+            <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
+            <button
+              v-if="recommendationTarget && recommendationArtists.length"
+              type="button"
+              class="refresh-recommendations glass-secondary"
+              :disabled="recommendationsLoading"
+              @click="refreshRecommendations"
+            >
+              {{ recommendationsLoading ? 'Refreshing…' : 'Refresh songs' }}
+            </button>
+          </div>
+        </div>
+        <RecommendationResults
+          :tracks="recommendations"
+          :loading="!recommendationInputsReady || recommendationsLoading"
+          :error="recommendationsError"
+          :target="recommendationTarget"
+          @play="playRecommendation"
+        />
+      </section>
 
       <!-- A faded calendar stands in while the month loads. -->
       <section v-if="loading" class="calendar-shell calendar-skeleton" role="status" aria-label="Loading your mood calendar">
@@ -332,45 +366,6 @@ onMounted(() => {
             {{ isConnectingSpotify ? 'Connecting…' : 'Connect Spotify' }}
           </button>
         </div>
-
-        <section class="recommendation-panel" aria-labelledby="recommendations-title" aria-live="polite">
-          <div class="recommendation-heading">
-            <div>
-              <p class="eyebrow">A small listening nudge</p>
-              <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
-              <div v-if="recommendationArtists.length" class="recommendation-personalization">
-                <span>Artists similar to the ones you played most:</span>
-                <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
-              </div>
-            </div>
-            <div class="recommendation-actions">
-              <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
-              <button
-                v-if="recommendationTarget && recommendationArtists.length"
-                type="button"
-                class="refresh-recommendations glass-secondary"
-                :disabled="recommendationsLoading"
-                @click="refreshRecommendations"
-              >
-                {{ recommendationsLoading ? 'Refreshing…' : 'Refresh songs' }}
-              </button>
-            </div>
-          </div>
-          <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
-          <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
-          <div v-else-if="recommendations.length" class="recommendation-list">
-            <div v-for="track in recommendations" :key="track.id" class="recommendation-card">
-              <span class="art-link" aria-hidden="true">
-                <img v-if="track.imageUrl" :src="track.imageUrl" alt="" />
-                <span v-else class="track-art">♫</span>
-              </span>
-              <span class="track-copy"><a class="recommendation-title" :href="`/song/${track.id}`" @click.prevent="openRecommendationSong($event, track)"><strong>{{ track.name }}</strong></a><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
-              <button class="recommendation-open" type="button" @click="playRecommendation(track)">Play song</button>
-            </div>
-          </div>
-          <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
-          <p v-else class="recommendation-status">No songs by similar artists matched the mood this time. Try refreshing for other artists.</p>
-        </section>
 
         <section class="calendar-shell" aria-label="Mood calendar">
           <button class="month-arrow previous glass-icon" type="button" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
@@ -507,17 +502,6 @@ onMounted(() => {
 .recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: .74rem; }
 .artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
 .recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 800; }
-.recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-.recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); transition: border-color .16s ease, transform .16s ease; }
-.recommendation-card:hover { border-color: var(--color-brand-300); }
-.recommendation-card img, .recommendation-card .track-art { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 8px; object-fit: cover; }
-.recommendation-card .track-copy { display: grid; min-width: 0; gap: 3px; }
-.recommendation-card .track-copy strong, .recommendation-card .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.recommendation-card .track-copy strong { font-size: .8rem; }
-.recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
-.recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: .65rem; font-weight: 700; }
-.recommendation-open { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; border: 0; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; }
-.recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
 .month-heading { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 0 0 16px; }
@@ -600,13 +584,10 @@ onMounted(() => {
 .track-link:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
 /* Song titles open the song's mood page. */
 .title-link { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
-.recommendation-title { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
-.recommendation-title:hover strong { text-decoration: underline; text-underline-offset: 3px; }
 .title-link strong { display: block; }
 .title-link:hover strong { text-decoration: underline; text-underline-offset: 3px; }
-.title-link:focus-visible, .recommendation-title:focus-visible, .art-link:focus-visible, .recommendation-open:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+.title-link:focus-visible, .art-link:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
 .art-link { display: block; flex: 0 0 auto; line-height: 0; }
-.recommendation-open { text-decoration: none; }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: 1.4rem; }
 .track-copy { display: grid; min-width: 0; gap: 3px; }
@@ -635,7 +616,6 @@ onMounted(() => {
   .recommendation-heading { display: block; }
   .recommendation-actions { margin-top: 10px; }
   .recommendation-mood { display: inline-flex; }
-  .recommendation-list { grid-template-columns: 1fr; }
   .track-list.is-carousel .track-card { flex-basis: calc((100% - 10px) / 2); }
 }
 </style>
