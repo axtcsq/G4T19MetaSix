@@ -432,8 +432,10 @@ watch(
   margin-bottom: 12px;
 }
 .art-pause {
+  flex-shrink: 0;
   cursor: pointer;
   font-size: var(--text-label);
+  white-space: nowrap;
   min-height: 44px;
   text-decoration: underline;
   text-underline-offset: 5px;
