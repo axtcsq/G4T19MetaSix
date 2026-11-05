@@ -6,6 +6,13 @@ import { useListeningRoom } from '../composables/useListeningRoom'
 import { useAuthStore } from '../stores/auth'
 import AmbientWave from '../components/listening/AmbientWave.vue'
 
+const { route, replace } = vi.hoisted(() => ({ route: { path: '/listen', query: {} }, replace: vi.fn() }))
+vi.mock('vue-router', async (original) => ({
+  ...(await original()),
+  useRoute: () => route,
+  useRouter: () => ({ replace }),
+}))
+
 describe('Spotify listening room', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -94,6 +101,24 @@ describe('Spotify listening room', () => {
     expect(load).toHaveBeenCalledOnce()
     reopened.unmount()
   })
+  it('takes the song out of the address, so a refresh does not restart it', async () => {
+    const auth = useAuthStore()
+    auth.checked = true
+    route.query = { play: '3WPNBHvmOfqP9RdTGI27gZ' }
+    const wrapper = mount(ListeningRoom, {
+      global: {
+        stubs: {
+          RouterLink: { template: '<a><slot /></a>' },
+          VinylTurntable: { props: ['spinning'], template: '<div />' },
+        },
+      },
+    })
+    await flushPromises()
+    expect(replace).toHaveBeenCalledWith({ query: {} })
+    route.query = {}
+    wrapper.unmount()
+  })
+
   it('paces the seek wave from track tempo and falls back when tempo is unavailable', async () => {
     const wrapper = mount(AmbientWave, { props: { tempo: 60 } })
     expect(wrapper.element.style.getPropertyValue('--wave-duration')).toBe('2s')

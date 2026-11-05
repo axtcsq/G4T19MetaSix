@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
@@ -9,6 +10,8 @@ import { useTrackMood } from '@/composables/useTrackMoods'
 
 defineOptions({ name: 'ListeningRoom' })
 const room = useListeningRoom()
+const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const {
   track,
@@ -75,7 +78,15 @@ async function commitSeek(value) {
 // wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
   if (!auth.checked) await auth.load()
-  room.initialize()
+  // /listen?play=<id> plays that song. It's taken out of the address so that
+  // refreshing the page doesn't start it again.
+  const song = route.query.play
+  if (typeof song === 'string') {
+    router.replace({ query: {} })
+    room.playById(song)
+  } else {
+    room.initialize()
+  }
 })
 onBeforeUnmount(() => {
   clearTimeout(searchTimer)

@@ -241,6 +241,65 @@ describe('Listening player lifecycle', () => {
     expect(room.error.value).toMatch(/another device/)
   })
 
+  describe('playing a song by its ID', () => {
+    const ID = '3WPNBHvmOfqP9RdTGI27gZ'
+    const SONG = { id: ID, uri: `spotify:track:${ID}`, duration_ms: 1000, album: { images: [] } }
+    const played = () => playSpotify.mock.calls.at(-1)?.[1]?.[0]
+
+    it('waits for the player to be ready, then looks the song up and plays it', async () => {
+      spotifyRequest.mockImplementation(async (path) => (path.startsWith('/tracks/') ? SONG : undefined))
+      const room = useListeningRoom()
+      await room.playById(ID)
+      expect(playSpotify).not.toHaveBeenCalled()
+
+      players[0].listeners.ready({ device_id: 'device' })
+      await vi.waitFor(() => expect(played()).toBe(SONG.uri))
+      expect(spotifyRequest).toHaveBeenCalledWith(`/tracks/${ID}?market=from_token`)
+      expect(room.error.value).toBe('')
+    })
+
+    it('plays straight away when the player is already ready', async () => {
+      spotifyRequest.mockImplementation(async (path) => (path.startsWith('/tracks/') ? SONG : undefined))
+      const room = useListeningRoom()
+      await room.initialize()
+      players[0].listeners.ready({ device_id: 'device' })
+      await room.playById(ID)
+      expect(played()).toBe(SONG.uri)
+    })
+
+    it('ignores anything that is not a Spotify ID', async () => {
+      const room = useListeningRoom()
+      await room.playById('../me/player')
+      players[0].listeners.ready({ device_id: 'device' })
+      await Promise.resolve()
+      expect(spotifyRequest).not.toHaveBeenCalledWith(expect.stringContaining('/tracks/'))
+      expect(playSpotify).not.toHaveBeenCalled()
+    })
+
+    it('says so if the song cannot load', async () => {
+      spotifyRequest.mockImplementation(async (path) => {
+        if (path.startsWith('/tracks/')) throw new Error('Spotify is busy')
+      })
+      const room = useListeningRoom()
+      await room.initialize()
+      players[0].listeners.ready({ device_id: 'device' })
+      await room.playById(ID)
+      expect(room.error.value).toBe('Spotify is busy')
+      expect(playSpotify).not.toHaveBeenCalled()
+    })
+
+    it('forgets the waiting song after disconnecting', async () => {
+      spotifyRequest.mockImplementation(async (path) => (path.startsWith('/tracks/') ? SONG : undefined))
+      const room = useListeningRoom()
+      await room.playById(ID)
+      room.disconnect()
+      await room.initialize()
+      players[0].listeners.ready({ device_id: 'device' })
+      await new Promise((resolve) => setTimeout(resolve))
+      expect(playSpotify).not.toHaveBeenCalled()
+    })
+  })
+
   it('goes back a song early on and restarts the song after that', async () => {
     const room = useListeningRoom()
     await room.initialize()

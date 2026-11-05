@@ -39,6 +39,9 @@ const ambientColors = ref(['#cd6651', '#998ba1', '#ffd3ac'])
 const results = ref([])
 const searching = ref(false)
 const query = ref('')
+const SPOTIFY_ID = /^[0-9A-Za-z]{22}$/
+// A song waiting to play once the player is ready. See playById.
+let pendingSong = null
 let player,
   device,
   poll,
@@ -225,6 +228,7 @@ async function connectPlayer() {
       device = device_id
       ready.value = true
       error.value = ''
+      playPending()
     }
   })
   player.addListener('not_ready', () => {
@@ -331,8 +335,33 @@ async function startPlayback(command, isCurrent) {
     }
   }
 }
+// Plays a song from its Spotify ID, like the song the Personality page sends
+// here. The player reports ready after initialize finishes, so the song waits
+// for whichever comes last.
+async function playById(id) {
+  pendingSong = SPOTIFY_ID.test(id) ? id : null
+  await initialize()
+  await playPending()
+}
+async function playPending() {
+  if (!pendingSong || !connected.value || !ready.value || busy.value) return
+  const id = pendingSong
+  pendingSong = null
+  let record = records.value.find((item) => item.id === id)
+  if (!record) {
+    try {
+      record = await spotifyRequest(`/tracks/${id}?market=from_token`)
+    } catch (e) {
+      error.value = e.message || 'That song could not load. Try searching for it.'
+      return
+    }
+  }
+  await selectRecord(record)
+}
 async function selectRecord(record) {
   if (!connected.value) return
+  // Choosing a song replaces one still waiting to play.
+  pendingSong = null
   await action(async (isCurrent) => {
     if (!ready.value || !device)
       throw new Error('Reconnect the Spotify player before choosing a song.')
@@ -423,6 +452,7 @@ function cancelSearch() {
   searching.value = false
 }
 function disconnect() {
+  pendingSong = null
   ++actionVersion
   initPromise = null
   busy.value = false
@@ -472,6 +502,7 @@ export function useListeningRoom() {
     historyError,
     refreshHistory,
     initialize,
+    playById,
     selectRecord,
     toggle,
     seek,
