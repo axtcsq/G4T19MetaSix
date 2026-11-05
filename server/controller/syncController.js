@@ -3,7 +3,7 @@ import { recordSyncFailure, syncUser } from "../services/sync.js";
 // Opening the dashboard twice in a row shouldn't call Spotify twice.
 const MIN_INTERVAL_MS = 60 * 1000;
 
-// POST /api/sync: "Sync now". Saves the logged-in user's newest plays from Spotify straight away, instead of waiting for the hourly job.
+// POST /api/sync - the Sync now button. Saves the user's newest plays right away instead of waiting for the scheduled job.
 export async function syncNow(req, res) {
   const { isDemo, tracking } = req.user;
   if (isDemo) {

@@ -12,7 +12,7 @@ export async function syncBeforeReading() {
   try {
     await api.post('/api/sync', undefined, { timeout: 5000 })
   } catch {
-    // The hourly job will catch up.
+    // The sync job will catch up.
   }
 }
 

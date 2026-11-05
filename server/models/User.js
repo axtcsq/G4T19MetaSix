@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     preferences: {
       // "sound" when the user has turned lyrics analysis off on their profile.
       moodLens: { type: String, enum: MOOD_LENSES, default: "lyrics" },
-      // False stops the hourly job and Sync now saving new plays. Plays already saved are kept.
+      // False stops the sync job and Sync now from saving new plays. Plays already saved are kept.
       savePlays: { type: Boolean, default: true },
       // "HH:MM" in the user's own time, or null for no check-in reminder.
       reminderTime: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: null },
