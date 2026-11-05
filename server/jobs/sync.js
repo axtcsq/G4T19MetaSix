@@ -1,4 +1,4 @@
-// Sync Spotify plays and analyse pending tracks. Scheduled every 15 minutes. Run manually with `node jobs/sync.js` from the server directory.
+// Sync Spotify plays and analyse pending tracks. Runs every 15 minutes, or `node jobs/sync.js` from server/.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";

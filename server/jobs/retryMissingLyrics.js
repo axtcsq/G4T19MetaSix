@@ -11,7 +11,7 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // LRCLIB is a free service, so don't rush it.
 const WAIT_MS = 200;
 
-// Songs with sound data wait as "partial" and show "Lyrics pending". The job already picks up "no-data" songs once their lyrics are cleared.
+// Songs with sound data wait as "partial" and show "Lyrics pending". The job picks up "no-data" songs once their lyrics are cleared.
 function queueUpdate(track) {
   if (track.analysis?.status === "no-data") {
     return { $set: { lyrics: null } };

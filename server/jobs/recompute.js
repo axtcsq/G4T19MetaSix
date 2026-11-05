@@ -1,4 +1,4 @@
-// Recompute stored song moods and daily summaries after mood-rule changes. Run manually with `node jobs/recompute.js` from the server directory.
+// Recompute song moods and daily summaries after changing the mood rules. Run with `node jobs/recompute.js` from server/.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";

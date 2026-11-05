@@ -1,6 +1,6 @@
 import { balance, percent, scaleRow, tallyAnswers } from "../../services/quizEngine.js";
 
-// Music MBTI: the four MBTI letter pairs, measured with music questions. Three questions per pair; options give 2 points (strong lean) or 1 (mild).
+// Music MBTI: the four MBTI pairs, with music questions. Three per pair, options give 2 points (strong lean) or 1 (mild).
 const PAIRS = [
   {
     first: "E",
