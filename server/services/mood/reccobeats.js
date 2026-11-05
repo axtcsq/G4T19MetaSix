@@ -19,7 +19,7 @@ async function lookup(ids) {
   const body = await res.json().catch(() => null)
   if (!res.ok) throw failed(res)
 
-  // Unknown IDs are left out rather than reported, and `id` is ReccoBeats' own, so match on the Spotify URL instead.
+  // Unknown IDs get left out and `id` is ReccoBeats' own, so match on the Spotify URL instead.
   return ids.map((id) => body?.content?.find((f) => f.href?.endsWith(`/track/${id}`))).filter(Boolean)
 }
 

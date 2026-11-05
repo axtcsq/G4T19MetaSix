@@ -12,7 +12,7 @@ const GROQ_MODEL = "openai/gpt-oss-20b";
 // Home shows a fallback rather than keep the user waiting.
 const TIMEOUT_MS = 8000;
 const MAX_LENGTH = 160;
-// Artist and genre names come from Spotify and Last.fm. Cut long ones short so they can't fill the prompt.
+// Artist and genre names come from Spotify and Last.fm. Cut long ones so they can't fill the prompt.
 const MAX_NAME_LENGTH = 60;
 
 // "YYYY-MM-DD" in the user's own time zone.
@@ -145,7 +145,7 @@ async function listeningTaste(user) {
   }
 }
 
-// { text, mood, genre, source } for Home. text is null when there is nothing to go on yet, and Home shows its general line instead. source is "groq" or "mood".
+// { text, mood, genre, source } for Home. text is null if there's nothing to go on yet (Home shows its general line). source is "groq" or "mood".
 export async function dailyMetaphorFor(user, now = new Date()) {
   const today = localDate(now, user.timezone);
   const [moods, overall] = await Promise.all([
@@ -153,7 +153,7 @@ export async function dailyMetaphorFor(user, now = new Date()) {
     overallMood(user, { from: today, to: today }).catch(() => null),
   ]);
   const mood = todaysMood(moods, overall?.main);
-  // A new line when the check-ins or the day's overall mood change, not with every play.
+  // New line when the check-ins or the day's overall mood change, not on every play.
   const key = `${today}|${moods.join(",")}|${mood ?? ""}`;
   const cached = user.dailyMetaphor;
   if (cached?.key === key && cached.text) {

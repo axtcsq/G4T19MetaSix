@@ -62,7 +62,7 @@ export async function openLyricsDump(path) {
     }
   }
 
-  // Same rules as the live search: lyrics or an instrumental mark, within 10s, preferring the same album and then the closest duration.
+  // Same rules as the live search: lyrics or an instrumental mark, within 10s, prefer the same album then the closest duration.
   const query = db.prepare(`
     SELECT l.plain_lyrics AS plainLyrics, l.instrumental AS instrumental
     FROM tracks t JOIN lyrics l ON l.id = t.last_lyrics_id
@@ -124,7 +124,7 @@ function sameArtist(track, hitArtist) {
   })
 }
 
-// The wider searches ignore the full artist name, so a hit has to agree on the title, an artist and the length, or it could be a different song.
+// The wider searches ignore the full artist name, so a hit must agree on title, an artist and length or it could be a different song.
 const WIDE_MAX_SECONDS = 3
 
 function sameSong(track, seconds, hit) {
@@ -136,7 +136,7 @@ function sameSong(track, seconds, hit) {
   )
 }
 
-// For when LRCLIB credits the artist differently, so searching their full name finds nothing. Lyrics win over an instrumental mark on another copy.
+// For when LRCLIB credits the artist differently and the full name finds nothing. Lyrics beat an instrumental mark on another copy.
 async function wideSearch(track, seconds) {
   const name = baseTitle(track.name)
   const firstWord = words(track.artists?.[0]?.name)[0]
@@ -159,7 +159,7 @@ export async function findLyrics(track) {
   const artist = track.artists?.[0]?.name ?? ''
   const seconds = Math.round((track.duration_ms ?? 0) / 1000)
 
-  // Exact match first: LRCLIB matches on name, artist, album and duration (±2s). A record with no lyrics and no instrumental mark doesn't count.
+  // Exact match first: name, artist, album and duration (±2s). A record with no lyrics and no instrumental mark doesn't count.
   const exact = await lrclib('/get', {
     track_name: track.name,
     artist_name: artist,
@@ -168,7 +168,7 @@ export async function findLyrics(track) {
   })
   if (exact && usable(exact)) return toResult(exact)
 
-  // Fallback: fuzzy search, then pick the closest duration. Catches remasters, "feat." credits and album-name mismatches.
+  // Fallback: fuzzy search, take the closest duration. Catches remasters, "feat." credits and album name mismatches.
   const hits = (await lrclib('/search', { track_name: track.name, artist_name: artist })) ?? []
   const best = hits
     .filter(usable)

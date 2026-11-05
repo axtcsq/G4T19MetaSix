@@ -104,7 +104,7 @@ export async function rebuildDailyMoods(userId, dates) {
   return days.size;
 }
 
-// Rebuilds every (user, day) that has a play of one of these tracks, after their moods change. Returns how many days were rebuilt.
+// Rebuilds every (user, day) with a play of these tracks after their moods change. Returns how many days were rebuilt.
 export async function rebuildDaysWithTracks(trackIds) {
   if (!trackIds.length) {
     return 0;

@@ -24,7 +24,7 @@ const FEATURE_KEYS = [
   "mode",
 ];
 
-// Audio features from ReccoBeats, keyed by Spotify track ID. Songs ReccoBeats doesn't know are missing from the result.
+// ReccoBeats audio features by Spotify track ID. Songs it doesn't know just aren't in the result.
 export async function fetchFeatures(trackIds) {
   const response = await fetch(`${RECCOBEATS_URL}?ids=${trackIds.join(",")}`, {
     signal: AbortSignal.timeout(15000),
@@ -107,7 +107,7 @@ export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
         const update = {
           $set: {
             features,
-            // No lyrics reading until the analysis job reads them, so the song shows "Lyrics pending" rather than "No lyrics".
+            // No lyrics reading until the analysis job gets to it, so the song shows "Lyrics pending" and not "No lyrics".
             moods: { ...trackMoods(features), lyrics: null },
             "analysis.status": "partial",
             "analysis.analysedAt": analysedAt,

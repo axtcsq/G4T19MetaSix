@@ -1,4 +1,4 @@
-// A user's overall mood over some dates, from their journal entries and their listening together. Every feature that sums up "how you've been" uses this.
+// A user's overall mood over some dates, from journal and listening together. Anything that sums up "how you've been" uses this.
 import DailyMood from "../models/DailyMood.js";
 import MoodLog from "../models/MoodLog.js";
 import { AXES } from "./mood/axes.js";
@@ -6,7 +6,7 @@ import { AXES } from "./mood/axes.js";
 // What the journal is worth against the music on a day that has both.
 export const JOURNAL_WEIGHT = 0.6;
 
-// Each journal mood on the music's five axes. Tired leans only half sad: tired isn't quite unhappy, and it has no calm or tense side either.
+// Each journal mood on the music's five axes. Tired is only half sad: not quite unhappy, and no calm or tense side either.
 export const JOURNAL_AXES = {
   Happy: { happy: 1 },
   Excited: { happy: 1 },

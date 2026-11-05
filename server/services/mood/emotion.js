@@ -31,7 +31,7 @@ const EMOTIONS = Object.keys(EMOTION_VALENCE)
 const DARK_WORDS = new Set(`gun guns bullet bullets shoot shoots shot shooting kill kills killed killer killing
 murder murdered dead death die dies died dying blood bloody suicide knife grave funeral meth overdose bomb bombs
 corpse coffin cocaine heroin`.split(/\s+/))
-// A theme needs at least two different such words, at 1 in 200 words or more, so a lone "shooting star" or "killing me softly" doesn't count.
+// A theme needs two different such words, at 1 in 200 words or more, so a lone "shooting star" or "killing me softly" doesn't count.
 const MIN_DARK_WORDS = 2
 const MIN_DARK_RATE = 0.005
 
@@ -82,7 +82,7 @@ export function toChunks(text) {
 export async function scoreLyrics(text, { translations = null } = {}) {
   const classify = await getClassifier()
 
-  // Score each distinct verse once, but weight it by its line count and how often it appears: a repeated chorus is emphasis and should count more.
+  // Score each distinct verse once, weighted by line count and repeats. A repeated chorus is emphasis so it should count more.
   const verses = new Map()
   for (const lines of toChunks(text)) {
     const key = lines.join('\n')

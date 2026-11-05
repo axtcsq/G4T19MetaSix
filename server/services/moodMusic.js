@@ -3,7 +3,7 @@ import { MOODS } from "../models/MoodLog.js";
 import { AXES, axesOf, strongestAxis } from "./mood/axes.js";
 import { journalAxes, journalMoodsByDay, mainAxis, mainMood } from "./overallMood.js";
 
-// Day by day, how the user felt next to how happy their music sounded, for the Mood × music chart on the Personality page.
+// Day by day, how the user felt vs how happy their music sounded, for the Mood × music chart on the Personality page.
 
 const DAYS = 14;
 

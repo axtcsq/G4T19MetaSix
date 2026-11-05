@@ -34,7 +34,7 @@ async function fetchSimilar(artist) {
     .filter((similar) => similar.name && similar.match >= MIN_MATCH);
 }
 
-// Returns [{ name, match }, ...], most similar first, looking each artist up at most once a week.
+// Returns [{ name, match }, ...], most similar first. Each artist gets looked up at most once a week.
 export async function similarArtists(name) {
   if (!process.env.LASTFM_API_KEY) return [];
   const key = name.toLowerCase();

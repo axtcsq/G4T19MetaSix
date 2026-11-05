@@ -3,13 +3,13 @@ import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 import { clamp } from "./quizEngine.js";
 import { journalAxes, mainAxis } from "./overallMood.js";
 
-// How much the quiz results count versus the user's listening data when working out their MetaFor traits, once there is enough listening to go on.
+// How much quiz results count vs listening data for the MetaFor traits, once there's enough listening to go on.
 export const QUIZ_WEIGHT = 0.7;
 export const SPOTIFY_WEIGHT = 0.3;
 // Listening weight grows with history until it reaches the full weight.
 const FULL_WEIGHT_DAYS = 14;
 const FULL_WEIGHT_PLAYS = 300;
-// The weight moves in steps this size, so Patterns is rebuilt a handful of times as listening builds up rather than every few plays.
+// The weight moves in steps this size, so Patterns rebuilds a handful of times as listening builds up, not every few plays.
 const WEIGHT_STEP = 0.05;
 
 // How much the listening data counts for this user, from 0 to SPOTIFY_WEIGHT.
@@ -30,7 +30,7 @@ function averageFeature(profile, feature) {
   return average((profile?.topTracks ?? []).map((track) => track[feature]));
 }
 
-// Each signal is between -1 and 1, where a positive number leans towards the trait's first pole (Amped, Explorer, Wordsmith, Crowd). null = no data.
+// Each signal is -1 to 1. Positive leans to the trait's first pole (Amped, Explorer, Wordsmith, Crowd). null = no data.
 export function spotifySignals(profile) {
   const energy = averageFeature(profile, "energy");
   const instrumentalness = averageFeature(profile, "instrumentalness");
@@ -199,7 +199,7 @@ export function combineTraits(results, profile) {
   });
 }
 
-// The six types as the Personality page describes them, with the trait names each one leans towards, like Amped and Explorer.
+// The six types as the Personality page describes them, with the traits each leans towards (Amped, Explorer etc).
 export function describeTypes() {
   return PERSONALITY_TYPES.map(({ id, name, tagline, description, profile }) => ({
     id,
@@ -213,7 +213,7 @@ export function describeTypes() {
   }));
 }
 
-// Ranks every personality type by how close its profile is to the user's traits. match is a percentage, 100 being an exact fit.
+// Ranks every type by how close its profile is to the user's traits. match is a percentage, 100 is an exact fit.
 export function rankTypes(traits) {
   return PERSONALITY_TYPES.map((type) => {
     const targets = Object.entries(type.profile);

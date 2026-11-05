@@ -24,7 +24,7 @@ const DANCEABLE = 0.6
 // Sad songs with a full band still reach 0.6–0.8 energy. Above this they're anguished, not quiet.
 const LOUD = 0.6
 
-// Harsh sound: very energetic and not acoustic. Loudness is left out on purpose, since older recordings are mastered quieter.
+// Harsh sound: very energetic and not acoustic. Loudness is left out on purpose since older recordings are mastered quieter.
 const HARSH_ENERGY = 0.85
 const MAX_ACOUSTIC = 0.15
 // Angry or disgusted lyrics over an energetic, non-acoustic, non-danceable track are tense too.
@@ -87,7 +87,7 @@ function variantOf(quadrant, { energy, danceability }) {
   return quadrant === 'sad' && energy >= LOUD ? 'loud' : 'still'
 }
 
-// When sound and words pull in opposite directions, averaging hides the point of the song, so the clash gets its own mood. `tone` picks the colour.
+// When sound and words pull opposite ways, averaging hides the point of the song, so the clash gets its own mood. `tone` picks the colour.
 const CONTRAST_MOODS = {
   'dark-words': {
     tone: 'tense',

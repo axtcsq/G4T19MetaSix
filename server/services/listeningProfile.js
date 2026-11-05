@@ -14,7 +14,7 @@ const NAMED_GENRE_SHARE = 0.5;
 const TOP_TRACKS = 6;
 const FEATURES = ["energy", "valence", "danceability", "acousticness", "instrumentalness", "speechiness"];
 
-// Each artist's tags count by how much the user played them, so the artist they play most has the most say.
+// Each artist's tags count by how much they were played, so the most played artist has the most say.
 function topGenre(rankedArtists, genres) {
   const totals = new Map();
   for (const [name, plays] of rankedArtists) {
@@ -31,7 +31,7 @@ function topGenre(rankedArtists, genres) {
   return named?.[0] ?? top;
 }
 
-// The Personality page asks for several quiz routes at once, and each needs the profile. Each user's profile is kept briefly so they share one build.
+// The Personality page hits several quiz routes at once and each needs the profile, so keep it briefly and share one build.
 const PROFILE_CACHE_MS = 60 * 1000;
 const profiles = new Map();
 
@@ -104,7 +104,7 @@ async function loadListeningProfile(user) {
     playlists: [],
     // Share of plays that were a song already played in the window.
     repeatListenRatio: totalPlays ? (totalPlays - plays.length) / totalPlays : null,
-    // How much listening there is to go on, so a new account's first day of plays doesn't count as much as weeks of them.
+    // How much listening there is to go on, so a new account's first day doesn't count like weeks of plays.
     history: {
       days: firstPlay ? (Date.now() - firstPlay.playedAt.getTime()) / (24 * 60 * 60 * 1000) : 0,
       plays: totalPlays,
@@ -112,7 +112,7 @@ async function loadListeningProfile(user) {
   };
 }
 
-// Split each artist's plays across their tags so extra tags do not add plays.
+// Split each artist's plays across their tags so extra tags don't add plays.
 export function genreMix(rankedArtists, genres) {
   const totals = new Map();
   let taggedPlays = 0;

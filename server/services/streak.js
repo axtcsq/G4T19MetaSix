@@ -11,7 +11,7 @@ const LOOK_BACK_DAYS = 400;
 
 const nextDay = (date) => new Date(Date.parse(`${date}T00:00:00Z`) + DAY_MS).toISOString().slice(0, 10);
 
-// The streak from a set of "YYYY-MM-DD" check-in dates, up to today. Today only counts once it has a check-in, so the streak doesn't break at midnight.
+// Streak from a set of YYYY-MM-DD check-in dates up to today. Today only counts once it has a check-in, so the streak doesn't break at midnight.
 export function streakFrom(dates, today) {
   const checkedIn = new Set(dates);
   let days = 0;

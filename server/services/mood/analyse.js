@@ -26,7 +26,7 @@ const defaultDeps = {
   toChunks,
 };
 
-// Only the scores are kept, never the lyrics text. Highlights are capped at two short excerpts each way, in the original language.
+// Only the scores are kept, never the lyrics. Highlights are capped at two short excerpts each way, in the original language.
 function toStoredLyrics(status, scores = {}, translatedFrom) {
   const excerpts = (list = []) => list.slice(0, HIGHLIGHTS).map((excerpt) => excerpt.text);
   return {
@@ -115,7 +115,7 @@ export async function analyseSong(track, deps = defaultDeps) {
   }
   const moods = trackMoods(features, lyrics);
 
-  // trackMoods leaves the lyrics reading out only after a temporary lyric failure. lyricsBusy: the lyrics site or DeepL was busy, so the retry is free.
+  // trackMoods only leaves the lyrics reading out after a temporary failure. lyricsBusy means the lyrics site or DeepL was busy, so the retry is free.
   return { status: moods.lyrics ? "done" : "partial", features, lyrics, moods, lyricsBusy };
 }
 
@@ -144,7 +144,7 @@ function timed(deps, timings) {
   return wrapped;
 }
 
-// Analyses one stored track and saves the result. Returns the new status, and whether its moods changed, so the caller knows which days to rebuild.
+// Analyses one stored track and saves it. Returns the new status and whether its moods changed, so the caller knows which days to rebuild.
 export async function analyseTrack(trackId, deps = defaultDeps) {
   const track = await Track.findById(trackId).lean();
   if (!track) {

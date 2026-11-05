@@ -6,7 +6,7 @@ import { getTrack, sameRecordingIds } from "./spotify.js";
 
 const defaultDeps = { getTrack, getAudioFeatures, idsForIsrc, sameRecordingIds, sameRecording };
 
-// Another stored copy of the same recording (same ISRC) that already has its features, e.g. the album and deluxe editions of a song. null when there's none.
+// Another stored copy of the same recording (same ISRC) that already has features, e.g. album and deluxe editions. null if none.
 export function sameRecording(track) {
   if (!track.isrc) {
     return null;

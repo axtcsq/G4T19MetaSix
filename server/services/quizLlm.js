@@ -1,28 +1,28 @@
 import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 
-// Generate a personality summary from quiz, listening, and mood data. The result is limited to scored candidates and falls back to static text.
+// Personality summary from quiz, listening and mood data. Limited to scored candidates, falls back to static text.
 
 // The LLM may choose among this many of the best-scoring types.
 const CANDIDATE_COUNT = 3;
 
-// Groq, the same provider and key as the Daily Mood journal helper. The key stays in server/.env (GROQ_API_KEY) and is never sent to the client.
+// Groq, same provider and key as the journal helper. The key stays in server/.env (GROQ_API_KEY), never sent to the client.
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "openai/gpt-oss-20b";
 // Long enough for the model's reasoning plus the JSON reply.
 const MAX_TOKENS = 1500;
 // Patterns falls back to the scoring result rather than keep the user waiting.
 const TIMEOUT_MS = 15000;
-// Groq rejects a reply that doesn't match the schema with a 400. Its model sometimes drops a field, so that gets one more try.
+// Groq 400s a reply that doesn't match the schema. Its model sometimes drops a field, so that gets one more try.
 const RETRIES = 1;
 
-// The exact shape of the reply. Groq's strict structured outputs make the model return every field, and only one of the candidate types.
+// Exact shape of the reply. Groq's strict outputs make the model return every field and only one of the candidate types.
 function analysisSchema(typeIds) {
   return {
     type: "object",
     properties: {
       typeId: { type: "string", enum: typeIds },
       headline: { type: "string" },
-      // Before insights: the model writes fields in order and tends to stop after a list, so the last field was often dropped.
+      // Before insights: the model writes fields in order and tends to stop after a list, so the last field kept getting dropped.
       summary: { type: "string" },
       insights: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
     },
