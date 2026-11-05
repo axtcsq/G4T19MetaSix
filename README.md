@@ -15,11 +15,11 @@ MetaFor connects Spotify listening with mood tracking and journaling, helping us
 | Visuals | Three.js, p5.js |
 | Testing | Vitest, Playwright, Node test runner |
 | Services | Spotify, ReccoBeats, LRCLIB, Open-Meteo; optional Groq, DeepL, Last.fm |
-| Deployment | Vercel, GitHub Actions |
+| Deployment | Vercel, Render, GitHub Actions |
 
 ## Try it live
 
-[Open MetaFor](https://g4-t19-meta-six.vercel.app/)
+[Open MetaFor](https://g4t19metasix.vercel.app/)
 
 Spotify sign-in may be limited to accounts approved in the Spotify Developer app.
 
@@ -38,8 +38,8 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 | Path | Access | Description |
 | --- | --- | --- |
 | `/` | Public | Landing page and sign-in entry point. |
-| `/dashboard` | Public | Listening overview, music moods, artists, and listening habits. |
-| `/listen` | Public | Spotify listening room and playback controls. |
+| `/dashboard` | Signed in | Listening overview, music moods, artists, and listening habits. |
+| `/listen` | Signed in | Spotify listening room and playback controls. |
 | `/login` | Public | Sign in with Spotify; signed-in users are redirected to their next page or the dashboard. |
 | `/daily-mood` | Signed in | Log today's mood, journal entry, drawing, or song. |
 | `/calendar` | Signed in | Browse and edit mood history and discover mood-matched songs. |
@@ -167,7 +167,7 @@ The recent application review also covered authentication, API boundaries, respo
 
 ## Deployment
 
-Vercel serves the client and API as two services from the repository root. Set production environment variables in Vercel and register the production `SPOTIFY_REDIRECT_URI` with Spotify. GitHub Actions can sync listening history when its MongoDB and Spotify secrets are configured.
+Vercel serves the client, and `client/vercel.json` forwards `/api` requests to the Express API on Render (`https://metafor.onrender.com`). Set the server's production environment variables in Render and register the production `SPOTIFY_REDIRECT_URI` with Spotify. GitHub Actions can sync listening history when its MongoDB and Spotify secrets are configured.
 
 ## Project structure
 
