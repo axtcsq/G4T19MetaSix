@@ -37,6 +37,45 @@ describe('Spotify listening portrait', () => {
     expect(week.minutes).toBeUndefined()
     expect(week.radar).toBeUndefined()
   })
+  it('counts today and the previous 29 days for the monthly period', () => {
+    const history = [
+      { track: record('newest'), played_at: '2026-10-19T10:00:00' },
+      { track: record('first-day'), played_at: '2026-09-20T00:00:00' },
+      { track: record('too-old'), played_at: '2026-09-19T23:59:59' },
+    ]
+    const month = getDashboard('monthly', history, now)
+    expect(month.date).toBe('20 September to 19 October')
+    expect(month.plays).toBe(2)
+    expect(month.daily).toHaveLength(30)
+  })
+  it('labels a 30-day chart with real dates across a month boundary', () => {
+    const data = getDashboard('monthly', [], now)
+    const chart = mount(ListeningChart, { props: { type: 'days', data } })
+    const labels = chart.findAll('.day-label').map((node) => node.text())
+    expect(labels[0]).toBe('20')
+    expect(labels[4]).toBe('24')
+    expect(labels[9]).toBe('29')
+    expect(labels[14]).toBe('4')
+    expect(labels[29]).toBe('19')
+    expect(labels[1]).toBe('')
+  })
+  it('counts only today for the daily period', () => {
+    const song = record('song')
+    const history = [
+      { track: song, played_at: '2026-10-19T00:00:00' },
+      { track: song, played_at: '2026-10-19T10:00:00' },
+      { track: song, played_at: '2026-10-18T23:59:59' },
+      { track: record('later'), played_at: '2026-10-19T18:00:00' },
+    ]
+    const today = getDashboard('daily', history, now)
+    expect(today.period).toBe('daily')
+    expect(today.date).toBe('19 October')
+    expect(today.plays).toBe(2)
+    expect(today.songs).toHaveLength(1)
+    expect(today.songs[0].daily).toBe(2)
+    expect(today.artists[0].daily).toBe(2)
+    expect(today.daily).toHaveLength(1)
+  })
   it('does not invent data when there is no history', () => {
     const data = getDashboard('weekly', [], now)
     expect(data.plays).toBe(0)
@@ -87,7 +126,7 @@ describe('Spotify listening portrait', () => {
     )
     const chart = mount(ListeningChart, { props: { type: 'days', data } })
     const days = chart.findAll('.play-equaliser button')
-    expect(days).toHaveLength(19)
+    expect(days).toHaveLength(30)
     expect(chart.findAll('.day-value').map((node) => node.text())).toEqual(['1'])
     expect(days.at(-1).findAll('.day-blocks span')).toHaveLength(10)
     await days.at(-1).trigger('click')

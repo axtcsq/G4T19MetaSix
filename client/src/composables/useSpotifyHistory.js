@@ -8,11 +8,9 @@ import {
 import { getListens, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 import { useAuthStore } from '@/stores/auth'
 
-// The dashboard shows the last 7 days or this month, whichever starts earlier.
+// The dashboard's longest period is the last 30 days, today included.
 function historyStart(now = new Date()) {
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6)
-  return weekStart < monthStart ? weekStart : monthStart
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
 }
 
 // Dashboard history does not need the listening room's player or search state.

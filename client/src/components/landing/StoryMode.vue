@@ -175,18 +175,18 @@ const fill = (position) => {
   --button-ink: #fff;
   position: relative;
   display: inline-flex;
-  min-height: 60px !important;
+  min-height: 44px !important;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin: 0;
-  padding: 0.85rem 2rem 0.85rem 0.85rem !important;
+  padding: 0.375rem 1.25rem 0.375rem 0.375rem !important;
   border: 0;
   border-radius: 999px;
   color: #fff;
   background: var(--ui-primary);
   box-shadow: 0 6px 16px rgba(118, 62, 50, 0.22);
   font-family: var(--font-sans);
-  font-size: var(--text-lead) !important;
+  font-size: var(--text-label) !important;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease;
@@ -209,8 +209,8 @@ const fill = (position) => {
 }
 .story-play {
   display: inline-grid;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   place-items: center;
   border-radius: 50%;
   color: #a9533f;
@@ -233,8 +233,8 @@ const fill = (position) => {
   outline-offset: 3px;
 }
 .story-open svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   fill: currentColor;
   margin-left: 2px;
 }

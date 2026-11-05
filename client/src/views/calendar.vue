@@ -270,7 +270,7 @@ function listeningMoodFor(date) {
   }
   const winner = [...counts.values()].sort((a, b) => b.count - a.count)[0]
   const songMoodName = [...winner.names].sort((a, b) => b[1] - a[1])[0]?.[0]
-  return { family: winner.family, count: winner.count, total: readings.length, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
+  return { family: winner.family, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
 }
 function moodFaceType(mood) { return musicMoodType[mood] || mood }
 function moodFaceClass(mood) {
@@ -399,7 +399,17 @@ onMounted(() => {
                 <span v-else class="track-art">♫</span>
               </span>
               <span class="track-copy"><a class="recommendation-title" :href="`/song/${track.id}`" @click.prevent="openRecommendationSong($event, track)"><strong>{{ track.name }}</strong></a><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
-              <button class="recommendation-open" type="button" @click="playRecommendation(track)">Play song</button>
+              <button
+                class="recommendation-open"
+                type="button"
+                :aria-label="`Play ${track.name}`"
+                title="Play song"
+                @click="playRecommendation(track)"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l11-6.86a1 1 0 0 0 0-1.7l-11-6.86A1 1 0 0 0 8 5.14z" />
+                </svg>
+              </button>
             </div>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
@@ -480,7 +490,6 @@ onMounted(() => {
                   <MoodFace :mood="moodFaceType(selectedListeningMood.family)" class="button-mood-face listening-face-svg" />
                 </span>
                 <span class="listening-mood-copy"><small>Most common music mood</small><strong>{{ selectedListeningMood.name }}</strong></span>
-                <span class="analyzed-count">{{ selectedListeningMood.count }} / {{ selectedListeningMood.total }} analyzed</span>
               </div>
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
               <div v-if="selectedListens.length" class="listening-carousel" role="group" aria-roledescription="carousel" aria-label="Listening history">
@@ -550,7 +559,9 @@ onMounted(() => {
 .recommendation-card .track-copy strong { font-size: var(--text-caption); }
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: var(--text-caption); }
 .recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: var(--text-caption); font-weight: 700; }
-.recommendation-open { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; border: 0; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font: inherit; font-size: var(--text-caption); font-weight: 700; cursor: pointer; }
+.recommendation-card .recommendation-title { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recommendation-open { display: inline-grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; margin-left: auto; padding: 0; border: 0; border-radius: 50%; color: var(--calendar-accent); background: var(--calendar-accent-soft); cursor: pointer; transition: transform .16s ease; }
+.recommendation-open:hover { transform: scale(1.06); }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: var(--text-label); }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
@@ -612,7 +623,6 @@ onMounted(() => {
 .listening-mood-copy { display: grid; gap: 2px; }
 .listening-mood-copy small { color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .listening-mood-copy strong { font-family: var(--font-sans); font-size: var(--text-label); }
-.analyzed-count { margin-left: auto; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); text-align: right; }
 .analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
