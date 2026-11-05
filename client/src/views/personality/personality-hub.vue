@@ -66,8 +66,12 @@ const TYPES_TAB = 'metafor-types'
 const types = ref([])
 const showingTypes = computed(() => outcomesQuizId.value === TYPES_TAB)
 const myTypeId = computed(() => personality.value?.type?.id ?? null)
-const sortedTypes = computed(() =>
-  [...types.value].sort((a, b) => (b.id === myTypeId.value) - (a.id === myTypeId.value)),
+const shownTypes = computed(() => {
+  const sorted = [...types.value].sort((a, b) => (b.id === myTypeId.value) - (a.id === myTypeId.value))
+  return showAllOutcomes.value ? sorted : sorted.slice(0, OUTCOMES_SHOWN)
+})
+const shownTotal = computed(() =>
+  showingTypes.value ? types.value.length : (outcomesQuiz.value?.outcomes.length ?? 0),
 )
 function pickOutcomesQuiz(id) {
   outcomesQuizId.value = id
@@ -318,7 +322,7 @@ onMounted(loadPage)
             </p>
             <ul class="outcome-grid">
               <li
-                v-for="type in sortedTypes"
+                v-for="type in shownTypes"
                 :key="type.id"
                 class="outcome-card"
                 :class="{ 'is-mine': type.id === myTypeId }"
@@ -349,18 +353,18 @@ onMounted(loadPage)
                 <p class="outcome-meaning">{{ outcome.meaning }}</p>
               </li>
             </ul>
-            <button
-              v-if="outcomesQuiz.outcomes.length > OUTCOMES_SHOWN"
-              type="button"
-              class="peach-button peach-button--quiet show-more"
-              :aria-expanded="showAllOutcomes"
-              aria-controls="outcomes-panel"
-              @click="toggleOutcomes"
-            >
-              {{ showAllOutcomes ? 'Show fewer' : `Show all ${outcomesQuiz.outcomes.length} results` }}
-              <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-            </button>
           </template>
+          <button
+            v-if="shownTotal > OUTCOMES_SHOWN"
+            type="button"
+            class="peach-button peach-button--quiet show-more"
+            :aria-expanded="showAllOutcomes"
+            aria-controls="outcomes-panel"
+            @click="toggleOutcomes"
+          >
+            {{ showAllOutcomes ? 'Show fewer' : `Show all ${shownTotal} ${showingTypes ? 'types' : 'results'}` }}
+            <svg class="show-more-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
         </div>
       </section>
       <!-- Patterns -->
