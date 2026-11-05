@@ -275,19 +275,15 @@ watch(
               <h3>Genre Mix</h3>
               <span>Last 30 days</span>
             </div>
-            <GenreMixChart v-if="genreMix" :data="genreMix" />
+            <GenreMixChart v-if="genreMix" :data="genreMix" :paused="motionPaused" />
             <p v-else class="unavailable-note" :role="genreError ? 'alert' : 'status'">
               {{
                 genreError ? 'Genre mix could not load. Reload to try again.' : 'Loading genre mix…'
               }}
             </p>
           </article>
-          <article class="chart-panel">
-            <div class="panel-heading"><h3>Month at a Glance</h3></div>
-            <MonthMoods />
-          </article>
-          <!-- A single day would be one lone bar, so Today leaves this chart out. -->
-          <article v-if="period !== 'daily'" class="chart-panel">
+          <!-- A single day would be one lone bar, so Today leaves this chart out. It spans the full width so each day's column has room. -->
+          <article v-if="period !== 'daily'" class="chart-panel days-panel">
             <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart
               :key="`days-${period}`"
@@ -669,6 +665,9 @@ watch(
   gap: 48px;
   margin-top: 32px;
 }
+.days-panel {
+  grid-column: 1 / -1;
+}
 .genre-panel {
   border-left: 1px solid var(--dash-rule);
   padding-left: clamp(24px, 3vw, 48px);
@@ -678,6 +677,48 @@ watch(
 }
 .night-icon {
   display: none;
+}
+/* The hour clock and the genre mix sit on spinning vinyl: grooves, a rim and
+   a light that sweeps round. */
+@property --vinyl-turn {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.habits-layout :deep(:is(.hour-clock, .genre-disc)) {
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from var(--vinyl-turn),
+      transparent 0 10%,
+      color-mix(in srgb, var(--dash-ink) 9%, transparent) 16%,
+      transparent 24% 60%,
+      color-mix(in srgb, var(--dash-ink) 6%, transparent) 66%,
+      transparent 74%
+    ),
+    repeating-radial-gradient(
+      circle,
+      color-mix(in srgb, var(--dash-ink) 5%, transparent) 0 1px,
+      transparent 1px 5px
+    ),
+    color-mix(in srgb, var(--dash-ink) 4%, transparent);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--dash-ink) 7%, transparent),
+    0 0 0 7px var(--dash-rule),
+    0 14px 30px rgb(0 0 0 / 20%);
+  animation: vinyl-turn 6s linear infinite;
+}
+/* Room for the rim above the hint under the clock. */
+.habits-layout :deep(.hour-clock) {
+  margin-bottom: 22px;
+}
+.motion-paused .habits-layout :deep(:is(.hour-clock, .genre-disc)) {
+  animation-play-state: paused;
+}
+@keyframes vinyl-turn {
+  to {
+    --vinyl-turn: 360deg;
+  }
 }
 .dashboard :is(button, a, summary, input):focus-visible {
   outline: 2px solid var(--dash-accent);

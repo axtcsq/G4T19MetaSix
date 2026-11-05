@@ -79,6 +79,20 @@ async function mountPage(song) {
 describe('Song page', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('shows the spinning record until the song arrives', async () => {
+    let finish
+    getTrack.mockReturnValue(new Promise((resolve) => { finish = resolve }))
+    const wrapper = mount(SongPage, { global: { stubs } })
+    await flushPromises()
+    expect(wrapper.find('.record').exists()).toBe(true)
+    expect(wrapper.find('[role="status"]').text()).toBe('Reading the song…')
+
+    finish(kicks)
+    await flushPromises()
+    expect(wrapper.find('.record').exists()).toBe(false)
+    expect(wrapper.find('h1').text()).toBe('Pumped Up Kicks')
+  })
+
   it('explains both readings, the clash and the lyrics', async () => {
     const wrapper = await mountPage(kicks)
 

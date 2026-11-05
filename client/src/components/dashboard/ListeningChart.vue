@@ -20,8 +20,13 @@ const busiestDay = computed(() =>
 const isMonth = computed(() => props.data.period === 'monthly')
 const litBlocks = (value) =>
   value ? Math.max(1, Math.round((value / dailyMaximum.value) * EQUALISER_BLOCKS)) : 0
+// The 30 days can cross into a new month, so each label is the day's real date.
 const dayLabel = (point, index) =>
-  isMonth.value ? (index === 0 || (index + 1) % 5 === 0 ? index + 1 : '') : point.label
+  isMonth.value
+    ? index === 0 || (index + 1) % 5 === 0
+      ? Number(point.date.slice(8))
+      : ''
+    : point.label
 // Each column bounces at its own pace, so the bars never move in step. The bounce waits for the rise-in to finish.
 const bounceStyle = (index) => ({
   '--bounce-time': `${1.6 + ((index * 7) % 5) * 0.22}s`,

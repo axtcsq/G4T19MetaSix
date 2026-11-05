@@ -383,9 +383,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 .canvas-action {
   position: relative;
   display: grid;
-  width: 42px;
-  height: 42px;
-  min-height: 42px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
   padding: 0;
   place-items: center;
   border-color: rgba(255, 255, 255, 0.94);

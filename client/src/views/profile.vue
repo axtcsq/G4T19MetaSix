@@ -2,7 +2,9 @@
 // The profile page: who is logged in, their MetaFor personality, a few listening facts and the privacy settings. Editing the profile comes later.
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SiteFooter from '@/components/layout/footer.vue'
-import { clearHistory, exportData, updateSettings } from '@/api/auth'
+import { clearHistory, disconnectSpotify, exportData, updateSettings } from '@/api/auth'
+import { getQuizzes } from '@/api/quiz'
+import { downloadDataPdf } from '@/utils/dataExportPdf'
 import { getMood } from '@/api/moods'
 import { getPersonality } from '@/api/quiz'
 import MoodFace from '@/components/journal/MoodFace.vue'
@@ -239,15 +241,11 @@ async function runConfirmed() {
 
 async function downloadData() {
   dataBusy.value = true
-  dataMessage.value = ''
+  dataMessage.value = 'Preparing your PDF…'
   try {
-    const data = await exportData()
-    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `metafor-data-${new Date().toISOString().slice(0, 10)}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+    // The quizzes are only for naming each result, so the PDF still works without them.
+    const [data, quizzes] = await Promise.all([exportData(), getQuizzes().catch(() => [])])
+    await downloadDataPdf(data, quizzes, `metafor-data-${new Date().toISOString().slice(0, 10)}.pdf`)
     dataMessage.value = 'Your data has been downloaded.'
   } catch (error) {
     dataMessage.value = `Couldn’t download: ${error.message}`
@@ -409,7 +407,7 @@ const logOut = useLogOut()
           <li class="setting">
             <div>
               <p class="setting-label">Export my data</p>
-              <p class="muted small">Download your journal, listening history and quiz answers as a JSON file.</p>
+              <p class="muted small">Download your journal, listening history and quiz results as a PDF.</p>
             </div>
             <button type="button" class="glass-secondary data-button" :disabled="dataBusy" @click="downloadData">
               Export

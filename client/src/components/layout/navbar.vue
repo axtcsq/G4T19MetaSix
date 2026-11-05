@@ -21,6 +21,9 @@ const links = [
   { to: '/quiz', label: 'Personality' },
 ]
 
+// A link stays highlighted on the pages under it, like a quiz under Personality.
+const isCurrent = (link) => route.path === link.to || route.path.startsWith(`${link.to}/`)
+
 // Keep the hidden menu measurable so it can reopen without layout shifts.
 const header = ref(null)
 const headerInner = ref(null)
@@ -153,7 +156,14 @@ watch(
         :aria-hidden="isCollapsed || undefined"
         :inert="isCollapsed"
       >
-        <RouterLink v-for="link in links" :key="link.to" class="header-link" :to="link.to">
+        <RouterLink
+          v-for="link in links"
+          :key="link.to"
+          class="header-link"
+          :class="{ 'is-current': isCurrent(link) }"
+          :aria-current="isCurrent(link) ? 'page' : undefined"
+          :to="link.to"
+        >
           {{ link.label }}
         </RouterLink>
         <!-- Log out lives on the profile page. -->
@@ -214,7 +224,14 @@ watch(
       class="site-menu"
       aria-label="Main navigation"
     >
-      <RouterLink v-for="link in links" :key="link.to" class="menu-link" :to="link.to">
+      <RouterLink
+        v-for="link in links"
+        :key="link.to"
+        class="menu-link"
+        :class="{ 'is-current': isCurrent(link) }"
+        :aria-current="isCurrent(link) ? 'page' : undefined"
+        :to="link.to"
+      >
         {{ link.label }}
       </RouterLink>
       <RouterLink v-if="!auth.user" class="header-cta glass-action menu-cta" to="/login">Sign in</RouterLink>
@@ -356,7 +373,7 @@ watch(
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.header-link.router-link-exact-active {
+.header-link.is-current {
   color: #a54b3b;
   text-decoration: underline;
   text-underline-offset: 7px;
@@ -502,7 +519,7 @@ watch(
   color: #cd6651;
   background: #f0eae6;
 }
-.menu-link.router-link-exact-active {
+.menu-link.is-current {
   color: #a54b3b;
   background: #f5e6e0;
 }
@@ -555,8 +572,8 @@ watch(
 .dark .menu-link:hover {
   color: #eaa596;
 }
-.dark .header-link.router-link-exact-active,
-.dark .menu-link.router-link-exact-active {
+.dark .header-link.is-current,
+.dark .menu-link.is-current {
   color: #eaa596;
 }
 .dark .profile-button,
@@ -579,7 +596,7 @@ watch(
 .dark .menu-link:hover {
   background: rgba(255, 255, 255, 0.06);
 }
-.dark .menu-link.router-link-exact-active {
+.dark .menu-link.is-current {
   background: rgba(219, 128, 109, 0.16);
 }
 @media (prefers-reduced-transparency: reduce) {

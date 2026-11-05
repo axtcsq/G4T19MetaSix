@@ -31,10 +31,8 @@ test('login does not loop on a login return destination', async ({ page, app }) 
   await expect(page.locator('main')).toBeVisible()
 })
 
-test('account login returns to requested page and can log out', async ({ page, app }) => {
-  app.signedIn = false
+test('logging out means logging in again', async ({ page }) => {
   await page.goto('/profile')
-  await page.getByRole('button', { name: 'Use the test account' }).click()
   await expect(page.getByRole('heading', { name: 'Your Profile', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Log out', exact: true }).click()
   await expect(page).toHaveURL('/')

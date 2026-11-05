@@ -3,6 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SiteFooter from '@/components/layout/footer.vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import { getTrack } from '@/api/tracks'
 import { setPageTitle } from '@/utils/pageTitle'
@@ -130,7 +131,7 @@ function back() {
     <main class="song-shell">
       <button type="button" class="back glass-text" @click="back">← Back</button>
 
-      <p v-if="loading" class="status" role="status">Reading the song…</p>
+      <RecordLoader v-if="loading" label="Reading the song…" />
       <p v-else-if="error" class="status" role="alert">{{ error }}</p>
 
       <template v-else-if="song">

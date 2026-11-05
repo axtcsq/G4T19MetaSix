@@ -144,11 +144,11 @@ const result = computed(() => {
 .taste-answers {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 .taste-answers button {
-  min-height: 56px;
-  padding: 10px 14px;
+  min-height: 44px;
+  padding: 8px 14px;
   border: 1px solid var(--ui-border);
   border-radius: 12px;
   color: var(--ui-text);

@@ -1,6 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue'
-const props = defineProps({ data: { type: Object, required: true } })
+const props = defineProps({
+  data: { type: Object, required: true },
+  // Stops the disc turning, with the dashboard's Pause button.
+  paused: Boolean,
+})
 const selected = ref(null)
 const colors = ['#a65f46', '#827091', '#54766a', '#bd8b38', '#557f99', '#8b7770']
 const label = (name) => name.charAt(0).toLocaleUpperCase() + name.slice(1)
@@ -15,7 +19,11 @@ const slices = computed(() => {
 const active = computed(() => slices.value.find((slice) => slice.name === selected.value))
 </script>
 <template>
-  <div v-if="slices.length" class="genre-mix">
+  <div
+    v-if="slices.length"
+    class="genre-mix"
+    :class="{ 'is-paused': paused, 'has-selection': selected }"
+  >
     <div class="genre-disc">
       <svg viewBox="0 0 120 120" role="img" aria-label="Genre mix; percentages listed alongside">
         <circle
@@ -62,10 +70,14 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
       {{ data.taggedArtistPlays }} of {{ data.artistPlays }}. Untagged artists are excluded.
     </p>
   </div>
-  <p v-else class="genre-note">
-    No genre tags available yet. Genres appear when your stored listening history has tagged
-    artists.
-  </p>
+  <div v-else class="genre-mix">
+    <!-- An empty record until there are genres to put on it. -->
+    <div class="genre-disc" aria-hidden="true" />
+    <p class="genre-note">
+      No genre tags available yet. Genres appear when your stored listening history has tagged
+      artists.
+    </p>
+  </div>
 </template>
 <style scoped>
 .genre-mix {
@@ -76,10 +88,27 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
 }
 .genre-disc {
   position: relative;
+  aspect-ratio: 1;
+  padding: 7%;
 }
+/* The ring turns slowly like a spinning record, and stops while a genre is
+   picked so it's easy to read. */
 svg {
   width: 100%;
   transform: rotate(-90deg);
+  animation: genre-spin 24s linear infinite;
+}
+.is-paused svg,
+.has-selection svg {
+  animation-play-state: paused;
+}
+@keyframes genre-spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
 }
 circle {
   transition:
@@ -151,6 +180,7 @@ button strong {
   font: var(--text-label)/1.5 var(--font-sans);
 }
 @media (prefers-reduced-motion: reduce) {
+  svg,
   circle {
     transition: none;
     animation: none;

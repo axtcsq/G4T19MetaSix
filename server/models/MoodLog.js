@@ -13,6 +13,16 @@ const songSchema = new mongoose.Schema(
   { _id: false },
 );
 
+// The entry's photo, already shrunk by the journal page: the image bytes and
+// their type, like image/jpeg.
+const photoSchema = new mongoose.Schema(
+  {
+    data: { type: Buffer, required: true },
+    type: { type: String, required: true },
+  },
+  { _id: false },
+);
+
 const moodLogSchema = new mongoose.Schema(
   {
     userId: {
@@ -40,6 +50,16 @@ const moodLogSchema = new mongoose.Schema(
     song: {
       type: songSchema,
       default: null,
+    },
+    // Optional photo. Left out of every query unless asked for, so lists of entries stay small; hasPhoto tells the page there is one to load.
+    photo: {
+      type: photoSchema,
+      default: null,
+      select: false,
+    },
+    hasPhoto: {
+      type: Boolean,
+      default: false,
     },
     // "seed" for the demo user's generated entries, so re-seeding replaces only those. Absent on entries people write.
     source: {
@@ -69,6 +89,10 @@ export function retrieveMoodLogs(userId) {
 
 export function findMoodLogById(id, userId) {
   return MoodLog.findOne({ _id: id, userId });
+}
+
+export function findMoodLogPhoto(id, userId) {
+  return MoodLog.findOne({ _id: id, userId, hasPhoto: true }, { photo: 1 });
 }
 
 export function editMoodLog(id, userId, changes) {

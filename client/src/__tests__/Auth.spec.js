@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { demoLogin, getMe, logout, spotifyLoginUrl } from '@/api/auth'
+import { getMe, logout, spotifyLoginUrl } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 
 vi.mock('@/api/auth', async (importOriginal) => ({
   ...(await importOriginal()),
-  demoLogin: vi.fn(),
   getMe: vi.fn(),
   logout: vi.fn(),
 }))
@@ -61,15 +60,6 @@ describe('auth store', () => {
     expect(getMe).toHaveBeenCalledTimes(1)
   })
 
-  it('logs in as the test account', async () => {
-    demoLogin.mockResolvedValue({ id: 'demo', displayName: 'Demo', isDemo: true })
-    const auth = useAuthStore()
-
-    await auth.demoLogin()
-
-    expect(auth.user).toEqual({ id: 'demo', displayName: 'Demo', isDemo: true })
-  })
-
   it('clears the user on logout', async () => {
     getMe.mockResolvedValue({ id: '1' })
     logout.mockResolvedValue(null)
@@ -94,18 +84,6 @@ describe('auth store', () => {
     expect(auth.user).toBeNull()
   })
 
-  it('ignores a session check that finishes after demo login', async () => {
-    let reject
-    getMe.mockReturnValue(new Promise((resolve, fail) => { reject = fail }))
-    demoLogin.mockResolvedValue({ id: 'demo' })
-    const auth = useAuthStore()
-    const checking = auth.load()
-    await auth.demoLogin()
-    reject(failure(401, 'Not logged in'))
-    await checking
-    expect(auth.user).toEqual({ id: 'demo' })
-    expect(auth.checked).toBe(true)
-  })
 })
 
 describe('spotifyLoginUrl', () => {
