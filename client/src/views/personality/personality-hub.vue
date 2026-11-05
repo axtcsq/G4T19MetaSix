@@ -542,8 +542,11 @@ onMounted(loadPage)
                 >
                   Open in Spotify
                 </a>
-                <RouterLink class="peach-button peach-button--quiet" to="/listen">
-                  Listening Room
+                <RouterLink
+                  class="peach-button peach-button--quiet"
+                  :to="{ name: 'listen', query: { play: personality.song.id } }"
+                >
+                  Play in Listening Room
                 </RouterLink>
               </div>
             </div>

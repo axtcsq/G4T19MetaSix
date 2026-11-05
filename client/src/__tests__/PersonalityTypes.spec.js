@@ -29,7 +29,7 @@ const mountHub = async () => {
   const hub = mount(PersonalityHub, {
     global: {
       stubs: {
-        RouterLink: { template: '<a><slot /></a>' },
+        RouterLink: { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot /></a>' },
         SiteFooter: true,
         WaveBackground: true,
         ShareCardDialog: true,
@@ -106,6 +106,25 @@ describe('MetaFor Types tab', () => {
     const hub = await mountHub()
     expect(typesTab(hub)).toBeUndefined()
     expect(hub.text()).toContain('A result')
+  })
+})
+
+describe('A Song for You', () => {
+  it('links to the Listening Room with the song to play', async () => {
+    vi.clearAllMocks()
+    getQuizzes.mockResolvedValue(QUIZZES)
+    getPersonalityTypes.mockResolvedValue(TYPES)
+    getPersonality.mockResolvedValue({
+      type: { id: 'poet', name: 'The Poet' },
+      traits: [],
+      insights: [],
+      quizResults: [],
+      song: { id: 'abc123', name: 'A song', artist: 'An artist', reason: 'A reason.' },
+    })
+    const hub = await mountHub()
+    const link = hub.findAll('.song-actions a').find((item) => item.text().includes('Listening Room'))
+    expect(link.text()).toBe('Play in Listening Room')
+    expect(JSON.parse(link.attributes('data-to'))).toEqual({ name: 'listen', query: { play: 'abc123' } })
   })
 })
 
