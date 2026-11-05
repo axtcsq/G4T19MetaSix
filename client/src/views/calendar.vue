@@ -5,7 +5,7 @@ import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import { getMoods } from '@/api/moods'
-import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
+import { hasSpotifySession, recentSpotify } from '@/api/spotify'
 import { getRecommendations } from '@/api/recommendations'
 import { getListens, getOverallMood, syncBeforeReading, usesStoredHistory } from '@/api/listens'
 import { useListeningRoom } from '@/composables/useListeningRoom'
@@ -23,7 +23,6 @@ const listens = ref([])
 const loading = ref(true)
 const moodError = ref('')
 const spotifyError = ref('')
-const isConnectingSpotify = ref(false)
 const recommendations = ref([])
 const recommendationsLoading = ref(true)
 const recommendationInputsReady = ref(false)
@@ -208,17 +207,6 @@ function loadStoredMonth() {
     .then((data) => { if (shownMonth.value === from) listens.value = data.items || [] })
     .catch((error) => { spotifyError.value = error.message })
 }
-async function connectSpotify() {
-  if (isConnectingSpotify.value) return
-  isConnectingSpotify.value = true
-  spotifyError.value = ''
-  try {
-    await authorizeSpotify()
-  } catch (error) {
-    spotifyError.value = error.message
-    isConnectingSpotify.value = false
-  }
-}
 function moveMonth(amount) {
   shownMonth.value = new Date(shownMonth.value.getFullYear(), shownMonth.value.getMonth() + amount, 1)
   selectedDate.value = null
@@ -389,15 +377,9 @@ onMounted(() => {
       <template v-else>
         <div v-if="spotifyError" class="spotify-connect-note" role="status">
           <p>{{ spotifyError }}</p>
-          <button v-if="!hasSpotifySession()" type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
-            {{ isConnectingSpotify ? 'Connecting…' : 'Connect Spotify' }}
-          </button>
         </div>
         <div v-else-if="!hasSpotifySession()" class="spotify-connect-note">
-          <p>{{ storedHistory ? 'Connect your Spotify account to get song recommendations.' : 'Connect Spotify to see your recent songs and get recommendations. Spotify provides up to 50 recent plays here.' }}</p>
-          <button type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
-            {{ isConnectingSpotify ? 'Connecting…' : 'Connect Spotify' }}
-          </button>
+          <p>Sign out and sign in with Spotify to see recent songs and get Spotify recommendations.</p>
         </div>
 
         <section class="calendar-shell" aria-label="Mood calendar">

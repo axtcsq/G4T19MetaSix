@@ -63,7 +63,7 @@ describe('Spotify listening room', () => {
         },
       },
     })
-    expect(wrapper.text()).toContain('Connect Spotify to load your music')
+    expect(wrapper.text()).toContain('Sign in with Spotify to load your music')
     expect(wrapper.findAll('.shelf-record')).toHaveLength(0)
     expect(wrapper.get('.track-copy h2').text()).toBe('Choose a song')
     expect(wrapper.get('[aria-label="Play"]').element.disabled).toBe(true)
