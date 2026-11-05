@@ -1,6 +1,14 @@
 import { test, expect } from './helpers.js'
 
-for (const path of ['/daily-mood', '/calendar', '/quiz', '/profile', '/song/example']) {
+for (const path of [
+  '/dashboard',
+  '/listen',
+  '/daily-mood',
+  '/calendar',
+  '/quiz',
+  '/profile',
+  '/song/example',
+]) {
   test('signed-out visitors must log in before opening ' + path, async ({ page, app }) => {
     app.signedIn = false
     await page.goto(path)
