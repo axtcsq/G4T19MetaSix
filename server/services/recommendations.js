@@ -185,7 +185,7 @@ async function saveSongs(picks) {
   );
 }
 
-/** Recommend up to four mood-matched songs, all fully analysed (sound and lyrics). */
+// Recommend up to four mood-matched songs, all fully analysed (sound and lyrics).
 export async function recommendSongs(
   { target, artists, mix, exclude = [], page = 0, useLyrics = true, userId },
   deps = defaultDeps,

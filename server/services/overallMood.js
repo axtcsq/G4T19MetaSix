@@ -20,7 +20,7 @@ export const JOURNAL_AXES = {
 
 const zero = () => Object.fromEntries(AXES.map((axis) => [axis, 0]));
 
-/** One day's journal entries on the axes, each entry an equal share of the day. */
+// One day's journal entries on the axes, each entry an equal share of the day.
 export function journalAxes(moods) {
   const axes = zero();
   for (const mood of moods) {
@@ -31,7 +31,7 @@ export function journalAxes(moods) {
   return axes;
 }
 
-/** One day's music axes as shares of the day, so a busy day counts the same as a quiet one. */
+// One day's music axes as shares of the day, so a busy day counts the same as a quiet one.
 export function musicAxes(axes = {}) {
   const total = AXES.reduce((sum, axis) => sum + (axes[axis] ?? 0), 0);
   const shares = zero();
@@ -39,7 +39,7 @@ export function musicAxes(axes = {}) {
   return total > 0 ? shares : null;
 }
 
-/** A day's mood: journal and music blended 60/40, or whichever of them the day has. */
+// A day's mood: journal and music blended 60/40, or whichever of them the day has.
 export function dayAxes({ moods = [], music = null }) {
   const journal = moods.length ? journalAxes(moods) : null;
   if (!journal && !music) return null;
@@ -50,7 +50,7 @@ export function dayAxes({ moods = [], music = null }) {
   return axes;
 }
 
-/** The journal mood logged most often, given newest first. Ties go to the latest. */
+// The journal mood logged most often, given newest first. Ties go to the latest.
 export function mainMood(moods) {
   const counts = {};
   for (const mood of moods) counts[mood] = (counts[mood] ?? 0) + 1;
@@ -59,17 +59,15 @@ export function mainMood(moods) {
   return main;
 }
 
-/** The strongest axis, or null when nothing leans anywhere. Ties go to the earlier axis. */
+// The strongest axis, or null when nothing leans anywhere. Ties go to the earlier axis.
 export function mainAxis(axes) {
   let main = null;
   for (const axis of AXES) if ((axes?.[axis] ?? 0) > 0 && (!main || axes[axis] > axes[main])) main = axis;
   return main;
 }
 
-/**
- * The overall mood over these days, each day counting equally.
- * days: [{ date, moods: ["Happy", ...], music: axes or null, plays }]
- */
+// The overall mood over these days, each day counting equally.
+// days: [{ date, moods: ["Happy", ...], music: axes or null, plays }]
 export function combineDays(days) {
   const axes = zero();
   let counted = 0;
@@ -98,7 +96,7 @@ const localDate = (date, timezone) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: timezone || "UTC" }).format(date);
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** Each date's journal moods, newest first ("YYYY-MM-DD" -> ["Happy", ...]), in the user's time zone. */
+// Each date's journal moods, newest first ("YYYY-MM-DD" -> ["Happy", ...]), in the user's time zone.
 export async function journalMoodsByDay(user, from, to) {
   // A day either side covers every time zone; exact dates are checked below.
   const logs = await MoodLog.find(
@@ -119,7 +117,7 @@ export async function journalMoodsByDay(user, from, to) {
   return byDay;
 }
 
-/** The user's overall mood from `from` to `to` ("YYYY-MM-DD", inclusive). */
+// The user's overall mood from `from` to `to` ("YYYY-MM-DD", inclusive).
 export async function overallMood(user, { from, to }) {
   const lens = user.preferences?.moodLens === "sound" ? "sound" : "lyrics";
   const [journal, music] = await Promise.all([
