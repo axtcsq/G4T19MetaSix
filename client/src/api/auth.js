@@ -34,6 +34,10 @@ export function clearHistory() {
   return api.delete('/api/me/history')
 }
 
+// Forgets the Spotify connection while keeping the MetaFor account signed in.
+export function disconnectSpotify() {
+  return api.post('/api/me/spotify/disconnect')
+}
 
 
 export function logout() {
