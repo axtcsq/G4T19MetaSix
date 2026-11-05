@@ -1063,6 +1063,21 @@ input:disabled {
     grid-row: span 2;
     margin: 0;
   }
+  /* Side by side across the full width, under the cover and song details. */
+  .track-actions {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .track-actions .track-action {
+    width: 100%;
+    padding-inline: 0.75rem !important;
+    text-align: center;
+    white-space: nowrap;
+  }
   .transport {
     grid-template-columns: 1fr;
     gap: 8px;
