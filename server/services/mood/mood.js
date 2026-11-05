@@ -63,7 +63,7 @@ const MOODS = {
 
 const hasLyrics = (lyrics) => lyrics?.status === 'found' && lyrics.valence != null
 
-// * Harsh sound, or angry words over a heavy track, unless the lyrics are joyful.
+// Harsh sound, or angry words over a heavy track, unless the lyrics are joyful.
 function isTense({ valence, energy, acousticness, danceability }, lyrics) {
   const found = hasLyrics(lyrics)
   if (found && (lyrics.emotions?.joy ?? 0) >= JOYFUL) return false
@@ -101,7 +101,7 @@ const CONTRAST_MOODS = {
   },
 }
 
-// * `features` carries the blended valence; `lyrics` is the server's lyric analysis, if any.
+// `features` carries the blended valence; `lyrics` is the server's lyric analysis, if any.
 export function describeMood(features, contrast = null, lyrics = null) {
   const quadrant = quadrantOf(features, lyrics)
   if (contrast) return { quadrant, contrast: true, ...CONTRAST_MOODS[contrast] }
@@ -111,7 +111,7 @@ export function describeMood(features, contrast = null, lyrics = null) {
 // Lyric failures that a later retry may fix. Until then there is no lyrics reading yet.
 const TEMPORARY_LYRIC_FAILURES = ['unavailable', 'untranslated']
 
-// * Return separate sound and lyrics-based mood readings.
+// Return separate sound and lyrics-based mood readings.
 export function readMoods(features, lyrics = null) {
   const blend = blendValence(features, lyrics)
   const sound = describeMood(features)
@@ -124,7 +124,7 @@ export const contrastLabel = (contrast) => CONTRAST_MOODS[contrast]?.label ?? nu
 // Use a default mood when lyrics exist but audio features do not.
 const LYRICS_ONLY_MOODS = { happy: 'Uplifting', sad: 'Melancholic', tense: 'Aggressive' }
 
-// * A rough mood from the lyrics alone, or null when the lyrics are missing or too neutral.
+// A rough mood from the lyrics alone, or null when the lyrics are missing or too neutral.
 export function lyricsOnlyMood(lyrics) {
   if (!hasLyrics(lyrics) || (lyrics.emotionalShare ?? 0) < MIN_EMOTIONAL_SHARE / 2) return null
   const emotions = lyrics.emotions ?? {}
@@ -139,7 +139,7 @@ export function lyricsOnlyMood(lyrics) {
 const recentre = (v) =>
   v < LYRIC_NEUTRAL ? (0.5 * v) / LYRIC_NEUTRAL : 0.5 + (0.5 * (v - LYRIC_NEUTRAL)) / (1 - LYRIC_NEUTRAL)
 
-// * Blend audio and lyric valence, reducing the lyric weight for neutral lyrics.
+// Blend audio and lyric valence, reducing the lyric weight for neutral lyrics.
 export function blendValence(features, lyrics) {
   const audio = features.valence
   if (!hasLyrics(lyrics)) {

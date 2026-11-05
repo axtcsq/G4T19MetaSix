@@ -29,7 +29,7 @@ export function isEnglish(text) {
   return latin / words.length >= MIN_LATIN && common / words.length >= MIN_COMMON
 }
 
-// * Translate lyric chunks to English for emotion scoring.
+// Translate lyric chunks to English for emotion scoring.
 export async function translateToEnglish(chunks) {
   const key = process.env.DEEPL_API_KEY?.trim()
   if (!key) throw new Error('DEEPL_API_KEY is not set')

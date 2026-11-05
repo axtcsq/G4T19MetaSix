@@ -43,7 +43,7 @@ function nameForms(text = '') {
   return [lower, lower.normalize('NFD').replace(/\p{M}/gu, '').normalize('NFC')]
 }
 
-// * Open a local LRCLIB dump for lyric lookups.
+// Open a local LRCLIB dump for lyric lookups.
 export async function openLyricsDump(path) {
   // Loaded here so the server and the GitHub job never need node:sqlite.
   const { DatabaseSync } = await import('node:sqlite')
@@ -147,7 +147,7 @@ async function wideSearch(track, seconds) {
   return null
 }
 
-// * Find lyrics for a Spotify track.
+// Find lyrics for a Spotify track.
 export async function findLyrics(track) {
   const local = (await localDump())?.(track)
   if (local) return local
