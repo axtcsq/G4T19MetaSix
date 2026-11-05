@@ -151,6 +151,7 @@ function fromStore(track, queue, played) {
   return {
     track: {
       id: track._id,
+      uri: `spotify:track:${track._id}`,
       name: track.name,
       artists: track.artists ?? [],
       album: { images: track.album?.imageUrl ? [{ url: track.album.imageUrl }] : [] },
@@ -254,6 +255,7 @@ export async function recommendSongs(
 
   return picks.map(({ track, artist, mood, instrumental }) => ({
     id: track.id,
+    uri: track.uri,
     name: track.name,
     artists: (track.artists ?? []).map((a) => a.name),
     imageUrl: track.album?.images?.[1]?.url ?? track.album?.images?.[0]?.url ?? null,

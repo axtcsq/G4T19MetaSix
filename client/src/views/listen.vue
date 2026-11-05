@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import SiteFooter from '@/components/layout/footer.vue'
@@ -74,6 +74,26 @@ async function commitSeek(value) {
   await room.seek(value)
   seekPosition.value = null
 }
+function waitForPlayerReady() {
+  if (ready.value) return Promise.resolve(true)
+  if (!connected.value || error.value) return Promise.resolve(false)
+  return new Promise((resolve) => {
+    let timer
+    let stop = () => {}
+    const settle = () => {
+      if (!ready.value && !error.value) return
+      clearTimeout(timer)
+      stop()
+      resolve(ready.value)
+    }
+    stop = watch([ready, error], settle)
+    timer = setTimeout(() => {
+      stop()
+      resolve(ready.value)
+    }, 20000)
+    settle()
+  })
+}
 // After a refresh the login check is still running when the page opens, so
 // wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
@@ -84,8 +104,23 @@ onMounted(async () => {
   if (typeof song === 'string') {
     router.replace({ query: {} })
     room.playById(song)
-  } else {
-    room.initialize()
+    return
+  }
+  await room.initialize()
+  const trackId = typeof route.query.track === 'string' ? route.query.track : ''
+  const uri = typeof route.query.uri === 'string' ? route.query.uri : ''
+  if (trackId && uri) {
+    const record = {
+      id: trackId,
+      uri,
+      name: typeof route.query.title === 'string' ? route.query.title : 'Selected song',
+      artists: typeof route.query.artist === 'string' ? route.query.artist.split(', ').map((name) => ({ name })) : [],
+      album: { images: typeof route.query.image === 'string' ? [{ url: route.query.image }] : [] },
+    }
+    const selected = room.records.value.find((item) => item.id === trackId)
+    if (selected) Object.assign(record, selected)
+    if (await waitForPlayerReady()) await room.selectRecord(record)
+    await router.replace({ name: 'listen' })
   }
 })
 onBeforeUnmount(() => {

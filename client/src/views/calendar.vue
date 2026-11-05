@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
@@ -7,6 +8,7 @@ import { getMoods } from '@/api/moods'
 import { authorizeSpotify, hasSpotifySession, recentSpotify } from '@/api/spotify'
 import { getRecommendations } from '@/api/recommendations'
 import { getListens, getOverallMood, syncBeforeReading, usesStoredHistory } from '@/api/listens'
+import { useListeningRoom } from '@/composables/useListeningRoom'
 
 defineOptions({ name: "MoodCalendar" })
 
@@ -33,6 +35,17 @@ const shownRecommendationIds = new Set()
 let recommendationRequest = 0
 // The test account's plays come from our database, one month at a time.
 const storedHistory = usesStoredHistory()
+const router = useRouter()
+const listeningRoom = useListeningRoom()
+
+function playRecommendation(track) {
+  router.push({ name: 'listen', query: { track: track.id, uri: track.uri, title: track.name, artist: track.artists.join(', '), image: track.imageUrl || undefined } })
+}
+
+function openRecommendationSong(event, track) {
+  event.stopPropagation()
+  router.push(`/song/${track.id}`)
+}
 
 const monthLabel = computed(() => shownMonth.value.toLocaleDateString('en-SG', { month: 'long', year: 'numeric' }))
 const monthCells = computed(() => {
@@ -90,20 +103,6 @@ function toggleAllSelectedListens() {
   showAllSelectedListens.value = !showAllSelectedListens.value
 }
 const selectedListeningMood = computed(() => listeningMoodFor(selectedDate.value))
-const monthMoods = computed(() => {
-  const counts = new Map()
-  for (const [key, entries] of logsByDate.value) {
-    const d = new Date(`${key}T12:00:00`)
-    if (d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear()) {
-      for (const entry of entries) counts.set(entry.mood, (counts.get(entry.mood) || 0) + 1)
-    }
-  }
-  return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0]
-})
-const monthSongCount = computed(() => listens.value.filter((item) => {
-  const d = new Date(item.played_at)
-  return d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear()
-}).length)
 const recommendationArtists = computed(() => {
   const artists = new Map()
   for (const item of listens.value) {
@@ -133,10 +132,6 @@ const recommendationTypeMix = computed(() => {
   const instrumentalShare = known ? instrumental / known : 0.5
   return { instrumental: Math.round(instrumentalShare * 4), vocal: 4 - Math.round(instrumentalShare * 4) }
 })
-const monthMoodCount = computed(() => [...logsByDate.value].reduce((n, [key, entries]) => {
-  const d = new Date(`${key}T12:00:00`)
-  return n + (d.getMonth() === shownMonth.value.getMonth() && d.getFullYear() === shownMonth.value.getFullYear() ? entries.length : 0)
-}, 0))
 const songMoodTrend = computed(() => {
   const counts = { happy: 0, calm: 0, sad: 0, tense: 0 }
   for (const item of listens.value) {
@@ -180,28 +175,6 @@ const recommendationTarget = computed(() => {
   if (sad + tense === 0) return happy >= calm ? 'happy' : 'calm'
   return sad >= tense ? 'happy' : 'calm'
 })
-const moodTrendSummary = computed(() => {
-  const picks = recommendationTarget.value === 'happy' ? 'uplifting' : 'calming'
-  const mood = overallMood.value
-  if (combinedTarget.value) {
-    const basis = [
-      mood.journalDays ? `${mood.journalDays} journal day${mood.journalDays === 1 ? '' : 's'}` : null,
-      mood.plays ? `${mood.plays} analyzed plays` : null,
-    ].filter(Boolean).join(' and ')
-    const negative = ['sad', 'angry', 'anxious'].includes(mood.main)
-    return negative
-      ? `Your journal and music this month lean mostly ${MOOD_NAMES[mood.main]} (${basis}). Here are some ${picks} picks to shift the tone.`
-      : `Your journal and music this month lean mostly ${MOOD_NAMES[mood.main]} (${basis}). Here are more ${picks} picks.`
-  }
-  const { happy, calm, sad, tense } = songMoodTrend.value
-  const negative = sad + tense
-  const total = happy + calm + sad + tense
-  if (!total) return 'We need mood-analyzed songs or journal entries from this month to spot a trend.'
-  if (!negative) return `Your analyzed songs have mostly been uplifting or calm (${total} plays). Here are more ${picks} picks.`
-  const trend = sad >= tense ? 'sad' : 'intense'
-  return `${negative} of ${total} analyzed plays leaned ${trend}. Here are some ${picks} picks to shift the tone.`
-})
-
 async function loadData() {
   loading.value = true
   moodError.value = ''
@@ -355,7 +328,10 @@ watch([recommendationTarget, recommendationArtists, recommendationTypeMix], () =
   if (loading.value || monthLoading.value) return
   restartRecommendations()
 })
-onMounted(loadData)
+onMounted(() => {
+  loadData()
+  listeningRoom.initialize()
+})
 </script>
 
 <template>
@@ -363,7 +339,6 @@ onMounted(loadData)
     <main class="calendar-content">
       <header class="calendar-intro">
         <h1 class="page-title">Mood Calendar</h1>
-        <p>Track your daily moods and the songs that soundtracked them.</p>
       </header>
 
       <!-- A faded calendar stands in while the month loads. -->
@@ -381,12 +356,6 @@ onMounted(loadData)
       <div v-else-if="moodError" class="calendar-message error-message" role="alert">Could not load mood logs: {{ moodError }}</div>
 
       <template v-else>
-        <section class="month-summary" aria-live="polite">
-          <span v-if="monthMoodCount">This month, you logged <strong>{{ monthMoodCount }}</strong> mood{{ monthMoodCount === 1 ? '' : 's' }}<template v-if="monthMoods"> and most often felt <strong>{{ monthMoods.toLowerCase() }}</strong></template>.</span>
-          <span v-else>No mood logs for this month yet. Add one in Daily Mood.</span>
-          <span v-if="overallMood?.main">With your music, you've leaned mostly <strong>{{ MOOD_NAMES[overallMood.main] }}</strong>.</span>
-          <span class="song-summary">{{ monthSongCount }} {{ storedHistory ? '' : 'recent Spotify ' }}play{{ monthSongCount === 1 ? '' : 's' }} shown</span>
-        </section>
         <div v-if="spotifyError" class="spotify-connect-note" role="status">
           <p>{{ spotifyError }}</p>
           <button v-if="!hasSpotifySession()" type="button" class="connect-spotify glass-action" :disabled="isConnectingSpotify" @click="connectSpotify">
@@ -405,11 +374,9 @@ onMounted(loadData)
             <div>
               <p class="eyebrow">A small listening nudge</p>
               <h2 id="recommendations-title">Songs for a Brighter Moment</h2>
-              <p class="recommendation-reason">{{ moodTrendSummary }}</p>
               <div v-if="recommendationArtists.length" class="recommendation-personalization">
                 <span>Artists similar to the ones you played most:</span>
                 <span v-for="artist in recommendationArtists" :key="artist.id || artist.name" class="artist-chip">{{ artist.name }}</span>
-                <span class="fallback-explainer">Every pick’s sound is checked against the mood, and vocal/instrumental picks follow your listening mix.</span>
               </div>
             </div>
             <div class="recommendation-actions">
@@ -428,15 +395,14 @@ onMounted(loadData)
           <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
           <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
           <div v-else-if="recommendations.length" class="recommendation-list">
-            <!-- The title opens the song's mood page; the artwork and arrow open Spotify. -->
-            <article v-for="track in recommendations" :key="track.id" class="recommendation-card">
-              <a class="art-link" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+            <div v-for="track in recommendations" :key="track.id" class="recommendation-card">
+              <span class="art-link" aria-hidden="true">
                 <img v-if="track.imageUrl" :src="track.imageUrl" alt="" />
                 <span v-else class="track-art">♫</span>
-              </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
-              <a class="recommendation-open" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
-            </article>
+              </span>
+              <span class="track-copy"><a class="recommendation-title" :href="`/song/${track.id}`" @click.prevent="openRecommendationSong($event, track)"><strong>{{ track.name }}</strong></a><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
+              <button class="recommendation-open" type="button" @click="playRecommendation(track)">Play song</button>
+            </div>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
           <p v-else class="recommendation-status">No fully analysed songs by similar artists matched the mood yet. New matches are being analysed, so try refreshing later or for other artists.</p>
@@ -561,8 +527,6 @@ onMounted(loadData)
 .eyebrow { margin: 0 0 8px; }
 .calendar-intro h1 { margin: 0; }
 .calendar-intro > p:last-child { margin: 10px 0 0; color: var(--ui-text-muted); }
-.month-summary { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--ui-text-muted); }
-.month-summary strong { color: var(--ui-text); }
 .day-overall { margin: 4px 0 0; color: var(--ui-text-muted); }
 .day-overall strong { color: var(--ui-text); }
 .song-summary { color: var(--calendar-accent); font-family: var(--font-sans); font-weight: 700; }
@@ -573,24 +537,22 @@ onMounted(loadData)
 .recommendation-panel { width: 100%; margin: 24px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated), var(--color-brand-100) 32%), var(--ui-bg-elevated) 72%); box-shadow: 0 10px 28px #211a210b; }
 .recommendation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .recommendation-heading h2 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
-.recommendation-reason { max-width: 62ch; margin: 7px 0 0; color: var(--ui-text-muted); font-size: var(--text-small); }
 .recommendation-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
 .refresh-recommendations { min-height: 34px !important; padding: 5px 11px !important; font-size: var(--text-label) !important; }
 .refresh-recommendations:disabled { opacity: .65; cursor: wait; }
 .recommendation-personalization { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
-.fallback-explainer { flex-basis: 100%; }
 .artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
 .recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: var(--text-caption); font-weight: 800; }
 .recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-.recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: border-color .16s ease, transform .16s ease; }
-.recommendation-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); }
+.recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); transition: border-color .16s ease, transform .16s ease; }
+.recommendation-card:hover { border-color: var(--color-brand-300); }
 .recommendation-card img, .recommendation-card .track-art { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 8px; object-fit: cover; }
 .recommendation-card .track-copy { display: grid; min-width: 0; gap: 3px; }
 .recommendation-card .track-copy strong, .recommendation-card .track-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recommendation-card .track-copy strong { font-size: var(--text-caption); }
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: var(--text-caption); }
 .recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: var(--text-caption); font-weight: 700; }
-.recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: var(--text-lead); }
+.recommendation-open { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; border: 0; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font: inherit; font-size: var(--text-caption); font-weight: 700; cursor: pointer; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: var(--text-label); }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
@@ -674,11 +636,12 @@ onMounted(loadData)
 .track-link:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
 /* Song titles open the song's mood page. */
 .title-link { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
+.recommendation-title { display: block; min-width: 0; border-radius: 4px; color: inherit; text-decoration: none; }
+.recommendation-title:hover strong { text-decoration: underline; text-underline-offset: 3px; }
 .title-link strong { display: block; }
 .title-link:hover strong { text-decoration: underline; text-underline-offset: 3px; }
-.title-link:focus-visible, .art-link:focus-visible, .recommendation-open:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
+.title-link:focus-visible, .recommendation-title:focus-visible, .art-link:focus-visible, .recommendation-open:focus-visible { outline: 3px solid var(--color-brand-400); outline-offset: 2px; }
 .art-link { display: block; flex: 0 0 auto; line-height: 0; }
-.recommendation-open { text-decoration: none; }
 .track-card img, .track-card .track-art { width: 100%; aspect-ratio: 1; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .track-art { display: grid; place-items: center; color: #fff; background: #81747c; font-size: var(--text-subheader); }
 .track-copy { display: grid; min-width: 0; gap: 3px; }
