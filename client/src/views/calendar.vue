@@ -601,7 +601,7 @@ onMounted(() => {
 .mood-entry p { margin: 5px 0; color: var(--ui-text-muted); font-family: var(--font-serif); font-size: var(--text-body); }
 .mood-entry .no-journal { font-style: italic; }
 .mood-entry time { color: var(--ui-text-muted); font-size: var(--text-caption); }
-.track-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-top: 20px; }
+.track-list { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-top: 20px; }
 .track-list.is-carousel { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; padding-bottom: 6px; }
 .track-list.is-carousel .track-card { flex: 0 0 calc((100% - 30px) / 4); scroll-snap-align: start; }
 .track-list h4 { grid-column: 1 / -1; }
