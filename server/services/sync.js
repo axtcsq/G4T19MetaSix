@@ -89,8 +89,7 @@ export async function syncUser(
     };
   });
 
-  // Upserting on the unique { userId, playedAt } skips plays already stored,
-  // while a replay has its own playedAt and is kept.
+  // Upserting on the unique { userId, playedAt } skips plays already stored, while a replay has its own playedAt and is kept.
   const result = listens.length
     ? await Listen.bulkWrite(
         listens.map((listen) => ({
@@ -105,8 +104,7 @@ export async function syncUser(
     : null;
   const added = Object.keys(result?.upsertedIds ?? {}).map((index) => listens[index]);
 
-  // If every returned play is newer than the last one stored, older plays may
-  // have dropped out of Spotify's 50 before this run.
+  // If every returned play is newer than the last one stored, older plays may have dropped out of Spotify's 50 before this run.
   const times = listens.map((listen) => listen.playedAt.getTime());
   const newest = times.length ? new Date(Math.max(...times)) : null;
   const oldest = times.length ? new Date(Math.min(...times)) : null;
@@ -133,8 +131,7 @@ export async function syncUser(
   }
   await User.updateOne({ _id: user._id }, update);
 
-  // Give this run's new songs a mood from their sound. A failure only leaves
-  // them pending for the next run, so it never fails the sync.
+  // Give this run's new songs a mood from their sound. A failure only leaves them pending for the next run, so it never fails the sync.
   if (items.length) {
     try {
       await analysePendingTracks({ trackIds: [...new Set(items.map((item) => item.track.id))] });
@@ -143,7 +140,7 @@ export async function syncUser(
     }
   }
 
-  const dates = [...new Set(added.map((listen) => listen.localDate))];
+  const dates = [...new Set(listens.map((listen) => listen.localDate))];
   if (dates.length) {
     await rebuildDailyMoods(user._id, dates);
   }
