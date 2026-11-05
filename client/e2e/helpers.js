@@ -32,6 +32,8 @@ export const test = base.extend({
             state.signedIn ? state.user : { error: 'Not logged in' },
             state.signedIn ? 200 : 401,
           )
+        if (path === '/api/me/metaphor')
+          return reply({ text: null, mood: null, genre: null, source: null })
         if (path === '/api/auth/demo') {
           if (method === 'GET') return reply({ enabled: true })
           state.signedIn = true
@@ -62,12 +64,15 @@ export const test = base.extend({
         }
         if (path === '/api/listens') return reply({ items: [] })
         if (path === '/api/listens/insights') return reply({ days: [], emotions: null })
+        if (path === '/api/listens/overall-mood')
+          return reply({ main: null, axes: null, days: [] })
         // Song mood tags: no stored moods, and nothing to work out.
         if (path === '/api/tracks/moods') return reply({ moods: {}, needsSound: [] })
         if (path === '/api/tracks/moods/sound') return reply({ moods: {} })
         if (path === '/api/recommendations') return reply({ tracks: [] })
         if (path === '/api/quiz/genre-mix')
           return reply({ genres: [], artistPlays: 0, taggedArtistPlays: 0 })
+        if (path === '/api/quiz/types') return reply([])
         if (path === '/api/quiz/personality') return reply(null)
         if (path === '/api/quiz/mood-music')
           return reply({ days: [], byMood: [], musicMoods: null })

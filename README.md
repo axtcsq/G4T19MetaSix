@@ -33,7 +33,7 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 
 ## Design
 
-The interface uses a warm journal-inspired palette, with terracotta and lavender accents. Raleway is used for headings and controls; Crimson Text for prose. Light and dark themes, mobile layouts, and reduced-motion settings are supported. Quiz card images are from Unsplash under the [Unsplash License](https://unsplash.com/license).
+The interface uses a warm journal-inspired palette, with terracotta and lavender accents. Raleway is used for headings and controls; Crimson Text for prose. Light and dark themes, mobile layouts, and reduced-motion settings are supported. Quiz card images are from Unsplash.
 
 ## Prerequisites
 
