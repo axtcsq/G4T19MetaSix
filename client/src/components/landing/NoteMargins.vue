@@ -14,9 +14,7 @@ const REACH = 80 // how close the mouse has to be to bump a note
 const LOOP = 1.08
 const SPEED = 0.03
 const HIT = 24 // how close a click has to be to play a note
-// C major pentatonic over two octaves, so any mix of notes sounds pleasant.
-// Each line gets its own run of the scale, lower on the left.
-const SCALE = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25, 783.99, 880]
+const TWINKLE = [261.63, 261.63, 392, 392, 440, 440, 392, 349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63]
 
 let context
 let frame
@@ -28,6 +26,7 @@ let reduceMotion = false
 const lines = []
 const notes = []
 let audio
+let nextNote = 0
 let pointerShown = false
 // Where the lines become clear enough to see, set each frame. The mouse does
 // nothing above it, so hidden notes and lines can't be bumped or played.
@@ -67,11 +66,9 @@ function playTone(frequency, volume = 0.12) {
   }
 }
 
-// Left lines are lower, right lines higher, and higher up the line is higher.
-function pitchFor(line, y) {
-  const lineIndex = lines.indexOf(line)
-  const upward = 1 - Math.min(1, Math.max(0, y / height))
-  return SCALE[Math.min(SCALE.length - 1, Math.floor(lineIndex * 1.2 + upward * 4))]
+function playNextNote(volume = 0.12) {
+  playTone(TWINKLE[nextNote], volume)
+  nextNote = (nextNote + 1) % TWINKLE.length
 }
 
 function setUp() {
@@ -274,7 +271,7 @@ function onPointerMove(event) {
     // Quieter than a click, and not more than a few times a second per line.
     if (now - (line.lastSound ?? 0) > 180) {
       line.lastSound = now
-      playTone(pitchFor(line, py), 0.06)
+      playNextNote(0.06)
     }
   }
 }
@@ -294,7 +291,7 @@ function onPointerDown(event) {
     hit.bump = 1
     // Waits a moment for the audio to start on the very first click.
     window.setTimeout(
-      () => playTone(pitchFor(hit.line, hit.screenY)),
+      () => playNextNote(),
       audio?.state === 'running' ? 0 : 60,
     )
     return
@@ -303,7 +300,7 @@ function onPointerDown(event) {
   if (!line) return
   line.pluckY = py
   line.pluckSpeed += 300
-  window.setTimeout(() => playTone(pitchFor(line, py), 0.09), audio?.state === 'running' ? 0 : 60)
+  window.setTimeout(() => playNextNote(0.09), audio?.state === 'running' ? 0 : 60)
 }
 
 onMounted(() => {
