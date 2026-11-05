@@ -166,10 +166,17 @@ function formatDate(date) {
               <button
                 type="button"
                 class="pin-button"
+                aria-label="Pin to profile"
                 :aria-pressed="entry._id === pinnedId"
+                :title="entry._id === pinnedId ? 'Pinned to profile' : 'Pin to profile'"
                 @click="emit('pin', entry._id === pinnedId ? null : entry._id)"
               >
-                {{ entry._id === pinnedId ? 'Pinned to profile' : 'Pin to profile' }}
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 17v5" />
+                  <path
+                    d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"
+                  />
+                </svg>
               </button>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
@@ -314,19 +321,43 @@ function formatDate(date) {
 }
 
 .pin-button {
-  padding: 2px 12px;
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
   border: 1px solid #d9cdbb;
-  border-radius: 999px;
+  border-radius: 50%;
   color: #687181;
   background: rgb(255 255 255 / 70%);
-  font: 600 var(--text-caption)/1.8 var(--font-sans);
   cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
+.pin-button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pin-button:hover {
+  border-color: #b0573f;
+  color: #b0573f;
+}
+
+/* Pinned: a filled pin on the brand colour. */
 .pin-button[aria-pressed='true'] {
   border-color: #b0573f;
   color: #fff;
   background: #b0573f;
+}
+
+.pin-button[aria-pressed='true'] svg {
+  fill: currentColor;
 }
 
 .pin-button:focus-visible {
@@ -462,33 +493,21 @@ function formatDate(date) {
     width: 44px;
   }
 
+  /* The pin stays in the corner, and a long mood wraps under the date instead. */
   .entry-metadata {
+    position: relative;
     gap: 4px 12px;
+    padding-right: 44px;
     font-size: 20px;
   }
 
   .pin-button {
-  padding: 2px 12px;
-  border: 1px solid #d9cdbb;
-  border-radius: 999px;
-  color: #687181;
-  background: rgb(255 255 255 / 70%);
-  font: 600 var(--text-caption)/1.8 var(--font-sans);
-  cursor: pointer;
-}
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 
-.pin-button[aria-pressed='true'] {
-  border-color: #b0573f;
-  color: #fff;
-  background: #b0573f;
-}
-
-.pin-button:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 2px;
-}
-
-.emotion-sketch {
+  .emotion-sketch {
     width: 30px;
     height: 30px;
   }
