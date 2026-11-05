@@ -15,7 +15,7 @@ import loveOnRepeatImage from '@/assets/images/personality/love-on-repeat.webp'
 import soundwoodsImage from '@/assets/images/personality/soundwoods.webp'
 import musicalNeedsImage from '@/assets/images/personality/musical-needs.webp'
 
-// Card images by quiz id, from Unsplash (credits in docs/PersonalityQuiz.md).
+// Quiz card images are from Unsplash; see the README for attribution.
 // Quizzes without one show the lilac placeholder.
 const quizImages = {
   'music-mbti': musicMbtiImage,
