@@ -139,7 +139,7 @@ const rows = computed(() =>
 
 .breakdown-title {
   font-family: var(--font-sans);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   font-weight: 600;
 }
 
@@ -216,7 +216,7 @@ const rows = computed(() =>
 
 .source-name {
   font-family: var(--font-sans);
-  font-size: var(--text-caption);
+  font-size: var(--text-label);
   font-weight: 700;
   line-height: 1.2;
 }
