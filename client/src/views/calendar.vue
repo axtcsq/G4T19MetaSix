@@ -506,7 +506,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.calendar-page { --calendar-accent: var(--color-brand-700); --calendar-accent-soft: var(--color-brand-100); min-height: calc(100vh - 76px); display: flex; flex-direction: column; background: var(--ui-bg); color: var(--ui-text); font: var(--text-body)/1.5 var(--font-serif); }
+:global(html:has(.calendar-page)), :global(body:has(.calendar-page)), :global(#app:has(.calendar-page)) { overflow-x: clip; }
+.calendar-page { --calendar-accent: var(--color-brand-700); --calendar-accent-soft: var(--color-brand-100); width: 100%; min-width: 0; max-width: 100%; min-height: calc(100vh - 76px); display: flex; flex-direction: column; overflow-x: clip; background: var(--ui-bg); color: var(--ui-text); font: var(--text-body)/1.5 var(--font-serif); }
 .calendar-page :is(button, time, .eyebrow, .weekday, .day-number, .song-count, .inline-note, .calendar-hint, .track-copy, .play-time, .mood-tags, .calendar-message) { font-family: var(--font-sans); }
 .calendar-page :is(h1, h2, h3, h4) { font-family: var(--font-sans); }
 .calendar-content { width: var(--page-width); margin: 0 auto; padding: var(--page-top) 0 var(--page-bottom); flex: 1; }
@@ -578,11 +579,11 @@ onMounted(() => {
 @keyframes skeleton-pulse { 50% { opacity: .45; } }
 @media (prefers-reduced-motion: reduce) { .calendar-skeleton .skeleton-cell, .skeleton-bar { animation: none; } }
 .error-message { color: #a53e36; }
-.day-detail { width: 100%; margin: 28px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
+.day-detail { width: 100%; min-width: 0; margin: 28px 0 0; padding: 22px; border: 1px solid var(--ui-border); border-radius: 18px; background: var(--ui-bg-elevated); box-shadow: 0 12px 32px #211a2112; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .detail-header h3 { margin: 0; font-size: var(--text-subheader); font-weight: 600; }
 .close-detail { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--ui-text-muted); background: var(--ui-bg-accented); font-size: var(--text-subheader); cursor: pointer; }
-.day-detail-grid { display: grid; grid-template-columns: minmax(150px, .55fr) minmax(0, 1.45fr); gap: 20px; }
+.day-detail-grid { display: grid; min-width: 0; grid-template-columns: minmax(150px, .55fr) minmax(0, 1.45fr); gap: 20px; }
 .day-detail-column { min-width: 0; padding: 16px; border: 1px solid var(--ui-border); border-radius: 14px; background: color-mix(in srgb, var(--ui-bg), var(--ui-bg-elevated) 55%); }
 .column-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: var(--text-subheader); font-weight: 600; }
 .column-title span { color: var(--ui-text-muted); font-size: var(--text-caption); }
