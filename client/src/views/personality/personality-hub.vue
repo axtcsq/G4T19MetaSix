@@ -91,6 +91,12 @@ function isMine(quiz, outcome) {
   return Boolean(title) && (title === outcome.name || title.endsWith(` ${outcome.name}`))
 }
 
+// Spotify Horoscope has no questions: it only asks for a birthday.
+function quizLength({ questionCount: count, needsBirthday }) {
+  if (count) return `${count} ${count === 1 ? 'question' : 'questions'}`
+  return needsBirthday ? 'Just your birthday' : 'A quick one'
+}
+
 // Where the empty Patterns card sends a new user.
 const firstQuiz = computed(() => quizzes.value.find((quiz) => !quiz.latestResult) ?? quizzes.value[0])
 
@@ -251,13 +257,20 @@ onMounted(loadPage)
                 </button>
               </div>
             </template>
-            <RouterLink
-              v-else
-              class="peach-button"
-              :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
-            >
-              Get Started
-            </RouterLink>
+            <template v-else>
+              <p class="quiz-result">
+                <span class="quiz-result-line"><strong>Not taken yet</strong></span>
+                <span class="quiz-result-note">{{ quizLength(quiz) }}</span>
+              </p>
+              <div class="card-actions card-actions--single">
+                <RouterLink
+                  class="peach-button"
+                  :to="{ name: 'personality-quiz', params: { quizId: quiz.id } }"
+                >
+                  Get started
+                </RouterLink>
+              </div>
+            </template>
           </li>
         </ul>
       </section>
@@ -591,12 +604,20 @@ onMounted(loadPage)
 .quiz-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 58px clamp(24px, 7vw, 97px);
+  column-gap: clamp(24px, 7vw, 97px);
 }
 
+/* Each card shares its row's tracks, so the text, result lines and buttons line
+   up across cards whichever ones have been taken. */
 .quiz-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  margin-bottom: 58px;
+}
+
+.quiz-card:last-child {
+  margin-bottom: 0;
 }
 
 .quiz-image {
@@ -695,6 +716,10 @@ onMounted(loadPage)
 /* View result takes the room, and Retake is a square icon button beside it. */
 .card-actions.card-actions--retry {
   grid-template-columns: 1fr 44px;
+}
+
+.card-actions.card-actions--single {
+  grid-template-columns: 1fr;
 }
 
 .retry-button {
