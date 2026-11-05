@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import VinylTurntable from '@/components/listening/VinylTurntable.vue'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
@@ -9,6 +10,8 @@ import { useTrackMood } from '@/composables/useTrackMoods'
 
 defineOptions({ name: 'ListeningRoom' })
 const room = useListeningRoom()
+const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const {
   track,
@@ -75,7 +78,22 @@ async function commitSeek(value) {
 // wait for it before deciding whether Spotify is connected.
 onMounted(async () => {
   if (!auth.checked) await auth.load()
-  room.initialize()
+  await room.initialize()
+  const trackId = typeof route.query.track === 'string' ? route.query.track : ''
+  const uri = typeof route.query.uri === 'string' ? route.query.uri : ''
+  if (trackId && uri) {
+    const record = {
+      id: trackId,
+      uri,
+      name: typeof route.query.title === 'string' ? route.query.title : 'Selected song',
+      artists: typeof route.query.artist === 'string' ? route.query.artist.split(', ').map((name) => ({ name })) : [],
+      album: { images: typeof route.query.image === 'string' ? [{ url: route.query.image }] : [] },
+    }
+    const selected = room.records.value.find((item) => item.id === trackId)
+    if (selected) Object.assign(record, selected)
+    await room.selectRecord(record)
+    await router.replace({ name: 'listen' })
+  }
 })
 onBeforeUnmount(() => {
   clearTimeout(searchTimer)
