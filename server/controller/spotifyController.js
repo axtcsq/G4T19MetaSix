@@ -4,9 +4,7 @@ import { isSpotifyLinked, refreshAccessToken } from "../services/spotifyAuth.js"
 
 const RECONNECT = "Log in with Spotify again to connect your account.";
 
-// GET /api/spotify/token
-// A short-lived Spotify access token for the browser (Listening room, recent
-// history). The refresh token never leaves the server.
+// GET /api/spotify/token A short-lived Spotify access token for the browser (Listening room, recent history). The refresh token never leaves the server.
 export async function getSpotifyToken(req, res) {
   const user = await User.findById(req.user._id).select("+spotify.refreshToken");
   if (!isSpotifyLinked(user) || !user.spotify.refreshToken) {

@@ -1,5 +1,4 @@
-// Run with: npm test
-// The overall mood from journal entries and listening together.
+// Run with: npm test The overall mood from journal entries and listening together.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { combineDays, dayAxes, journalAxes, mainAxis, musicAxes } from "../services/overallMood.js";

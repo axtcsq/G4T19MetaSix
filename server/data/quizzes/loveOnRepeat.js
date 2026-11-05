@@ -1,7 +1,6 @@
 import { clamp, shareRow, shares, tallyAnswers, topDimension } from "../../services/quizEngine.js";
 
-// Love on Repeat: the 5 Love Languages, expressed through music. Every
-// option maps to exactly one language; the most-picked language is the result.
+// Love on Repeat: the 5 Love Languages, expressed through music. Every option maps to exactly one language; the most-picked language is the result.
 const LANGUAGES = {
   curation: {
     name: "Acts of Curation",

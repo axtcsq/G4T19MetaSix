@@ -1,5 +1,4 @@
-// Analyse synced tracks and rebuild their daily summaries.
-// Run manually with `node jobs/analyse.js` from the server directory.
+// Analyse synced tracks and rebuild their daily summaries. Run manually with `node jobs/analyse.js` from the server directory.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";
@@ -28,15 +27,13 @@ async function run() {
       { "analysis.status": "no-data", "lyrics.scorerVersion": { $ne: SCORER_VERSION } },
     ],
   };
-  // Without a DeepL key, songs waiting on a translation would only fail again.
-  // They're retried once a key is set.
+  // Without a DeepL key, songs waiting on a translation would only fail again. They're retried once a key is set.
   if (!process.env.DEEPL_API_KEY?.trim()) {
     console.warn("[analyse] DEEPL_API_KEY is not set: non-English lyrics are skipped");
     filter.$nor = [{ "analysis.status": "partial", "lyrics.status": "untranslated" }];
   }
 
-  // New songs first, then retries, least recently tried first so songs waiting
-  // on a busy service don't crowd out the rest.
+  // New songs first, then retries, least recently tried first so songs waiting on a busy service don't crowd out the rest.
   const tracks = await Track.find(filter, { _id: 1, name: 1 })
     .sort({ "analysis.attempts": 1, "analysis.analysedAt": 1 })
     .limit(MAX_TRACKS)
@@ -46,8 +43,7 @@ async function run() {
     return;
   }
 
-  // Load the emotion model once, before any song, so a broken download stops
-  // the run instead of marking every song's lyrics unavailable.
+  // Load the emotion model once, before any song, so a broken download stops the run instead of marking every song's lyrics unavailable.
   await loadModel();
 
   const counts = {};

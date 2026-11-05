@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry", "Excited", "Tired", "Lonely"];
 
-// The song picked as the entry's Song of the Day. A copy of what Spotify
-// showed, so old entries still show it without asking Spotify again.
+// The song picked as the entry's Song of the Day. A copy of what Spotify showed, so old entries still show it without asking Spotify again.
 const songSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
@@ -42,8 +41,7 @@ const moodLogSchema = new mongoose.Schema(
       type: songSchema,
       default: null,
     },
-    // "seed" for the demo user's generated entries, so re-seeding replaces
-    // only those. Absent on entries people write.
+    // "seed" for the demo user's generated entries, so re-seeding replaces only those. Absent on entries people write.
     source: {
       type: String,
       enum: ["seed"],

@@ -1,9 +1,7 @@
 import MoodLog from "../models/MoodLog.js";
 import { localDate } from "./dailyMetaphor.js";
 
-// The daily check-in streak on Home, with streak savers. Every 7 days in a row
-// earns a saver (holding at most 2), and a saver covers a single missed day so
-// the streak carries on. Missing a day with no saver left starts it again.
+// Track check-in days and up to two missed-day savers.
 
 const DAY_MS = 86_400_000;
 const SAVER_EVERY = 7;
@@ -13,8 +11,7 @@ const LOOK_BACK_DAYS = 400;
 
 const nextDay = (date) => new Date(Date.parse(`${date}T00:00:00Z`) + DAY_MS).toISOString().slice(0, 10);
 
-// The streak from a set of "YYYY-MM-DD" check-in dates, up to today. Today
-// only counts once it has a check-in, so the streak doesn't break at midnight.
+// The streak from a set of "YYYY-MM-DD" check-in dates, up to today. Today only counts once it has a check-in, so the streak doesn't break at midnight.
 export function streakFrom(dates, today) {
   const checkedIn = new Set(dates);
   let days = 0;

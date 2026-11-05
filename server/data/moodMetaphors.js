@@ -1,5 +1,4 @@
-// Hand-written metaphors for each check-in mood. Used when Groq can't write
-// today's metaphor, so the line still fits how the user feels.
+// Hand-written metaphors for each check-in mood. Used when Groq can't write today's metaphor, so the line still fits how the user feels.
 export const MOOD_METAPHORS = {
   Happy: [
     'Joy is a chorus you get to sing a little louder today.',

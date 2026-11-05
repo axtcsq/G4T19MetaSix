@@ -88,8 +88,7 @@ export async function getListens(req, res) {
 const EMOTIONS = ["joy", "sadness", "anger", "fear", "disgust", "surprise", "neutral"];
 const LOCAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-// GET /api/listens/overall-mood: the user's mood from their journal and listening
-// together, from `from` to `to` ("YYYY-MM-DD", both included).
+// GET /api/listens/overall-mood: the user's mood from their journal and listening together, from `from` to `to` ("YYYY-MM-DD", both included).
 export async function getOverallMood(req, res) {
   const { from, to } = req.query;
   if (!LOCAL_DATE.test(from ?? "") || !LOCAL_DATE.test(to ?? "") || from > to) {
@@ -161,8 +160,7 @@ export async function getMoodInsights(req, res) {
   };
   const analysedPlays = dailyMoods.reduce((sum, day) => sum + analysedIn(day), 0);
 
-  // For each mood the user journalled, what they mostly played on those days.
-  // A day counts for every mood logged on it, not only the last.
+  // For each mood the user journalled, what they mostly played on those days. A day counts for every mood logged on it, not only the last.
   const journalMoods = await journalMoodsByDay(req.user, from, to);
   const daysByJournalMood = new Map();
   for (const day of dailyMoods) {

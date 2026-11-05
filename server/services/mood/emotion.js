@@ -1,10 +1,10 @@
 /* ------------------------------------------------------------------ */
-/*  Lyric emotion with a local transformer model (Transformers.js).    */
-/*  The model (~83 MB) downloads once into server/.models; after that  */
-/*  it runs offline with no API and no limits.                         */
-/*                                                                     */
-/*  Unlike a word list, the model reads a whole verse in context, so   */
-/*  "outrun my gun" reads as anger rather than "better" = positive.    */
+/* Lyric emotion with a local transformer model (Transformers.js). */
+/* The model (~83 MB) downloads once into server/.models; after that */
+/* it runs offline with no API and no limits. */
+/*  */
+/* Unlike a word list, the model reads a whole verse in context, so */
+/* "outrun my gun" reads as anger rather than "better" = positive. */
 /* ------------------------------------------------------------------ */
 import { env, pipeline } from '@huggingface/transformers'
 import { fileURLToPath } from 'node:url'
@@ -27,13 +27,11 @@ const EMOTION_VALENCE = {
 }
 const EMOTIONS = Object.keys(EMOTION_VALENCE)
 
-// Violent or dark subjects (guns, death, drugs) that the emotion model misses: it reads
-// "outrun my gun" as mild anger. Used to spot cheerful-sounding songs about dark things.
+// Catch dark phrases the emotion model can misread, like "outrun my gun".
 const DARK_WORDS = new Set(`gun guns bullet bullets shoot shoots shot shooting kill kills killed killer killing
 murder murdered dead death die dies died dying blood bloody suicide knife grave funeral meth overdose bomb bombs
 corpse coffin cocaine heroin`.split(/\s+/))
-// A theme needs at least two different such words, at 1 in 200 words or more, so a lone
-// "shooting star" or "killing me softly" doesn't count.
+// A theme needs at least two different such words, at 1 in 200 words or more, so a lone "shooting star" or "killing me softly" doesn't count.
 const MIN_DARK_WORDS = 2
 const MIN_DARK_RATE = 0.005
 
@@ -84,8 +82,7 @@ export function toChunks(text) {
 export async function scoreLyrics(text, { translations = null } = {}) {
   const classify = await getClassifier()
 
-  // Score each distinct verse once, but weight it by its line count and how often it
-  // appears: a repeated chorus is emphasis and should count more.
+  // Score each distinct verse once, but weight it by its line count and how often it appears: a repeated chorus is emphasis and should count more.
   const verses = new Map()
   for (const lines of toChunks(text)) {
     const key = lines.join('\n')

@@ -1,5 +1,4 @@
-// Run with: npm test
-// ReccoBeats requests that are skipped before reaching the network.
+// Run with: npm test ReccoBeats requests that are skipped before reaching the network.
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import { idsForIsrc } from "../services/mood/reccobeats.js";

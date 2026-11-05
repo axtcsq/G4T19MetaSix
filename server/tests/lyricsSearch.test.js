@@ -1,5 +1,4 @@
-// Run with: npm test
-// Finding lyrics when LRCLIB credits a song differently from Spotify.
+// Run with: npm test Finding lyrics when LRCLIB credits a song differently from Spotify.
 import assert from "node:assert/strict";
 import { afterEach, describe, it, mock } from "node:test";
 import { baseTitle, findLyrics } from "../services/mood/lyrics.js";

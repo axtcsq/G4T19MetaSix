@@ -1,5 +1,4 @@
-// Seed demo data with `npm run db:seed` (or add `-- --days 30`).
-// Run `npm run db:init` first.
+// Seed demo data with `npm run db:seed` (or add `-- --days 30`). Run `npm run db:init` first.
 import "dotenv/config";
 import dns from "node:dns/promises";
 import { readFile } from "node:fs/promises";
@@ -41,8 +40,7 @@ const MIXES = {
   normal: { happy: 0.3, calm: 0.2, sad: 0.3, angry: 0.2 },
 };
 
-// Journal entries: most days get one in the evening, in the mood of that day's
-// music. A song label maps to a journal mood; exam days also bring Anxious.
+// Journal entries: most days get one in the evening, in the mood of that day's music. A song label maps to a journal mood; exam days also bring Anxious.
 const ENTRY_CHANCE = { weekday: 0.75, weekend: 0.85 };
 const MOOD_OF_LABEL = { sad: "Sad", happy: "Happy", calm: "Relaxed", angry: "Angry" };
 const ANXIOUS_ON_EXAM_DAYS = 0.35;
@@ -161,8 +159,7 @@ function periodOf(localDate) {
   return "normal";
 }
 
-// Each label's songs in a fixed shuffled order; earlier songs are the user's
-// favourites and get replayed more.
+// Each label's songs in a fixed shuffled order; earlier songs are the user's favourites and get replayed more.
 function favouritesByLabel(songs) {
   const byLabel = {};
   for (const song of songs) {
@@ -217,8 +214,7 @@ function generateDay(localDate, byLabel, userId) {
   return listens;
 }
 
-// A day's journal entry in the mood of its music, or null for a day off. Its
-// time is in the evening, after the day's plays.
+// A day's journal entry in the mood of its music, or null for a day off. Its time is in the evening, after the day's plays.
 function generateEntry(localDate, dayListens, labelOf, userId) {
   const weekday = new Date(`${localDate}T00:00:00Z`).getUTCDay();
   const weekend = weekday === 0 || weekday === 6;

@@ -1,6 +1,6 @@
 /* ------------------------------------------------------------------ */
-/*  Track details and search for the ISRC fallback. App-only login     */
-/*  (client credentials), so it needs no user.                         */
+/* Track details and search for the ISRC fallback. App-only login */
+/* (client credentials), so it needs no user. */
 /* ------------------------------------------------------------------ */
 import { HttpError, busyStatus } from './errors.js'
 

@@ -11,8 +11,7 @@ const axesSchema = new mongoose.Schema(
   { _id: false },
 );
 
-// One user's moods on one local date. Rebuilt from listens and tracks, so it
-// can be dropped at any time.
+// One user's moods on one local date. Rebuilt from listens and tracks, so it can be dropped at any time.
 const dailyMoodSchema = new mongoose.Schema(
   {
     userId: {

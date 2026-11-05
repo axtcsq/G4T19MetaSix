@@ -94,8 +94,7 @@ function validDrawing(drawing) {
   });
 }
 
-// A Song of the Day as the journal page sends it: a Spotify ID, the title,
-// the artists and the cover, or null for no song.
+// A Song of the Day as the journal page sends it: a Spotify ID, the title, the artists and the cover, or null for no song.
 function validSong(song) {
   if (song === null) return true;
   if (!song || typeof song !== "object" || Array.isArray(song)) return false;
@@ -181,8 +180,7 @@ export async function getMoods(req, res) {
   res.json(logs);
 }
 
-// READ STREAK
-// The daily check-in streak and its streak savers, for Home.
+// READ STREAK The daily check-in streak and its streak savers, for Home.
 export async function getStreak(req, res) {
   res.json(await checkInStreak(req.user));
 }

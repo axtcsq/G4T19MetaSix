@@ -1,5 +1,4 @@
-// Run with: npm test
-// recommendSongs with fake Last.fm, Spotify, ReccoBeats and database answers.
+// Run with: npm test recommendSongs with fake Last.fm, Spotify, ReccoBeats and database answers.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { recommendSongs } from "../services/recommendations.js";

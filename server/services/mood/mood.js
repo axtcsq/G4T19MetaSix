@@ -1,22 +1,22 @@
 /* ------------------------------------------------------------------ */
-/*  Mood from valence, energy and danceability.                        */
-/*                                                                     */
-/*  Valence (sad → happy) and energy (calm → intense) place a song in   */
-/*  one of four quadrants of Russell's circumplex model of affect.     */
-/*  Danceability then picks the flavour within that quadrant.          */
-/*  All values are 0–1, as returned by ReccoBeats' /v1/audio-features. */
-/*                                                                     */
-/*  "Tense" is decided by how harsh the sound is, not by valence:      */
-/*  audio valence is unreliable for heavy music, and plenty of sad     */
-/*  songs are loud. Negative songs that aren't harsh are sad.          */
-/*                                                                     */
-/*  When lyrics are available, their emotion score is blended into     */
-/*  valence, and their emotion mix (joy, anger) helps decide tension.  */
-/*  If the sound and the words clearly disagree, that clash is the     */
-/*  mood.                                                              */
-/*                                                                     */
-/*  Thresholds were tuned on 89 labelled songs and checked on 67       */
-/*  others: 81% land in the right family (sad, happy, calm, angry).    */
+/* Mood from valence, energy and danceability. */
+/*  */
+/* Valence (sad → happy) and energy (calm → intense) place a song in */
+/* one of four quadrants of Russell's circumplex model of affect. */
+/* Danceability then picks the flavour within that quadrant. */
+/* All values are 0–1, as returned by ReccoBeats' /v1/audio-features. */
+/*  */
+/* "Tense" is decided by how harsh the sound is, not by valence: */
+/* audio valence is unreliable for heavy music, and plenty of sad */
+/* songs are loud. Negative songs that aren't harsh are sad. */
+/*  */
+/* When lyrics are available, their emotion score is blended into */
+/* valence, and their emotion mix (joy, anger) helps decide tension. */
+/* If the sound and the words clearly disagree, that clash is the */
+/* mood. */
+/*  */
+/* Thresholds were tuned on 89 labelled songs and checked on 67 */
+/* others: 81% land in the right family (sad, happy, calm, angry). */
 /* ------------------------------------------------------------------ */
 
 const MIDPOINT = 0.5
@@ -24,8 +24,7 @@ const DANCEABLE = 0.6
 // Sad songs with a full band still reach 0.6–0.8 energy. Above this they're anguished, not quiet.
 const LOUD = 0.6
 
-// Harsh sound: very energetic and not acoustic. Loudness is left out on purpose,
-// since older recordings are mastered quieter.
+// Harsh sound: very energetic and not acoustic. Loudness is left out on purpose, since older recordings are mastered quieter.
 const HARSH_ENERGY = 0.85
 const MAX_ACOUSTIC = 0.15
 // Angry or disgusted lyrics over an energetic, non-acoustic, non-danceable track are tense too.
@@ -71,8 +70,7 @@ function isTense({ valence, energy, acousticness, danceability }, lyrics) {
   const found = hasLyrics(lyrics)
   if (found && (lyrics.emotions?.joy ?? 0) >= JOYFUL) return false
   if (acousticness > MAX_ACOUSTIC) return false
-  // Without lyrics, a harsh track only counts as tense if it also sounds negative. Same for
-  // translated lyrics: translation flattens joy, so its absence isn't evidence of anger.
+  // Missing or flattened lyrics alone do not indicate anger.
   if (energy >= HARSH_ENERGY) return (found && !lyrics.translatedFrom) || valence < MIDPOINT
   const angry = (lyrics?.emotions?.anger ?? 0) + (lyrics?.emotions?.disgust ?? 0)
   return found && angry >= ANGRY_WORDS && energy >= ANGRY_ENERGY && danceability < DANCEABLE
@@ -89,8 +87,7 @@ function variantOf(quadrant, { energy, danceability }) {
   return quadrant === 'sad' && energy >= LOUD ? 'loud' : 'still'
 }
 
-// When sound and words pull in opposite directions, averaging hides the point of the
-// song, so the clash gets its own mood. `tone` picks the colour.
+// When sound and words pull in opposite directions, averaging hides the point of the song, so the clash gets its own mood. `tone` picks the colour.
 const CONTRAST_MOODS = {
   'dark-words': {
     tone: 'tense',
@@ -126,9 +123,7 @@ export function readMoods(features, lyrics = null) {
 
 export const contrastLabel = (contrast) => CONTRAST_MOODS[contrast]?.label ?? null
 
-// Songs ReccoBeats has no sound data for get one of the usual names from their lyrics alone.
-// Without energy and danceability there's no telling happy from calm or loud from quiet, so
-// each family gets one default name.
+// Use a default mood when lyrics exist but audio features do not.
 const LYRICS_ONLY_MOODS = { happy: 'Uplifting', sad: 'Melancholic', tense: 'Aggressive' }
 
 /** A rough mood from the lyrics alone, or null when the lyrics are missing or too neutral. */

@@ -24,8 +24,7 @@ const FEATURE_KEYS = [
   "mode",
 ];
 
-// Audio features from ReccoBeats, keyed by Spotify track ID. Songs ReccoBeats
-// doesn't know are missing from the result.
+// Audio features from ReccoBeats, keyed by Spotify track ID. Songs ReccoBeats doesn't know are missing from the result.
 export async function fetchFeatures(trackIds) {
   const response = await fetch(`${RECCOBEATS_URL}?ids=${trackIds.join(",")}`, {
     signal: AbortSignal.timeout(15000),
@@ -51,9 +50,7 @@ export async function fetchFeatures(trackIds) {
   return features;
 }
 
-// Features already stored under another copy of the same recording (same
-// ISRC), e.g. the album and deluxe editions, for the songs given. Keyed by
-// Spotify track ID.
+// Reuse features from another track with the same ISRC.
 async function featuresFromCopies(ids) {
   const songs = await Track.find({ _id: { $in: ids }, isrc: { $ne: null } }, { isrc: 1 }).lean();
   if (!songs.length) {
@@ -110,8 +107,7 @@ export async function analysePendingTracks({ trackIds, limit = 400 } = {}) {
         const update = {
           $set: {
             features,
-            // No lyrics reading until the analysis job reads them, so the song
-            // shows "Lyrics pending" rather than "No lyrics".
+            // No lyrics reading until the analysis job reads them, so the song shows "Lyrics pending" rather than "No lyrics".
             moods: { ...trackMoods(features), lyrics: null },
             "analysis.status": "partial",
             "analysis.analysedAt": analysedAt,

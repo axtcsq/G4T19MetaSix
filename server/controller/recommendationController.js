@@ -4,8 +4,7 @@ const MAX_ARTISTS = 5;
 const MAX_EXCLUDED = 2000;
 const MAX_PAGE = 100;
 const SPOTIFY_ID = /^[0-9A-Za-z]{22}$/;
-// Each request can search Spotify for up to 8 artists, so a user waits this
-// long between requests; repeated clicks could otherwise get the app blocked.
+// Each request can search Spotify for up to 8 artists, so a user waits this long between requests; repeated clicks could otherwise get the app blocked.
 const COOLDOWN_MS = 3000;
 
 const isCount = (value) => Number.isInteger(value) && value >= 0 && value <= PICKS;

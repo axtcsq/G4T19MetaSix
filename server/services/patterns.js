@@ -3,17 +3,13 @@ import { PERSONALITY_TYPES } from "../data/personalityTypes.js";
 import { clamp } from "./quizEngine.js";
 import { journalAxes, mainAxis } from "./overallMood.js";
 
-// How much the quiz results count versus the user's listening data when
-// working out their MetaFor traits, once there is enough listening to go on.
+// How much the quiz results count versus the user's listening data when working out their MetaFor traits, once there is enough listening to go on.
 export const QUIZ_WEIGHT = 0.7;
 export const SPOTIFY_WEIGHT = 0.3;
-// Listening reaches its full weight after this many days or plays, whichever
-// comes first. Before that it counts for less, since a day of plays says
-// little about someone's habits.
+// Listening weight grows with history until it reaches the full weight.
 const FULL_WEIGHT_DAYS = 14;
 const FULL_WEIGHT_PLAYS = 300;
-// The weight moves in steps this size, so Patterns is rebuilt a handful of
-// times as listening builds up rather than every few plays.
+// The weight moves in steps this size, so Patterns is rebuilt a handful of times as listening builds up rather than every few plays.
 const WEIGHT_STEP = 0.05;
 
 // How much the listening data counts for this user, from 0 to SPOTIFY_WEIGHT.
@@ -34,8 +30,7 @@ function averageFeature(profile, feature) {
   return average((profile?.topTracks ?? []).map((track) => track[feature]));
 }
 
-// Each signal is between -1 and 1, where a positive number leans towards the
-// trait's first pole (Amped, Explorer, Wordsmith, Crowd). null = no data.
+// Each signal is between -1 and 1, where a positive number leans towards the trait's first pole (Amped, Explorer, Wordsmith, Crowd). null = no data.
 export function spotifySignals(profile) {
   const energy = averageFeature(profile, "energy");
   const instrumentalness = averageFeature(profile, "instrumentalness");
@@ -50,8 +45,7 @@ export function spotifySignals(profile) {
   };
 }
 
-// Why the listening data leans the way it does, per trait, for the
-// "how it adds up" table.
+// Why the listening data leans the way it does, per trait, for the "how it adds up" table.
 export function spotifyEvidence(profile) {
   const percent = (value) => (value === null ? null : Math.round(value * 100));
   const energy = percent(averageFeature(profile, "energy"));
@@ -134,9 +128,7 @@ const MOOD_VALENCE = {
 
 const MOOD_NAMES = { happy: "happy", relaxed: "calm", sad: "sad", angry: "angry", anxious: "anxious" };
 
-// One line on how the user has been overall, from their journal and listening
-// together, then how their logged moods compare with how their music sounds.
-// `overall` is overallMood() for the last 30 days.
+// Summarize recent journal and listening moods.
 export function moodLink(moodPatterns, stats, overall = null) {
   const lead = overall?.main
     ? `Over the last 30 days, your journal and music together lean mostly ${MOOD_NAMES[overall.main]}`
@@ -207,8 +199,7 @@ export function combineTraits(results, profile) {
   });
 }
 
-// The six types as the Personality page describes them, with the trait names
-// each one leans towards, like Amped and Explorer.
+// The six types as the Personality page describes them, with the trait names each one leans towards, like Amped and Explorer.
 export function describeTypes() {
   return PERSONALITY_TYPES.map(({ id, name, tagline, description, profile }) => ({
     id,
@@ -222,8 +213,7 @@ export function describeTypes() {
   }));
 }
 
-// Ranks every personality type by how close its profile is to the user's
-// traits. match is a percentage, 100 being an exact fit.
+// Ranks every personality type by how close its profile is to the user's traits. match is a percentage, 100 being an exact fit.
 export function rankTypes(traits) {
   return PERSONALITY_TYPES.map((type) => {
     const targets = Object.entries(type.profile);
@@ -237,8 +227,7 @@ export function rankTypes(traits) {
   }).sort((a, b) => b.match - a.match);
 }
 
-// Wrapped-style facts about the user's listening, shown in Patterns and given
-// to the LLM as evidence.
+// Wrapped-style facts about the user's listening, shown in Patterns and given to the LLM as evidence.
 export function listeningStats(profile) {
   const topTrack = profile?.topTracks?.[0];
   const percent = (value) => (value === null ? null : Math.round(value * 100));

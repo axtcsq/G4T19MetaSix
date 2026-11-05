@@ -1,10 +1,8 @@
-// Spotify login (Authorization Code flow). The client secret stays on the
-// server; the browser only ever gets our session cookie.
+// Spotify login (Authorization Code flow). The client secret stays on the server; the browser only ever gets our session cookie.
 const ACCOUNTS_URL = "https://accounts.spotify.com";
 const API_URL = "https://api.spotify.com/v1";
 
-// recently-played feeds mood tracking. The rest are what Spotify's Web Playback
-// SDK needs for the Listening room (playback itself needs Premium).
+// recently-played feeds mood tracking. The rest are what Spotify's Web Playback SDK needs for the Listening room (playback itself needs Premium).
 export const SCOPES = [
   "user-read-recently-played",
   "streaming",
@@ -35,8 +33,7 @@ function redirectUri() {
   return uri;
 }
 
-// Throws an error with Spotify's status code, so callers can tell a user who
-// isn't on the app's allowed list (403) from Spotify being down.
+// Throws an error with Spotify's status code, so callers can tell a user who isn't on the app's allowed list (403) from Spotify being down.
 async function spotifyFetch(url, options) {
   const response = await fetch(url, { ...options, signal: AbortSignal.timeout(10000) });
   const body = await response.json().catch(() => ({}));
@@ -86,8 +83,7 @@ export function exchangeCode(code) {
   });
 }
 
-// Returns { access_token, scope, expires_in }, plus a new refresh_token when
-// Spotify rotates it.
+// Returns { access_token, scope, expires_in }, plus a new refresh_token when Spotify rotates it.
 export function refreshAccessToken(refreshToken) {
   return requestToken({
     grant_type: "refresh_token",
@@ -110,16 +106,14 @@ export function fetchProfile(accessToken) {
   });
 }
 
-// The newest 50 plays, newest first. No cursor, so a run never skips plays
-// that Spotify reports late.
+// The newest 50 plays, newest first. No cursor, so a run never skips plays that Spotify reports late.
 export function fetchRecentlyPlayed(accessToken) {
   return spotifyFetch(`${API_URL}/me/player/recently-played?limit=50`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 }
 
-// An app token (Client Credentials flow) for public data like search, so
-// visitors who aren't logged in can still look up songs. Reused until it expires.
+// An app token (Client Credentials flow) for public data like search, so visitors who aren't logged in can still look up songs. Reused until it expires.
 let appToken = null;
 
 async function fetchAppToken() {

@@ -9,15 +9,12 @@ const WINDOW_DAYS = 30;
 const TOP_ARTISTS = 5;
 // More artists than are shown, so a few untagged artists don't decide the genre.
 const GENRE_ARTISTS = 15;
-// A genre MetaFor has a word for beats the top genre if it has at least this
-// share of the top genre's weight, so a broad tag like "alternative" doesn't
-// hide "rock" just behind it.
+// Prefer a specific genre when it has enough of the top genre's weight.
 const NAMED_GENRE_SHARE = 0.5;
 const TOP_TRACKS = 6;
 const FEATURES = ["energy", "valence", "danceability", "acousticness", "instrumentalness", "speechiness"];
 
-// Each artist's tags count by how much the user played them, so the artist
-// they play most has the most say.
+// Each artist's tags count by how much the user played them, so the artist they play most has the most say.
 function topGenre(rankedArtists, genres) {
   const totals = new Map();
   for (const [name, plays] of rankedArtists) {
@@ -34,8 +31,7 @@ function topGenre(rankedArtists, genres) {
   return named?.[0] ?? top;
 }
 
-// The Personality page asks for several quiz routes at once, and each needs
-// the profile. Each user's profile is kept briefly so they share one build.
+// The Personality page asks for several quiz routes at once, and each needs the profile. Each user's profile is kept briefly so they share one build.
 const PROFILE_CACHE_MS = 60 * 1000;
 const profiles = new Map();
 
@@ -108,8 +104,7 @@ async function loadListeningProfile(user) {
     playlists: [],
     // Share of plays that were a song already played in the window.
     repeatListenRatio: totalPlays ? (totalPlays - plays.length) / totalPlays : null,
-    // How much listening there is to go on, so a new account's first day of
-    // plays doesn't count as much as weeks of them.
+    // How much listening there is to go on, so a new account's first day of plays doesn't count as much as weeks of them.
     history: {
       days: firstPlay ? (Date.now() - firstPlay.playedAt.getTime()) / (24 * 60 * 60 * 1000) : 0,
       plays: totalPlays,

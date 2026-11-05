@@ -46,8 +46,7 @@ async function artistQueue(seeds, deps) {
   return seeds.map((seed) => ({ name: seed.name, because: `From ${seed.name}`, weight: seed.plays }));
 }
 
-// Each artist's most popular songs the user hasn't played or been shown. The
-// searches run one at a time; if Spotify rate-limits us, the rest are skipped.
+// Each artist's most popular songs the user hasn't played or been shown. The searches run one at a time; if Spotify rate-limits us, the rest are skipped.
 async function candidateSongs(artists, exclude, deps) {
   const seen = new Set(exclude);
   const songs = [];
@@ -72,9 +71,7 @@ async function candidateSongs(artists, exclude, deps) {
   return songs;
 }
 
-// Up to PICKS songs: one per artist before any artist gets a second, the most
-// relevant artists first, and the vocal/instrumental split asked for when the
-// matches allow it.
+// Pick relevant songs, spreading results across artists when possible.
 function choose(matches, mix) {
   const ordered = [...matches].sort((a, b) => b.artist.weight - a.artist.weight);
   const wanted = { ...mix };
@@ -111,15 +108,13 @@ async function storedSongs(ids) {
   return new Map(tracks.map((track) => [track._id, track]));
 }
 
-// The reading the user sees, once both the sound and the lyrics have been read.
-// Songs with no sound data only have a lyrics reading, so they need lyrics on.
+// The reading the user sees, once both the sound and the lyrics have been read. Songs with no sound data only have a lyrics reading, so they need lyrics on.
 function analysedMood(track, useLyrics) {
   if (track?.analysis?.status !== "done") return null;
   return (useLyrics ? track.moods?.lyrics : track.moods?.sound) ?? null;
 }
 
-// Fully analysed songs in this mood by these artists, from the database, in random
-// order so refreshes vary.
+// Fully analysed songs in this mood by these artists, from the database, in random order so refreshes vary.
 async function analysedSongs({ artists, family, useLyrics, exclude, limit }) {
   if (!artists.length) return [];
   const reading = useLyrics ? "moods.lyrics.family" : "moods.sound.family";
@@ -137,8 +132,7 @@ async function listeningHistory(userId) {
   return { artists, played: new Set(played) };
 }
 
-// A stored song in the same shape as a Spotify search result, credited to the
-// similar artist it's by, or else to the user's own artist.
+// A stored song in the same shape as a Spotify search result, credited to the similar artist it's by, or else to the user's own artist.
 function fromStore(track, queue, played) {
   const names = new Set(track.artists?.map((artist) => artist.name.toLowerCase()));
   const own = track.artists?.[0]?.name ?? "";
@@ -170,8 +164,7 @@ function toMatch(song, track, target, useLyrics) {
   return { ...song, mood: { name: mood.name, family: mood.family }, instrumental };
 }
 
-// Saves sound-matched songs that haven't been analysed yet, so the analysis job
-// reads their lyrics and a later refresh can suggest them.
+// Saves sound-matched songs that haven't been analysed yet, so the analysis job reads their lyrics and a later refresh can suggest them.
 async function saveSongs(picks) {
   await Track.bulkWrite(
     picks.map(({ track, features }) => ({
@@ -212,8 +205,7 @@ export async function recommendSongs(
   const matches = songs.map((song) => toMatch(song, stored.get(song.track.id), target, useLyrics)).filter(Boolean);
   let picks = choose(matches, mix);
 
-  // Too few of the searched songs are analysed: fill up from the database, first
-  // with any similar artist's songs, then with songs by artists the user listens to.
+  // Fill sparse results with similar and familiar artists.
   const considered = [...exclude, ...songs.map((song) => song.track.id)];
   const fill = async (fromArtists, played) => {
     const tracks = await deps.analysedSongs({

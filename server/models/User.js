@@ -16,8 +16,7 @@ const userSchema = new mongoose.Schema(
     birthday: { type: String, default: null },
     // The journal entry pinned to the profile page.
     pinnedEntryId: { type: mongoose.Schema.Types.ObjectId, ref: "MoodLog", default: null },
-    // Home's metaphor of the day, kept so Groq writes it once a day. key is
-    // the date and that day's check-in moods, so a new check-in gets a new line.
+    // Home's metaphor of the day, kept so Groq writes it once a day. key is the date and that day's check-in moods, so a new check-in gets a new line.
     dailyMetaphor: {
       key: String,
       text: String,
@@ -33,8 +32,7 @@ const userSchema = new mongoose.Schema(
     preferences: {
       // "sound" when the user has turned lyrics analysis off on their profile.
       moodLens: { type: String, enum: MOOD_LENSES, default: "lyrics" },
-      // False stops the hourly job and Sync now saving new plays. Plays already
-      // saved are kept.
+      // False stops the hourly job and Sync now saving new plays. Plays already saved are kept.
       savePlays: { type: Boolean, default: true },
       // "HH:MM" in the user's own time, or null for no check-in reminder.
       reminderTime: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: null },

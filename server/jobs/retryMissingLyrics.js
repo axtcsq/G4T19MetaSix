@@ -1,8 +1,4 @@
-// Songs marked "not-found" are never looked up again. After the lyrics search
-// improves, this queues the ones it can now find for the analysis job, which
-// reads and translates them on its next run.
-// Run manually from the server directory. It only lists them without --apply:
-//   node jobs/retryMissingLyrics.js [--apply] [trackId]
+// Requeue tracks marked not found: node jobs/retryMissingLyrics.js [--apply] [trackId].
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";
@@ -15,8 +11,7 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // LRCLIB is a free service, so don't rush it.
 const WAIT_MS = 200;
 
-// Songs with sound data wait as "partial" and show "Lyrics pending". The job
-// already picks up "no-data" songs once their lyrics are cleared.
+// Songs with sound data wait as "partial" and show "Lyrics pending". The job already picks up "no-data" songs once their lyrics are cleared.
 function queueUpdate(track) {
   if (track.analysis?.status === "no-data") {
     return { $set: { lyrics: null } };

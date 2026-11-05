@@ -1,6 +1,4 @@
-// Creates every collection and its indexes. Run it once per database, and
-// again whenever an index is added or changed:
-//   npm run db:init
+// Creates every collection and its indexes. Run it once per database, and again whenever an index is added or changed: npm run db:init
 import "dotenv/config";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";
@@ -23,8 +21,7 @@ async function init() {
   for (const model of MODELS) {
     // Creates the collection up front so it shows in Atlas straight away.
     await model.createCollection();
-    // Only creates missing indexes. Don't use syncIndexes(): it also drops
-    // any index that isn't in the schema.
+    // Only creates missing indexes. Don't use syncIndexes(): it also drops any index that isn't in the schema.
     await model.createIndexes();
 
     const indexes = await model.collection.indexes();

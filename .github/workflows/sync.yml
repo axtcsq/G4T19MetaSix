@@ -1,20 +1,15 @@
-# Saves every active user's newest Spotify plays, every 15 minutes, then works
-# out the moods of any new songs. Spotify only keeps each user's latest 50
-# plays, so this is what lets history grow.
-# Needs the repo secrets MONGODB_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET,
-# TOKEN_KEY and DEEPL_API_KEY (Settings > Secrets and variables > Actions).
+# Sync recent Spotify plays because Spotify only returns the latest 50.
+# Needs MongoDB, Spotify, TOKEN_KEY and DeepL secrets.
 name: Sync listening history
 
 on:
   schedule:
-    # Every 15 minutes, avoiding :00 and :30 when GitHub's scheduler is busiest.
-    # GitHub delays or drops scheduled runs under load (hourly gave a run every
-    # 3-4 hours), so asking often keeps real runs well inside 50 plays apart.
+    # Run every 15 minutes; GitHub may delay scheduled jobs.
     - cron: "7,22,37,52 * * * *"
-  # Adds a "Run workflow" button in the Actions tab.
+  # Allow manual runs.
   workflow_dispatch:
 
-# Never run two syncs at once; a second one waits for the first.
+# Prevent overlapping sync jobs.
 concurrency:
   group: sync
   cancel-in-progress: false
@@ -40,13 +35,13 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
-      # The emotion model (~83 MB) is downloaded once and kept between runs.
+      # Cache the emotion model between runs.
       - uses: actions/cache@v4
         with:
           path: server/.models
           key: emotion-model-${{ hashFiles('server/services/mood/emotion.js') }}
           restore-keys: emotion-model-
-      # Runs even when a user's sync failed, so the other users' songs are analysed.
+      # Analyze songs even when some syncs fail.
       - if: ${{ !cancelled() }}
         run: node jobs/analyse.js
         env:

@@ -7,8 +7,7 @@ export class HttpError extends Error {
   }
 }
 
-// A service that's busy (429), down (5xx) or unreachable says nothing about the
-// song, so the analysis job retries it later without counting the attempt.
+// A service that's busy (429), down (5xx) or unreachable says nothing about the song, so the analysis job retries it later without counting the attempt.
 export function busyStatus(status) {
   return status === 429 || status >= 500
 }

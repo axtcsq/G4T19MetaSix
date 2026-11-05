@@ -1,5 +1,4 @@
-// Run with: npm test
-// The local LRCLIB copy, using a small SQLite file shaped like LRCLIB's dump.
+// Run with: npm test The local LRCLIB copy, using a small SQLite file shaped like LRCLIB's dump.
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";

@@ -24,8 +24,7 @@ export function axesOf(moodName) {
   return AXES_BY_MOOD[moodName] ?? {};
 }
 
-// The journal mood a music mood counts towards most, which picks its colour in
-// the client. Ties go to the earlier axis in AXES, so "Hope in the dark" is happy.
+// The journal mood a music mood counts towards most, which picks its colour in the client. Ties go to the earlier axis in AXES, so "Hope in the dark" is happy.
 export function strongestAxis(moodName) {
   let best = null;
   for (const axis of AXES) {

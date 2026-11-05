@@ -3,8 +3,7 @@ import { MOODS } from "../models/MoodLog.js";
 import { AXES, axesOf, strongestAxis } from "./mood/axes.js";
 import { journalAxes, journalMoodsByDay, mainAxis, mainMood } from "./overallMood.js";
 
-// Day by day, how the user felt next to how happy their music sounded, for the
-// Mood × music chart on the Personality page.
+// Day by day, how the user felt next to how happy their music sounded, for the Mood × music chart on the Personality page.
 
 const DAYS = 14;
 
@@ -78,9 +77,7 @@ export function summariseMusicMoods(rows, moods, useLyrics) {
   }
 
   const share = (count) => Math.round((count / plays) * 100);
-  // Every music mood played, most first, with the one of the five moods it
-  // counts towards most. mixed marks moods that count towards two, like
-  // Bittersweet, so the page can say so.
+  // List played song moods and the axes they contribute to.
   const allMoods = [...byName]
     .sort((a, b) => b[1] - a[1])
     .map(([name, count]) => ({

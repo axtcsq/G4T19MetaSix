@@ -9,8 +9,7 @@ const CACHE_MS = 7 * 24 * 60 * 60 * 1000;
 const BATCH_SIZE = 5;
 // Last.fm's error code for an artist it doesn't know.
 const ARTIST_NOT_FOUND = 6;
-// After any other failure (Last.fm down, rate limited, a bad key), lookups stop
-// for this long, so one outage doesn't slow down every quiz request.
+// After any other failure (Last.fm down, rate limited, a bad key), lookups stop for this long, so one outage doesn't slow down every quiz request.
 const PAUSE_MS = 10 * 60 * 1000;
 // The most artists kept in memory. The oldest lookup is dropped past this.
 const CACHE_LIMIT = 2000;
@@ -99,8 +98,7 @@ async function genresFor(name) {
   }
 }
 
-// Returns { [artist name]: [{ name, weight }, ...] }, looking up each artist at
-// most once a week.
+// Returns { [artist name]: [{ name, weight }, ...] }, looking up each artist at most once a week.
 export async function artistGenres(names) {
   if (!process.env.LASTFM_API_KEY) {
     return Object.fromEntries(names.map((name) => [name, []]));

@@ -1,6 +1,6 @@
 /* ------------------------------------------------------------------ */
-/*  Audio features from ReccoBeats (https://reccobeats.com). Free, no  */
-/*  key. Same 0–1 values as Spotify's retired audio-features endpoint. */
+/* Audio features from ReccoBeats (https://reccobeats.com). Free, no */
+/* key. Same 0–1 values as Spotify's retired audio-features endpoint. */
 /* ------------------------------------------------------------------ */
 import { HttpError, busyStatus } from './errors.js'
 
@@ -19,8 +19,7 @@ async function lookup(ids) {
   const body = await res.json().catch(() => null)
   if (!res.ok) throw failed(res)
 
-  // Unknown IDs are left out rather than reported, and `id` is ReccoBeats' own,
-  // so match on the Spotify URL instead.
+  // Unknown IDs are left out rather than reported, and `id` is ReccoBeats' own, so match on the Spotify URL instead.
   return ids.map((id) => body?.content?.find((f) => f.href?.endsWith(`/track/${id}`))).filter(Boolean)
 }
 

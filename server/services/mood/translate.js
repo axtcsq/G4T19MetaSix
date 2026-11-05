@@ -1,8 +1,8 @@
 /* ------------------------------------------------------------------ */
-/*  Lyric translation with DeepL (https://www.deepl.com/pro-api).      */
-/*  The emotion model only reads English, so other languages are       */
-/*  translated first. English lyrics never reach DeepL, so they cost   */
-/*  no quota and score exactly as before.                              */
+/* Lyric translation with DeepL (https://www.deepl.com/pro-api). */
+/* The emotion model only reads English, so other languages are */
+/* translated first. English lyrics never reach DeepL, so they cost */
+/* no quota and score exactly as before. */
 /* ------------------------------------------------------------------ */
 import { busyStatus } from './errors.js'
 
@@ -10,14 +10,12 @@ import { busyStatus } from './errors.js'
 const host = (key) => (key.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com')
 // DeepL takes at most 50 texts per request.
 const MAX_TEXTS = 50
-// DeepL's established source languages. Its newer long-tail guesses (Wolof, Lombard, Tsonga…)
-// mostly appear on romanised lyrics or chants, and the "translation" is then invented.
+// Accept only DeepL source languages with reliable lyric support.
 const TRUSTED = new Set(`AR BG CS DA DE EL EN ES ET FI FR HE HU ID IT JA KO LT LV NB NL PL PT RO RU SK SL SV TH TR UK VI ZH`.split(' '))
 // Below this share of trusted text, the song is treated as untranslatable.
 const MIN_TRUSTED = 0.5
 
-// Very common English words. English lyrics are 37–62% these; other languages,
-// romanised ones included, stay under 15%.
+// Very common English words. English lyrics are 37–62% these; other languages, romanised ones included, stay under 15%.
 const COMMON = new Set(`the and you i to a me my it in is of that on your we be for all what so this but no just love know
 like don't i'm can it's oh not with when do up now out get go want got see one baby yeah are was have will they he she
 her his there how if at our from by never time way make let take more back down say been cause 'cause can't won't`.split(/\s+/))

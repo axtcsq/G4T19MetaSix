@@ -48,8 +48,7 @@ async function lastMonthMood(user) {
   return overallMood(user, { from: date(29), to: date(0) });
 }
 
-// Works out a stored attempt's result. Attempts whose answers no longer fit
-// the quiz (for example after its questions changed) are skipped.
+// Works out a stored attempt's result. Attempts whose answers no longer fit the quiz (for example after its questions changed) are skipped.
 function evaluateAttempt(attempt, profile) {
   const quiz = findQuiz(attempt.quizId);
   if (!quiz || validateAnswers(quiz, attempt.answers)) return null;
@@ -80,8 +79,7 @@ function publicType(id) {
   return { id, name, tagline, description };
 }
 
-// The line under the Patterns section when no LLM summary is available: a
-// send-off written for the type, since the cards above already explain the result.
+// The line under the Patterns section when no LLM summary is available: a send-off written for the type, since the cards above already explain the result.
 function closingLine(typeId) {
   return PERSONALITY_TYPES.find((type) => type.id === typeId).closing;
 }
@@ -170,9 +168,7 @@ async function rebuildPersonality(user, profile) {
   });
 }
 
-// True when the saved results no longer match what the quizzes give now, for
-// example after a quiz or result is renamed, or when the listening has grown
-// enough to count for more.
+// Check whether saved quiz results need rebuilding.
 async function isOutdated(userId, personality, profile) {
   const results = await latestResults(userId, profile);
   const titles = (list) =>
@@ -206,8 +202,7 @@ function formatPersonality(personality) {
     traits: personality.traits,
     quizResults: personality.quizResults,
     sources: personality.sources,
-    // full is what listening counts for once there's enough of it. Added here
-    // rather than saved, so personalities saved before it existed have it too.
+    // full is what listening counts for once there's enough of it. Added here rather than saved, so personalities saved before it existed have it too.
     weights: personality.weights && {
       ...personality.weights,
       full: SPOTIFY_WEIGHT,
@@ -247,8 +242,7 @@ export async function getQuizzes(req, res) {
   );
 }
 
-// GET /api/quiz/types
-// The six MetaFor types, for the Personality page.
+// GET /api/quiz/types The six MetaFor types, for the Personality page.
 export function getPersonalityTypes(req, res) {
   res.json(describeTypes());
 }
@@ -258,8 +252,7 @@ export async function getPersonality(req, res) {
   const userId = req.user._id;
   let personality = await findPersonality(userId);
 
-  // Rebuild personalities saved before the "how it adds up" data existed, or
-  // whose quiz results have since changed (a rename, or new listening).
+  // Rebuild personalities saved before the "how it adds up" data existed, or whose quiz results have since changed (a rename, or new listening).
   if (!personality?.quizResults?.length) {
     return res.json(formatPersonality(personality));
   }

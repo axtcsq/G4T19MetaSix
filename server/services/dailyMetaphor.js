@@ -4,9 +4,7 @@ import { MOOD_METAPHORS } from "../data/moodMetaphors.js";
 import { buildListeningProfile } from "./listeningProfile.js";
 import { journalAxes, mainAxis, mainMood, overallMood } from "./overallMood.js";
 
-// Home's metaphor of the day, written for how the user feels today (their
-// check-ins and today's listening together) and what they listen to. Groq writes it once a day (again if they check in with a new
-// mood), and a hand-written line for their mood stands in when it can't.
+// Build Home's metaphor from today's moods and listening.
 
 // Groq, the same provider and key as Patterns and the journal helper.
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -14,8 +12,7 @@ const GROQ_MODEL = "openai/gpt-oss-20b";
 // Home shows a fallback rather than keep the user waiting.
 const TIMEOUT_MS = 8000;
 const MAX_LENGTH = 160;
-// Artist and genre names come from Spotify and Last.fm. Cut long ones short
-// so they can't fill the prompt.
+// Artist and genre names come from Spotify and Last.fm. Cut long ones short so they can't fill the prompt.
 const MAX_NAME_LENGTH = 60;
 
 // "YYYY-MM-DD" in the user's own time zone.
@@ -53,9 +50,7 @@ export function cleanMetaphor(text) {
 // The journal mood each of the music's moods reads as.
 const AXIS_MOOD = { happy: "Happy", relaxed: "Relaxed", sad: "Sad", angry: "Angry", anxious: "Anxious" };
 
-// Today's mood from the check-ins and today's listening together (`overall` is
-// the strongest axis). A check-in that agrees keeps its own name, like Tired or
-// Excited; otherwise the combined mood decides.
+// Combine today's check-ins and listening into one mood.
 export function todaysMood(moods, overall) {
   const logged = mainMood(moods);
   if (!overall) return logged;
@@ -150,9 +145,7 @@ async function listeningTaste(user) {
   }
 }
 
-// { text, mood, genre, source } for Home. text is null when there is nothing
-// to go on yet, and Home shows its general line instead. source is "groq" or
-// "mood".
+// { text, mood, genre, source } for Home. text is null when there is nothing to go on yet, and Home shows its general line instead. source is "groq" or "mood".
 export async function dailyMetaphorFor(user, now = new Date()) {
   const today = localDate(now, user.timezone);
   const [moods, overall] = await Promise.all([
