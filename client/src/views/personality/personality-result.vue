@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { getLatestResult } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/layout/footer.vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import { setPageTitle } from '@/utils/pageTitle'
 import TraitBar from '@/components/personality/TraitBar.vue'
 
@@ -35,9 +36,7 @@ onMounted(loadResult)
     <main class="mx-auto w-[min(48rem,var(--page-width))] flex-1 pt-(--page-top) pb-(--page-bottom)">
       <RouterLink class="back-link" :to="{ name: 'personality' }">← All quizzes</RouterLink>
 
-      <p v-if="isLoading" role="status" aria-live="polite" class="body-text mt-8 text-muted">
-        Loading your result...
-      </p>
+      <RecordLoader v-if="isLoading" label="Loading your result…" />
 
       <div v-else-if="loadError" role="alert" class="mt-8">
         <p class="body-text">{{ loadError }}</p>

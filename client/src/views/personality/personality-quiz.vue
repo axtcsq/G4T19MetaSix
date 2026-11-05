@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getQuiz, submitQuiz } from '@/api/quiz'
 import '@/assets/css/personality-theme.css'
 import SiteFooter from '@/components/layout/footer.vue'
+import RecordLoader from '@/components/layout/RecordLoader.vue'
 import { setPageTitle } from '@/utils/pageTitle'
 import { useAuthStore } from '@/stores/auth'
 
@@ -107,7 +108,8 @@ onMounted(loadQuiz)
         <h1 class="page-title mt-6">{{ quiz.title }}</h1>
         <p class="body-text mt-1 text-(--pq-muted)">{{ quiz.description }}</p>
 
-        <form class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
+        <RecordLoader v-if="isSubmitting" label="Working out your result…" />
+        <form v-else class="quiz-panel mt-8" novalidate @submit.prevent="goNext">
           <template v-if="steps.length > 1">
             <div class="flex items-center justify-between font-sans text-sm text-muted">
               <span>Step {{ currentIndex + 1 }} of {{ steps.length }}</span>
@@ -166,7 +168,7 @@ onMounted(loadQuiz)
             <button
               type="button"
               class="back-button"
-              :disabled="currentIndex === 0 || isSubmitting"
+              :disabled="currentIndex === 0"
               @click="goBack"
             >
               Back
@@ -174,9 +176,9 @@ onMounted(loadQuiz)
             <button
               type="submit"
               class="peach-button next-button"
-              :disabled="!hasAnsweredCurrent || isSubmitting"
+              :disabled="!hasAnsweredCurrent"
             >
-              {{ isSubmitting ? 'Working out your result...' : isLastStep ? 'See my result' : 'Next' }}
+              {{ isLastStep ? 'See my result' : 'Next' }}
             </button>
           </div>
         </form>
