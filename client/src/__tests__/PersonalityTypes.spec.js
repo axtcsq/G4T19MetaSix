@@ -109,7 +109,7 @@ describe('MetaFor Types tab', () => {
   })
 })
 
-describe('Your result ticket', () => {
+describe('Your result on a quiz card', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     getPersonalityTypes.mockResolvedValue(TYPES)
@@ -119,25 +119,21 @@ describe('Your result ticket', () => {
 
   it('shows the result, with a link to it', async () => {
     const hub = await mountHub()
-    const ticket = hub.find('.result-ticket')
-    expect(ticket.text()).toContain('You got')
-    expect(ticket.text()).toContain('INFP')
-    expect(ticket.text()).toContain('The Dreamer')
-    expect(ticket.find('.ticket-main').text()).toContain('View result')
+    expect(hub.find('.quiz-result').text()).toContain('You got INFP')
+    expect(hub.find('.quiz-result').text()).toContain('The Dreamer')
+    expect(hub.find('.card-actions--retry').text()).toContain('View result')
     expect(hub.text()).not.toContain('Get Started')
   })
 
-  it('asks before retaking, from the stub', async () => {
+  it('asks before retaking', async () => {
     const hub = await mountHub()
-    const stub = hub.find('.ticket-stub')
-    expect(stub.attributes('aria-label')).toBe('Retake Music MBTI')
+    const retake = hub.find('.retry-button')
+    expect(retake.attributes('aria-label')).toBe('Retake Music MBTI')
     expect(hub.find('.retake-confirm').exists()).toBe(false)
 
-    await stub.trigger('click')
-    expect(stub.attributes('aria-expanded')).toBe('true')
+    await retake.trigger('click')
     expect(hub.find('.retake-confirm').text()).toContain('Retaking replaces your INFP result.')
-
-    await stub.trigger('click')
+    await hub.find('.retake-confirm .peach-button--quiet').trigger('click')
     expect(hub.find('.retake-confirm').exists()).toBe(false)
   })
 })

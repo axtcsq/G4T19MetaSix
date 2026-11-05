@@ -206,41 +206,10 @@ onMounted(loadPage)
             <p class="body-text quiz-description">{{ quiz.description }}</p>
 
             <template v-if="quiz.latestResult">
-              <!-- A gig ticket: the main part opens the result, the stub retakes the quiz. -->
-              <div class="result-ticket">
-                <RouterLink
-                  class="ticket-main"
-                  :to="{ name: 'personality-result', params: { quizId: quiz.id } }"
-                >
-                  <span class="ticket-label">You got</span>
-                  <span class="ticket-title">{{ quiz.latestResult.title }}</span>
-                  <span v-if="quiz.latestResult.subtitle" class="ticket-subtitle">{{ quiz.latestResult.subtitle }}</span>
-                  <span class="ticket-cta">View result <span aria-hidden="true">→</span></span>
-                </RouterLink>
-                <button
-                  type="button"
-                  class="ticket-stub"
-                  :aria-label="`Retake ${quiz.title}`"
-                  :aria-expanded="confirmingRetake === quiz.id"
-                  @click="confirmingRetake = confirmingRetake === quiz.id ? null : quiz.id"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M3 12a9 9 0 1 0 3-6.7" />
-                    <path d="M3 4v5h5" />
-                  </svg>
-                  Retake
-                </button>
-              </div>
+              <p class="quiz-result">
+                <span class="quiz-result-line">You got <strong>{{ quiz.latestResult.title }}</strong></span>
+                <span v-if="quiz.latestResult.subtitle" class="quiz-result-note">{{ quiz.latestResult.subtitle }}</span>
+              </p>
               <div v-if="confirmingRetake === quiz.id" class="retake-confirm" role="group" :aria-label="`Retake ${quiz.title}?`">
                 <p class="retake-question">
                   Retaking replaces your {{ quiz.latestResult.title }} result.
@@ -256,6 +225,36 @@ onMounted(loadPage)
                     Cancel
                   </button>
                 </div>
+              </div>
+              <div v-else class="card-actions card-actions--retry">
+                <RouterLink
+                  class="peach-button"
+                  :to="{ name: 'personality-result', params: { quizId: quiz.id } }"
+                >
+                  View result
+                </RouterLink>
+                <button
+                  type="button"
+                  class="peach-button peach-button--quiet retry-button"
+                  :aria-label="`Retake ${quiz.title}`"
+                  title="Retake"
+                  @click="confirmingRetake = quiz.id"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 12a9 9 0 1 0 3-6.7" />
+                    <path d="M3 4v5h5" />
+                  </svg>
+                </button>
               </div>
             </template>
             <RouterLink
@@ -670,118 +669,41 @@ onMounted(loadPage)
   background: var(--pq-quiet);
 }
 
-/* A gig ticket, with a perforated line and a notch cut out at each end of it. */
-.result-ticket {
-  --stub: 76px;
-  --notch: 18px;
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--stub);
-  margin-top: 0.75rem;
-  border: 1px solid var(--pq-border-strong);
-  border-radius: 12px;
-  background: var(--pq-result);
-}
-
-.result-ticket::before,
-.result-ticket::after {
-  position: absolute;
-  right: calc(var(--stub) - var(--notch) / 2);
-  width: var(--notch);
-  height: var(--notch);
-  border: 1px solid var(--pq-border-strong);
-  border-radius: 50%;
-  background: var(--ui-bg);
-  content: '';
-}
-
-.result-ticket::before {
-  top: calc(var(--notch) / -2 - 1px);
-  clip-path: inset(50% 0 0);
-}
-
-.result-ticket::after {
-  bottom: calc(var(--notch) / -2 - 1px);
-  clip-path: inset(0 0 50%);
-}
-
-.ticket-main {
+/* Just text under a thin line, so a taken quiz looks like the others. */
+.quiz-result {
   display: flex;
-  min-width: 0;
   flex-direction: column;
-  padding: 0.85rem 1.1rem 0.85rem 1rem;
-  border-radius: 11px 0 0 11px;
-  color: var(--pq-on-surface);
-  text-decoration: none;
+  gap: 0.15rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pq-line);
 }
 
-.ticket-label {
+.quiz-result-line {
   color: var(--pq-muted);
   font-family: var(--font-sans);
-  font-size: var(--text-caption);
-  font-weight: 600;
+  font-size: var(--text-small);
 }
 
-.ticket-title {
-  margin-top: 0.15rem;
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
+.quiz-result-line strong {
+  color: var(--pq-on-surface);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
 }
 
-.ticket-subtitle {
-  margin-top: 0.2rem;
+.quiz-result-note {
+  color: var(--pq-muted);
   font-family: var(--font-serif);
   font-size: var(--text-small);
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
-.ticket-cta {
-  margin-top: 0.6rem;
-  color: var(--pq-brown);
-  font-family: var(--font-sans);
-  font-size: var(--text-label);
-  font-weight: 600;
+/* View result takes the room, and Retake is a square icon button beside it. */
+.card-actions.card-actions--retry {
+  grid-template-columns: 1fr 55px;
 }
 
-.ticket-cta span {
-  display: inline-block;
-  transition: transform 160ms ease;
-}
-
-.ticket-main:hover .ticket-cta span {
-  transform: translateX(3px);
-}
-
-.ticket-stub {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  border: 0;
-  border-left: 2px dashed var(--pq-border-strong);
-  border-radius: 0 11px 11px 0;
-  color: var(--pq-on-surface);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 160ms ease;
-}
-
-.ticket-stub:hover,
-.ticket-stub[aria-expanded='true'] {
-  background: var(--pq-peach-hover);
-}
-
-.ticket-main:focus-visible,
-.ticket-stub:focus-visible {
-  outline: 3px solid var(--pq-focus);
-  outline-offset: -3px;
+.retry-button {
+  padding: 0;
 }
 
 .card-actions {
