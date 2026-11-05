@@ -29,7 +29,7 @@ describe("Your Music's Moods", () => {
     expect(groups.at(0).find('.group-share').text()).toBe('56%')
     expect(groups.at(0).find('.group-songs').text()).toContain('Melancholic 40%')
     expect(groups.at(0).find('.group-songs').text()).toContain('Bittersweet* 20%')
-    expect(card.text()).toContain('* Also counts partly as another mood.')
+    expect(card.text()).toContain('* Bittersweet counts partly toward another mood.')
   })
 
   it('notes where the moods come from', () => {
