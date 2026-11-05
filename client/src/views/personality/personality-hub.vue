@@ -603,7 +603,7 @@ onMounted(loadPage)
 
 .emphasis-text {
   font-family: var(--font-serif);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   font-weight: 600;
   line-height: 1.35;
 }
@@ -906,7 +906,7 @@ onMounted(loadPage)
 
 .type-tagline {
   margin-top: 0.35rem;
-  font-size: var(--text-lead);
+  font-size: var(--text-small);
   line-height: 1.4;
 }
 
@@ -915,7 +915,7 @@ onMounted(loadPage)
   padding-top: 1.1rem;
   border-top: 1px solid var(--pq-line);
   font-family: var(--font-serif);
-  font-size: var(--text-lead);
+  font-size: var(--text-small);
   line-height: 1.45;
 }
 
@@ -929,7 +929,7 @@ onMounted(loadPage)
 
 .insight-text {
   font-family: var(--font-serif);
-  font-size: var(--text-lead);
+  font-size: var(--text-small);
   line-height: 1.45;
 }
 
@@ -1279,7 +1279,7 @@ onMounted(loadPage)
 
 .patterns-loading .body-text,
 .patterns-empty .body-text {
-  font-size: var(--text-lead);
+  font-size: var(--text-small);
   line-height: 1.45;
 }
 
@@ -1374,7 +1374,7 @@ onMounted(loadPage)
 
 .song-name {
   font-family: var(--font-sans);
-  font-size: var(--text-body);
+  font-size: var(--text-lead);
   font-weight: 600;
   line-height: 1.25;
 }
