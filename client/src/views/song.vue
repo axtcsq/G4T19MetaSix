@@ -431,7 +431,6 @@ function back() {
 .song-heading .page-title {
   margin: 0;
   overflow-wrap: anywhere;
-  font-size: clamp(28px, 3.2vw, 42px);
   line-height: 1.12;
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -448,7 +447,7 @@ function back() {
 .album,
 .plays {
   color: var(--ui-text-muted);
-  font-size: 1.05rem;
+  font-size: var(--text-small);
 }
 .spotify {
   margin-top: 14px;
@@ -463,18 +462,18 @@ function back() {
 }
 .prose {
   margin: 8px 0 0;
-  font: 1.1rem / 1.45 var(--font-serif);
+  font: var(--text-lead) / 1.45 var(--font-serif);
 }
 .caption,
 .basis {
   margin: 8px 0 0;
   color: var(--ui-text-muted);
-  font: 0.9rem / 1.4 var(--font-sans);
+  font: var(--text-label) / 1.4 var(--font-sans);
 }
 .reading-label {
   margin: 0 0 16px;
   color: var(--ui-text-muted);
-  font: 500 1rem / 1.4 var(--font-sans);
+  font: 500 var(--text-small) / 1.4 var(--font-sans);
 }
 .value {
   font-family: var(--font-sans);
@@ -507,7 +506,7 @@ function back() {
 }
 .summary-line {
   margin: 0;
-  font: 1.1rem / 1.4 var(--font-serif);
+  font: var(--text-lead) / 1.4 var(--font-serif);
 }
 .readings,
 .panels {
@@ -524,7 +523,7 @@ function back() {
 .agreement {
   margin: -4px 0 0;
   color: var(--ui-text-muted);
-  font: 1.05rem / 1.4 var(--font-serif);
+  font: var(--text-small) / 1.4 var(--font-serif);
 }
 .agreement strong {
   color: var(--ui-text);
@@ -543,7 +542,7 @@ function back() {
 .cell {
   padding: 8px 10px;
   color: var(--ui-text-muted);
-  font: 600 0.75rem / 1.2 var(--font-sans);
+  font: 600 var(--text-caption) / 1.2 var(--font-sans);
 }
 .top-left {
   background: color-mix(in srgb, var(--color-mood-angry-500) 10%, transparent);
@@ -591,7 +590,7 @@ function back() {
   justify-content: space-between;
   margin-top: 6px;
   color: var(--ui-text-muted);
-  font: 0.75rem / 1.2 var(--font-sans);
+  font: var(--text-caption) / 1.2 var(--font-sans);
 }
 .legend {
   display: flex;
@@ -629,7 +628,7 @@ function back() {
   display: flex;
   justify-content: space-between;
   margin-top: 12px;
-  font: 600 0.9rem / 1.3 var(--font-sans);
+  font: 600 var(--text-label) / 1.3 var(--font-sans);
 }
 .bars .bar-head {
   margin-top: 0;
@@ -652,7 +651,7 @@ function back() {
   justify-content: space-between;
   margin-top: 4px;
   color: var(--ui-text-muted);
-  font: 0.75rem / 1.2 var(--font-sans);
+  font: var(--text-caption) / 1.2 var(--font-sans);
 }
 
 /* Lyrics */
@@ -663,7 +662,7 @@ function back() {
   border-radius: 999px;
   color: var(--color-mood-anxious-800);
   background: color-mix(in srgb, var(--color-mood-anxious-500) 16%, transparent);
-  font: 700 0.8rem / 1.4 var(--font-sans);
+  font: 700 var(--text-caption) / 1.4 var(--font-sans);
 }
 .emotions {
   display: grid;
@@ -677,7 +676,7 @@ function back() {
   grid-template-columns: 90px 1fr 44px;
   align-items: center;
   gap: 12px;
-  font: 0.9rem / 1.3 var(--font-sans);
+  font: var(--text-label) / 1.3 var(--font-sans);
 }
 .emotion-name {
   text-transform: capitalize;
@@ -705,12 +704,12 @@ function back() {
 }
 .quote-title {
   margin: 0 0 8px;
-  font: 600 0.9rem / 1.3 var(--font-sans);
+  font: 600 var(--text-label) / 1.3 var(--font-sans);
 }
 blockquote {
   margin: 0 0 10px;
   padding-left: 12px;
-  font: italic 1.1rem / 1.4 var(--font-serif);
+  font: italic var(--text-lead) / 1.4 var(--font-serif);
 }
 
 .panels {
@@ -732,7 +731,7 @@ blockquote {
   gap: 16px;
   cursor: pointer;
   list-style: none;
-  font: 600 1.2rem / 1.4 var(--font-sans);
+  font: 600 var(--text-body) / 1.4 var(--font-sans);
   transition: color 180ms ease;
 }
 .analysis-details > summary::-webkit-details-marker {
@@ -741,7 +740,7 @@ blockquote {
 .analysis-details > summary::after {
   content: '+';
   margin-left: auto;
-  font-size: 24px;
+  font-size: var(--text-subheader);
 }
 .analysis-details[open] > summary::after {
   content: '\2212';
