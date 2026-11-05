@@ -448,11 +448,20 @@ onMounted(() => {
                 <div class="track-list" :class="{ 'is-carousel': !showAllSelectedListens, 'is-all-tracks': showAllSelectedListens }" tabindex="0" aria-label="Song cards; scroll horizontally to browse">
                     <!-- Keep Spotify artwork and song mood links separate. -->
                     <article v-for="(item, index) in selectedListens" :key="`${item.played_at}-${index}`" class="track-card">
-                      <a class="track-link" :href="item.track?.external_urls?.spotify || '#'" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${trackName(item)} on Spotify (opens new tab)`">
+                      <RouterLink
+                        v-if="item.track?.id"
+                        class="track-link"
+                        :to="{ name: 'song', params: { id: item.track.id }, query: { from: 'calendar' } }"
+                        :aria-label="`View ${trackName(item)} song analysis`"
+                      >
                         <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
                         <span v-else class="track-art">♫</span>
-                      </a>
-                      <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="`/song/${item.track.id}`"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
+                      </RouterLink>
+                      <span v-else class="track-link" aria-hidden="true">
+                        <img v-if="item.track?.album?.images?.[0]?.url" :src="item.track.album.images[item.track.album.images.length > 1 ? 1 : 0].url" alt="" />
+                        <span v-else class="track-art">♫</span>
+                      </span>
+                      <span class="track-copy"><RouterLink v-if="item.track?.id" class="title-link" :to="{ name: 'song', params: { id: item.track.id }, query: { from: 'calendar' } }"><strong>{{ trackName(item) }}</strong><span class="sr-only">, see its mood</span></RouterLink><strong v-else>{{ trackName(item) }}</strong><small>{{ trackArtists(item) }}</small></span>
                       <MoodTag :track-id="item.track?.id" size="sm" />
                       <span class="play-time">{{ new Date(item.played_at).toLocaleTimeString('en-SG', { hour: 'numeric', minute: '2-digit' }) }}</span>
                     </article>
