@@ -173,7 +173,7 @@ const showcase = [
     id: 'listen',
     eyebrow: 'Listening Room',
     title: 'Play your music while you reflect',
-    text: 'Connect Spotify to see your top tracks, spin them on the turntable and keep them playing as you browse.',
+    text: 'Sign in with Spotify to see your top tracks, spin them on the turntable and keep them playing as you browse.',
     to: '/listen',
     link: 'Step into the room',
   },

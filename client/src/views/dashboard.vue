@@ -23,7 +23,7 @@ const periods = [
 ]
 const period = ref('weekly')
 const spotify = useSpotifyHistory()
-const { connected, source, busy, history, historyLoading, historyError, error } = spotify
+const { connected, source, history, historyLoading, historyError, error } = spotify
 const auth = useAuthStore()
 const historyLabel = computed(() =>
   source.value !== 'stored'
@@ -108,11 +108,8 @@ watch(
         </div>
       </div>
       <TodayStory v-if="auth.user" />
-      <p v-if="!connected">
-        Connect Spotify to see your music at a glance.
-        <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">
-          Connect Spotify
-        </button>
+      <p v-if="!connected" class="spotify-signin-note">
+        Sign out and sign in with Spotify to see your listening history here.
       </p>
       <p v-if="error" role="alert">{{ error }}</p>
       <RecordLoader v-if="historyLoading" label="Loading your listening history…" />

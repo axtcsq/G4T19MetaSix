@@ -12,6 +12,7 @@ defineOptions({ name: 'SongMood' })
 
 const route = useRoute()
 const router = useRouter()
+const fromCalendar = computed(() => route.query.from === 'calendar')
 const song = ref(null)
 const loading = ref(true)
 const error = ref('')
@@ -121,6 +122,10 @@ const lyricsWhy = computed(() => {
 })
 
 function back() {
+  if (fromCalendar.value) {
+    router.push('/calendar')
+    return
+  }
   if (window.history.state?.back) router.back()
   else router.push('/dashboard')
 }
@@ -129,7 +134,9 @@ function back() {
 <template>
   <div class="song-page">
     <main class="song-shell">
-      <button type="button" class="back glass-text" @click="back">← Back</button>
+      <button type="button" class="back glass-text" @click="back">
+        {{ fromCalendar ? '← Back to calendar' : '← Back' }}
+      </button>
 
       <RecordLoader v-if="loading" label="Reading the song…" />
       <p v-else-if="error" class="status" role="alert">{{ error }}</p>
@@ -203,13 +210,13 @@ function back() {
               <figure
                 class="plane"
                 role="img"
-                :aria-label="`Positivity ${pct(blend.valence)} out of 100, energy ${pct(song.energy)} out of 100`"
+                :aria-label="`Mood map. Positivity ${pct(blend.valence)} out of 100, energy ${pct(song.energy)} out of 100. Left is negative, right is positive, bottom is calm, and top is intense.`"
               >
                 <!-- Positions, not verdicts: a loud sad song sits top-left but isn't tense. -->
-                <span class="cell top-left">Negative, intense</span>
-                <span class="cell top-right">Positive, intense</span>
-                <span class="cell bottom-left">Negative, calm</span>
-                <span class="cell bottom-right">Positive, calm</span>
+                <span class="quadrant quadrant-negative-intense" />
+                <span class="quadrant quadrant-positive-intense" />
+                <span class="quadrant quadrant-negative-calm" />
+                <span class="quadrant quadrant-positive-calm" />
                 <span
                   v-if="showSoundDot"
                   class="dot dot-sound"
@@ -230,7 +237,7 @@ function back() {
                 <span>← Negative</span><span>Positivity</span><span>Positive →</span>
               </div>
               <p class="caption">
-                Up and down is energy, from calm at the bottom to intense at the top.
+                Tinted regions show mood families; marker styles distinguish sound, lyrics and the combined mood.
               </p>
               <p v-if="blend.lyrics != null" class="caption legend">
                 <span v-if="showSoundDot"><span class="key dot-sound" /> sound only</span>
@@ -540,45 +547,40 @@ function back() {
   overflow: hidden;
   border-radius: 2px;
 }
-.cell {
-  padding: 8px 10px;
-  color: var(--ui-text-muted);
-  font: 600 var(--text-caption) / 1.2 var(--font-sans);
+.quadrant {
+  min-width: 0;
+  min-height: 0;
 }
-.top-left {
-  background: color-mix(in srgb, var(--color-mood-angry-500) 10%, transparent);
+.quadrant-negative-intense {
+  background: color-mix(in srgb, var(--color-mood-angry-500) 8%, var(--ui-bg-elevated));
 }
-.top-right {
-  background: color-mix(in srgb, var(--color-mood-happy-500) 14%, transparent);
-  text-align: right;
+.quadrant-positive-intense {
+  background: color-mix(in srgb, var(--color-mood-happy-500) 8%, var(--ui-bg-elevated));
 }
-.bottom-left {
-  display: flex;
-  align-items: flex-end;
-  background: color-mix(in srgb, var(--color-mood-sad-500) 10%, transparent);
+.quadrant-negative-calm {
+  background: color-mix(in srgb, var(--color-mood-sad-500) 8%, var(--ui-bg-elevated));
 }
-.bottom-right {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  background: color-mix(in srgb, var(--color-mood-relaxed-500) 12%, transparent);
+.quadrant-positive-calm {
+  background: color-mix(in srgb, var(--color-mood-relaxed-500) 8%, var(--ui-bg-elevated));
 }
 .dot {
   position: absolute;
+  z-index: 1;
   width: 18px;
   height: 18px;
   border-radius: 50%;
   transform: translate(-50%, 50%);
 }
 .dot-song {
-  border: 3px solid #fff;
+  border: 3px solid var(--ui-bg-elevated);
   background: var(--mood);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-text) 28%, transparent);
 }
 .dot-words {
   width: 12px;
   height: 12px;
   border: 2px solid var(--color-lavender);
-  background: color-mix(in srgb, var(--color-lavender) 35%, white);
+  background: color-mix(in srgb, var(--color-lavender) 24%, var(--ui-bg-elevated));
 }
 .dot-sound {
   width: 12px;
