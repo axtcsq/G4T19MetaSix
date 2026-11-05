@@ -356,7 +356,7 @@ html.has-dock body:not(:has(.site-footer)) {
   backdrop-filter: blur(18px) saturate(1.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   color: var(--ui-text);
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .listening-dock::before,
 .listening-dock::after {
@@ -459,7 +459,7 @@ span {
 }
 span {
   margin-top: 4px;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 /* The song's mood sits on its own row, lined up under the title. */
 .dock-mood {
@@ -495,7 +495,7 @@ span {
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.72);
   box-shadow: none;
-  font-size: 10.5px;
+  font-size: var(--text-caption);
   font-weight: 600;
   line-height: 1.35;
   white-space: normal;
@@ -530,7 +530,7 @@ button {
   border-radius: 10px;
   color: inherit;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--text-caption);
 }
 .dock-text:hover:not(:disabled) {
   background: rgba(127, 127, 127, 0.16);
@@ -547,7 +547,7 @@ button {
   flex-basis: 100%;
   gap: 8px;
   align-items: center;
-  font-size: 11px;
+  font-size: var(--text-caption);
   font-variant-numeric: tabular-nums;
 }
 .dock-seek span {

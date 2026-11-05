@@ -158,7 +158,7 @@ function disposeModel(model) {
 
 .cassette-viewer:active { cursor: grabbing; }
 canvas { display: block; width: 100%; height: 100%; outline: none; }
-.viewer-status { position: absolute; right: 0; bottom: 0; left: 0; color: #8b7c70; font-size: 0.72rem; text-align: center; }
+.viewer-status { position: absolute; right: 0; bottom: 0; left: 0; color: #8b7c70; font-size: var(--text-caption); text-align: center; }
 
 @media (max-width: 768px) {
   .cassette-viewer { height: 260px; min-height: 0; }

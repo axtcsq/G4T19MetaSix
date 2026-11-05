@@ -97,7 +97,7 @@ function backToTop() {
   color: var(--footer-text);
   background: var(--footer-bg);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--text-label);
 }
 
 :global(.dark .site-footer) {
@@ -142,7 +142,7 @@ function backToTop() {
   margin-top: 0.5rem;
   color: var(--footer-muted);
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-small);
   line-height: 1.4;
 }
 
@@ -154,7 +154,7 @@ function backToTop() {
 .group-title {
   margin-bottom: 0.6rem;
   color: var(--footer-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -191,7 +191,7 @@ function backToTop() {
   min-height: 56px;
   border-top: 1px solid var(--footer-line);
   color: var(--footer-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
 }
 
 .footer-bottom a {

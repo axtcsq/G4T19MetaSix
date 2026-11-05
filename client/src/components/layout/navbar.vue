@@ -329,7 +329,7 @@ watch(
   flex-shrink: 0;
   white-space: nowrap;
   color: #625a53;
-  font-size: 0.94rem;
+  font-size: var(--text-small);
   font-weight: 600;
   text-decoration: none;
   transition: color 160ms ease;
@@ -501,7 +501,7 @@ watch(
   padding: 12px 10px;
   border-radius: 10px;
   color: #625a53;
-  font-size: 1rem;
+  font-size: var(--text-small);
   font-weight: 600;
   text-decoration: none;
 }
@@ -614,7 +614,7 @@ watch(
   .site-header-landing .header-story { display: none; }
   .site-header-landing .header-inner { gap: 8px; }
   .site-header-landing .brand-group { gap: 6px; }
-  .site-header-landing .header-cta { padding-inline: 10px; font-size: 0.8rem !important; }
+  .site-header-landing .header-cta { padding-inline: 10px; font-size: var(--text-label) !important; }
 
 }
 </style>

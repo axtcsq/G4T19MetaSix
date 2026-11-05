@@ -148,15 +148,15 @@ const details = computed(() => {
   gap: 6px;
   max-width: 100%;
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: var(--text-small);
   font-style: italic;
   line-height: 1.4;
 }
 .mood-tag--sm {
-  font-size: 14px;
+  font-size: var(--text-label);
 }
 .mood-tag--lg {
-  font-size: 18px;
+  font-size: var(--text-lead);
 }
 .mood-tag-link {
   display: inline-flex;
