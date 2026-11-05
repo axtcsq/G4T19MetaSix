@@ -186,14 +186,6 @@ watch(
             <div>
               <h2 id="music-heading">Most Played in Returned History</h2>
             </div>
-            <a
-              href="https://open.spotify.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="spotify-link"
-              ><img src="@/assets/images/spotify-logo.webp" alt="" width="18" height="18" />Open
-              Spotify <span aria-hidden="true">↗</span></a
-            >
           </div>
           <div class="music-layout">
             <article class="artists-panel">
@@ -710,10 +702,6 @@ watch(
     0 0 0 7px var(--dash-rule),
     0 14px 30px rgb(0 0 0 / 20%);
   animation: vinyl-turn 6s linear infinite;
-}
-/* Room for the rim above the hint under the clock. */
-.habits-layout :deep(.hour-clock) {
-  margin-bottom: 22px;
 }
 .motion-paused .habits-layout :deep(:is(.hour-clock, .genre-disc)) {
   animation-play-state: paused;

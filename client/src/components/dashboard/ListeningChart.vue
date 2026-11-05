@@ -62,16 +62,6 @@ function hourWedge(hour, value) {
   ].join(' ')
 }
 
-const clockLabels = [
-  { text: 'Midnight', hour: 0 },
-  { text: '6 am', hour: 6 },
-  { text: 'Noon', hour: 12 },
-  { text: '6 pm', hour: 18 },
-].map((label) => {
-  const [x, y] = clockPoint(CLOCK_OUTER + 12, label.hour).split(' ')
-  return { ...label, x, y }
-})
-
 </script>
 <template>
   <div class="listening-chart" :class="`chart-${type}`">
@@ -121,12 +111,15 @@ const clockLabels = [
       </p>
     </template>
     <template v-else-if="type === 'hours'">
-      <svg
-        class="hour-clock"
-        viewBox="0 0 240 240"
-        role="group"
-        :aria-label="`Recorded plays across 24 hours, drawn as a clock with midnight at the top. Busiest at ${formatHour(peakHour)}. Longer wedges mean more recorded plays.`"
-      >
+      <div class="hour-clock-wrap">
+        <span class="clock-label clock-label--midnight" aria-hidden="true">Midnight</span>
+        <span class="clock-label clock-label--six-pm" aria-hidden="true">6 pm</span>
+        <svg
+          class="hour-clock"
+          viewBox="0 0 240 240"
+          role="group"
+          :aria-label="`Recorded plays across 24 hours, drawn as a clock with midnight at the top. Busiest at ${formatHour(peakHour)}. Longer wedges mean more recorded plays.`"
+        >
         <circle
           v-for="radius in [CLOCK_INNER, 69, CLOCK_OUTER]"
           :key="radius"
@@ -150,23 +143,16 @@ const clockLabels = [
             @click="selectedHour = i"
           />
         </g>
-        <text
-          v-for="label in clockLabels"
-          :key="label.text"
-          class="clock-label"
-          :x="label.x"
-          :y="label.y"
-          aria-hidden="true"
-        >
-          {{ label.text }}
-        </text>
         <text class="clock-centre-label" :x="CLOCK_CENTRE" :y="CLOCK_CENTRE - 5" aria-hidden="true">
           {{ selectedHour === null ? 'peak' : 'plays' }}
         </text>
         <text class="clock-centre-value" :x="CLOCK_CENTRE" :y="CLOCK_CENTRE + 12" aria-hidden="true">
           {{ selectedHour === null ? formatHour(peakHour) : data.hourly[selectedHour] }}
         </text>
-      </svg>
+        </svg>
+        <span class="clock-label clock-label--six-am" aria-hidden="true">6 am</span>
+        <span class="clock-label clock-label--noon" aria-hidden="true">Noon</span>
+      </div>
       <p class="calendar-readout" aria-live="polite">
         {{
           selectedHour === null
@@ -290,10 +276,28 @@ const clockLabels = [
 /* The wedges grow out from the middle when the chart appears or the period changes; the hand turns round the same centre. */
 .hour-clock {
   display: block;
-  width: min(100%, 320px);
-  margin: 0 auto;
+  width: 100%;
   overflow: visible;
 }
+.hour-clock-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 260px) minmax(0, 1fr);
+  grid-template-rows: 28px auto 28px;
+  align-items: center;
+  justify-items: center;
+  width: min(100%, 360px);
+  margin: 0 auto 22px;
+}
+.clock-label--midnight { grid-area: 1 / 2; }
+.clock-label--six-pm { grid-area: 2 / 1; }
+.clock-label--six-am { grid-area: 2 / 3; }
+.clock-label--noon { grid-area: 3 / 2; }
+.clock-label {
+  color: var(--dash-muted);
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+}
+.hour-clock { grid-area: 2 / 2; }
 .clock-ring {
   fill: none;
   stroke: var(--dash-rule);
@@ -327,12 +331,6 @@ const clockLabels = [
   stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-}
-.clock-label {
-  fill: var(--dash-muted);
-  font: var(--text-caption) var(--font-sans);
-  text-anchor: middle;
-  dominant-baseline: middle;
 }
 .clock-centre-label {
   fill: var(--dash-muted);

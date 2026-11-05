@@ -44,6 +44,10 @@ const emit = defineEmits(['retry', 'pin'])
 const searchInput = ref('')
 const searchQuery = ref('')
 
+watch(searchInput, (value) => {
+  if (!value) searchQuery.value = ''
+})
+
 const filteredEntries = computed(() => {
   const query = searchQuery.value.toLocaleLowerCase()
   if (!query) return props.entries

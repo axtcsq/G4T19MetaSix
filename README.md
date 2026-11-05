@@ -31,6 +31,13 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 - **Journal Helper:** Groq suggests a journal starting point from the prompt the user enters. The existing journal draft is not sent.
 - **Listening garden:** Shows recent listening with Singapore weather from Open-Meteo, refreshed every 15 minutes.
 
+## AI usage declaration
+
+- **Listening Room:** The vinyl player is a browser-rendered visual; Spotify handles search and playback.
+- **Creative features:** AI assisted development of the 3D models and piano note strings, and generation of dashboard flowers.
+- **Spotify API:** Spotify supplies account, track, and listening data. It does not generate music or analysis.
+- **Personality quizzes:** Quiz content and scoring are predefined. Groq can generate profile summaries from quiz results and listening patterns.
+
 ## Routes
 
 ### App pages
