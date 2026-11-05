@@ -78,6 +78,21 @@ describe('MetaFor Types tab', () => {
     expect(cards[1].text()).not.toContain('Your type')
   })
 
+  it('shows three types until Show all is pressed, like the quiz tabs', async () => {
+    getPersonalityTypes.mockResolvedValue(
+      ['a', 'b', 'c', 'd'].map((id) => ({ id, name: `Type ${id}`, tagline: '', description: '', traits: [] })),
+    )
+    const hub = await mountHub()
+    await typesTab(hub).trigger('click')
+    expect(hub.findAll('#outcomes-panel .outcome-card')).toHaveLength(3)
+
+    const showAll = hub.find('.show-more')
+    expect(showAll.text()).toContain('Show all 4 types')
+    await showAll.trigger('click')
+    expect(hub.findAll('#outcomes-panel .outcome-card')).toHaveLength(4)
+    expect(showAll.text()).toContain('Show fewer')
+  })
+
   it('goes back to a quiz when its tab is picked', async () => {
     const hub = await mountHub()
     await typesTab(hub).trigger('click')
@@ -91,5 +106,38 @@ describe('MetaFor Types tab', () => {
     const hub = await mountHub()
     expect(typesTab(hub)).toBeUndefined()
     expect(hub.text()).toContain('A result')
+  })
+})
+
+describe('Your result ticket', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    getPersonalityTypes.mockResolvedValue(TYPES)
+    getPersonality.mockResolvedValue(null)
+    getQuizzes.mockResolvedValue([{ ...QUIZZES[0], latestResult: { title: 'INFP', subtitle: 'The Dreamer' } }])
+  })
+
+  it('shows the result, with a link to it', async () => {
+    const hub = await mountHub()
+    const ticket = hub.find('.result-ticket')
+    expect(ticket.text()).toContain('You got')
+    expect(ticket.text()).toContain('INFP')
+    expect(ticket.text()).toContain('The Dreamer')
+    expect(ticket.find('.ticket-main').text()).toContain('View result')
+    expect(hub.text()).not.toContain('Get Started')
+  })
+
+  it('asks before retaking, from the stub', async () => {
+    const hub = await mountHub()
+    const stub = hub.find('.ticket-stub')
+    expect(stub.attributes('aria-label')).toBe('Retake Music MBTI')
+    expect(hub.find('.retake-confirm').exists()).toBe(false)
+
+    await stub.trigger('click')
+    expect(stub.attributes('aria-expanded')).toBe('true')
+    expect(hub.find('.retake-confirm').text()).toContain('Retaking replaces your INFP result.')
+
+    await stub.trigger('click')
+    expect(hub.find('.retake-confirm').exists()).toBe(false)
   })
 })
