@@ -159,6 +159,7 @@ export async function recommendSongs({ target, artists, mix, exclude = [], page 
     const { name, family } = trackMoods(songFeatures).sound;
     return {
       id: track.id,
+      uri: track.uri,
       name: track.name,
       artists: (track.artists ?? []).map((a) => a.name),
       imageUrl: track.album?.images?.[1]?.url ?? track.album?.images?.[0]?.url ?? null,

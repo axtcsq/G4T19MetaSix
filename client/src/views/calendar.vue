@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import SiteFooter from '@/components/layout/footer.vue'
 import MoodTag from '@/components/mood/MoodTag.vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
@@ -29,6 +30,11 @@ const shownRecommendationIds = new Set()
 let recommendationRequest = 0
 // The test account's plays come from our database, one month at a time.
 const storedHistory = usesStoredHistory()
+const router = useRouter()
+
+function playRecommendation(track) {
+  router.push({ name: 'listen', query: { track: track.id, uri: track.uri, title: track.name, artist: track.artists.join(', '), image: track.imageUrl || undefined } })
+}
 
 const monthLabel = computed(() => shownMonth.value.toLocaleDateString('en-SG', { month: 'long', year: 'numeric' }))
 const monthCells = computed(() => {
@@ -361,15 +367,14 @@ onMounted(loadData)
           <p v-if="recommendationsLoading" class="recommendation-status" role="status">Finding songs for you…</p>
           <p v-else-if="recommendationsError" class="recommendation-status" role="alert">{{ recommendationsError }}</p>
           <div v-else-if="recommendations.length" class="recommendation-list">
-            <!-- The title opens the song's mood page; the artwork and arrow open Spotify. -->
-            <article v-for="track in recommendations" :key="track.id" class="recommendation-card">
-              <a class="art-link" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+            <button v-for="track in recommendations" :key="track.id" type="button" class="recommendation-card" @click="playRecommendation(track)">
+              <span class="art-link" aria-hidden="true">
                 <img v-if="track.imageUrl" :src="track.imageUrl" alt="" />
                 <span v-else class="track-art">♫</span>
-              </a>
-              <span class="track-copy"><RouterLink class="title-link" :to="`/song/${track.id}`"><strong>{{ track.name }}</strong><span class="sr-only">, see its mood</span></RouterLink><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
-              <a class="recommendation-open" :href="track.spotifyUrl" target="_blank" rel="noopener noreferrer" :aria-label="`Open ${track.name} on Spotify (opens new tab)`">↗</a>
-            </article>
+              </span>
+              <span class="track-copy"><strong>{{ track.name }}</strong><small>{{ track.artists.join(', ') }}</small><small class="recommendation-source">{{ track.because }}</small><MoodTag :track-id="track.id" size="sm" :link="false" :hide-pending-lyrics="track.instrumental" /></span>
+              <span class="recommendation-open">Play song</span>
+            </button>
           </div>
           <p v-else-if="!recommendationTarget" class="recommendation-status">Listen history with analyzed song moods will help shape suggestions for this month.</p>
           <p v-else class="recommendation-status">No songs by similar artists matched the mood this time. Try refreshing for other artists.</p>
@@ -513,7 +518,7 @@ onMounted(loadData)
 .artist-chip { padding: 4px 9px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-weight: 700; }
 .recommendation-mood { flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 800; }
 .recommendation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-.recommendation-card { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); text-decoration: none; transition: border-color .16s ease, transform .16s ease; }
+.recommendation-card { display: flex; width: 100%; min-width: 0; align-items: center; gap: 10px; padding: 9px; border: 1px solid var(--ui-border); border-radius: 12px; color: inherit; background: var(--ui-bg-elevated); font: inherit; text-align: left; cursor: pointer; transition: border-color .16s ease, transform .16s ease; }
 .recommendation-card:hover { transform: translateY(-1px); border-color: var(--color-brand-300); }
 .recommendation-card img, .recommendation-card .track-art { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 8px; object-fit: cover; }
 .recommendation-card .track-copy { display: grid; min-width: 0; gap: 3px; }
@@ -521,7 +526,7 @@ onMounted(loadData)
 .recommendation-card .track-copy strong { font-size: .8rem; }
 .recommendation-card .track-copy small { color: var(--ui-text-muted); font-size: .7rem; }
 .recommendation-card .track-copy .recommendation-source { color: var(--calendar-accent); font-size: .65rem; font-weight: 700; }
-.recommendation-open { margin-left: auto; color: var(--calendar-accent); font-size: 1.1rem; }
+.recommendation-open { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; border-radius: 999px; color: var(--calendar-accent); background: var(--calendar-accent-soft); font-size: .72rem; font-weight: 700; }
 .recommendation-status { margin: 14px 0 0; color: var(--ui-text-muted); font-size: .85rem; }
 .calendar-shell { display: grid; width: 100%; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; margin: 24px auto 0; }
 .calendar-center { width: 100%; }
