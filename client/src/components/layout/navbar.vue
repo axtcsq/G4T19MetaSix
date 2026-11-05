@@ -9,9 +9,15 @@ defineOptions({ name: 'SiteNavbar' })
 const route = useRoute()
 const auth = useAuthStore()
 const isLanding = computed(() => route.path === '/')
-const isCalendarContext = computed(
-  () => route.path === '/calendar' || (route.name === 'song' && route.query.from === 'calendar'),
-)
+// A song page isn't in the menu, so it keeps the page it was opened from highlighted. The router
+// records that page in the browser's history, so it survives a refresh.
+const songOrigin = computed(() => {
+  if (route.name !== 'song') return null
+  if (route.query.from === 'calendar') return '/calendar'
+  const back = window.history.state?.back
+  return typeof back === 'string' ? back.split(/[?#]/)[0] : null
+})
+const currentPath = computed(() => songOrigin.value ?? route.path)
 // The sign-in page shows just the logo: nothing past it works until you log in.
 const isLogin = computed(() => route.path === '/login')
 const isListeningPage = computed(() => ['/dashboard', '/listen'].includes(route.path))
@@ -26,9 +32,7 @@ const links = [
 
 // A link stays highlighted on the pages under it, like a quiz under Personality.
 const isCurrent = (link) =>
-  route.path === link.to ||
-  route.path.startsWith(`${link.to}/`) ||
-  (link.to === '/calendar' && isCalendarContext.value)
+  currentPath.value === link.to || currentPath.value.startsWith(`${link.to}/`)
 
 // Keep the hidden menu measurable so it can reopen without layout shifts.
 const header = ref(null)
