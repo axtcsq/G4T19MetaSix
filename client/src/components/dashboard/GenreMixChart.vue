@@ -25,7 +25,7 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
     :class="{ 'is-paused': paused, 'has-selection': selected }"
   >
     <div class="genre-disc">
-      <svg viewBox="0 0 120 120" role="img" aria-label="Genre mix; percentages listed alongside">
+      <svg viewBox="0 0 120 120" role="img" aria-label="Genre mix; percentages listed below">
         <circle
           v-for="slice in slices"
           :key="slice.name"
@@ -79,12 +79,12 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
 .genre-mix {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(140px, 220px) minmax(0, 1fr);
   gap: 16px;
-  align-items: center;
+  justify-items: center;
 }
 .genre-disc {
   position: relative;
+  width: min(100%, 220px);
   aspect-ratio: 1;
   padding: 7%;
 }
@@ -137,6 +137,7 @@ circle {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #f6ece1;
   text-align: center;
   pointer-events: none;
 }
@@ -149,6 +150,10 @@ circle {
   overflow-wrap: anywhere;
 }
 ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 8px;
+  width: 100%;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -172,6 +177,7 @@ button[aria-pressed='true'] {
 }
 button strong {
   flex: 0 0 auto;
+  margin-left: auto;
 }
 .genre-dot {
   width: 10px;
