@@ -345,7 +345,6 @@ onMounted(() => {
             </div>
           </div>
           <div class="recommendation-actions">
-            <span v-if="recommendationTarget" class="recommendation-mood">{{ recommendationTarget === 'happy' ? 'Uplifting' : 'Calming' }}</span>
             <button
               v-if="recommendationTarget && recommendationArtists.length"
               type="button"

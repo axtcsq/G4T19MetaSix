@@ -53,6 +53,29 @@ describe('Mood river', () => {
     river.unmount()
   })
 
+  it('only numbers every fifth day of a long river, but keeps every day selectable', async () => {
+    getMoodInsights.mockResolvedValue({
+      days: [{ date: '2026-10-06', axes: { happy: 3, relaxed: 0, sad: 0, angry: 0, anxious: 0 } }],
+    })
+    const river = mount(MoodRiver, { props: { from: '2026-10-06', to: '2026-11-04' } })
+    await flushPromises()
+
+    const days = river.findAll('.river-day')
+    expect(days).toHaveLength(30)
+    expect(days.map((day) => day.text()).filter(Boolean)).toEqual([
+      '6',
+      '10',
+      '15',
+      '20',
+      '25',
+      '30',
+      '4',
+    ])
+    await days.at(1).trigger('click')
+    expect(river.find('.river-readout').text()).toContain('no analysed plays')
+    river.unmount()
+  })
+
   it('explains an empty river', async () => {
     getMoodInsights.mockResolvedValue({ days: [] })
     const river = mount(MoodRiver, { props: { from: '2026-10-19', to: '2026-10-20' } })

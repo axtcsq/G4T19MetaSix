@@ -26,10 +26,10 @@ export function getLatestResult(quizId) {
   return api.get(`${quizPath(quizId)}/result`)
 }
 
-export function getMoodMusic() {
-  return api.get('/api/quiz/mood-music')
+export function getMoodMusic(days) {
+  return api.get('/api/quiz/mood-music', { params: { days } })
 }
 
-export function getGenreMix() {
-  return api.get('/api/quiz/genre-mix')
+export function getGenreMix(days) {
+  return api.get('/api/quiz/genre-mix', { params: { days } })
 }
