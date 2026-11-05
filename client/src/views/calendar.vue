@@ -271,7 +271,7 @@ function listeningMoodFor(date) {
   }
   const winner = [...counts.values()].sort((a, b) => b.count - a.count)[0]
   const songMoodName = [...winner.names].sort((a, b) => b[1] - a[1])[0]?.[0]
-  return { family: winner.family, count: winner.count, total: readings.length, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
+  return { family: winner.family, name: songMoodName || musicMoodLabel[winner.family] || 'Mixed' }
 }
 function moodFaceType(mood) { return musicMoodType[mood] || mood }
 function moodFaceClass(mood) {
@@ -492,7 +492,6 @@ onMounted(() => {
                   <MoodFace :mood="moodFaceType(selectedListeningMood.family)" class="button-mood-face listening-face-svg" />
                 </span>
                 <span class="listening-mood-copy"><small>Most common music mood</small><strong>{{ selectedListeningMood.name }}</strong></span>
-                <span class="analyzed-count">{{ selectedListeningMood.count }} / {{ selectedListeningMood.total }} analyzed</span>
               </div>
               <p v-else-if="selectedListens.length" class="analysis-note">Mood analysis isn’t available for these songs yet.</p>
               <div v-if="selectedListens.length" class="listening-carousel" role="group" aria-roledescription="carousel" aria-label="Listening history">
@@ -626,7 +625,6 @@ onMounted(() => {
 .listening-mood-copy { display: grid; gap: 2px; }
 .listening-mood-copy small { color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .listening-mood-copy strong { font-family: var(--font-sans); font-size: var(--text-label); }
-.analyzed-count { margin-left: auto; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); text-align: right; }
 .analysis-note { margin: 0 0 12px; color: var(--ui-text-muted); font-family: var(--font-sans); font-size: var(--text-caption); }
 .mood-logs { display: grid; gap: 10px; }
 .mood-entry { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ui-bg-accented); }
