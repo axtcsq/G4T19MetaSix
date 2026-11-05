@@ -41,13 +41,19 @@ const mixedSongs = computed(() =>
 const source = computed(() =>
   props.data.lens === 'lyrics' ? 'From sound and lyrics' : 'From sound',
 )
+
+// A river needs at least two days to flow between.
+const singleDay = computed(() => props.dates.length === 1)
+const period = computed(() => (singleDay.value ? 'today' : `last ${props.dates.length} days`))
 </script>
 
 <template>
-  <div class="music-moods">
+  <div class="music-moods" :class="{ 'is-single-day': singleDay }">
     <div class="moods-copy">
       <h3 class="sub-header">Your Music’s Moods</h3>
-      <p class="source-note">{{ source }} · last 14 days · {{ data.plays }} plays</p>
+      <p class="source-note">
+        {{ source }} · {{ period }} · {{ data.plays }} {{ data.plays === 1 ? 'play' : 'plays' }}
+      </p>
 
       <section class="mood-breakdown" aria-labelledby="mood-breakdown-title">
         <h4 id="mood-breakdown-title" class="breakdown-title">What’s in each mood</h4>
@@ -78,8 +84,8 @@ const source = computed(() =>
       </section>
     </div>
 
-    <div class="moods-visual">
-      <MoodRiver v-if="dates.length" :from="dates[0]" :to="dates.at(-1)" />
+    <div v-if="dates.length > 1" class="moods-visual">
+      <MoodRiver :from="dates[0]" :to="dates.at(-1)" />
     </div>
   </div>
 </template>
@@ -90,6 +96,10 @@ const source = computed(() =>
   grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.6fr);
   align-items: stretch;
   gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.music-moods.is-single-day {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .sub-header {

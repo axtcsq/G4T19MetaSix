@@ -1,6 +1,4 @@
-// Turns the user's exported data into a PDF. Each page is drawn on a canvas first,
-// because PDF's built-in fonts can't show song titles in Japanese, Korean or other
-// non-Latin scripts, and the browser's fonts can.
+// Turns the user's exported data into a PDF
 
 const PAGE_WIDTH = 595
 const PAGE_HEIGHT = 842

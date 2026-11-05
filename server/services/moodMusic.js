@@ -5,17 +5,19 @@ import { journalAxes, journalMoodsByDay, mainAxis, mainMood } from "./overallMoo
 
 // Day by day, how the user felt vs how happy their music sounded, for the Mood × music chart on the Personality page.
 
-const DAYS = 14;
+const DEFAULT_DAYS = 14;
+// The periods the dashboard's filter can ask for: today, the last 7 days and the last 30.
+export const PERIOD_DAYS = [1, 7, 30];
 
 function localDateOf(date, timezone) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: timezone || "UTC" }).format(date);
 }
 
-// The last DAYS dates in the user's timezone, oldest first.
-function recentDates(timezone) {
+// The last `days` dates in the user's timezone, oldest first.
+export function recentDates(timezone, days = DEFAULT_DAYS, now = Date.now()) {
   const dates = [];
-  for (let back = DAYS - 1; back >= 0; back--) {
-    dates.push(localDateOf(new Date(Date.now() - back * 24 * 60 * 60 * 1000), timezone));
+  for (let back = days - 1; back >= 0; back--) {
+    dates.push(localDateOf(new Date(now - back * 24 * 60 * 60 * 1000), timezone));
   }
   return dates;
 }
@@ -58,7 +60,7 @@ async function musicMoodsByDay(userId, dates, useLyrics) {
 
 const TOP_MOODS = 3;
 
-// Summarise two weeks of music moods and compare them with journal moods.
+// Summarise a period's music moods and compare them with journal moods.
 export function summariseMusicMoods(rows, moods, useLyrics) {
   const plays = rows.reduce((sum, row) => sum + row.plays, 0);
   if (!plays) return null;
@@ -113,8 +115,8 @@ export function summariseMusicMoods(rows, moods, useLyrics) {
 
 const percent = (value) => (typeof value === "number" ? Math.round(value * 100) : null);
 
-export async function moodMusic(user) {
-  const dates = recentDates(user.timezone);
+export async function moodMusic(user, days = DEFAULT_DAYS) {
+  const dates = recentDates(user.timezone, days);
   const useLyrics = user.preferences?.moodLens !== "sound";
   const [music, moods, moodRows] = await Promise.all([
     happinessByDay(user._id, dates),
@@ -122,7 +124,7 @@ export async function moodMusic(user) {
     musicMoodsByDay(user._id, dates, useLyrics),
   ]);
 
-  const days = dates.map((date) => ({
+  const dayRows = dates.map((date) => ({
     date,
     // The mood logged most that day, and every mood logged.
     mood: mainMood(moods.get(date) ?? []),
@@ -134,10 +136,10 @@ export async function moodMusic(user) {
   // For each mood, how happy the music sounded on the days it was logged.
   const byMood = MOODS.map((mood) => {
     // A day counts for every mood logged on it.
-    const matching = days.filter((day) => day.moods.includes(mood) && day.happiness !== null);
+    const matching = dayRows.filter((day) => day.moods.includes(mood) && day.happiness !== null);
     const total = matching.reduce((sum, day) => sum + day.happiness, 0);
     return { mood, days: matching.length, happiness: matching.length ? Math.round(total / matching.length) : null };
   }).filter((entry) => entry.days > 0);
 
-  return { days, byMood, musicMoods: summariseMusicMoods(moodRows, moods, useLyrics) };
+  return { days: dayRows, byMood, musicMoods: summariseMusicMoods(moodRows, moods, useLyrics) };
 }

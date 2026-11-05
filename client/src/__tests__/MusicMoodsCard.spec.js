@@ -33,10 +33,24 @@ describe("Your Music's Moods", () => {
   })
 
   it('notes where the moods come from', () => {
-    const card = mount(MusicMoodsCard, { props: { data } })
+    const dates = Array.from({ length: 7 }, (_, day) => `2026-10-${10 + day}`)
+    const card = mount(MusicMoodsCard, {
+      props: { data, dates },
+      global: { stubs: { MoodRiver: true } },
+    })
 
-    expect(card.find('.source-note').text()).toBe(
-      'From sound and lyrics · last 14 days · 100 plays',
-    )
+    expect(card.find('.source-note').text()).toBe('From sound and lyrics · last 7 days · 100 plays')
+    expect(card.findComponent({ name: 'MoodRiver' }).exists()).toBe(true)
+  })
+
+  it('says today and leaves out the river for a single day', () => {
+    const card = mount(MusicMoodsCard, {
+      props: { data: { ...data, plays: 1 }, dates: ['2026-10-19'] },
+      global: { stubs: { MoodRiver: true } },
+    })
+
+    expect(card.find('.source-note').text()).toBe('From sound and lyrics · today · 1 play')
+    expect(card.findComponent({ name: 'MoodRiver' }).exists()).toBe(false)
+    expect(card.classes()).toContain('is-single-day')
   })
 })

@@ -2,6 +2,7 @@ import Listen from "../models/Listen.js";
 import Track from "../models/Track.js";
 import { genreWord } from "../data/genreWords.js";
 import { artistGenres } from "./artistGenres.js";
+import { recentDates } from "./moodMusic.js";
 
 // Build the listening profile used by quizzes and personality patterns.
 
@@ -29,6 +30,17 @@ function topGenre(rankedArtists, genres) {
   const [top, topWeight] = ranked[0];
   const named = ranked.find(([genre, weight]) => genreWord(genre) && weight >= topWeight * NAMED_GENRE_SHARE);
   return named?.[0] ?? top;
+}
+
+// The most played artists as [name, plays], counting every credited artist on a song.
+export function rankArtists(plays, tracksById) {
+  const artistPlays = new Map();
+  for (const play of plays) {
+    for (const artist of tracksById.get(play._id)?.artists ?? []) {
+      artistPlays.set(artist.name, (artistPlays.get(artist.name) ?? 0) + play.plays);
+    }
+  }
+  return [...artistPlays].sort((a, b) => b[1] - a[1]).slice(0, GENRE_ARTISTS);
 }
 
 // The Personality page hits several quiz routes at once and each needs the profile, so keep it briefly and share one build.
@@ -69,13 +81,6 @@ async function loadListeningProfile(user) {
   ).lean();
   const tracksById = new Map(tracks.map((track) => [track._id, track]));
 
-  const artistPlays = new Map();
-  for (const play of plays) {
-    for (const artist of tracksById.get(play._id)?.artists ?? []) {
-      artistPlays.set(artist.name, (artistPlays.get(artist.name) ?? 0) + play.plays);
-    }
-  }
-
   const topTracks = plays
     .map((play) => tracksById.get(play._id))
     .filter(Boolean)
@@ -89,7 +94,7 @@ async function loadListeningProfile(user) {
     }));
 
   const totalPlays = plays.reduce((sum, play) => sum + play.plays, 0);
-  const rankedArtists = [...artistPlays].sort((a, b) => b[1] - a[1]).slice(0, GENRE_ARTISTS);
+  const rankedArtists = rankArtists(plays, tracksById);
   const genres = await artistGenres(rankedArtists.map(([name]) => name));
   const topArtistNames = rankedArtists.slice(0, TOP_ARTISTS).map(([name]) => name);
 
@@ -110,6 +115,19 @@ async function loadListeningProfile(user) {
       plays: totalPlays,
     },
   };
+}
+
+// The genre mix of the last `days` dates in the user's timezone, for the dashboard's filter.
+export async function genreMixForDays(user, days) {
+  const [firstDate] = recentDates(user.timezone, days);
+  const plays = await Listen.aggregate([
+    { $match: { userId: user._id, localDate: { $gte: firstDate } } },
+    { $group: { _id: "$trackId", plays: { $sum: 1 } } },
+  ]);
+  const tracks = await Track.find({ _id: { $in: plays.map((play) => play._id) } }, { artists: 1 }).lean();
+  const rankedArtists = rankArtists(plays, new Map(tracks.map((track) => [track._id, track])));
+  const genres = await artistGenres(rankedArtists.map(([name]) => name));
+  return { ...genreMix(rankedArtists, genres), days };
 }
 
 // Split each artist's plays across their tags so extra tags don't add plays.

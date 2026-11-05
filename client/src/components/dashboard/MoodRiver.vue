@@ -69,6 +69,12 @@ const edgeInset = computed(() => ({
   paddingLeft: `calc(100% / ${Math.max(1, days.value.length) * 2})`,
 }))
 
+// Long rivers only number every fifth day, so the dates still fit on a phone.
+const riverDayLabel = (day, index) =>
+  days.value.length > 14 && index !== 0 && (index + 1) % 5 !== 0
+    ? ''
+    : Number(day.date.slice(-2))
+
 const dayLabel = (date) =>
   new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 
@@ -405,7 +411,7 @@ onBeforeUnmount(() => {
           @focus="selectDay(index)"
           @click="selectDay(index)"
         >
-          {{ Number(day.date.slice(-2)) }}
+          {{ riverDayLabel(day, index) }}
         </button>
       </div>
       <p class="river-readout" :style="edgeInset" aria-live="polite">{{ readout }}</p>
@@ -453,6 +459,10 @@ onBeforeUnmount(() => {
   margin-top: 6px;
 }
 .river-day {
+  /* Centred without wrapping, so a date wider than its column stays on one line. */
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
   padding: 2px 0;
   border-radius: 6px;
   color: var(--ui-text-muted);

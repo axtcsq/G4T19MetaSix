@@ -17,9 +17,9 @@ import { useAuthStore } from '@/stores/auth'
 defineOptions({ name: 'ListeningDashboard' })
 
 const periods = [
-  { value: 'daily', label: 'Today' },
-  { value: 'weekly', label: 'Last 7 days' },
-  { value: 'monthly', label: 'Last 30 days' },
+  { value: 'daily', label: 'Today', days: 1 },
+  { value: 'weekly', label: 'Last 7 days', days: 7 },
+  { value: 'monthly', label: 'Last 30 days', days: 30 },
 ]
 const period = ref('weekly')
 const spotify = useSpotifyHistory()
@@ -36,49 +36,51 @@ const data = computed(() => getDashboard(period.value, history.value))
 const motionPaused = ref(false)
 // Each top track's colour from the waveform, for its play bar in the list.
 const songColors = ref({})
-// The last two weeks of logged moods and music moods, for the mood insights.
+// The selected period's logged moods and music moods, for the mood insights.
 const moodMusic = ref(null)
+const moodMusicError = ref(false)
 const genreMix = ref(null)
 const genreError = ref(false)
-watch(
-  () => auth.user?.id,
-  async (id, _, onCleanup) => {
-    let active = true
-    onCleanup(() => {
-      active = false
-    })
-    genreMix.value = null
-    genreError.value = false
-    if (!id) return
-    try {
-      const result = await getGenreMix()
-      if (active) genreMix.value = result
-    } catch {
-      if (active) genreError.value = true
-    }
-  },
-  { immediate: true },
-)
-const moodMusicError = ref(false)
 onMounted(() => {
   spotify.initialize()
 })
 
-// Loaded once the signed-in user is known, which can be after the page mounts.
-watch(
-  () => auth.user?.id,
-  async (id) => {
-    moodMusic.value = null
-    moodMusicError.value = false
-    if (!id) return
-    try {
-      moodMusic.value = await getMoodMusic()
-    } catch {
-      moodMusicError.value = true
-    }
-  },
-  { immediate: true },
-)
+// Loads a card's data for the selected period, once the signed-in user is known, which can be
+// after the page mounts. Each period is fetched once, so switching back to one is instant.
+function loadForPeriod(fetchDays, result, failed) {
+  const fetched = new Map()
+  watch(
+    () => [auth.user?.id, period.value],
+    async ([id, selected], _, onCleanup) => {
+      let active = true
+      onCleanup(() => {
+        active = false
+      })
+      failed.value = false
+      const key = `${id}:${selected}`
+      result.value = fetched.get(key) ?? null
+      if (!id || result.value) return
+      try {
+        const data = await fetchDays(periods.find((option) => option.value === selected).days)
+        fetched.set(key, data)
+        if (active) result.value = data
+      } catch {
+        if (active) failed.value = true
+      }
+    },
+    { immediate: true },
+  )
+}
+loadForPeriod(getMoodMusic, moodMusic, moodMusicError)
+loadForPeriod(getGenreMix, genreMix, genreError)
+
+// Says what the server actually sent; a server without the filter always sends 30 days.
+const genrePeriod = computed(() => {
+  const days = genreMix.value
+    ? (genreMix.value.days ?? 30)
+    : periods.find((option) => option.value === period.value).days
+  return days === 1 ? 'Today' : `Last ${days} days`
+})
 </script>
 
 <template>
@@ -159,7 +161,7 @@ watch(
             </div>
           </aside>
         </section>
-        <!-- The moods the analysis heard. Always the last 14 days. -->
+        <!-- The moods the analysis heard, over the selected period. -->
         <section class="restored-charts mood-insights" aria-label="Mood insights">
           <p v-if="moodMusicError" class="unavailable-note">
             Your mood insights couldn’t load right now.
@@ -172,8 +174,8 @@ watch(
                 :dates="moodMusic.days.map((day) => day.date)"
               />
               <p v-else class="unavailable-note">
-                Your songs’ moods show here once MetaFor has listened to them, usually within a few
-                minutes of a sync.
+                No analysed plays in this period yet. Your songs’ moods show here once MetaFor has
+                listened to them, usually within a few minutes of a sync.
               </p>
             </article>
           </template>
@@ -191,14 +193,12 @@ watch(
             <article class="artists-panel">
               <div class="panel-heading">
                 <h3>Top Artists</h3>
-                <span>Recorded plays</span>
               </div>
               <ArtistRecords :artists="data.artists" :period="period" :paused="motionPaused" />
             </article>
             <article class="songs-panel">
               <div class="panel-heading">
                 <h3>Top Tracks</h3>
-                <span>Plays</span>
               </div>
               <TrackWaveform
                 :songs="data.songs"
@@ -269,7 +269,7 @@ watch(
           <article class="chart-panel genre-panel">
             <div class="panel-heading">
               <h3>Genre Mix</h3>
-              <span>Last 30 days</span>
+              <span class="genre-period">{{ genrePeriod }}</span>
             </div>
             <GenreMixChart v-if="genreMix" :data="genreMix" :paused="motionPaused" />
             <p v-else-if="genreError" class="unavailable-note" role="alert">

@@ -37,6 +37,8 @@ Spotify sign-in may be limited to accounts approved in the Spotify Developer app
 - **Creative features:** AI assisted development of the 3D models and piano note strings, and generation of dashboard flowers.
 - **Spotify API:** Spotify supplies account, track, and listening data. It does not generate music or analysis.
 - **Personality quizzes:** Quiz content and scoring are predefined. Groq can generate profile summaries from quiz results and listening patterns.
+- **Journal Drawing:** Users create drawings themselves with the in-app drawing canvas. The drawing is then saved as part of their journal entry
+
 
 ## Routes
 
@@ -88,7 +90,6 @@ All endpoints use the `/api` prefix. Unless noted, endpoints below require a sig
 | `GET /songs/:id/analysis` | Public | Read a song's mood analysis. |
 | `GET /moods` | Signed in | List the user's mood entries. |
 | `POST /moods` | Signed in | Create a mood entry. |
-| `GET /moods/streak` | Signed in | Read the current check-in streak. |
 | `GET /moods/:id` | Signed in | Read one mood entry. |
 | `PATCH /moods/:id` | Signed in | Edit a mood entry. |
 | `DELETE /moods/:id` | Signed in | Delete a mood entry. |

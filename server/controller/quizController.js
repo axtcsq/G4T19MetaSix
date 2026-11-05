@@ -8,8 +8,8 @@ import {
   retrieveLatestAttempts,
   savePersonality,
 } from "../models/QuizAttempt.js";
-import { buildListeningProfile } from "../services/listeningProfile.js";
-import { moodMusic } from "../services/moodMusic.js";
+import { buildListeningProfile, genreMixForDays } from "../services/listeningProfile.js";
+import { PERIOD_DAYS, moodMusic } from "../services/moodMusic.js";
 import { overallMood } from "../services/overallMood.js";
 import { analysePersonality } from "../services/quizLlm.js";
 import {
@@ -274,15 +274,27 @@ export async function getPersonality(req, res) {
   });
 }
 
-// GET /api/quiz/mood-music
+// GET /api/quiz/mood-music?days=7: without days, it covers the last 14 days.
 export async function getMoodMusic(req, res) {
-  res.json(await moodMusic(req.user));
+  if (req.query.days === undefined) return res.json(await moodMusic(req.user));
+  const days = Number(req.query.days);
+  if (!PERIOD_DAYS.includes(days)) {
+    return res.status(400).json({ error: `days must be one of ${PERIOD_DAYS.join(", ")}` });
+  }
+  res.json(await moodMusic(req.user, days));
 }
 
-// GET /api/quiz/genre-mix
+// GET /api/quiz/genre-mix?days=7: without days, it covers the listening profile's last 30 days.
 export async function getGenreMix(req, res) {
   res.set('Cache-Control', 'no-store');
-  res.json((await buildListeningProfile(req.user)).genreMix);
+  if (req.query.days === undefined) {
+    return res.json((await buildListeningProfile(req.user)).genreMix);
+  }
+  const days = Number(req.query.days);
+  if (!PERIOD_DAYS.includes(days)) {
+    return res.status(400).json({ error: `days must be one of ${PERIOD_DAYS.join(", ")}` });
+  }
+  res.json(await genreMixForDays(req.user, days));
 }
 
 // GET /api/quiz/:quizId
