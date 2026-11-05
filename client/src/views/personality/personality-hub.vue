@@ -626,7 +626,6 @@ onMounted(loadPage)
 }
 
 .quiz-description {
-  flex: 1;
   margin-top: 0.25rem;
   font-size: var(--text-lead);
   line-height: 1.45;
