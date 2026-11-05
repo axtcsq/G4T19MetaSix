@@ -34,10 +34,6 @@ export function clearHistory() {
   return api.delete('/api/me/history')
 }
 
-// Forgets the Spotify login and stops saving plays. Returns the updated user.
-export function disconnectSpotify() {
-  return api.post('/api/me/spotify/disconnect')
-}
 
 
 export function logout() {

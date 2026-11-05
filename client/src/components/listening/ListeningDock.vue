@@ -14,7 +14,7 @@ const formatTime = (ms) =>
 const progress = computed(() =>
   duration.value ? `${Math.min(100, (playPosition.value / duration.value) * 100)}%` : '0%',
 )
-// Without Spotify Premium the player never becomes ready, so the dock keeps to the simple version: the song, a link back to the room, and Disconnect.
+// Without Spotify Premium the dock shows the song and a link back to the room.
 const canPlay = computed(() => ready.value)
 // A short version of the room's message when the phone or Spotify app takes over playback, since the dock is the only player on other pages.
 const movedAway = computed(() => room.error.value.includes('another device'))
@@ -256,15 +256,6 @@ watch([dock, minimised], measure, { flush: 'post' })
           </svg>
         </button>
       </template>
-      <button
-        type="button"
-        class="dock-text"
-        :class="{ 'is-kept': !canPlay }"
-        :disabled="busy"
-        @click="room.disconnect"
-      >
-        Disconnect
-      </button>
     </template>
     <button
       v-else
@@ -512,22 +503,6 @@ button {
   width: auto;
   /* Even space above and below the single row. */
   padding-block: 12px;
-}
-.dock-text {
-  border: 0;
-  border-radius: 10px;
-  color: inherit;
-  background: transparent;
-  font-size: var(--text-caption);
-}
-.dock-text:hover:not(:disabled) {
-  background: rgba(127, 127, 127, 0.16);
-}
-/* On phones the song title needs the room; Disconnect stays in the Listening Room, which the title links to. */
-@media (max-width: 600px) {
-  .dock-text:not(.is-kept) {
-    display: none;
-  }
 }
 .dock-seek {
   display: flex;
