@@ -613,6 +613,8 @@ onMounted(loadPage)
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   column-gap: clamp(24px, 7vw, 97px);
+  /* Cancels the last row's card margin. */
+  margin-bottom: -58px;
 }
 
 /* Each card shares its row's tracks, so the text, result lines and buttons line
@@ -622,10 +624,6 @@ onMounted(loadPage)
   grid-row: span 5;
   grid-template-rows: subgrid;
   margin-bottom: 58px;
-}
-
-.quiz-card:last-child {
-  margin-bottom: 0;
 }
 
 .quiz-image {
@@ -737,6 +735,8 @@ onMounted(loadPage)
 
 .card-actions {
   display: grid;
+  /* A card's last row can be taller than its buttons, so they don't stretch. */
+  align-self: start;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
 }
