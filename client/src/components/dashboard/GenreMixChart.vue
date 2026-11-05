@@ -3,10 +3,11 @@ import { computed, ref } from 'vue'
 const props = defineProps({ data: { type: Object, required: true } })
 const selected = ref(null)
 const colors = ['#a65f46', '#827091', '#54766a', '#bd8b38', '#557f99', '#8b7770']
+const label = (name) => name.charAt(0).toLocaleUpperCase() + name.slice(1)
 const slices = computed(() => {
   let start = 0
   return props.data.genres.map((genre, index) => {
-    const slice = { ...genre, color: colors[index], offset: -start }
+    const slice = { ...genre, label: label(genre.name), color: colors[index], offset: -start }
     start += genre.share
     return slice
   })
@@ -25,16 +26,18 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
           r="44"
           fill="none"
           :stroke="slice.color"
-          stroke-width="20"
+          :stroke-width="selected === slice.name ? 23 : 20"
           pathLength="100"
           :stroke-dasharray="`${slice.share} ${100 - slice.share}`"
           :stroke-dashoffset="slice.offset"
           :style="{ opacity: selected && selected !== slice.name ? 0.3 : 1 }"
+          @pointerenter="selected = slice.name"
+          @pointerleave="selected = null"
         />
       </svg>
       <div class="disc-label" aria-hidden="true">
         <strong>{{ active ? `${Math.round(active.share)}%` : slices.length }}</strong
-        ><span>{{ active?.name ?? 'genres' }}</span>
+        ><span>{{ active?.label ?? 'Genres' }}</span>
       </div>
     </div>
     <ul>
@@ -49,7 +52,7 @@ const active = computed(() => slices.value.find((slice) => slice.name === select
           @blur="selected = null"
         >
           <span class="genre-dot" :style="{ background: slice.color }" />
-          <span>{{ slice.name }}</span
+          <span>{{ slice.label }}</span
           ><strong>{{ Math.round(slice.share) }}%</strong>
         </button>
       </li>
@@ -81,7 +84,8 @@ svg {
 circle {
   transition:
     opacity 180ms,
-    stroke-dasharray 450ms;
+    stroke-dasharray 450ms,
+    stroke-width 180ms;
   animation: genre-reveal 500ms ease-out;
 }
 @keyframes genre-reveal {

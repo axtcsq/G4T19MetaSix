@@ -19,6 +19,7 @@ const MOOD_NAME = {
   angry: 'Angry',
 }
 const HEIGHT = 190
+let canvasHeight = HEIGHT
 // Room under the streams, so the widest day doesn't touch the edge.
 const MARGIN = 10
 
@@ -27,7 +28,6 @@ const days = ref([])
 const loading = ref(true)
 const error = ref('')
 const selectedIndex = ref(null)
-const paused = ref(false)
 const reduced = ref(false)
 const inView = ref(true)
 
@@ -63,21 +63,11 @@ async function load() {
 
 const hasPlays = computed(() => days.value.some((day) => day.total > 0))
 
-// The river starts at the middle of the first day's column, so the text under
-// it is indented by half a column to line up with the river's edge.
+// The river starts at the middle of the first day's column, so the text under it is indented by half a column to line up with the river's edge.
 const edgeInset = computed(() => ({
   paddingLeft: `calc(100% / ${Math.max(1, days.value.length) * 2})`,
 }))
 
-// Each mood's share of every play in the river, for the legend.
-const legend = computed(() => {
-  const total = days.value.reduce((sum, day) => sum + day.total, 0) || 1
-  return AXES.map((axis, stream) => ({
-    axis,
-    name: MOOD_NAME[axis],
-    share: Math.round((days.value.reduce((sum, day) => sum + day.values[stream], 0) / total) * 100),
-  })).filter((entry) => entry.share > 0)
-})
 const dayLabel = (date) =>
   new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 
@@ -108,7 +98,7 @@ function buildShape(width) {
   const count = days.value.length
   const columnWidth = width / Math.max(1, count)
   const dayX = (index) => columnWidth * (index + 0.5)
-  const height = HEIGHT - MARGIN * 2
+  const height = canvasHeight - MARGIN * 2
   const smooth = (t) => t * t * (3 - 2 * t)
   const shares = days.value.map((day) => day.values.map((value) => (day.total ? value / day.total : 0)))
   const played = days.value.map((day) => day.total > 0)
@@ -141,8 +131,7 @@ function buildShape(width) {
     })
     columns.push({ x, bands, water })
   }
-  // Running totals of each stream's thickness, to place new water where the
-  // stream is widest. Days without plays get none.
+  // Running totals of each stream's thickness, to place new water where the stream is widest. Days without plays get none.
   const weights = AXES.map((_, stream) => {
     let sum = 0
     return columns.map((column) => (sum += column.bands[stream].thickness * column.water))
@@ -217,7 +206,7 @@ function readColours() {
 
 function syncPlayback() {
   if (!instance) return
-  if (paused.value || reduced.value || !inView.value || document.hidden) instance.noLoop()
+  if (reduced.value || !inView.value || document.hidden) instance.noLoop()
   else instance.loop()
 }
 
@@ -244,7 +233,8 @@ async function draw() {
   P5.disableFriendlyErrors = true
   instance = new P5((p) => {
     p.setup = () => {
-      const canvas = p.createCanvas(host.value.clientWidth, HEIGHT)
+      canvasHeight = Math.max(HEIGHT, host.value.clientHeight)
+      const canvas = p.createCanvas(host.value.clientWidth, canvasHeight)
       canvas.attribute('role', 'img')
       canvas.attribute(
         'aria-label',
@@ -270,7 +260,7 @@ async function draw() {
         p.endShape(p.CLOSE)
       })
 
-      const moving = !paused.value && !reduced.value
+      const moving = !reduced.value
       if (moving) spawn(p)
       particles = particles.filter((particle) => {
         if (moving) {
@@ -299,14 +289,14 @@ async function draw() {
         // Whole pixels, so neighbouring days meet without a seam.
         const left = Math.round(shape.dayX(index) - shape.columnWidth / 2)
         const right = Math.round(shape.dayX(index) + shape.columnWidth / 2)
-        p.rect(left, 0, right - left, HEIGHT)
+        p.rect(left, 0, right - left, canvasHeight)
       })
 
       if (selectedIndex.value !== null) {
         const x = shape.dayX(selectedIndex.value)
         p.stroke(255, 255, 255, 170)
         p.strokeWeight(1.5)
-        p.line(x, 0, x, HEIGHT)
+        p.line(x, 0, x, canvasHeight)
       }
     }
   }, host.value)
@@ -317,8 +307,12 @@ async function draw() {
   })
   intersectionObserver.observe(host.value)
   resizeObserver = new ResizeObserver(() => {
-    if (!instance || !host.value || host.value.clientWidth === instance.width) return
-    instance.resizeCanvas(host.value.clientWidth, HEIGHT)
+    if (!instance || !host.value) return
+    const width = host.value.clientWidth
+    const height = Math.max(HEIGHT, host.value.clientHeight)
+    if (width === instance.width && height === canvasHeight) return
+    canvasHeight = height
+    instance.resizeCanvas(width, height)
     buildShape(instance.width)
     fill(instance)
     instance.redraw()
@@ -343,11 +337,6 @@ function selectDay(index) {
 function clearSelection() {
   selectedIndex.value = null
   instance?.redraw()
-}
-
-function togglePause() {
-  paused.value = !paused.value
-  syncPlayback()
 }
 
 function onPreference(event) {
@@ -393,17 +382,6 @@ onBeforeUnmount(() => {
       Your river fills up once MetaFor has heard your songs, usually within a few minutes of a sync.
     </p>
     <template v-else>
-      <div class="river-head">
-        <button
-          v-if="!reduced"
-          type="button"
-          class="river-pause"
-          :aria-pressed="paused"
-          @click="togglePause"
-        >
-          {{ paused ? 'Let it flow' : 'Pause' }}
-        </button>
-      </div>
       <div
         ref="host"
         class="river-canvas"
@@ -429,13 +407,6 @@ onBeforeUnmount(() => {
           {{ Number(day.date.slice(-2)) }}
         </button>
       </div>
-      <!-- The streams' colours, in the same order as the river, top to bottom. -->
-      <p class="river-legend" :style="edgeInset" aria-hidden="true">
-        <span v-for="entry in legend" :key="entry.axis" class="legend-item">
-          <span class="legend-dot" :style="{ background: `var(--color-mood-${entry.axis}-500)` }" />
-          {{ entry.name }} {{ entry.share }}%
-        </span>
-      </p>
       <p class="river-readout" :style="edgeInset" aria-live="polite">{{ readout }}</p>
     </template>
   </div>
@@ -443,15 +414,12 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .mood-river {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
   font-family: var(--font-sans);
 }
-.river-head {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 6px;
-}
-.river-pause,
 .river-retry {
   padding: 4px 12px;
   border: 1px solid var(--ui-border);
@@ -463,14 +431,14 @@ onBeforeUnmount(() => {
     border-color 160ms ease,
     color 160ms ease;
 }
-.river-pause:hover,
 .river-retry:hover {
   border-color: var(--ui-primary);
   color: var(--ui-primary);
 }
 .river-canvas {
+  flex: 1;
   width: 100%;
-  height: 190px;
+  min-height: 190px;
   border-radius: 14px;
   overflow: hidden;
   cursor: crosshair;
@@ -482,24 +450,6 @@ onBeforeUnmount(() => {
 .river-days {
   display: grid;
   margin-top: 6px;
-}
-.river-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1rem;
-  margin-top: 10px;
-  font-size: var(--text-label);
-}
-.legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
-  border-radius: 50%;
 }
 .river-day {
   padding: 2px 0;
@@ -516,7 +466,6 @@ onBeforeUnmount(() => {
   font-weight: 700;
 }
 .river-day:focus-visible,
-.river-pause:focus-visible,
 .river-retry:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;

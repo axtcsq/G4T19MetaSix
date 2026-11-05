@@ -9,8 +9,6 @@ import MusicMoodsCard from '@/components/dashboard/MusicMoodsCard.vue'
 import ArtistRecords from '@/components/dashboard/ArtistRecords.vue'
 import TrackWaveform from '@/components/dashboard/TrackWaveform.vue'
 import GenreMixChart from '@/components/dashboard/GenreMixChart.vue'
-import MonthMoods from '@/components/dashboard/MonthMoods.vue'
-import CheckInStreak from '@/components/dashboard/CheckInStreak.vue'
 import { getMoodMusic, getGenreMix } from '@/api/quiz'
 import { getDashboard } from '@/data/spotifyDashboard'
 import { useSpotifyHistory } from '@/composables/useSpotifyHistory'
@@ -104,7 +102,6 @@ watch(
         </div>
       </div>
       <TodayStory v-if="auth.user" />
-      <CheckInStreak />
       <p v-if="!connected">
         Connect Spotify to see your music at a glance.
         <button class="art-pause glass-secondary" :disabled="busy" @click="spotify.connect">
@@ -235,17 +232,10 @@ watch(
                       >{{ song.title }}<span class="sr-only">, see its mood</span></RouterLink
                     ><a v-else :href="song.url" target="_blank" rel="noopener noreferrer"
                       >{{ song.title }}<span class="sr-only"> on Spotify (opens new tab)</span></a
-                    ><span
-                      class="play-bar"
-                      :style="{
-                        width: `${(song[period] / data.songs[0][period]) * 100}%`,
-                        background: songColors[song.id],
-                      }"
-                      aria-hidden="true"
-                    /><span>{{ song.artist }}</span>
+                    ><span>{{ song.artist }}</span>
                     <div class="song-mood"><MoodTag :track-id="song.id" size="sm" /></div>
                   </div>
-                  <strong class="play-count" :style="{ '--song': songColors[song.id] }"
+                  <strong class="play-count"
                     >{{ song[period]
                     }}<span>{{ song[period] === 1 ? 'play' : 'plays' }}</span></strong
                   >
@@ -278,7 +268,7 @@ watch(
             </div>
             <ListeningChart :key="`hours-${period}`" type="hours" :data="data" />
           </article>
-          <article class="chart-panel">
+          <article class="chart-panel genre-panel">
             <div class="panel-heading">
               <h3>Genre Mix</h3>
               <span>Last 30 days</span>
@@ -290,11 +280,7 @@ watch(
               }}
             </p>
           </article>
-          <article class="chart-panel">
-            <div class="panel-heading"><h3>Month at a Glance</h3></div>
-            <MonthMoods />
-          </article>
-          <article class="chart-panel">
+          <article class="chart-panel day-chart-panel">
             <div class="panel-heading"><h3>Recorded Plays by Day</h3></div>
             <ListeningChart
               :key="`days-${period}`"
@@ -357,8 +343,7 @@ watch(
   min-height: 100svh;
   font: var(--text-body)/1.5 var(--font-serif);
 }
-/* The shared tokens switch for dark mode; only the accents need lightening.
-   The garden draws its own sky. */
+/* The shared tokens switch for dark mode; only the accents need lightening. The garden draws its own sky. */
 :global(.dark .dashboard) {
   --dash-accent: var(--color-brand-300);
   --dash-meter: var(--color-brand-400);
@@ -590,11 +575,6 @@ watch(
   display: grid;
   flex-shrink: 0;
   justify-items: center;
-  min-width: 64px;
-  padding: 6px 12px;
-  border: 1px solid color-mix(in srgb, var(--song, var(--dash-meter)) 55%, transparent);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--song, var(--dash-meter)) 18%, transparent);
   color: var(--dash-ink);
   font: 600 24px/1 var(--font-serif);
   font-variant-numeric: tabular-nums;
@@ -681,6 +661,13 @@ watch(
   gap: 48px;
   margin-top: 32px;
 }
+.genre-panel {
+  border-left: 1px solid var(--dash-rule);
+  padding-left: clamp(24px, 3vw, 48px);
+}
+.day-chart-panel {
+  grid-column: 1 / -1;
+}
 .night-icon {
   display: none;
 }
@@ -747,6 +734,12 @@ watch(
   .habits-layout {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+  .genre-panel {
+    border-top: 1px solid var(--dash-rule);
+    border-left: 0;
+    padding-top: 28px;
+    padding-left: 0;
   }
   .section-intro {
     margin-top: 28px;
