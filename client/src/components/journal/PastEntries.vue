@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalDrawingNote from '@/components/journal/JournalDrawingNote.vue'
+import { moodPhotoUrl } from '@/api/moods'
 
 const MOOD_COLORS = {
   Sad: '#4389d1',
@@ -180,8 +181,19 @@ function formatDate(date) {
               </button>
             </header>
             <p>{{ entry.journal || 'No written reflection.' }}</p>
-            <!-- The Song of the Day and the drawing share one row under the writing, so the entry stays short. -->
-            <div v-if="entry.song || entry.drawing?.items?.length" class="entry-extras">
+            <!-- The photo, the Song of the Day and the drawing share one row under the writing, so the entry stays short. -->
+            <div
+              v-if="entry.song || entry.drawing?.items?.length || entry.hasPhoto"
+              class="entry-extras"
+            >
+              <!-- The photo, taped on like a print. -->
+              <figure v-if="entry.hasPhoto" class="entry-photo">
+                <img
+                  :src="moodPhotoUrl(entry._id)"
+                  :alt="'Photo from ' + formatDate(entry.createdAt)"
+                  loading="lazy"
+                />
+              </figure>
               <!-- The Song of the Day, clipped to the page like a ticket stub. -->
               <div v-if="entry.song" class="entry-song">
                 <img v-if="entry.song.imageUrl" class="entry-song-cover" :src="entry.song.imageUrl" alt="" />
@@ -376,22 +388,59 @@ function formatDate(date) {
   transform: rotate(-5deg);
 }
 
-/* Place the song and drawing side by side, wrapping on narrow screens. */
+/* The photo, song and drawing share one row, so the entry stays short; the
+   song gives way to the other two, and they wrap on narrow screens. */
 .entry-extras {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
   gap: 28px 24px;
   margin-top: 24px;
   white-space: normal;
 }
 .entry-drawing {
+  flex: none;
+  width: min(200px, 100%);
   margin-left: auto;
+}
+.entry-drawing :deep(canvas) {
+  height: 120px;
+}
+
+/* A white-bordered print with a strip of tape, tilted the other way to the
+   song. */
+.entry-photo {
+  position: relative;
+  flex: none;
+  width: min(190px, 100%);
+  margin: 0;
+  padding: 8px 8px 22px;
+  background: #fff;
+  box-shadow: 2px 7px 12px #3a2b2426;
+  transform: rotate(1.5deg);
+}
+.entry-photo::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 72px;
+  height: 22px;
+  background: rgb(240 228 196 / 80%);
+  transform: translateX(-50%) rotate(-3deg);
+}
+.entry-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #eee6da;
 }
 
 .entry-song {
   display: flex;
+  flex: 0 1 auto;
   width: fit-content;
+  min-width: 0;
   max-width: 100%;
   align-items: center;
   gap: 12px;
@@ -424,13 +473,15 @@ function formatDate(date) {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+/* A long title wraps onto a second line before it's cut short. */
 .entry-song-title {
+  display: -webkit-box;
   overflow: hidden;
   color: #313c50;
   font-size: var(--text-small);
   font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .entry-song-title:hover {
   color: #b0573f;
@@ -475,6 +526,12 @@ function formatDate(date) {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   cursor: auto;
+}
+
+@media (max-width: 760px) {
+  .entry-extras {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 600px) {

@@ -8,6 +8,7 @@ import MoodFace from '@/components/journal/MoodFace.vue'
 import JournalCanvas from '@/components/journal/JournalCanvas.vue'
 import PastEntries from '@/components/journal/PastEntries.vue'
 import JournalSongPicker from '@/components/journal/JournalSongPicker.vue'
+import JournalPhotoPicker from '@/components/journal/JournalPhotoPicker.vue'
 import { useTodayMoodStore } from '@/stores/todayMood'
 import { useAuthStore } from '@/stores/auth'
 import { updateSettings } from '@/api/auth'
@@ -20,6 +21,7 @@ const showHistory = ref(window.location.hash === '#past-entries' || typeof route
 const focusEntryId = computed(() => typeof route.query.entryId === 'string' ? route.query.entryId : '')
 const showDrawing = ref(false)
 const showSong = ref(false)
+const showPhoto = ref(false)
 const saveStatus = ref('')
 
 const moods = ['Sad', 'Happy', 'Relaxed', 'Anxious', 'Angry', 'Excited', 'Tired', 'Lonely']
@@ -28,6 +30,9 @@ const journalEntry = ref('')
 const drawingData = ref(null)
 // The optional Song of the Day: null or { id, name, artists, imageUrl }.
 const songOfTheDay = ref(null)
+// The optional photo, already shrunk: null or a JPEG data URL.
+const photo = ref(null)
+const isReadingPhoto = ref(false)
 const helperOpen = ref(false)
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const logs = ref([])
@@ -47,7 +52,10 @@ const canSave = computed(
     selectedMood.value !== null &&
     (journalEntry.value.trim().length > 0 ||
       drawingData.value?.items?.length > 0 ||
-      songOfTheDay.value !== null) &&
+      songOfTheDay.value !== null ||
+      photo.value !== null) &&
+    // Waits for a photo still being got ready, so it isn't left out.
+    !isReadingPhoto.value &&
     !isLoading.value &&
     !isSaving.value,
 )
@@ -78,6 +86,7 @@ async function saveEntry() {
       drawing: drawingData.value,
       // Only sent when a song was picked, so entries without one stay as before.
       ...(songOfTheDay.value ? { song: songOfTheDay.value } : {}),
+      ...(photo.value ? { photo: photo.value } : {}),
     })
 
     logs.value = [savedEntry, ...logs.value]
@@ -88,6 +97,8 @@ async function saveEntry() {
     drawingData.value = null
     songOfTheDay.value = null
     showSong.value = false
+    photo.value = null
+    showPhoto.value = false
     helperOpen.value = false
   } catch (error) {
     saveError.value = error.message
@@ -241,8 +252,8 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
                 @update:model-value="clearSaveFeedback"
               />
               <p id="journal-help" class="mt-2 text-sm text-muted">
-                {{ journalEntry.length }} / 5000 characters. Write a reflection, add a drawing or
-                pick a song.
+                {{ journalEntry.length }} / 5000 characters. Write a reflection, add a drawing, pick
+                a song or add a photo.
               </p>
             </div>
           </form>
@@ -385,6 +396,30 @@ onBeforeUnmount(() => window.clearTimeout(saveStatusTimer))
           </summary>
           <section class="drawing-section song-section" aria-labelledby="song-of-the-day-heading">
             <JournalSongPicker v-model="songOfTheDay" @update:model-value="clearSaveFeedback" />
+          </section>
+        </details>
+        <!-- Folded away like the others, for anyone who wants to add a photo. -->
+        <details
+          class="song-disclosure photo-disclosure"
+          :open="showPhoto"
+          @toggle="showPhoto = $event.target.open"
+        >
+          <summary>
+            <span class="disclosure-text">
+              <span id="photo-of-the-day-heading" class="section-title">Add a Photo</span>
+              <span class="body-text text-muted">A moment from today worth keeping.</span>
+            </span>
+            <span class="disclosure-optional">Optional</span>
+            <svg class="disclosure-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <section class="drawing-section" aria-labelledby="photo-of-the-day-heading">
+            <JournalPhotoPicker
+              v-model="photo"
+              v-model:reading="isReadingPhoto"
+              @update:model-value="clearSaveFeedback"
+            />
           </section>
         </details>
         <div class="save-row">

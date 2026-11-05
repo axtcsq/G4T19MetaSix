@@ -8,6 +8,7 @@ import { searchSongs } from '@/api/songs'
 vi.mock('@/api/moods', () => ({
   createMood: vi.fn(),
   getMoods: vi.fn(),
+  moodPhotoUrl: (id) => `/api/moods/${id}/photo`,
 }))
 
 vi.mock('@/api/songs', () => ({
@@ -246,5 +247,64 @@ describe('Song of the Day', () => {
     expect(card.text()).toContain('Song of the Day')
     expect(card.text()).toContain('drivers license')
     expect(card.text()).toContain('Olivia Rodrigo')
+  })
+})
+
+describe('Photo of the day', () => {
+  const photo = 'data:image/jpeg;base64,/9j/4A=='
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    getMoods.mockResolvedValue([])
+    createMood.mockResolvedValue({
+      _id: 'entry-4',
+      mood: 'Happy',
+      journal: '',
+      hasPhoto: true,
+      createdAt: '2026-11-05T10:00:00.000Z',
+    })
+  })
+
+  it('saves a photo with the entry, and a photo on its own is enough', async () => {
+    const wrapper = mount(DailyMood, {
+      global: {
+        plugins: [createPinia()],
+        stubs: {
+          ...stubs,
+          JournalPhotoPicker: {
+            emits: ['update:modelValue'],
+            template: `<button type="button" class="pick-photo" @click="$emit('update:modelValue', '${photo}')" />`,
+          },
+        },
+      },
+    })
+    await flushPromises()
+
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text() === 'Happy')
+      .trigger('click')
+    await wrapper.find('.pick-photo').trigger('click')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(createMood).toHaveBeenCalledWith({ mood: 'Happy', journal: '', drawing: null, photo })
+  })
+
+  it('shows the photo on a past entry, loaded from its own address', async () => {
+    getMoods.mockResolvedValue([
+      {
+        _id: 'entry-4',
+        mood: 'Happy',
+        journal: 'Beach day',
+        hasPhoto: true,
+        createdAt: '2026-11-05T10:00:00.000Z',
+      },
+    ])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.find('.entry-photo img').attributes('src')).toBe('/api/moods/entry-4/photo')
   })
 })

@@ -4,6 +4,7 @@ import {
   addMoodLog,
   editMoodLog,
   findMoodLogById,
+  findMoodLogPhoto,
   MOODS,
   removeMoodLog,
   retrieveMoodLogs,
@@ -118,6 +119,36 @@ function validSong(song) {
   );
 }
 
+// The image types the journal page may send, and how each file starts.
+const PHOTO_TYPES = {
+  "image/jpeg": (bytes) => bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff,
+  "image/png": (bytes) => bytes.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])),
+  "image/webp": (bytes) =>
+    bytes.subarray(0, 4).toString("ascii") === "RIFF" &&
+    bytes.subarray(8, 12).toString("ascii") === "WEBP",
+};
+// The page shrinks photos well under this before sending them.
+const MAX_PHOTO_BYTES = 600_000;
+
+// A photo as the journal page sends it, a data URL like
+// "data:image/jpeg;base64,...", as { data, type } for MongoDB. null when it
+// isn't a real image of a supported type and size.
+export function parsePhoto(value) {
+  if (typeof value !== "string") return null;
+  const match = /^data:(image\/[a-z]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);
+  if (!match || !PHOTO_TYPES[match[1]]) return null;
+  const data = Buffer.from(match[2], "base64");
+  if (!data.length || data.length > MAX_PHOTO_BYTES || !PHOTO_TYPES[match[1]](data)) return null;
+  return { data, type: match[1] };
+}
+
+// The photo's bytes stay on the server; the page loads them by the entry's id.
+function withoutPhoto(log) {
+  const entry = log.toObject();
+  delete entry.photo;
+  return entry;
+}
+
 function validateEntry(body, requireMood = false) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return "Request body must be an object";
@@ -125,7 +156,7 @@ function validateEntry(body, requireMood = false) {
 
   const keys = Object.keys(body);
 
-  if (keys.some((key) => !["mood", "journal", "drawing", "song"].includes(key))) {
+  if (keys.some((key) => !["mood", "journal", "drawing", "song", "photo"].includes(key))) {
     return "Unsupported field";
   }
 
@@ -152,7 +183,17 @@ function validateEntry(body, requireMood = false) {
     return "Song of the Day is invalid";
   }
 
+  if ("photo" in body && body.photo !== null && !parsePhoto(body.photo)) {
+    return "Photo must be a JPEG, PNG or WebP image under 600 KB";
+  }
+
   return null;
+}
+
+// The photo field as MongoDB stores it: the image, or none.
+function photoChanges(body) {
+  const photo = body.photo ? parsePhoto(body.photo) : null;
+  return { photo, hasPhoto: Boolean(photo) };
 }
 
 // CREATE
@@ -168,9 +209,10 @@ export async function createMood(req, res) {
     journal: req.body.journal ?? "",
     drawing: req.body.drawing ?? null,
     song: req.body.song ?? null,
+    ...photoChanges(req.body),
   });
 
-  res.status(201).json(log);
+  res.status(201).json(withoutPhoto(log));
 }
 
 // READ ALL
@@ -216,13 +258,34 @@ export async function updateMood(req, res) {
     return res.status(400).json({ error: "No fields supplied" });
   }
 
-  const log = await editMoodLog(req.params.id, req.user._id, req.body);
+  const changes = { ...req.body };
+  // Sending photo: null removes it.
+  if ("photo" in req.body) Object.assign(changes, photoChanges(req.body));
+  const log = await editMoodLog(req.params.id, req.user._id, changes);
 
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
   }
 
   res.json(log);
+}
+
+// READ PHOTO
+// The entry's photo as an image, only for its owner.
+export async function getMoodPhoto(req, res) {
+  if (!validId(req.params.id)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  const log = await findMoodLogPhoto(req.params.id, req.user._id);
+
+  if (!log?.photo) {
+    return res.status(404).json({ error: "Photo not found" });
+  }
+
+  // Private, so only this person's browser keeps a copy.
+  res.set("Cache-Control", "private, max-age=86400");
+  res.type(log.photo.type).send(log.photo.data);
 }
 
 // DELETE
