@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
     birthday: { type: String, default: null },
     // The journal entry pinned to the profile page.
     pinnedEntryId: { type: mongoose.Schema.Types.ObjectId, ref: "MoodLog", default: null },
-    // Home's metaphor of the day, kept so Groq writes it once a day. key is the date and that day's check-in moods, so a new check-in gets a new line.
+    // Home's metaphor of the day, kept so Groq only writes it once a day. key is the date plus that day's check-in moods, so a new check-in gets a new line.
     dailyMetaphor: {
       key: String,
       text: String,

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const MOODS = ["Sad", "Happy", "Relaxed", "Anxious", "Angry", "Excited", "Tired", "Lonely"];
 
-// The song picked as the entry's Song of the Day. A copy of what Spotify showed, so old entries still show it without asking Spotify again.
+// The entry's Song of the Day. Copied from Spotify so old entries don't need to ask again.
 const songSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
@@ -51,7 +51,7 @@ const moodLogSchema = new mongoose.Schema(
       type: songSchema,
       default: null,
     },
-    // Optional photo. Left out of every query unless asked for, so lists of entries stay small; hasPhoto tells the page there is one to load.
+    // Optional photo. Left out of queries unless asked for to keep entry lists small; hasPhoto says there's one to load.
     photo: {
       type: photoSchema,
       default: null,
@@ -61,7 +61,7 @@ const moodLogSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // "seed" for the demo user's generated entries, so re-seeding replaces only those. Absent on entries people write.
+    // "seed" on the demo user's generated entries so re-seeding only replaces those. Not set on real entries.
     source: {
       type: String,
       enum: ["seed"],
@@ -78,7 +78,7 @@ moodLogSchema.index({ userId: 1, createdAt: -1 });
 const MoodLog =
   mongoose.models.MoodLog || mongoose.model("MoodLog", moodLogSchema);
 
-// Keep MongoDB operations here so the controller can focus on HTTP behavior.
+// MongoDB operations live here so the controller can stick to HTTP.
 export function addMoodLog(userId, entry) {
   return MoodLog.create({ ...entry, userId });
 }
