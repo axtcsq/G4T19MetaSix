@@ -105,6 +105,7 @@ const rows = computed(() =>
 }
 
 .breakdown-intro {
+  max-width: 760px;
   margin-top: 0.25rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);

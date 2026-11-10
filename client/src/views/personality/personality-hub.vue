@@ -1396,9 +1396,7 @@ onMounted(loadPage)
 
 .insights-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: 40px;
+  gap: 2rem;
 }
 
 .breakdown-card {
@@ -1410,6 +1408,10 @@ onMounted(loadPage)
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem 1.75rem;
+}
+
+.insights-card > * {
+  max-width: 760px;
 }
 
 .match-note {
