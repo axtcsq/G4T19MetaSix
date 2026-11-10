@@ -1397,6 +1397,7 @@ onMounted(loadPage)
 .insights-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 40px;
 }
 
@@ -1404,7 +1405,6 @@ onMounted(loadPage)
   padding: 1.5rem 1.75rem;
 }
 
-/* The text card stretches to the height of the card beside it. Its text stays together at the top and the match note sits at the bottom. */
 .insights-card {
   display: flex;
   flex-direction: column;
@@ -1413,7 +1413,6 @@ onMounted(loadPage)
 }
 
 .match-note {
-  margin-top: auto;
   padding-top: 0.5rem;
 }
 
