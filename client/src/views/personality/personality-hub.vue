@@ -1410,17 +1410,14 @@ onMounted(loadPage)
   padding: 1.5rem 1.75rem;
 }
 
-.insights-card > * {
-  max-width: 760px;
-}
-
 .match-note {
   padding-top: 0.5rem;
 }
 
 .insight-list {
   display: grid;
-  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 0.6rem 2.5rem;
 }
 
 .summary-text {

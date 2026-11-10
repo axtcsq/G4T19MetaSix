@@ -105,7 +105,6 @@ const rows = computed(() =>
 }
 
 .breakdown-intro {
-  max-width: 760px;
   margin-top: 0.25rem;
   color: var(--pq-muted);
   font-family: var(--font-sans);
@@ -190,6 +189,18 @@ const rows = computed(() =>
 .chip.is-empty {
   color: var(--pq-muted);
   background: var(--pq-tint);
+}
+
+@media (min-width: 1001px) {
+  .source-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  .source-row.is-total {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 600px) {
