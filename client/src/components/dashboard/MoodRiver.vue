@@ -44,7 +44,16 @@ function datesBetween(from, to) {
   return dates
 }
 
+// The loader replaces the drawing area, so the old drawing goes with it.
+function stopDrawing() {
+  intersectionObserver?.disconnect()
+  resizeObserver?.disconnect()
+  instance?.remove()
+  instance = null
+}
+
 async function load() {
+  stopDrawing()
   loading.value = true
   error.value = ''
   try {
@@ -370,11 +379,9 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   disposed = true
-  intersectionObserver?.disconnect()
-  resizeObserver?.disconnect()
+  stopDrawing()
   media?.removeEventListener('change', onPreference)
   document.removeEventListener('visibilitychange', syncPlayback)
-  instance?.remove()
 })
 </script>
 
