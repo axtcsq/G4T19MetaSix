@@ -50,7 +50,20 @@ export async function syncUser(
     );
   }
 
-  const response = await fetchRecentlyPlayed(token.access_token);
+  let response;
+  try {
+    response = await fetchRecentlyPlayed(token.access_token);
+  } catch (error) {
+    if (error.status === 403) {
+      // The user isn't on the app's allowed list in the Spotify dashboard. Logging in again resumes tracking.
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { "tracking.status": "revoked", "tracking.lastError": error.message } },
+      );
+      return { status: "revoked" };
+    }
+    throw error;
+  }
   // Local files have no track ID and can't be analysed, so they're skipped.
   const items = (response.items ?? []).filter((item) => item.track?.id && item.played_at);
 
